@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "changeset": "changeset",
+    "ci": "turbo ci",
+    "clean": "turbo clean && rm -rf node_modules",
+    "dev": "turbo dev --no-cache --continue",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo lint",
+    "prepare": "husky install",
+    "prettier": "prettier --write ./",
+    "release": "turbo build && changeset publish",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "version-packages": "changeset version"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.13",
+    "@changesets/cli": "2.26.2",
+    "@internal/tsconfig": "workspace:*",
+    "eslint": "8.47.0",
+    "eslint-config-custom": "workspace:*",
+    "husky": "8.0.0",
+    "lint-staged": "14.0.0",
+    "prettier": "3.0.1",
+    "tslib": "2.6.2",
+    "turbo": "1.10.12",
+    "typescript": "5.2.2"
+  },
+  "packageManager": "pnpm@8.6.10",
+  "volta": {
+    "node": "18.14.1",
+    "pnpm": "8.6.10"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "pnpm prettier --write",
+      "pnpm eslint --fix"
+    ]
+  }
+}
