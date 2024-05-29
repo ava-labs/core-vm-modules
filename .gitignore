@@ -1,0 +1,12 @@
+.DS_Store
+node_modules
+.turbo
+*.log
+dist
+*.local
+.env
+.cache
+server/dist
+public/dist
+.turbo
+tsconfig.tsbuildinfo
