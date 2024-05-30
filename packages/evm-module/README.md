@@ -2,7 +2,7 @@
 
 ## Overview
 
-The evm-module package implements the core logic for the EVM (Ethereum Virtual Machine) module.
+This package implements the core logic for the EVM (Ethereum Virtual Machine) module.
 
 ## Installation
 
