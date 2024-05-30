@@ -11,10 +11,8 @@
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch"
   },
-  "dependencies": {
-    "@internal/types": "workspace:*"
-  },
   "devDependencies": {
+    "@internal/types": "workspace:*",
     "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",
     "@types/lodash": "4.14.201",
