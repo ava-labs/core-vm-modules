@@ -1,5 +1,5 @@
-import { parseManifest } from '@avalabs/core-module';
-import type { Module } from '@avalabs/core-module';
+import { parseManifest } from '@internal/types';
+import type { Module } from '@internal/types';
 
 export const evm: Module = {
   getManifest: () => {
