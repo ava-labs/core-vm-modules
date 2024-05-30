@@ -12,7 +12,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-module": "workspace:*"
+    "@internal/types": "workspace:*"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

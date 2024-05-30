@@ -25,16 +25,16 @@ pnpm build    # builds all packages
 
 > These Packages are published to NPM
 
-- `core-module`: common utilities for reuse across various VM modules
 - `evm-module`: EVM module
 
 #### Internal
 
 > These packages are only used internally within this repo
 
-- `tsconfig-custom`: tsconfig for sdks (private)
-- `eslint-config-custom`: eslint config for sdks (private)
-- `github-actions-custom`: eslint config for sdks (private)
+- `types`: shared types for modules
+- `tsconfig`: tsconfig for modules
+- `eslint-config-custom`: eslint config for modules
+- `github-actions`: custom github actions
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
