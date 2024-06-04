@@ -34,6 +34,7 @@ export type Transaction = {
   txType?: TransactionType;
   chainId: string; // chainId from ActiveNetwork used to fetch tx
   method?: string;
+  explorerLink: string;
 };
 
 export interface TxToken {

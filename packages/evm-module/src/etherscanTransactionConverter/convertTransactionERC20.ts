@@ -1,8 +1,8 @@
 import { Erc20Tx } from '@avalabs/etherscan-sdk';
-import { getFeeString } from '../utils/getFeeString';
 import { TokenType, Transaction, TransactionType } from '../types';
 import { balanceToDisplayValue, stringToBN } from '@avalabs/utils-sdk';
 import { Network } from '@avalabs/chains-sdk';
+import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
 
 export function convertTransactionERC20({
   tx,
@@ -17,9 +17,9 @@ export function convertTransactionERC20({
   const timestamp = parseInt(tx.timeStamp) * 1000;
   const decimals = parseInt(tx.tokenDecimal);
   const amountDisplayValue = balanceToDisplayValue(stringToBN(tx.value, decimals), decimals);
-  const fee = getFeeString(tx);
   const { from, to, gasPrice, gasUsed, hash, tokenDecimal, tokenName, tokenSymbol } = tx;
   const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
+  const explorerLink = getExplorerAddressByNetwork(network, hash);
 
   return {
     isIncoming: !isSender,
@@ -41,8 +41,8 @@ export function convertTransactionERC20({
     ],
     gasUsed,
     gasPrice,
-    fee,
     chainId: network.chainId.toString(),
     txType,
+    explorerLink,
   };
 }

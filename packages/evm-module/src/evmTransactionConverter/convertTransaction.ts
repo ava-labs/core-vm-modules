@@ -2,6 +2,7 @@ import { ConvertTransactionParams, Transaction } from '../types';
 import { getTxHistoryCategories } from './getTxHistoryCategories';
 import { getSenderInfo } from './getSenderInfo';
 import { getTokens } from './getTokens';
+import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
 
 export const convertTransaction = async ({
   transactions,
@@ -13,6 +14,7 @@ export const convertTransaction = async ({
   const tokens = await getTokens(transactions, network);
   const { txType, isContractCall } = txHistoryCategories;
   const { blockTimestamp, txHash: hash, gasPrice, gasUsed } = transactions.nativeTransaction;
+  const explorerLink = getExplorerAddressByNetwork(network, hash);
 
   return {
     isContractCall,
@@ -28,5 +30,6 @@ export const convertTransaction = async ({
     gasUsed,
     chainId: network.chainId.toString(),
     txType,
+    explorerLink,
   };
 };

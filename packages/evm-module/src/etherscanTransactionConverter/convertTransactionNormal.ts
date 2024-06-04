@@ -3,8 +3,8 @@ import { NormalTx } from '@avalabs/etherscan-sdk';
 import { TokenType, Transaction, TransactionType } from '../types';
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { isContractCall } from '../utils/isContractCall';
-import { getFeeString } from '../utils/getFeeString';
 import { BN } from 'bn.js';
+import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
 
 export const convertTransactionNormal = (tx: NormalTx, network: Network, address: string): Transaction => {
   const isSender = tx.from.toLowerCase() === address.toLowerCase();
@@ -12,10 +12,10 @@ export const convertTransactionNormal = (tx: NormalTx, network: Network, address
   const decimals = network.networkToken.decimals;
   const amountBN = new BN(tx.value);
   const amountDisplayValue = balanceToDisplayValue(amountBN, decimals);
-  const fee = getFeeString(tx);
   const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
 
   const { from, to, gasPrice, gasUsed, hash } = tx;
+  const explorerLink = getExplorerAddressByNetwork(network, hash);
 
   return {
     isIncoming: !isSender,
@@ -37,8 +37,8 @@ export const convertTransactionNormal = (tx: NormalTx, network: Network, address
     ],
     gasUsed,
     gasPrice,
-    fee,
     chainId: network.chainId.toString(),
     txType,
+    explorerLink,
   };
 };
