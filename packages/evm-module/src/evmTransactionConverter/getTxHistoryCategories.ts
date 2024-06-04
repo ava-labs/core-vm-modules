@@ -31,7 +31,7 @@ export const getTxHistoryCategories = (
     : isTransfer
     ? TransactionType.TRANSFER
     : TransactionType.UNKNOWN;
-  const isContractCall = !NonContractCallTypes.includes(type);
+  const isContractCall = !NonContractCallTypes.includes(txType);
 
   return {
     isSwap,
