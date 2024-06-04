@@ -1,7 +1,8 @@
 import { parseManifest } from '@internal/types';
-import type { Module, Manifest, NetworkFees } from '@internal/types';
+import type { Module, Manifest, NetworkFees, GetTransactionHistory } from '@internal/types';
 import type { JsonRpcProvider } from 'ethers';
 import { getNetworkFee } from './get-network-fee';
+import { getTransactionHistory } from './getTransactionHistory';
 
 export class EvmModule implements Module {
   #provider: JsonRpcProvider;
@@ -27,7 +28,7 @@ export class EvmModule implements Module {
     return getNetworkFee(this.#provider);
   }
 
-  getTransactionHistory(): Promise<string> {
-    return Promise.resolve('EVM transaction history');
+  getTransactionHistory(params: GetTransactionHistory) {
+    return getTransactionHistory(params);
   }
 }

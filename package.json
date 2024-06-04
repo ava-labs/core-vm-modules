@@ -16,6 +16,11 @@
     "version-packages": "changeset version"
   },
   "devDependencies": {
+    "@avalabs/utils-sdk": "v2.8.0-alpha.187",
+    "@avalabs/chains-sdk": "v2.8.0-alpha.187",
+    "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
+    "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
+    "@internal/types": "workspace:*",
     "@types/node": "20.12.13",
     "@changesets/cli": "2.26.2",
     "@internal/tsconfig": "workspace:*",
@@ -26,7 +31,9 @@
     "prettier": "3.0.1",
     "tslib": "2.6.2",
     "turbo": "1.10.12",
-    "typescript": "5.2.2"
+    "typescript": "5.2.2",
+    "bn.js": "5.2.1",
+    "@types/bn.js": "5.1.5"
   },
   "packageManager": "pnpm@8.6.10",
   "volta": {

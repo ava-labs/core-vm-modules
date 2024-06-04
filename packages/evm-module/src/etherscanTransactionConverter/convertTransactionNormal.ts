@@ -1,0 +1,44 @@
+import { Network } from '@avalabs/chains-sdk';
+import { NormalTx } from '@avalabs/etherscan-sdk';
+import { TokenType, Transaction, TransactionType } from '../types';
+import { balanceToDisplayValue } from '@avalabs/utils-sdk';
+import { isContractCall } from '../utils/isContractCall';
+import { getFeeString } from '../utils/getFeeString';
+import { BN } from 'bn.js';
+
+export const convertTransactionNormal = (tx: NormalTx, network: Network, address: string): Transaction => {
+  const isSender = tx.from.toLowerCase() === address.toLowerCase();
+  const timestamp = parseInt(tx.timeStamp) * 1000;
+  const decimals = network.networkToken.decimals;
+  const amountBN = new BN(tx.value);
+  const amountDisplayValue = balanceToDisplayValue(amountBN, decimals);
+  const fee = getFeeString(tx);
+  const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
+
+  const { from, to, gasPrice, gasUsed, hash } = tx;
+
+  return {
+    isIncoming: !isSender,
+    isOutgoing: isSender,
+    isContractCall: isContractCall(tx),
+    timestamp,
+    hash,
+    isSender,
+    from,
+    to,
+    tokens: [
+      {
+        decimal: decimals.toString(),
+        name: network.networkToken.name,
+        symbol: network.networkToken.symbol,
+        amount: amountDisplayValue,
+        type: TokenType.NATIVE,
+      },
+    ],
+    gasUsed,
+    gasPrice,
+    fee,
+    chainId: network.chainId.toString(),
+    txType,
+  };
+};

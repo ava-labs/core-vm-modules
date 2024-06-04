@@ -14,12 +14,6 @@ module.exports = {
         argsIgnorePattern: '^_', // Ignore unused variables whose name starts with `_`
       },
     ],
-    'unicorn/filename-case': [
-      'error',
-      {
-        case: 'kebabCase',
-      },
-    ],
     '@typescript-eslint/no-var-requires': 'off',
   },
 };
