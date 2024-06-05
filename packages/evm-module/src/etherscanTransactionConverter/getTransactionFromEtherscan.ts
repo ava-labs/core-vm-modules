@@ -1,6 +1,7 @@
 import { convertTransactionNormal } from './convertTransactionNormal';
 import { convertTransactionERC20 } from './convertTransactionERC20';
-import { EtherscanPagination, GetTransactionHistory, TransactionHistoryResponse } from '../types';
+import type { EtherscanPagination } from '../types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
 
 export const getTransactionFromEtherscan = async ({

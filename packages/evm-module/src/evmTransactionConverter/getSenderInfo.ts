@@ -1,5 +1,5 @@
-import { TransactionDetails } from '@avalabs/glacier-sdk';
-import { TxHistoryCategories } from '../types';
+import type { TransactionDetails } from '@avalabs/glacier-sdk';
+import type { TxHistoryCategories } from '../types';
 
 export const getSenderInfo = (
   { isNativeSend, isNativeReceive, isTransfer }: TxHistoryCategories,

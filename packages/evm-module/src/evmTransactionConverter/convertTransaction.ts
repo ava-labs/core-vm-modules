@@ -1,4 +1,5 @@
-import { ConvertTransactionParams, Transaction } from '../types';
+import type { ConvertTransactionParams } from '../types';
+import type { Transaction } from '@internal/types';
 import { getTxHistoryCategories } from './getTxHistoryCategories';
 import { getSenderInfo } from './getSenderInfo';
 import { getTokens } from './getTokens';

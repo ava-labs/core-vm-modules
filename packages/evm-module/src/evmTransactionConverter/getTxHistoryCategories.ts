@@ -1,5 +1,7 @@
-import { TransactionDetails } from '@avalabs/glacier-sdk';
-import { NonContractCallTypes, TransactionType, TxHistoryCategories } from '../types';
+import type { TransactionDetails } from '@avalabs/glacier-sdk';
+import { NonContractCallTypes } from '../types';
+import type { TxHistoryCategories } from '../types';
+import { TransactionType } from '@internal/types';
 import { startCase } from 'lodash';
 
 export const getTxHistoryCategories = (

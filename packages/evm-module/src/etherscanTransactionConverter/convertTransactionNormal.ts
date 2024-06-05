@@ -1,6 +1,8 @@
-import { Network } from '@avalabs/chains-sdk';
-import { NormalTx } from '@avalabs/etherscan-sdk';
-import { TokenType, Transaction, TransactionType } from '../types';
+import type { Network } from '@avalabs/chains-sdk';
+import type { NormalTx } from '@avalabs/etherscan-sdk';
+import { TokenType, TransactionType } from '@internal/types';
+import type { Transaction } from '@internal/types';
+
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { isContractCall } from '../utils/isContractCall';
 import { BN } from 'bn.js';

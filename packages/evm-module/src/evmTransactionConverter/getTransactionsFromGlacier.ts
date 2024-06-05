@@ -1,4 +1,4 @@
-import { GetTransactionHistory, TransactionHistoryResponse } from '../types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { convertTransaction } from './convertTransaction';
 

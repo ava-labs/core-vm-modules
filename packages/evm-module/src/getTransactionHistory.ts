@@ -1,6 +1,6 @@
 import { getTransactionFromEtherscan } from './etherscanTransactionConverter/getTransactionFromEtherscan';
 import { isEthereumChainId } from './utils/isEthereumChainId';
-import { GetTransactionHistory, TransactionHistoryResponse } from './types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { getTransactionsFromGlacier } from './evmTransactionConverter/getTransactionsFromGlacier';
 
 export const getTransactionHistory = async ({
