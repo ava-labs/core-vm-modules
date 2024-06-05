@@ -12,14 +12,6 @@
     "test:watch": "jest --watch"
   },
   "devDependencies": {
-    "lodash": "4.17.21",
-    "@avalabs/utils-sdk": "v2.8.0-alpha.187",
-    "@avalabs/chains-sdk": "v2.8.0-alpha.187",
-    "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
-    "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
-    "bn.js": "5.2.1",
-    "@types/bn.js": "5.1.5",
-    "@internal/types": "workspace:*",
     "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",
     "@types/lodash": "4.14.201",

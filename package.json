@@ -16,6 +16,15 @@
     "version-packages": "changeset version"
   },
   "devDependencies": {
+    "lodash": "4.17.21",
+    "@types/lodash": "4.14.201",
+    "@avalabs/utils-sdk": "v2.8.0-alpha.187",
+    "@avalabs/chains-sdk": "v2.8.0-alpha.187",
+    "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
+    "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
+    "bn.js": "5.2.1",
+    "@types/bn.js": "5.1.5",
+    "@internal/types": "workspace:*",
     "@types/node": "20.12.13",
     "@changesets/cli": "2.26.2",
     "@internal/tsconfig": "workspace:*",
