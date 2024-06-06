@@ -1,9 +1,8 @@
 import type { NormalTx } from '@avalabs/etherscan-sdk';
 import { TokenType, TransactionType, type NetworkToken, type Transaction } from '@internal/types';
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { isContractCall } from '../utils/isContractCall';
 import { BN } from 'bn.js';
-import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
+import { getExplorerAddressByNetwork } from '../utils/get-explorer-address-by-network';
 
 export const convertTransactionNormal = ({
   tx,
@@ -53,3 +52,7 @@ export const convertTransactionNormal = ({
     explorerLink,
   };
 };
+
+function isContractCall(tx: NormalTx): boolean {
+  return tx.input !== '0x';
+}

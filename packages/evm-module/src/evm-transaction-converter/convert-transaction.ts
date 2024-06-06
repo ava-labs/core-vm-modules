@@ -1,8 +1,8 @@
 import type { Transaction, NetworkToken } from '@internal/types';
-import { getTxType } from './getTxHistoryCategories';
-import { getSenderInfo } from './getSenderInfo';
-import { getTokens } from './getTokens';
-import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
+import { getTxType } from './get-tx-type';
+import { getSenderInfo } from './get-sender-info';
+import { getTokens } from './get-tokens';
+import { getExplorerAddressByNetwork } from '../utils/get-explorer-address-by-network';
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
 import { NonContractCallTypes } from '../types';
 

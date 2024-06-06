@@ -1,14 +1,6 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { TransactionType, type TxToken } from '@internal/types';
+import { TokenType, TransactionType, type TxToken } from '@internal/types';
 import { startCase } from 'lodash';
-import { isNFT } from '../utils/isNft';
-
-const parseRawMethod = (method = ''): string => {
-  if (method.includes('(')) {
-    return startCase(method.split('(', 1)[0]);
-  }
-  return method;
-};
 
 export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
@@ -42,4 +34,15 @@ export const getTxType = (
   if (isNFTSend) return TransactionType.NFT_SEND;
   if (isNFTReceive) return TransactionType.NFT_RECEIVE;
   return TransactionType.UNKNOWN;
+};
+
+function isNFT(tokenType: TokenType) {
+  return tokenType === TokenType.ERC721 || tokenType === TokenType.ERC1155;
+}
+
+const parseRawMethod = (method = ''): string => {
+  if (method.includes('(')) {
+    return startCase(method.split('(', 1)[0]);
+  }
+  return method;
 };

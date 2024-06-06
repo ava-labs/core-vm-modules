@@ -1,6 +1,6 @@
 import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { Glacier } from '@avalabs/glacier-sdk';
-import { convertTransaction } from './convertTransaction';
+import { convertTransaction } from './convert-transaction';
 
 export const getTransactionsFromGlacier = async ({
   chainId,

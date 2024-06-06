@@ -1,5 +1,5 @@
-import { convertTransactionNormal } from './convertTransactionNormal';
-import { convertTransactionERC20 } from './convertTransactionERC20';
+import { convertTransactionNormal } from './convert-transaction-normal';
+import { convertTransactionERC20 } from './convert-transaction-erc20';
 import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
 

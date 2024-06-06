@@ -1,7 +1,7 @@
 import type { Erc20Tx } from '@avalabs/etherscan-sdk';
 import { TokenType, TransactionType, type Transaction } from '@internal/types';
 import { balanceToDisplayValue, stringToBN } from '@avalabs/utils-sdk';
-import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
+import { getExplorerAddressByNetwork } from '../utils/get-explorer-address-by-network';
 
 export function convertTransactionERC20({
   tx,

@@ -4,8 +4,8 @@ import { BN } from 'bn.js';
 import type { TxToken, NetworkToken } from '@internal/types';
 import { TokenType } from '@internal/types';
 import { resolve } from '../utils/resolve';
-import { getNftMetadata } from './getNftMetadata';
-import { getSmallImageForNFT } from '../utils/getSmallImageForNFT';
+import { getNftMetadata } from './get-nft-metadata';
+import { getSmallImageForNFT } from '../utils/get-small-image-for-nft';
 
 export const getTokens = async (
   { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,

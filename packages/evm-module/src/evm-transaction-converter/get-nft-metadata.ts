@@ -1,4 +1,4 @@
-import { ipfsResolverWithFallback } from '../utils/ipfsResolverWithFallback';
+import { ipfsResolverWithFallback } from '../utils/ipfs-resolver-with-fallback';
 
 interface NftMetadata {
   attributes?: string;
