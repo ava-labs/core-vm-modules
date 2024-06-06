@@ -37,6 +37,5 @@ export async function getNetworkFee(
       maxFeePerGas: maxFeePerGasInWei + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
     },
-    isFixedFee: false,
   };
 }

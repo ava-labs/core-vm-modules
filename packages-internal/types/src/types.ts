@@ -7,7 +7,6 @@ export type NetworkFees = {
   medium: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
   high: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
   baseFee: Wei;
-  isFixedFee: boolean; // deprecated: only subnet with fixed fee was Swimmer but they don't exist anymore
 };
 
 export interface Module {
