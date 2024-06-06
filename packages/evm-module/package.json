@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "typings": "../../packages-internal/types/dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsup",
