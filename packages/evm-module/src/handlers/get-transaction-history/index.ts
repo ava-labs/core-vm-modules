@@ -1,7 +1,7 @@
-import { getTransactionFromEtherscan } from './etherscan-transaction-converter/get-transaction-from-etherscan';
+import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
 import { isEthereumChainId } from './utils/is-ethereum-chain-id';
 import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
-import { getTransactionsFromGlacier } from './evm-transaction-converter/get-transactions-from-glacier';
+import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
 
 export const getTransactionHistory = async ({
   chainId,
