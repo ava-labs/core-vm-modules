@@ -11,6 +11,10 @@ export const getTransactionsFromGlacier = async ({
   offset,
   glacierApiUrl,
 }: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
+  if (!glacierApiUrl) {
+    throw new Error('Glacier API URL is required');
+  }
+
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
 
   try {
