@@ -4,5 +4,4 @@
     "verbatimModuleSyntax": false,
     "esModuleInterop": true
   },
-  "include": ["src", "src/types"]
 }

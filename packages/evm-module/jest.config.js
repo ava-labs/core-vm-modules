@@ -6,4 +6,5 @@ export default {
   transform: {
     '.ts': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
   },
+  moduleDirectories: ['node_modules', 'src'],
 };
