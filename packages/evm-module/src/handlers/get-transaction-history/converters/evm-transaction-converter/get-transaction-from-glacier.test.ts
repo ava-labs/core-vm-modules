@@ -149,6 +149,7 @@ describe('get-transactions-from-glacier', () => {
       nextPageToken: '',
     });
   });
+
   it.skip('should have returned response', async () => {
     mockListTransactions.mockResolvedValue(mockListTransactionDetailsResponse);
     const result = await getTransactionsFromGlacier({
