@@ -1,6 +1,6 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
 import { TokenType, TransactionType, type TxToken } from '@internal/types';
-import { startCase } from 'lodash';
+import startCase from 'lodash.startcase';
 
 export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,

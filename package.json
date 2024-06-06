@@ -15,14 +15,6 @@
     "test:watch": "turbo test:watch",
     "version-packages": "changeset version"
   },
-  "dependencies": {
-    "@avalabs/utils-sdk": "v2.8.0-alpha.187",
-    "@avalabs/chains-sdk": "v2.8.0-alpha.187",
-    "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
-    "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
-    "bn.js": "5.2.1",
-    "lodash": "4.17.21"
-  },
   "devDependencies": {
     "@types/lodash": "4.14.201",
     "@types/bn.js": "5.1.5",
