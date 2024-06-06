@@ -3,6 +3,6 @@
   "compilerOptions": {
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types", "../packages-internal/types"]
+    "allowJs": true
   },
 }
