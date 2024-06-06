@@ -38,7 +38,7 @@ jobs:
       # This will run all build, test, and lint scripts in parallel,
       # outlined in the turbo.json file
       - name: Build, Test, & Lint
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Setup Local Github Actions
         run: pnpm run build --filter=github-actions --force
