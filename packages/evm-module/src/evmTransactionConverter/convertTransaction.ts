@@ -1,21 +1,32 @@
-import type { ConvertTransactionParams } from '../types';
-import type { Transaction } from '@internal/types';
-import { getTxHistoryCategories } from './getTxHistoryCategories';
+import type { Transaction, NetworkToken } from '@internal/types';
+import { getTxType } from './getTxHistoryCategories';
 import { getSenderInfo } from './getSenderInfo';
 import { getTokens } from './getTokens';
 import { getExplorerAddressByNetwork } from '../utils/getExplorerAddressByNetwork';
+import type { TransactionDetails } from '@avalabs/glacier-sdk';
+import { NonContractCallTypes } from '../types';
+
+type ConvertTransactionParams = {
+  transactions: TransactionDetails;
+  explorerUrl: string;
+  networkToken: NetworkToken;
+  chainId: number;
+  address: string;
+};
 
 export const convertTransaction = async ({
   transactions,
-  network,
+  explorerUrl,
+  networkToken,
+  chainId,
   address,
 }: ConvertTransactionParams): Promise<Transaction> => {
-  const txHistoryCategories = getTxHistoryCategories(transactions, address);
-  const { isOutgoing, isIncoming, isSender, from, to } = getSenderInfo(txHistoryCategories, transactions, address);
-  const tokens = await getTokens(transactions, network);
-  const { txType, isContractCall } = txHistoryCategories;
+  const tokens = await getTokens(transactions, networkToken);
+  const txType = getTxType(transactions, address, tokens);
+  const { isOutgoing, isIncoming, isSender, from, to } = getSenderInfo(txType, transactions, address);
   const { blockTimestamp, txHash: hash, gasPrice, gasUsed } = transactions.nativeTransaction;
-  const explorerLink = getExplorerAddressByNetwork(network, hash);
+  const explorerLink = getExplorerAddressByNetwork(explorerUrl, hash);
+  const isContractCall = !NonContractCallTypes.includes(txType);
 
   return {
     isContractCall,
@@ -29,7 +40,7 @@ export const convertTransaction = async ({
     tokens,
     gasPrice,
     gasUsed,
-    chainId: network.chainId.toString(),
+    chainId: chainId.toString(),
     txType,
     explorerLink,
   };

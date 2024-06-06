@@ -1,6 +1,4 @@
 import { object, string, boolean, z } from 'zod';
-import type { RichAddress } from '@avalabs/glacier-sdk';
-import type { Network } from '@avalabs/chains-sdk';
 
 export type Wei = bigint;
 
@@ -59,7 +57,10 @@ export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, M
 };
 
 export type GetTransactionHistory = {
-  network: Network;
+  chainId: number;
+  isTestnet: boolean;
+  networkToken: NetworkToken;
+  explorerUrl: string;
   address: string;
   nextPageToken?: string;
   offset?: number;
@@ -109,6 +110,11 @@ export enum TransactionType {
   NFT_BUY = 'NFTBuy',
   APPROVE = 'Approve',
   TRANSFER = 'Transfer',
+  NFT_SEND = 'NFTSend',
+  NFT_RECEIVE = 'NFTReceive',
+  AIRDROP = 'Airdrop',
+  FILL_ORDER = 'FillOrder',
+  UNWRAP = 'Unwrap',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -117,4 +123,35 @@ export enum TokenType {
   ERC20 = 'ERC20',
   ERC721 = 'ERC721',
   ERC1155 = 'ERC1155',
+}
+
+type RichAddress = {
+  /**
+   * The contract name.
+   */
+  name?: string;
+  /**
+   * The contract symbol.
+   */
+  symbol?: string;
+  /**
+   * The number of decimals the token uses. For example `6`, means to divide the token amount by `1000000` to get its user representation.
+   */
+  decimals?: number;
+  /**
+   * The logo uri for the address.
+   */
+  logoUri?: string;
+  /**
+   * A wallet or contract address in mixed-case checksum encoding.
+   */
+  address: string;
+};
+
+export interface NetworkToken {
+  name: string;
+  symbol: string;
+  description: string;
+  decimals: number;
+  logoUri: string;
 }

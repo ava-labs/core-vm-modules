@@ -3,7 +3,9 @@ import { Glacier } from '@avalabs/glacier-sdk';
 import { convertTransaction } from './convertTransaction';
 
 export const getTransactionsFromGlacier = async ({
-  network,
+  chainId,
+  explorerUrl,
+  networkToken,
   address,
   nextPageToken,
   offset,
@@ -13,7 +15,7 @@ export const getTransactionsFromGlacier = async ({
 
   try {
     const response = await glacierSdk.evmTransactions.listTransactions({
-      chainId: network.chainId.toString(),
+      chainId: chainId.toString(),
       address,
       pageToken: nextPageToken,
       pageSize: offset,
@@ -28,7 +30,9 @@ export const getTransactionsFromGlacier = async ({
         .map((transactions) =>
           convertTransaction({
             transactions,
-            network,
+            explorerUrl,
+            networkToken,
+            chainId,
             address,
           }).then((tx) => tx),
         ),

@@ -1,11 +1,18 @@
 import { convertTransactionNormal } from './convertTransactionNormal';
 import { convertTransactionERC20 } from './convertTransactionERC20';
-import type { EtherscanPagination } from '../types';
 import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
 import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
 
+interface EtherscanPagination {
+  queries: ('normal' | 'erc20')[];
+  page?: number;
+}
+
 export const getTransactionFromEtherscan = async ({
-  network,
+  isTestnet,
+  chainId,
+  networkToken,
+  explorerUrl,
   address,
   nextPageToken,
   offset,
@@ -21,13 +28,13 @@ export const getTransactionFromEtherscan = async ({
   const page = parsedPageToken?.page || 1;
   const queries = parsedPageToken?.queries || ['normal', 'erc20'];
 
-  const normalHist = (
-    queries.includes('normal') ? await getNormalTxs(address, !network.isTestnet, { page, offset }) : []
-  ).map((tx) => convertTransactionNormal(tx, network, address));
+  const normalHist = (queries.includes('normal') ? await getNormalTxs(address, !isTestnet, { page, offset }) : []).map(
+    (tx) => convertTransactionNormal({ tx, chainId, networkToken, explorerUrl, address }),
+  );
 
   const erc20Hist = (
     queries.includes('normal')
-      ? await getErc20Txs(address, !network.isTestnet, undefined, {
+      ? await getErc20Txs(address, !isTestnet, undefined, {
           page,
           offset,
         })
@@ -36,7 +43,8 @@ export const getTransactionFromEtherscan = async ({
     convertTransactionERC20({
       tx,
       address,
-      network,
+      explorerUrl,
+      chainId,
     }),
   );
 

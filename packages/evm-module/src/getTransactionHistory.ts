@@ -4,21 +4,30 @@ import type { GetTransactionHistory, TransactionHistoryResponse } from '@interna
 import { getTransactionsFromGlacier } from './evmTransactionConverter/getTransactionsFromGlacier';
 
 export const getTransactionHistory = async ({
-  network,
+  chainId,
+  isTestnet,
+  networkToken,
+  explorerUrl,
   address,
   nextPageToken,
   offset,
 }: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
-  if (isEthereumChainId(network.chainId)) {
+  if (isEthereumChainId(chainId)) {
     return getTransactionFromEtherscan({
-      network,
+      isTestnet,
+      networkToken,
+      explorerUrl,
+      chainId,
       address,
       nextPageToken,
       offset,
     });
   }
   return getTransactionsFromGlacier({
-    network,
+    isTestnet,
+    networkToken,
+    explorerUrl,
+    chainId,
     address,
     nextPageToken,
     offset,

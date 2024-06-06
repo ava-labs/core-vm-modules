@@ -1,13 +1,20 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { NonContractCallTypes } from '../types';
-import type { TxHistoryCategories } from '../types';
-import { TransactionType } from '@internal/types';
+import { TransactionType, type TxToken } from '@internal/types';
 import { startCase } from 'lodash';
+import { isNFT } from '../utils/isNft';
 
-export const getTxHistoryCategories = (
+const parseRawMethod = (method = ''): string => {
+  if (method.includes('(')) {
+    return startCase(method.split('(', 1)[0]);
+  }
+  return method;
+};
+
+export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
   address: string,
-): TxHistoryCategories => {
+  tokens: TxToken[],
+): TransactionType => {
   const nativeOnly = !erc20Transfers && !erc721Transfers;
   const method = parseRawMethod(nativeTransaction.method?.methodName);
 
@@ -20,40 +27,19 @@ export const getTxHistoryCategories = (
   const isAirdrop = method.toLowerCase().includes('airdrop');
   const isUnwrap = method.toLowerCase().includes('unwrap');
   const isFillOrder = method === 'Fill Order';
-  const txType = isSwap
-    ? TransactionType.SWAP
-    : isNativeSend
-    ? TransactionType.SEND
-    : isNativeReceive
-    ? TransactionType.RECEIVE
-    : isNFTPurchase
-    ? TransactionType.NFT_BUY
-    : isApprove
-    ? TransactionType.APPROVE
-    : isTransfer
-    ? TransactionType.TRANSFER
-    : TransactionType.UNKNOWN;
-  const isContractCall = !NonContractCallTypes.includes(txType);
+  const isNFTSend = isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address === address;
+  const isNFTReceive = isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address === address;
 
-  return {
-    isSwap,
-    isNativeSend,
-    isNativeReceive,
-    isNFTPurchase,
-    isApprove,
-    isTransfer,
-    isAirdrop,
-    isUnwrap,
-    isFillOrder,
-    isContractCall,
-    method,
-    txType,
-  };
-};
-
-const parseRawMethod = (method = ''): string => {
-  if (method.includes('(')) {
-    return startCase(method.split('(', 1)[0]);
-  }
-  return method;
+  if (isSwap) return TransactionType.SWAP;
+  if (isNativeSend) return TransactionType.SEND;
+  if (isNativeReceive) return TransactionType.RECEIVE;
+  if (isNFTPurchase) return TransactionType.NFT_BUY;
+  if (isApprove) return TransactionType.APPROVE;
+  if (isTransfer) return TransactionType.TRANSFER;
+  if (isAirdrop) return TransactionType.AIRDROP;
+  if (isUnwrap) return TransactionType.UNWRAP;
+  if (isFillOrder) return TransactionType.FILL_ORDER;
+  if (isNFTSend) return TransactionType.NFT_SEND;
+  if (isNFTReceive) return TransactionType.NFT_RECEIVE;
+  return TransactionType.UNKNOWN;
 };

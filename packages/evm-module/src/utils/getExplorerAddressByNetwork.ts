@@ -1,5 +1,7 @@
-import type { Network } from '@avalabs/chains-sdk';
-
-export function getExplorerAddressByNetwork(network: Network, hash: string, hashType: 'address' | 'tx' = 'tx'): string {
-  return `${network.explorerUrl}/${hashType}/${hash}`;
+export function getExplorerAddressByNetwork(
+  explorerUrl: string,
+  hash: string,
+  hashType: 'address' | 'tx' = 'tx',
+): string {
+  return `${explorerUrl}/${hashType}/${hash}`;
 }

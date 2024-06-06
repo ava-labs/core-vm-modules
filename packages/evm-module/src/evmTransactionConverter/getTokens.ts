@@ -1,28 +1,26 @@
-import type { Network } from '@avalabs/chains-sdk';
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { BN } from 'bn.js';
-import type { TxToken } from '@internal/types';
+import type { TxToken, NetworkToken } from '@internal/types';
 import { TokenType } from '@internal/types';
-
 import { resolve } from '../utils/resolve';
 import { getNftMetadata } from './getNftMetadata';
 import { getSmallImageForNFT } from '../utils/getSmallImageForNFT';
 
 export const getTokens = async (
-  { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
-  network: Network,
+  { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
+  networkToken: NetworkToken,
 ): Promise<TxToken[]> => {
   const result: TxToken[] = [];
 
   if (nativeTransaction.value !== '0') {
-    const decimal = network.networkToken.decimals;
+    const decimal = networkToken.decimals;
     const amountBN = new BN(nativeTransaction.value);
     const amountDisplayValue = balanceToDisplayValue(amountBN, decimal);
     result.push({
       decimal: decimal.toString(),
-      name: network.networkToken.name,
-      symbol: network.networkToken.symbol,
+      name: networkToken.name,
+      symbol: networkToken.symbol,
       amount: amountDisplayValue,
       from: nativeTransaction.from,
       to: nativeTransaction.to,
@@ -73,6 +71,37 @@ export const getTokens = async (
           to: erc721Transfer.to,
           collectableTokenId: erc721Transfer.erc721Token.tokenId,
           type: TokenType.ERC721,
+        });
+      }),
+    );
+  }
+
+  if (erc1155Transfers) {
+    await Promise.all(
+      erc1155Transfers.map(async (erc1155Transfer) => {
+        const token = erc1155Transfer.erc1155Token;
+        let imageUri: string;
+
+        if (token.metadata.imageUri) {
+          imageUri = token.metadata.imageUri;
+        } else {
+          const [metadata, error] = await resolve(getNftMetadata(token.tokenUri));
+          if (error) {
+            imageUri = '';
+          } else {
+            imageUri = metadata.image ? getSmallImageForNFT(metadata.image) : '';
+          }
+        }
+
+        result.push({
+          name: erc1155Transfer.erc1155Token.metadata.name ?? '',
+          symbol: erc1155Transfer.erc1155Token.metadata.symbol ?? '',
+          amount: '1',
+          imageUri,
+          from: erc1155Transfer.from,
+          to: erc1155Transfer.to,
+          collectableTokenId: erc1155Transfer.erc1155Token.tokenId,
+          type: TokenType.ERC1155,
         });
       }),
     );

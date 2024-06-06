@@ -1,11 +1,14 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import type { TxHistoryCategories } from '../types';
+import { TransactionType } from '@internal/types';
 
 export const getSenderInfo = (
-  { isNativeSend, isNativeReceive, isTransfer }: TxHistoryCategories,
+  txType: TransactionType,
   { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
   address: string,
 ): { isOutgoing: boolean; isIncoming: boolean; isSender: boolean; from: string; to: string } => {
+  const isTransfer = txType === TransactionType.TRANSFER;
+  const isNativeSend = txType === TransactionType.SEND;
+  const isNativeReceive = txType === TransactionType.RECEIVE;
   let from = nativeTransaction?.from?.address;
   let to = nativeTransaction?.to?.address;
 
