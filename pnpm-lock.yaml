@@ -124,13 +124,14 @@ importers:
         version: 7.2.0(typescript@5.2.2)
 
   packages/evm-module:
+    dependencies:
+      '@internal/types':
+        specifier: workspace:*
+        version: link:../../packages-internal/types
     devDependencies:
       '@internal/tsup-config':
         specifier: workspace:*
         version: link:../../packages-internal/tsup-config
-      '@internal/types':
-        specifier: workspace:*
-        version: link:../../packages-internal/types
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7
