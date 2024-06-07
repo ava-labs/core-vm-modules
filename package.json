@@ -16,9 +16,6 @@
     "version-packages": "changeset version"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.201",
-    "@types/bn.js": "5.1.5",
-    "@internal/types": "workspace:*",
     "@types/node": "20.12.13",
     "@changesets/cli": "2.26.2",
     "@internal/tsconfig": "workspace:*",
