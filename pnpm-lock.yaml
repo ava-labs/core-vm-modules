@@ -132,6 +132,9 @@ importers:
       '@internal/types':
         specifier: workspace:*
         version: link:../../packages-internal/types
+      '@types/bn.js':
+        specifier: 5.1.5
+        version: 5.1.5
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7
@@ -1513,6 +1516,12 @@ packages:
     resolution: {integrity: sha512-r1bzfrm0tomOI8g1SzvCaQHo6Lcv6zu0EA+W2kHrt8dyrHQxGzBBL4kdkzIS+jBMV+EYcMAEAqXqYaLJq5rOZg==}
     dependencies:
       '@babel/types': 7.24.6
+    dev: true
+
+  /@types/bn.js@5.1.5:
+    resolution: {integrity: sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==}
+    dependencies:
+      '@types/node': 20.12.13
     dev: true
 
   /@types/graceful-fs@4.1.9:
