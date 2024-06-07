@@ -33,7 +33,7 @@ export const getTransactionFromEtherscan = async ({
   );
 
   const erc20Hist = (
-    queries.includes('normal')
+    queries.includes('erc20')
       ? await getErc20Txs(address, !isTestnet, undefined, {
           page,
           offset,

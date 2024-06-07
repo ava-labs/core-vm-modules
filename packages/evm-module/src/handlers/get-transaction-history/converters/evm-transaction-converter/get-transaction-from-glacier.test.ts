@@ -15,7 +15,7 @@ const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
         value: '1',
         gasLimit: '1',
         nonce: '1',
-        txStatus: '0',
+        txStatus: '1',
         txType: 1,
         blockHash: 'blockHash',
         blockIndex: 1,
@@ -32,11 +32,17 @@ const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
 const mockListTransactions = jest.fn();
 jest.mock('@avalabs/glacier-sdk', () => ({
   Glacier: jest.fn(() => ({
-    listTransactions: mockListTransactions,
+    evmTransactions: {
+      listTransactions: mockListTransactions,
+    },
   })),
 }));
 
 describe('get-transactions-from-glacier', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should have returned error with missing glacier api url', async () => {
     try {
       await getTransactionsFromGlacier({
@@ -81,7 +87,7 @@ describe('get-transactions-from-glacier', () => {
       nextPageToken: '',
     });
   });
-  it('should have returned filtered response with no transaction status of 1', async () => {
+  it('should have returned filtered response with no transaction status of 0', async () => {
     mockListTransactions.mockResolvedValue({
       ...mockListTransactionDetailsResponse,
       transactions: [
@@ -89,7 +95,7 @@ describe('get-transactions-from-glacier', () => {
           ...mockListTransactionDetailsResponse.transactions[0],
           nativeTransaction: {
             ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
-            txStatus: '1',
+            txStatus: '0',
           },
         },
       ],
@@ -112,7 +118,7 @@ describe('get-transactions-from-glacier', () => {
     });
     expect(result).toEqual({
       transactions: [],
-      nextPageToken: '',
+      nextPageToken: 'nextPageToken',
     });
   });
   it('should have returned filtered response without transaction with amount 0', async () => {
@@ -123,7 +129,7 @@ describe('get-transactions-from-glacier', () => {
           ...mockListTransactionDetailsResponse.transactions[0],
           nativeTransaction: {
             ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
-            amount: '0',
+            value: '0',
           },
         },
       ],
@@ -146,11 +152,11 @@ describe('get-transactions-from-glacier', () => {
     });
     expect(result).toEqual({
       transactions: [],
-      nextPageToken: '',
+      nextPageToken: 'nextPageToken',
     });
   });
 
-  it.skip('should have returned response', async () => {
+  it('should have returned response', async () => {
     mockListTransactions.mockResolvedValue(mockListTransactionDetailsResponse);
     const result = await getTransactionsFromGlacier({
       isTestnet: false,
@@ -169,8 +175,39 @@ describe('get-transactions-from-glacier', () => {
       glacierApiUrl: 'glacierApiUrl',
     });
     expect(result).toEqual({
-      transactions: [],
-      nextPageToken: '',
+      transactions: [
+        {
+          isContractCall: false,
+          isIncoming: false,
+          isOutgoing: true,
+          isSender: true,
+          timestamp: 1000,
+          hash: 'txHash',
+          from: 'address',
+          to: 'address',
+          tokens: [
+            {
+              amount: '0.1',
+              symbol: 'networkToken',
+              decimal: '1',
+              name: 'networkToken',
+              type: 'NATIVE',
+              from: {
+                address: 'address',
+              },
+              to: {
+                address: 'address',
+              },
+            },
+          ],
+          gasPrice: '1',
+          gasUsed: '1',
+          chainId: '1',
+          txType: 'Send',
+          explorerLink: 'explorerUrl/tx/txHash',
+        },
+      ],
+      nextPageToken: 'nextPageToken',
     });
   });
 });
