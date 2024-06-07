@@ -4,5 +4,7 @@
     "outDir": "./dist",
     "incremental": false // Need to turn off because of tsup dts
   },
-  "include": ["src", "src/types"]
+
+  "include": ["src"],
+  "references": [{ "path": "../../packages-internal/types/tsconfig.json" }]
 }
