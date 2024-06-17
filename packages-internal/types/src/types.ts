@@ -44,7 +44,7 @@ const manifestSchema = object({
   permissions: object({
     rpc: object({
       dapps: boolean(),
-      methods: string(),
+      methods: string().array(),
     }),
   }),
   manifestVersion: string(),
