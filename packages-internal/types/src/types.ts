@@ -13,7 +13,7 @@ export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: () => Promise<string>;
   getTransactionHistory: () => Promise<string>;
-  getNetworkFee: () => Promise<NetworkFees | undefined>;
+  getNetworkFee: () => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
 }
 

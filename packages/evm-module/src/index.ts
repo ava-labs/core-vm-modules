@@ -23,7 +23,7 @@ export class EvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee(): Promise<NetworkFees | undefined> {
+  getNetworkFee(): Promise<NetworkFees> {
     return getNetworkFee(this.#provider);
   }
 
