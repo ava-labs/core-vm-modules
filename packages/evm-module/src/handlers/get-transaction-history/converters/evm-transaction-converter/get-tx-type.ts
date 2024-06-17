@@ -27,12 +27,12 @@ export const getTxType = (
   if (isNativeReceive) return TransactionType.RECEIVE;
   if (isNFTPurchase) return TransactionType.NFT_BUY;
   if (isApprove) return TransactionType.APPROVE;
+  if (isNFTSend) return TransactionType.NFT_SEND;
+  if (isNFTReceive) return TransactionType.NFT_RECEIVE;
   if (isTransfer) return TransactionType.TRANSFER;
   if (isAirdrop) return TransactionType.AIRDROP;
   if (isUnwrap) return TransactionType.UNWRAP;
   if (isFillOrder) return TransactionType.FILL_ORDER;
-  if (isNFTSend) return TransactionType.NFT_SEND;
-  if (isNFTReceive) return TransactionType.NFT_RECEIVE;
   return TransactionType.UNKNOWN;
 };
 

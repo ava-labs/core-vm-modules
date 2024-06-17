@@ -11,6 +11,7 @@ export const getTransactionHistory = async ({
   address,
   nextPageToken,
   offset,
+  glacierApiUrl,
 }: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
   if (isEthereumChainId(chainId)) {
     return getTransactionFromEtherscan({
@@ -31,5 +32,6 @@ export const getTransactionHistory = async ({
     address,
     nextPageToken,
     offset,
+    glacierApiUrl,
   });
 };

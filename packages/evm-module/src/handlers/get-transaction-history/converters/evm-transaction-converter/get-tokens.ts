@@ -6,6 +6,7 @@ import { TokenType } from '@internal/types';
 import { resolve } from '../../utils/resolve';
 import { getNftMetadata } from './get-nft-metadata';
 import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
+import { ipfsResolverWithFallback } from '../../utils/ipfs-resolver-with-fallback';
 
 export const getTokens = async (
   { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
@@ -46,21 +47,10 @@ export const getTokens = async (
   });
 
   if (erc721Transfers) {
-    await Promise.all(
+    await Promise.allSettled(
       erc721Transfers.map(async (erc721Transfer) => {
         const token = erc721Transfer.erc721Token;
-        let imageUri: string;
-
-        if (token.metadata.imageUri) {
-          imageUri = token.metadata.imageUri;
-        } else {
-          const [metadata, error] = await resolve(getNftMetadata(token.tokenUri));
-          if (error) {
-            imageUri = '';
-          } else {
-            imageUri = metadata.image ? getSmallImageForNFT(metadata.image) : '';
-          }
-        }
+        const imageUri = await getImageUri(token.tokenUri, token.metadata.imageUri);
 
         result.push({
           name: erc721Transfer.erc721Token.name,
@@ -77,26 +67,15 @@ export const getTokens = async (
   }
 
   if (erc1155Transfers) {
-    await Promise.all(
+    await Promise.allSettled(
       erc1155Transfers.map(async (erc1155Transfer) => {
         const token = erc1155Transfer.erc1155Token;
-        let imageUri: string;
-
-        if (token.metadata.imageUri) {
-          imageUri = token.metadata.imageUri;
-        } else {
-          const [metadata, error] = await resolve(getNftMetadata(token.tokenUri));
-          if (error) {
-            imageUri = '';
-          } else {
-            imageUri = metadata.image ? getSmallImageForNFT(metadata.image) : '';
-          }
-        }
+        const imageUri = await getImageUri(token.tokenUri, token.metadata.imageUri);
 
         result.push({
           name: erc1155Transfer.erc1155Token.metadata.name ?? '',
           symbol: erc1155Transfer.erc1155Token.metadata.symbol ?? '',
-          amount: '1',
+          amount: erc1155Transfer.value,
           imageUri,
           from: erc1155Transfer.from,
           to: erc1155Transfer.to,
@@ -108,4 +87,21 @@ export const getTokens = async (
   }
 
   return result;
+};
+
+const getImageUri = async (tokenUri: string, imageUri?: string): Promise<string> => {
+  if (imageUri) {
+    if (imageUri.startsWith('ipfs://')) {
+      return ipfsResolverWithFallback(imageUri);
+    } else {
+      return imageUri;
+    }
+  } else {
+    const [metadata, error] = await resolve(getNftMetadata(tokenUri));
+    if (error) {
+      return '';
+    } else {
+      return metadata.image ? getSmallImageForNFT(metadata.image) : '';
+    }
+  }
 };

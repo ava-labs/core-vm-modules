@@ -3,6 +3,7 @@ import type { Module, Manifest, NetworkFees, GetTransactionHistory } from '@inte
 import type { JsonRpcProvider } from 'ethers';
 import { getNetworkFee } from './get-network-fee';
 import { getTransactionHistory } from './handlers';
+import ManifestJson from './manifest.json';
 
 export class EvmModule implements Module {
   #provider: JsonRpcProvider;
@@ -19,8 +20,7 @@ export class EvmModule implements Module {
   }
 
   getManifest(): Manifest | undefined {
-    const manifest = require('./manifest.json');
-    const result = parseManifest(manifest);
+    const result = parseManifest(ManifestJson);
     return result.success ? result.data : undefined;
   }
 
