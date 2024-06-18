@@ -1,12 +1,21 @@
 import { object, string, boolean, z } from 'zod';
 
-export type Module = {
+export type Wei = bigint;
+
+export type NetworkFees = {
+  low: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
+  medium: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
+  high: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
+  baseFee: Wei;
+};
+
+export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: () => Promise<string>;
   getTransactionHistory: () => Promise<string>;
-  getNetworkFee: () => Promise<string>;
+  getNetworkFee: () => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
-};
+}
 
 const sourceSchema = object({
   checksum: string(),
@@ -41,7 +50,7 @@ const manifestSchema = object({
   manifestVersion: string(),
 });
 
-type Manifest = z.infer<typeof manifestSchema>;
+export type Manifest = z.infer<typeof manifestSchema>;
 
 export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
   return manifestSchema.safeParse(params);
