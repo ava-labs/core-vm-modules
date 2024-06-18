@@ -1,8 +1,8 @@
 import { parseManifest } from '@internal/types';
 import type { Module, Manifest, NetworkFees, GetTransactionHistory } from '@internal/types';
 import type { JsonRpcProvider } from 'ethers';
-import { getNetworkFee } from './get-network-fee';
-import { getTransactionHistory } from './handlers';
+import { getNetworkFee } from './handlers/get-network-fee';
+import { getTransactionHistory } from './handlers/get-transaction-history';
 import ManifestJson from './manifest.json';
 
 export class EvmModule implements Module {

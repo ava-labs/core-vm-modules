@@ -119,9 +119,6 @@ importers:
       '@avalabs/utils-sdk':
         specifier: v2.8.0-alpha.187
         version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
-      '@internal/types':
-        specifier: workspace:*
-        version: link:../../packages-internal/types
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
@@ -132,6 +129,9 @@ importers:
       '@internal/tsup-config':
         specifier: workspace:*
         version: link:../../packages-internal/tsup-config
+      '@internal/types':
+        specifier: workspace:*
+        version: link:../../packages-internal/types
       '@types/bn.js':
         specifier: 5.1.5
         version: 5.1.5
