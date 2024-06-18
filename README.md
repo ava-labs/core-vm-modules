@@ -47,6 +47,14 @@ Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 ## Versioning and Publishing packages
 
+### Versioning
+
+Checkout to a new branch and run only `pnpm changeset` and follow the CLI prompts to put in the summary and it will create the xxx.md file under .changeset directory. Push the change to this new branch and create a PR.
+
+Once the PR is merged, a new PR will be auto generated to bump the version to packages listed in the xxx.md file, and the summary in CHANGELOG.md
+
+### Publishing
+
 Package publishing has been configured using [Changesets](https://github.com/changesets/changesets). Please review their [documentation](https://github.com/changesets/changesets#documentation) to familiarize yourself with the workflow.
 
 This repo has an automated npm releases setup in a [GitHub Action](https://github.com/changesets/action) using the [Changesets bot](https://github.com/apps/changeset-bot).
