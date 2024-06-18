@@ -1,7 +1,9 @@
 import { parseManifest } from '@internal/types';
-import type { Module, Manifest, NetworkFees } from '@internal/types';
+import type { Module, Manifest, NetworkFees, GetTransactionHistory } from '@internal/types';
 import type { JsonRpcProvider } from 'ethers';
 import { getNetworkFee } from './get-network-fee';
+import { getTransactionHistory } from './handlers';
+import ManifestJson from './manifest.json';
 
 export class EvmModule implements Module {
   #provider: JsonRpcProvider;
@@ -18,8 +20,7 @@ export class EvmModule implements Module {
   }
 
   getManifest(): Manifest | undefined {
-    const manifest = require('./manifest.json');
-    const result = parseManifest(manifest);
+    const result = parseManifest(ManifestJson);
     return result.success ? result.data : undefined;
   }
 
@@ -27,7 +28,7 @@ export class EvmModule implements Module {
     return getNetworkFee(this.#provider);
   }
 
-  getTransactionHistory(): Promise<string> {
-    return Promise.resolve('EVM transaction history');
+  getTransactionHistory(params: GetTransactionHistory) {
+    return getTransactionHistory(params);
   }
 }
