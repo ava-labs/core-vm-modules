@@ -2,7 +2,7 @@
 
 ## Overview
 
-This package exposes the types for the VM modules.
+This package exposes the types for the VM modules
 
 ## Installation
 
