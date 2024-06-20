@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.6
+
+### Patch Changes
+
+- 1122704: test release
+
 ## 0.0.3
 
 ### Patch Changes

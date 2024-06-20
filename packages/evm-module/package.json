@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/evm-module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
-    "@avalabs/vm-module-types": "0.0.3"
+    "@avalabs/vm-module-types": "0.0.6"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.5",
