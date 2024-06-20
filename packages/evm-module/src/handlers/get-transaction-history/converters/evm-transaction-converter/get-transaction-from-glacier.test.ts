@@ -44,24 +44,23 @@ describe('get-transactions-from-glacier', () => {
   });
 
   it('should have returned error with missing glacier api url', async () => {
-    try {
-      await getTransactionsFromGlacier({
-        isTestnet: false,
-        networkToken: {
-          name: 'networkToken',
-          symbol: 'networkToken',
-          decimals: 1,
-          description: 'description',
-          logoUri: 'logoUri',
-        },
-        explorerUrl: 'explorerUrl',
-        chainId: 1,
-        address: 'address',
-        nextPageToken: 'nextPageToken',
-        offset: 1,
-      });
-    } catch (error) {
-      expect(error).toEqual(new Error('Glacier API URL is required'));
+    const result = await getTransactionsFromGlacier({
+      isTestnet: false,
+      networkToken: {
+        name: 'networkToken',
+        symbol: 'networkToken',
+        decimals: 1,
+        description: 'description',
+        logoUri: 'logoUri',
+      },
+      explorerUrl: 'explorerUrl',
+      chainId: 1,
+      address: 'address',
+      nextPageToken: 'nextPageToken',
+      offset: 1,
+    });
+    if ('error' in result) {
+      expect(result.error).toEqual(new Error('Glacier API URL is required'));
     }
   });
   it('should have returned empty response when listTransaction failed', async () => {
@@ -82,10 +81,12 @@ describe('get-transactions-from-glacier', () => {
       offset: 1,
       glacierApiUrl: 'glacierApiUrl',
     });
-    expect(result).toEqual({
-      transactions: [],
-      nextPageToken: '',
-    });
+    if ('result' in result) {
+      expect(result.result).toEqual({
+        transactions: [],
+        nextPageToken: '',
+      });
+    }
   });
   it('should have returned filtered response with no transaction status of 0', async () => {
     mockListTransactions.mockResolvedValue({
@@ -116,10 +117,12 @@ describe('get-transactions-from-glacier', () => {
       offset: 1,
       glacierApiUrl: 'glacierApiUrl',
     });
-    expect(result).toEqual({
-      transactions: [],
-      nextPageToken: 'nextPageToken',
-    });
+    if ('result' in result) {
+      expect(result.result).toEqual({
+        transactions: [],
+        nextPageToken: 'nextPageToken',
+      });
+    }
   });
   it('should have returned filtered response without transaction with amount 0', async () => {
     mockListTransactions.mockResolvedValue({
@@ -150,10 +153,12 @@ describe('get-transactions-from-glacier', () => {
       offset: 1,
       glacierApiUrl: 'glacierApiUrl',
     });
-    expect(result).toEqual({
-      transactions: [],
-      nextPageToken: 'nextPageToken',
-    });
+    if ('result' in result) {
+      expect(result.result).toEqual({
+        transactions: [],
+        nextPageToken: 'nextPageToken',
+      });
+    }
   });
 
   it('should have returned response', async () => {
@@ -174,40 +179,42 @@ describe('get-transactions-from-glacier', () => {
       offset: 1,
       glacierApiUrl: 'glacierApiUrl',
     });
-    expect(result).toEqual({
-      transactions: [
-        {
-          isContractCall: false,
-          isIncoming: false,
-          isOutgoing: true,
-          isSender: true,
-          timestamp: 1000,
-          hash: 'txHash',
-          from: 'address',
-          to: 'address',
-          tokens: [
-            {
-              amount: '0.1',
-              symbol: 'networkToken',
-              decimal: '1',
-              name: 'networkToken',
-              type: 'NATIVE',
-              from: {
-                address: 'address',
+    if ('result' in result) {
+      expect(result.result).toEqual({
+        transactions: [
+          {
+            isContractCall: false,
+            isIncoming: false,
+            isOutgoing: true,
+            isSender: true,
+            timestamp: 1000,
+            hash: 'txHash',
+            from: 'address',
+            to: 'address',
+            tokens: [
+              {
+                amount: '0.1',
+                symbol: 'networkToken',
+                decimal: '1',
+                name: 'networkToken',
+                type: 'NATIVE',
+                from: {
+                  address: 'address',
+                },
+                to: {
+                  address: 'address',
+                },
               },
-              to: {
-                address: 'address',
-              },
-            },
-          ],
-          gasPrice: '1',
-          gasUsed: '1',
-          chainId: '1',
-          txType: 'Send',
-          explorerLink: 'explorerUrl/tx/txHash',
-        },
-      ],
-      nextPageToken: 'nextPageToken',
-    });
+            ],
+            gasPrice: '1',
+            gasUsed: '1',
+            chainId: '1',
+            txType: 'Send',
+            explorerLink: 'explorerUrl/tx/txHash',
+          },
+        ],
+        nextPageToken: 'nextPageToken',
+      });
+    }
   });
 });

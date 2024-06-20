@@ -1,4 +1,4 @@
-import { getTransactionHistory } from './index';
+import { getTransactionHistory } from './get-transaction-history';
 import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
 
