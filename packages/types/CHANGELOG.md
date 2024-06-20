@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.8
+
+### Patch Changes
+
+- d1d080f: test release
+
 ## 0.0.7
 
 ### Patch Changes
