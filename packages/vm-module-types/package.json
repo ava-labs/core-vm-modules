@@ -1,9 +1,10 @@
 {
   "name": "@avalabs/vm-module-types",
   "version": "0.0.1",
-  "main": "dist/index.cjs",
+  "main": "dist/index.js",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsup",
@@ -11,7 +12,7 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts"
     }
   },
   "devDependencies": {
