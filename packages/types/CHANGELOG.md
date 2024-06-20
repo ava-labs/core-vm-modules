@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.4
+
+### Patch Changes
+
+- ed4a25b: test release
+
 ## 0.0.3
 
 ### Patch Changes
