@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.7
+
+### Patch Changes
+
+- bb98621: Move types to @avalabs/vm-module-types
+
 ## 0.0.6
 
 ### Patch Changes

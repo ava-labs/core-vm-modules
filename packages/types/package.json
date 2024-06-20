@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/vm-module-types",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint \"src/**/*.ts\""
