@@ -50,3 +50,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Get current branch
+        id: get_branch
+        run: echo "CURRENT_BRANCH=$(git branch --show-current)" >> $GITHUB_ENV
+
+      - name: Update lock file
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        run: pnpm install --lockfile-only
+
+      - name: Commit lock file
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: update lock file'
+          branch: changeset-release/main
