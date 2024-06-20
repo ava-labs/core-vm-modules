@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from 'ethers';
-import type { NetworkFees } from '@internal/types';
+import type { NetworkFees } from '@avalabs/vm-module-types';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,

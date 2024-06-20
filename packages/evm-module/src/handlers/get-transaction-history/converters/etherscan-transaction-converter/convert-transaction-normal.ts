@@ -1,5 +1,5 @@
 import type { NormalTx } from '@avalabs/etherscan-sdk';
-import { TokenType, TransactionType, type NetworkToken, type Transaction } from '@internal/types';
+import { TokenType, TransactionType, type NetworkToken, type Transaction } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { BN } from 'bn.js';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';

@@ -1,12 +1,33 @@
 import { object, string, boolean, z } from 'zod';
 
-export type Wei = bigint;
+export enum TransactionType {
+  BRIDGE = 'Bridge',
+  SWAP = 'Swap',
+  SEND = 'Send',
+  RECEIVE = 'Receive',
+  NFT_BUY = 'NFTBuy',
+  APPROVE = 'Approve',
+  TRANSFER = 'Transfer',
+  NFT_SEND = 'NFTSend',
+  NFT_RECEIVE = 'NFTReceive',
+  AIRDROP = 'Airdrop',
+  FILL_ORDER = 'FillOrder',
+  UNWRAP = 'Unwrap',
+  UNKNOWN = 'UNKNOWN',
+}
+
+export enum TokenType {
+  NATIVE = 'NATIVE',
+  ERC20 = 'ERC20',
+  ERC721 = 'ERC721',
+  ERC1155 = 'ERC1155',
+}
 
 export type NetworkFees = {
-  low: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
-  medium: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
-  high: { maxPriorityFeePerGas: Wei; maxFeePerGas: Wei };
-  baseFee: Wei;
+  low: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
+  medium: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
+  high: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
+  baseFee: bigint;
 };
 
 export interface Module {
@@ -16,45 +37,6 @@ export interface Module {
   getNetworkFee: () => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
 }
-
-const sourceSchema = object({
-  checksum: string(),
-  location: object({
-    npm: object({
-      filePath: string(),
-      packageName: string(),
-      registry: string(),
-    }),
-  }),
-});
-
-const manifestSchema = object({
-  name: string(),
-  version: string(),
-  description: string(),
-  sources: object({
-    module: sourceSchema,
-    provider: sourceSchema.optional(),
-  }),
-  network: object({
-    chainIds: string().array(),
-    namespaces: string().array(),
-  }),
-  cointype: string(),
-  permissions: object({
-    rpc: object({
-      dapps: boolean(),
-      methods: string().array(),
-    }),
-  }),
-  manifestVersion: string(),
-});
-
-export type Manifest = z.infer<typeof manifestSchema>;
-
-export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
-  return manifestSchema.safeParse(params);
-};
 
 export type GetTransactionHistory = {
   chainId: number;
@@ -102,29 +84,6 @@ export interface TxToken {
   type: TokenType;
 }
 
-export enum TransactionType {
-  BRIDGE = 'Bridge',
-  SWAP = 'Swap',
-  SEND = 'Send',
-  RECEIVE = 'Receive',
-  NFT_BUY = 'NFTBuy',
-  APPROVE = 'Approve',
-  TRANSFER = 'Transfer',
-  NFT_SEND = 'NFTSend',
-  NFT_RECEIVE = 'NFTReceive',
-  AIRDROP = 'Airdrop',
-  FILL_ORDER = 'FillOrder',
-  UNWRAP = 'Unwrap',
-  UNKNOWN = 'UNKNOWN',
-}
-
-export enum TokenType {
-  NATIVE = 'NATIVE',
-  ERC20 = 'ERC20',
-  ERC721 = 'ERC721',
-  ERC1155 = 'ERC1155',
-}
-
 type RichAddress = {
   /**
    * The contract name.
@@ -155,3 +114,42 @@ export interface NetworkToken {
   decimals: number;
   logoUri: string;
 }
+
+const sourceSchema = object({
+  checksum: string(),
+  location: object({
+    npm: object({
+      filePath: string(),
+      packageName: string(),
+      registry: string(),
+    }),
+  }),
+});
+
+const manifestSchema = object({
+  name: string(),
+  version: string(),
+  description: string(),
+  sources: object({
+    module: sourceSchema,
+    provider: sourceSchema.optional(),
+  }),
+  network: object({
+    chainIds: string().array(),
+    namespaces: string().array(),
+  }),
+  cointype: string(),
+  permissions: object({
+    rpc: object({
+      dapps: boolean(),
+      methods: string().array(),
+    }),
+  }),
+  manifestVersion: string(),
+});
+
+export type Manifest = z.infer<typeof manifestSchema>;
+
+export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
+  return manifestSchema.safeParse(params);
+};

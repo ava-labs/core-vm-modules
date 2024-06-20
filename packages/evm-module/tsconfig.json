@@ -5,5 +5,8 @@
     "incremental": false // Need to turn off because of tsup dts
   },
   "include": ["src"],
-  "references": [{ "path": "../../packages-internal/types/tsconfig.json" }]
+  "references": [
+    { "path": "../../packages/vm-module-types/tsconfig.json" },
+    { "path": "../../packages-internal/types/tsconfig.json" }
+  ]
 }

@@ -1,5 +1,5 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { TokenType, TransactionType, type TxToken } from '@internal/types';
+import { TokenType, TransactionType, type TxToken } from '@avalabs/vm-module-types';
 import startCase from 'lodash.startcase';
 
 export const getTxType = (
