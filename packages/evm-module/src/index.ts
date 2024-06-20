@@ -1,5 +1,5 @@
-import { parseManifest } from '@internal/types';
 import type { Module, Manifest, NetworkFees, GetTransactionHistory } from '@avalabs/vm-module-types';
+import { parseManifest } from '@avalabs/vm-module-types';
 import type { JsonRpcProvider } from 'ethers';
 import { getNetworkFee } from './handlers/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history';

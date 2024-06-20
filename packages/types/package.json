@@ -5,6 +5,9 @@
   "scripts": {
     "lint": "eslint \"src/**/*.ts\""
   },
+  "dependencies": {
+    "zod": "3.23.8"
+  },
   "devDependencies": {
     "@internal/types": "workspace:*",
     "eslint-config-custom": "workspace:*"

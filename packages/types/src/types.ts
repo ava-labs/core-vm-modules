@@ -1,4 +1,4 @@
-import type { Manifest } from '@internal/types';
+import { object, string, boolean, z } from 'zod';
 
 export enum TransactionType {
   BRIDGE = 'Bridge',
@@ -115,4 +115,41 @@ export interface NetworkToken {
   logoUri: string;
 }
 
-export type { Manifest };
+const sourceSchema = object({
+  checksum: string(),
+  location: object({
+    npm: object({
+      filePath: string(),
+      packageName: string(),
+      registry: string(),
+    }),
+  }),
+});
+
+const manifestSchema = object({
+  name: string(),
+  version: string(),
+  description: string(),
+  sources: object({
+    module: sourceSchema,
+    provider: sourceSchema.optional(),
+  }),
+  network: object({
+    chainIds: string().array(),
+    namespaces: string().array(),
+  }),
+  cointype: string(),
+  permissions: object({
+    rpc: object({
+      dapps: boolean(),
+      methods: string().array(),
+    }),
+  }),
+  manifestVersion: string(),
+});
+
+export type Manifest = z.infer<typeof manifestSchema>;
+
+export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
+  return manifestSchema.safeParse(params);
+};
