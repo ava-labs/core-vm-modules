@@ -9,6 +9,11 @@
     "build": "tsup",
     "lint": "eslint \"src/**/*.ts\""
   },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "devDependencies": {
     "@internal/types": "workspace:*",
     "@internal/tsup-config": "workspace:*",

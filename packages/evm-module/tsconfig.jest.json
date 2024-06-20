@@ -3,9 +3,5 @@
   "compilerOptions": {
     "verbatimModuleSyntax": false,
     "esModuleInterop": true
-  },
-  "include": [
-    "src/**/*.ts",
-    "node_modules/@avalabs/vm-module/types/**/*.d.ts",
-  ]
+  }
 }
