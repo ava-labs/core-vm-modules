@@ -95,12 +95,6 @@ importers:
         specifier: 7.2.0
         version: 7.2.0(typescript@5.2.2)
 
-  packages-internal/types:
-    devDependencies:
-      eslint-config-custom:
-        specifier: workspace:*
-        version: link:../eslint-config-custom
-
   packages/evm-module:
     dependencies:
       '@avalabs/chains-sdk':
@@ -128,9 +122,6 @@ importers:
       '@internal/tsup-config':
         specifier: workspace:*
         version: link:../../packages-internal/tsup-config
-      '@internal/types':
-        specifier: workspace:*
-        version: link:../../packages-internal/types
       '@types/bn.js':
         specifier: 5.1.5
         version: 5.1.5
@@ -162,9 +153,6 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
-      '@internal/types':
-        specifier: workspace:*
-        version: link:../../packages-internal/types
       eslint-config-custom:
         specifier: workspace:*
         version: link:../../packages-internal/eslint-config-custom

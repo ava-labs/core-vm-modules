@@ -21,7 +21,6 @@
     "@avalabs/vm-module-types": "0.0.1"
   },
   "devDependencies": {
-    "@internal/types": "workspace:*",
     "@types/bn.js": "5.1.5",
     "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",

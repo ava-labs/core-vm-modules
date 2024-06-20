@@ -8,5 +8,5 @@
   "references": [
     { "path": "../../packages/vm-module-types/tsconfig.json" },
     { "path": "../../packages-internal/types/tsconfig.json" }
-]
+  ]
 }
