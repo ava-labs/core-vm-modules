@@ -1,24 +1,12 @@
 {
   "name": "@avalabs/vm-module-types",
   "version": "0.0.1",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "types": "dist/index.d.ts",
-  "type": "module",
+  "main": "src/index.ts",
   "scripts": {
-    "build": "tsup",
     "lint": "eslint \"src/**/*.ts\""
-  },
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts"
-    }
   },
   "devDependencies": {
     "@internal/types": "workspace:*",
-    "@internal/tsup-config": "workspace:*",
-    "eslint-config-custom": "workspace:*",
-    "tsup": "7.2.0"
+    "eslint-config-custom": "workspace:*"
   }
 }

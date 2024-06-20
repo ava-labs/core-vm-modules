@@ -162,18 +162,12 @@ importers:
 
   packages/vm-module-types:
     devDependencies:
-      '@internal/tsup-config':
-        specifier: workspace:*
-        version: link:../../packages-internal/tsup-config
       '@internal/types':
         specifier: workspace:*
         version: link:../../packages-internal/types
       eslint-config-custom:
         specifier: workspace:*
         version: link:../../packages-internal/eslint-config-custom
-      tsup:
-        specifier: 7.2.0
-        version: 7.2.0(typescript@5.2.2)
 
 packages:
 
