@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.0.5
+
+### Patch Changes
+
+- 0b0c52e: Move types to @avalabs/vm-module-types
+- Updated dependencies [0b0c52e]
+  - @avalabs/vm-module-types@0.0.3
+
 ## 0.0.4
 
 ### Patch Changes
