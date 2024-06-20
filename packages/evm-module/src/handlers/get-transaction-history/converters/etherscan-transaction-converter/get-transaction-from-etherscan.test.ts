@@ -1,4 +1,4 @@
-import { TokenType } from '@internal/types';
+import { TokenType } from '@avalabs/vm-module-types';
 import { getTransactionFromEtherscan } from './get-transaction-from-etherscan';
 import type { Erc20Tx, NormalTx } from '@avalabs/etherscan-sdk';
 

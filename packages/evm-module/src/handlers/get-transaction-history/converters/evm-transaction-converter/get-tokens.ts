@@ -1,8 +1,8 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
 import { balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { BN } from 'bn.js';
-import type { TxToken, NetworkToken } from '@internal/types';
-import { TokenType } from '@internal/types';
+import type { TxToken, NetworkToken } from '@avalabs/vm-module-types';
+import { TokenType } from '@avalabs/vm-module-types';
 import { resolve } from '../../utils/resolve';
 import { getNftMetadata } from './get-nft-metadata';
 import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';

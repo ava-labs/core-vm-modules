@@ -1,5 +1,5 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { TransactionType } from '@internal/types';
+import { TransactionType } from '@avalabs/vm-module-types';
 
 export const getSenderInfo = (
   txType: TransactionType,

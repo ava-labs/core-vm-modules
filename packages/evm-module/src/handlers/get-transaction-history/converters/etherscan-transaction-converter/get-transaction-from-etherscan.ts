@@ -1,6 +1,6 @@
 import { convertTransactionNormal } from './convert-transaction-normal';
 import { convertTransactionERC20 } from './convert-transaction-erc20';
-import type { GetTransactionHistory, TransactionHistoryResponse } from '@internal/types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
 
 interface EtherscanPagination {

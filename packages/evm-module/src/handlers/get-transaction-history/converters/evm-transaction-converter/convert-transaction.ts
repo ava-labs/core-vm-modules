@@ -1,4 +1,4 @@
-import type { Transaction, NetworkToken } from '@internal/types';
+import type { Transaction, NetworkToken } from '@avalabs/vm-module-types';
 import { getTxType } from './get-tx-type';
 import { getSenderInfo } from './get-sender-info';
 import { getTokens } from './get-tokens';
