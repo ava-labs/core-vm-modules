@@ -32,7 +32,13 @@ export class EvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee({ chainId, chainName, rpcUrl, multiContractAddress }: GetNetworkFeeParams): Promise<NetworkFees> {
+  getNetworkFee({
+    chainId,
+    chainName,
+    rpcUrl,
+    multiContractAddress,
+    pollingInterval,
+  }: GetNetworkFeeParams): Promise<NetworkFees> {
     return getNetworkFee({
       glacierApiUrl: this.#glacierApiUrl,
       glacierApiKey: this.#glacierApiKey,
@@ -40,6 +46,7 @@ export class EvmModule implements Module {
       chainName,
       rpcUrl,
       multiContractAddress,
+      pollingInterval,
     });
   }
 

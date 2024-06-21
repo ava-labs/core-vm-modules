@@ -23,11 +23,20 @@ export async function getNetworkFee({
   chainName,
   rpcUrl,
   multiContractAddress,
+  pollingInterval,
 }: GetNetworkFeeParams & {
   glacierApiUrl: string;
   glacierApiKey?: string;
 }): Promise<NetworkFees> {
-  const provider = getProvider({ glacierApiUrl, glacierApiKey, chainId, chainName, rpcUrl, multiContractAddress });
+  const provider = getProvider({
+    glacierApiUrl,
+    glacierApiKey,
+    chainId,
+    chainName,
+    rpcUrl,
+    multiContractAddress,
+    pollingInterval,
+  });
   const { maxFeePerGas: maxFeePerGasInWei } = await provider.getFeeData();
   if (!maxFeePerGasInWei) {
     throw new Error('Pre-EIP-1559 networks are not supported');
