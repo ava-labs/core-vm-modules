@@ -57,14 +57,15 @@ export type RpcResponse<R = unknown, E extends Error = Error> =
       error: E;
     };
 
-export type GetNetworkFeeParams = {
+export type Chain = {
   isTestnet?: boolean;
   chainId?: string;
   chainName?: string;
   rpcUrl?: string;
   multiContractAddress?: string;
-  pollingInterval?: number;
 };
+
+export type GetNetworkFeeParams = Chain & { pollingInterval?: number };
 
 export interface Module {
   getManifest: () => Manifest | undefined;
