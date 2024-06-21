@@ -22,20 +22,15 @@ export const getProvider = ({
     throw new Error('Invalid chainId');
   }
 
-  try {
-    const provider = new JsonRpcBatchInternal(
-      { maxCalls: 40, multiContractAddress },
-      addGlacierAPIKeyIfNeeded(rpcUrl, glacierApiKey),
-      new Network(chainName, Number(chainId)),
-    );
+  const provider = new JsonRpcBatchInternal(
+    { maxCalls: 40, multiContractAddress },
+    addGlacierAPIKeyIfNeeded(rpcUrl, glacierApiKey),
+    new Network(chainName, Number(chainId)),
+  );
 
-    provider.pollingInterval = pollingInterval;
+  provider.pollingInterval = pollingInterval;
 
-    return provider;
-  } catch (error) {
-    console.log('Error in getProvider', error);
-    throw error;
-  }
+  return provider;
 };
 
 // RPC urls returned in the token list are always using the production URL

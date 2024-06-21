@@ -13,6 +13,7 @@ const BASE_PRIORITY_FEE_WEI = 500000000n; //0.5 GWei
  * Returns {@link NetworkFees} based on {@link DEFAULT_PRESETS} multipliers.
  * @param glacierApiUrl
  * @param glacierApiKey
+ * @params GetNetworkFeeParams
  * @throws Error if provider does not support eip-1559
  */
 export async function getNetworkFee({

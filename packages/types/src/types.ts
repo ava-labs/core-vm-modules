@@ -1,7 +1,4 @@
 import { object, string, boolean, z } from 'zod';
-import RpcResponse from '@avalabs/vm-module-types';
-import RpcRequest from '@avalabs/vm-module-types';
-import { GetNetworkFeeParams } from '../../evm-module/src/handlers/get-network-fee/types';
 
 export enum TransactionType {
   BRIDGE = 'Bridge',
