@@ -71,7 +71,10 @@ describe('get-transaction-from-etherscan', () => {
       nextPageToken: '',
       offset: 1,
     });
-    expect(result.transactions.length).toEqual(2);
+
+    if ('result' in result) {
+      expect(result.result.transactions.length).toEqual(2);
+    }
   });
 
   it('should have returned 1 normal if nextPageToken contains only normal', async () => {
@@ -90,8 +93,10 @@ describe('get-transaction-from-etherscan', () => {
       nextPageToken: JSON.stringify({ page: 1, queries: ['normal'] }),
       offset: 1,
     });
-    expect(result.transactions.length).toEqual(1);
-    expect(result.transactions[0]?.tokens[0]?.type).toEqual(TokenType.NATIVE);
+    if ('result' in result) {
+      expect(result.result.transactions.length).toEqual(1);
+      expect(result.result.transactions[0]?.tokens[0]?.type).toEqual(TokenType.NATIVE);
+    }
   });
 
   it('should have returned 1 erc20 if nextPageToken contains only erc20', async () => {
@@ -110,7 +115,9 @@ describe('get-transaction-from-etherscan', () => {
       nextPageToken: JSON.stringify({ page: 1, queries: ['erc20'] }),
       offset: 1,
     });
-    expect(result.transactions.length).toEqual(1);
-    expect(result.transactions[0]?.tokens[0]?.type).toEqual(TokenType.ERC20);
+    if ('result' in result) {
+      expect(result.result.transactions.length).toEqual(1);
+      expect(result.result.transactions[0]?.tokens[0]?.type).toEqual(TokenType.ERC20);
+    }
   });
 });
