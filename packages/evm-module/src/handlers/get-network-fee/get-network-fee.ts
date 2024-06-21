@@ -1,5 +1,5 @@
 import type { GetNetworkFeeParams, NetworkFees } from '@avalabs/vm-module-types';
-import { getProvider } from './get-provider';
+import { getProvider } from '../get-transaction-history/utils/get-provider';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,
