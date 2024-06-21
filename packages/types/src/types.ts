@@ -1,4 +1,5 @@
 import { object, string, boolean, z } from 'zod';
+import { JsonRpcProvider } from 'ethers';
 
 export enum TransactionType {
   BRIDGE = 'Bridge',
@@ -42,10 +43,6 @@ export enum RpcMethod {
   WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
   WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
   WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
-
-  /* UNIVERSAL */
-  GET_NETWORK_FEE = 'getNetworkFee',
-  GET_TRANSACTION_HISTORY = 'getTransactionHistory',
 }
 
 export type RpcRequest = {
@@ -63,6 +60,10 @@ export type RpcResponse<R = unknown, E extends Error = Error> =
 
 export interface Module {
   getManifest: () => Manifest | undefined;
+  getBalances: () => Promise<string>;
+  getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
+  getNetworkFee: ({ provider }: { provider: JsonRpcProvider }) => Promise<NetworkFees>;
+  getAddress: () => Promise<string>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
