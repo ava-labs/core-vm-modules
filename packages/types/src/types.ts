@@ -30,40 +30,12 @@ export type NetworkFees = {
   baseFee: bigint;
 };
 
-export enum RpcMethod {
-  /* EVM */
-  ETH_SEND_TRANSACTION = 'eth_sendTransaction',
-  SIGN_TYPED_DATA_V3 = 'eth_signTypedData_v3',
-  SIGN_TYPED_DATA_V4 = 'eth_signTypedData_v4',
-  SIGN_TYPED_DATA_V1 = 'eth_signTypedData_v1',
-  SIGN_TYPED_DATA = 'eth_signTypedData',
-  PERSONAL_SIGN = 'personal_sign',
-  ETH_SIGN = 'eth_sign',
-  WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
-  WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
-  WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
-
-  /* UNIVERSAL */
-  GET_NETWORK_FEE = 'getNetworkFee',
-  GET_TRANSACTION_HISTORY = 'getTransactionHistory',
-}
-
-export type RpcRequest = {
-  method: RpcMethod;
-  params: unknown;
-};
-
-export type RpcResponse<R = unknown, E extends Error = Error> =
-  | {
-      result: R;
-    }
-  | {
-      error: E;
-    };
-
 export interface Module {
   getManifest: () => Manifest | undefined;
-  onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
+  getBalances: () => Promise<string>;
+  getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
+  getNetworkFee: () => Promise<NetworkFees>;
+  getAddress: () => Promise<string>;
 }
 
 export type GetTransactionHistory = {

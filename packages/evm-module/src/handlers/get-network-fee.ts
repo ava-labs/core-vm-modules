@@ -1,5 +1,5 @@
-import type { NetworkFees, RpcResponse } from '@avalabs/vm-module-types';
 import { JsonRpcProvider } from 'ethers';
+import type { NetworkFees } from '@avalabs/vm-module-types';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,
@@ -12,20 +12,18 @@ const BASE_PRIORITY_FEE_WEI = 500000000n; //0.5 GWei
 /**
  * Returns {@link NetworkFees} based on {@link DEFAULT_PRESETS} multipliers.
  * @param provider
- * Returns Error if provider does not support eip-1559
+ * @throws Error if provider does not support eip-1559
  */
-export async function getNetworkFee(provider: JsonRpcProvider): Promise<RpcResponse<NetworkFees>> {
+export async function getNetworkFee(provider: JsonRpcProvider): Promise<NetworkFees> {
   const { maxFeePerGas: maxFeePerGasInWei } = await provider.getFeeData();
-
   if (!maxFeePerGasInWei) {
-    return { error: new Error('Pre-EIP-1559 networks are not supported') };
+    throw new Error('Pre-EIP-1559 networks are not supported');
   }
 
   const lowMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.LOW;
   const mediumMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.MEDIUM;
   const highMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.HIGH;
-
-  const result = {
+  return {
     baseFee: maxFeePerGasInWei,
     low: {
       maxFeePerGas: maxFeePerGasInWei + lowMaxTip,
@@ -39,9 +37,5 @@ export async function getNetworkFee(provider: JsonRpcProvider): Promise<RpcRespo
       maxFeePerGas: maxFeePerGasInWei + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
     },
-  };
-
-  return {
-    result,
   };
 }

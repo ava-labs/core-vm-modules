@@ -1,4 +1,4 @@
-import type { GetTransactionHistory, RpcResponse, TransactionHistoryResponse } from '@avalabs/vm-module-types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { convertTransaction } from './convert-transaction';
 
@@ -10,9 +10,9 @@ export const getTransactionsFromGlacier = async ({
   nextPageToken,
   offset,
   glacierApiUrl,
-}: GetTransactionHistory): Promise<RpcResponse<TransactionHistoryResponse>> => {
+}: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
   if (!glacierApiUrl) {
-    return { error: new Error('Glacier API URL is required') };
+    throw new Error('Glacier API URL is required');
   }
 
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
@@ -47,16 +47,14 @@ export const getTransactionsFromGlacier = async ({
       (transaction) => transaction.tokens.find((token) => Number(token.amount) !== 0),
     );
 
-    const result = { transactions, nextPageToken: response.nextPageToken };
-
     return {
-      result,
+      transactions,
+      nextPageToken: response.nextPageToken,
     };
   } catch {
-    const result = { transactions: [], nextPageToken: '' };
-
     return {
-      result,
+      transactions: [],
+      nextPageToken: '',
     };
   }
 };
