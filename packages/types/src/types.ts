@@ -1,4 +1,7 @@
 import { object, string, boolean, z } from 'zod';
+import RpcResponse from '@avalabs/vm-module-types';
+import RpcRequest from '@avalabs/vm-module-types';
+import { GetNetworkFeeParams } from '../../evm-module/src/handlers/get-network-fee/types';
 
 export enum TransactionType {
   BRIDGE = 'Bridge',
@@ -30,12 +33,49 @@ export type NetworkFees = {
   baseFee: bigint;
 };
 
+export enum RpcMethod {
+  /* EVM */
+  ETH_SEND_TRANSACTION = 'eth_sendTransaction',
+  SIGN_TYPED_DATA_V3 = 'eth_signTypedData_v3',
+  SIGN_TYPED_DATA_V4 = 'eth_signTypedData_v4',
+  SIGN_TYPED_DATA_V1 = 'eth_signTypedData_v1',
+  SIGN_TYPED_DATA = 'eth_signTypedData',
+  PERSONAL_SIGN = 'personal_sign',
+  ETH_SIGN = 'eth_sign',
+  WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
+  WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
+  WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
+}
+
+export type RpcRequest = {
+  method: RpcMethod;
+  params: unknown;
+};
+
+export type RpcResponse<R = unknown, E extends Error = Error> =
+  | {
+      result: R;
+    }
+  | {
+      error: E;
+    };
+
+export type GetNetworkFeeParams = {
+  isTestnet?: boolean;
+  chainId?: string;
+  chainName?: string;
+  rpcUrl?: string;
+  multiContractAddress?: string;
+  pollingInterval?: number;
+};
+
 export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: () => Promise<string>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
-  getNetworkFee: () => Promise<NetworkFees>;
+  getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
+  onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
 export type GetTransactionHistory = {
