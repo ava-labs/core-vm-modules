@@ -73,6 +73,7 @@ export interface Module {
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
   getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
+  getTokens: (params: GetTokens) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 

@@ -49,15 +49,15 @@ export class EvmModule implements Module {
     return getTransactionHistory({ ...params, glacierApiUrl: this.#glacierApiUrl });
   }
 
+  getTokens(params: GetTokens) {
+    return getTokens(params);
+  }
+
   async onRpcRequest(request: RpcRequest) {
     // TODO implement the RPC request handler
     switch (request.method) {
       default:
         return { error: new Error(`Method ${request.method} not supported`) };
     }
-  }
-
-  getTokens(params: GetTokens) {
-    return getTokens(params);
   }
 }
