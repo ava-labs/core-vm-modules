@@ -23,7 +23,6 @@ export async function getNetworkFee({
   chainName,
   rpcUrl,
   multiContractAddress,
-  pollingInterval,
 }: GetNetworkFeeParams & {
   glacierApiUrl: string;
   glacierApiKey?: string;
@@ -35,7 +34,6 @@ export async function getNetworkFee({
     chainName,
     rpcUrl,
     multiContractAddress,
-    pollingInterval,
   });
   const { maxFeePerGas: maxFeePerGasInWei } = await provider.getFeeData();
   if (!maxFeePerGasInWei) {

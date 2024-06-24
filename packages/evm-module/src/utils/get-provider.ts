@@ -8,7 +8,6 @@ export const getProvider = ({
   chainName,
   rpcUrl,
   multiContractAddress,
-  pollingInterval = 2000,
 }: GetNetworkFeeParams & {
   glacierApiUrl: string;
   glacierApiKey?: string;
@@ -28,7 +27,7 @@ export const getProvider = ({
     new Network(chainName, Number(chainId)),
   );
 
-  provider.pollingInterval = pollingInterval;
+  provider.pollingInterval = 2000;
 
   return provider;
 };

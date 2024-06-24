@@ -65,7 +65,7 @@ export type Chain = {
   multiContractAddress?: string;
 };
 
-export type GetNetworkFeeParams = Chain & { pollingInterval?: number };
+export type GetNetworkFeeParams = Chain;
 
 export interface Module {
   getManifest: () => Manifest | undefined;
