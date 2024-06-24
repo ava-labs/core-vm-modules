@@ -5,10 +5,12 @@ import type {
   GetTransactionHistory,
   RpcRequest,
   GetNetworkFeeParams,
+  GetTokens,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getTokens } from './handlers/get-tokens/get-tokens';
 import ManifestJson from './manifest.json';
 
 export class EvmModule implements Module {
@@ -53,5 +55,9 @@ export class EvmModule implements Module {
       default:
         return { error: new Error(`Method ${request.method} not supported`) };
     }
+  }
+
+  getTokens(params: GetTokens) {
+    return getTokens(params);
   }
 }

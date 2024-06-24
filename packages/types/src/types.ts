@@ -87,6 +87,11 @@ export type GetTransactionHistory = {
   glacierApiUrl?: string;
 };
 
+export type GetTokens = {
+  chainId: number;
+  isProd?: boolean;
+};
+
 export type TransactionHistoryResponse = {
   transactions: Transaction[];
   nextPageToken?: string;
@@ -151,6 +156,17 @@ export interface NetworkToken {
   description: string;
   decimals: number;
   logoUri: string;
+}
+
+export interface NetworkContractToken {
+  address: string;
+  chainId?: number;
+  color?: string;
+  contractType: 'ERC-20';
+  decimals: number;
+  logoUri?: string;
+  name: string;
+  symbol: string;
 }
 
 const sourceSchema = object({
