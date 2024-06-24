@@ -3,4 +3,4 @@
 '@avalabs/vm-module-types': patch
 ---
 
-make module interface dynamic
+add module functions to evm-module

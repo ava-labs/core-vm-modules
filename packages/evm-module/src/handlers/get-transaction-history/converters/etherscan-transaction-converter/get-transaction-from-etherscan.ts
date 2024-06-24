@@ -1,6 +1,6 @@
 import { convertTransactionNormal } from './convert-transaction-normal';
 import { convertTransactionERC20 } from './convert-transaction-erc20';
-import type { GetTransactionHistory, RpcResponse, TransactionHistoryResponse } from '@avalabs/vm-module-types';
+import type { GetTransactionHistory, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
 
 interface EtherscanPagination {
@@ -16,7 +16,7 @@ export const getTransactionFromEtherscan = async ({
   address,
   nextPageToken,
   offset,
-}: GetTransactionHistory): Promise<RpcResponse<TransactionHistoryResponse>> => {
+}: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
   /*
   Using JSON for nextPageToken because this function is managing both the Normal
   and ERC20 queries. It encodes the current page and the queries that should be
@@ -58,10 +58,8 @@ export const getTransactionFromEtherscan = async ({
   if (normalHist.length) next.queries.push('normal');
   if (erc20Hist.length) next.queries.push('erc20');
 
-  const result = {
+  return {
     transactions: [...filteredNormalTxs, ...erc20Hist],
     nextPageToken: next.queries.length ? JSON.stringify(next) : '', // stop pagination
   };
-
-  return { result };
 };
