@@ -42,10 +42,6 @@ export enum RpcMethod {
   WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
   WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
   WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
-
-  /* UNIVERSAL */
-  GET_NETWORK_FEE = 'getNetworkFee',
-  GET_TRANSACTION_HISTORY = 'getTransactionHistory',
 }
 
 export type RpcRequest = {
@@ -61,8 +57,22 @@ export type RpcResponse<R = unknown, E extends Error = Error> =
       error: E;
     };
 
+export type Chain = {
+  isTestnet?: boolean;
+  chainId?: string;
+  chainName?: string;
+  rpcUrl?: string;
+  multiContractAddress?: string;
+};
+
+export type GetNetworkFeeParams = Chain;
+
 export interface Module {
   getManifest: () => Manifest | undefined;
+  getBalances: () => Promise<string>;
+  getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
+  getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
+  getAddress: () => Promise<string>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
