@@ -73,7 +73,7 @@ export interface Module {
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
   getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
-  getTokens: (params: GetTokens) => Promise<NetworkContractToken[]>;
+  getTokens: (chainId: number) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
@@ -86,11 +86,6 @@ export type GetTransactionHistory = {
   nextPageToken?: string;
   offset?: number;
   glacierApiUrl?: string;
-};
-
-export type GetTokens = {
-  chainId: number;
-  isProd?: boolean;
 };
 
 export type TransactionHistoryResponse = {
@@ -163,7 +158,7 @@ export interface NetworkContractToken {
   address: string;
   chainId?: number;
   color?: string;
-  contractType: 'ERC-20';
+  contractType: string;
   decimals: number;
   logoUri?: string;
   name: string;

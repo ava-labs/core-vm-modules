@@ -1,5 +1,6 @@
-import { PROXY_API_URL, PROXY_API_URL_DEV } from '../../constants';
 import { getTokens } from './get-tokens';
+
+const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 global.fetch = jest.fn();
 
@@ -8,39 +9,13 @@ describe('get-tokens', () => {
     jest.clearAllMocks();
   });
 
-  it('should call the production URL when isProd is true', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => {},
-    });
-
-    const chainId = 43114;
-
-    await getTokens({ chainId, isProd: true });
-
-    expect(global.fetch).toHaveBeenCalledWith(`${PROXY_API_URL}/tokens?evmChainId=${chainId}`);
-  });
-
-  it('should call the development URL when isProd is false', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => {},
-    });
-
-    const chainId = 43114;
-
-    await getTokens({ chainId, isProd: false });
-
-    expect(global.fetch).toHaveBeenCalledWith(`${PROXY_API_URL_DEV}/tokens?evmChainId=${chainId}`);
-  });
-
   it('should return an empty array if chain id is not for a valid network', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => [],
     });
 
-    const result = await getTokens({ chainId: 0 });
+    const result = await getTokens({ chainId: 0, proxyApiUrl: PROXY_API_URL });
 
     expect(result).toEqual([]);
   });
@@ -68,7 +43,7 @@ describe('get-tokens', () => {
       ],
     });
 
-    const result = await getTokens({ chainId: 43114 });
+    const result = await getTokens({ chainId: 43114, proxyApiUrl: PROXY_API_URL });
 
     expect(result.length).toBeGreaterThan(0);
     expect(result.find((token) => token.symbol === 'WAVAX')).toBeDefined();
@@ -114,7 +89,7 @@ describe('get-tokens', () => {
       ],
     });
 
-    const result = await getTokens({ chainId: 1 });
+    const result = await getTokens({ chainId: 1, proxyApiUrl: PROXY_API_URL });
 
     expect(result.length).toBeGreaterThan(0);
     expect(result.find((token) => token.symbol === 'USDT')).toBeDefined();
