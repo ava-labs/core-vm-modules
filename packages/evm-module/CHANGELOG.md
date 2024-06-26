@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.0.10
+
+### Patch Changes
+
+- 60f36fa: add getTokens function
+- Updated dependencies [60f36fa]
+  - @avalabs/vm-module-types@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes
