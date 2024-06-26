@@ -73,6 +73,7 @@ export interface Module {
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
   getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
+  getTokens: (chainId: number) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
 }
 
@@ -151,6 +152,17 @@ export interface NetworkToken {
   description: string;
   decimals: number;
   logoUri: string;
+}
+
+export interface NetworkContractToken {
+  address: string;
+  chainId?: number;
+  color?: string;
+  contractType: string;
+  decimals: number;
+  logoUri?: string;
+  name: string;
+  symbol: string;
 }
 
 const sourceSchema = object({

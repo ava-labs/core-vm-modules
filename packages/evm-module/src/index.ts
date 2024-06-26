@@ -9,15 +9,26 @@ import type {
 import { parseManifest } from '@avalabs/vm-module-types';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getTokens } from './handlers/get-tokens/get-tokens';
 import ManifestJson from './manifest.json';
 
 export class EvmModule implements Module {
   #glacierApiUrl: string;
   #glacierApiKey?: string;
+  #proxyApiUrl: string;
 
-  constructor({ glacierApiUrl, glacierApiKey }: { glacierApiUrl: string; glacierApiKey?: string }) {
+  constructor({
+    glacierApiUrl,
+    glacierApiKey,
+    proxyApiUrl,
+  }: {
+    glacierApiUrl: string;
+    glacierApiKey?: string;
+    proxyApiUrl: string;
+  }) {
     this.#glacierApiUrl = glacierApiUrl;
     this.#glacierApiKey = glacierApiKey;
+    this.#proxyApiUrl = proxyApiUrl;
   }
   getAddress(): Promise<string> {
     return Promise.resolve('EVM address');
@@ -45,6 +56,10 @@ export class EvmModule implements Module {
 
   getTransactionHistory(params: GetTransactionHistory) {
     return getTransactionHistory({ ...params, glacierApiUrl: this.#glacierApiUrl });
+  }
+
+  getTokens(chainId: number) {
+    return getTokens({ chainId, proxyApiUrl: this.#proxyApiUrl });
   }
 
   async onRpcRequest(request: RpcRequest) {
