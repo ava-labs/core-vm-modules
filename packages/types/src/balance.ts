@@ -11,7 +11,6 @@ export type GetBalancesParams = Chain &
     currency: string;
     nativeTokenId?: string;
     assetPlatformId?: string;
-    isDeveloperMode?: boolean;
   };
 
 /**

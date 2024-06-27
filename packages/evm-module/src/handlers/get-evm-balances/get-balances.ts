@@ -17,7 +17,7 @@ export const getBalances = async ({
   currency,
   chainId,
   nativeTokenId,
-  isDeveloperMode,
+  proxyApiUrl,
   assetPlatformId,
   tokens,
   glacierApiKey,
@@ -35,7 +35,7 @@ export const getBalances = async ({
     currency: string;
     nativeTokenId?: string;
     assetPlatformId?: string;
-    isDeveloperMode?: boolean;
+    proxyApiUrl: string;
   }): Promise<(NetworkTokenWithBalance | TokenWithBalanceERC20)[]> => {
   const provider = getProvider({
     glacierApiKey,
@@ -44,7 +44,7 @@ export const getBalances = async ({
     rpcUrl,
     multiContractAddress,
   });
-  const tokenService = new TokenService({ getCache, setCache, isDeveloperMode });
+  const tokenService = new TokenService({ getCache, setCache, proxyApiUrl });
 
   const nativeToken = await getNativeTokenBalance({
     provider,

@@ -8,11 +8,10 @@ import {
   SimplePriceResponseSchema,
 } from './coingecko-types';
 import { boolean, number, string } from 'zod';
-import { PROXY_URL, PROXY_URL_DEV } from './consts';
 
-export const coingeckoProxyClient = (isDeveloperMode = false) =>
+export const coingeckoProxyClient = (proxyApiUrl: string) =>
   new Zodios(
-    `${isDeveloperMode ? PROXY_URL_DEV : PROXY_URL}/proxy/coingecko`,
+    `${proxyApiUrl}/proxy/coingecko`,
     [
       {
         method: 'post',

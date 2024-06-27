@@ -1,11 +1,10 @@
 import { Zodios } from '@zodios/core';
 import { array, boolean, string } from 'zod';
 import { CoinMarketSchema, SimplePriceResponseSchema } from './coingecko-types';
-import { PROXY_URL, PROXY_URL_DEV } from './consts';
 
-export const watchlistCacheClient = (isDeveloperMode = false) =>
+export const watchlistCacheClient = (proxyApiUrl: string) =>
   new Zodios(
-    `${isDeveloperMode ? PROXY_URL_DEV : PROXY_URL}/watchlist`,
+    `${proxyApiUrl}/watchlist`,
     [
       {
         method: 'get',

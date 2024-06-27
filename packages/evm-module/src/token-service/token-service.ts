@@ -12,12 +12,12 @@ const coingeckoBasicClient = getBasicCoingeckoHttp();
 export class TokenService {
   #getCache?: GetCache;
   #setCache?: SetCache;
-  isDeveloperMode: boolean;
+  #proxyApiUrl: string;
 
-  constructor({ getCache, setCache, isDeveloperMode }: CacheProviderParams & { isDeveloperMode?: boolean }) {
+  constructor({ getCache, setCache, proxyApiUrl }: CacheProviderParams & { proxyApiUrl: string }) {
     this.#getCache = getCache;
     this.#setCache = setCache;
-    this.isDeveloperMode = isDeveloperMode ?? false;
+    this.#proxyApiUrl = proxyApiUrl;
   }
 
   /**
@@ -52,7 +52,7 @@ export class TokenService {
       data = this.#getCache?.(cacheId) as SimplePriceResponse;
 
       if (data === undefined) {
-        data = await watchlistCacheClient(this.isDeveloperMode).simplePrice();
+        data = await watchlistCacheClient(this.#proxyApiUrl).simplePrice();
         this.#setCache?.(cacheId, data);
       }
       return data;
@@ -112,7 +112,7 @@ export class TokenService {
     useCoingeckoProxy?: boolean;
   }): Promise<SimplePriceResponse | CoingeckoError> {
     if (useCoingeckoProxy) {
-      return coingeckoProxyClient(this.isDeveloperMode).simplePriceByContractAddresses(undefined, {
+      return coingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses(undefined, {
         params: {
           id: assetPlatformId,
         },
