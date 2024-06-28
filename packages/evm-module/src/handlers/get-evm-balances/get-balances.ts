@@ -2,7 +2,6 @@ import type {
   NetworkTokenWithBalance,
   TokenWithBalanceERC20,
   NetworkToken,
-  NetworkContractToken,
   GetProviderParams,
   CacheProviderParams,
 } from '@avalabs/vm-module-types';
@@ -19,7 +18,6 @@ export const getBalances = async ({
   nativeTokenId,
   proxyApiUrl,
   assetPlatformId,
-  tokens,
   glacierApiKey,
   chainName,
   rpcUrl,
@@ -31,7 +29,6 @@ export const getBalances = async ({
     chainId: string;
     accountAddress: string;
     networkToken: NetworkToken;
-    tokens: NetworkContractToken[];
     currency: string;
     nativeTokenId?: string;
     assetPlatformId?: string;
@@ -56,9 +53,10 @@ export const getBalances = async ({
   });
 
   const erc20Tokens = await getErc20Balances({
+    chainId,
     provider,
     tokenService,
-    tokens,
+    proxyApiUrl,
     assetPlatformId,
     accountAddress,
     currency,

@@ -1,6 +1,6 @@
 export type Chain = {
   isTestnet?: boolean;
-  chainId?: string;
+  chainId?: string; // caip2ChainId
   chainName?: string;
   rpcUrl?: string;
   multiContractAddress?: string;
