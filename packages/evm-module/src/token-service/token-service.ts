@@ -1,11 +1,16 @@
-import { VsCurrencyType, getBasicCoingeckoHttp, simpleTokenPrice } from '@avalabs/coingecko-sdk';
-import type { PriceWithMarketData, SimplePriceResponse } from './coingecko-types';
-import { watchlistCacheClient } from './watchlist-cache-client';
-import { coingeckoRetry } from '../handlers/get-evm-balances/utils/coingecko-retry';
+import {
+  VsCurrencyType,
+  getBasicCoingeckoHttp,
+  simplePrice,
+  simpleTokenPrice,
+  type SimplePriceParams,
+} from '@avalabs/coingecko-sdk';
+import type { SimplePriceResponse } from './coingecko-types';
+import { coingeckoRetry } from '../handlers/get-balances/utils/coingecko-retry';
 import { arrayHash } from '../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
 import type { Error as CoingeckoError } from './coingecko-types';
-import type { CacheProviderParams, GetCache, SetCache } from '@avalabs/vm-module-types';
+import type { CacheProviderParams, GetCache, RawSimplePriceResponse, SetCache } from '@avalabs/vm-module-types';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
@@ -21,45 +26,83 @@ export class TokenService {
   }
 
   /**
-   * Get token price with market data for a coin
-   * @param coinId the coin id ie avalanche-2 for avax
-   * @param currency the currency to be used
-   * @returns the token price with market data
-   */
-  async getPriceWithMarketDataByCoinId(
-    coinId: string,
-    currency: VsCurrencyType = VsCurrencyType.USD,
-  ): Promise<PriceWithMarketData> {
-    const allPriceData = await this.fetchPriceWithMarketData();
-    const data = allPriceData?.[coinId]?.[currency];
-    return {
-      price: data?.price ?? 0,
-      change24: data?.change24 ?? 0,
-      marketCap: data?.marketCap ?? 0,
-      vol24: data?.vol24 ?? 0,
-    };
-  }
-
-  /**
-   * Get token price with market data from cached watchlist
+   * Get token price with market data first on coingecko (free tier) directly,
+   * if we get 429 error, retry it on coingecko proxy (paid service)
    * @returns token price with market data
    */
-  async fetchPriceWithMarketData(): Promise<SimplePriceResponse | undefined> {
-    try {
-      let data: SimplePriceResponse | undefined;
-      const cacheId = `fetchPriceWithMarketData`;
+  async getSimplePrice({
+    coinIds = [],
+    currencies = [VsCurrencyType.USD],
+  }: SimplePriceParams): Promise<SimplePriceResponse | undefined> {
+    let data: SimplePriceResponse | undefined;
 
-      data = this.#getCache?.(cacheId) as SimplePriceResponse;
+    const key = coinIds ? `${arrayHash(coinIds)}-${currencies.toString()}` : `${currencies.toString()}`;
 
-      if (data === undefined) {
-        data = await watchlistCacheClient(this.#proxyApiUrl).simplePrice();
-        this.#setCache?.(cacheId, data);
+    const cacheId = `getSimplePrice-${key}`;
+
+    data = this.#getCache?.(cacheId) as SimplePriceResponse;
+
+    if (data === undefined) {
+      try {
+        data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
+          this.simplePrice({
+            coinIds,
+            currencies,
+            marketCap: true,
+            vol24: true,
+            change24: true,
+            useCoingeckoProxy,
+          }),
+        );
+      } catch {
+        data = undefined;
       }
-      return data;
-    } catch (e) {
-      return Promise.resolve(undefined);
+      this.#setCache?.(cacheId, data);
     }
+
+    return data;
   }
+
+  // /**
+  //  * Get token price with market data for a coin
+  //  * @param coinId the coin id ie avalanche-2 for avax
+  //  * @param currency the currency to be used
+  //  * @returns the token price with market data
+  //  */
+  // async getPriceWithMarketDataByCoinId(
+  //   coinId: string,
+  //   currency: VsCurrencyType = VsCurrencyType.USD,
+  // ): Promise<PriceWithMarketData> {
+  //   const allPriceData = await this.fetchPriceWithMarketData();
+  //   const data = allPriceData?.[coinId]?.[currency];
+  //   return {
+  //     price: data?.price ?? 0,
+  //     change24: data?.change24 ?? 0,
+  //     marketCap: data?.marketCap ?? 0,
+  //     vol24: data?.vol24 ?? 0,
+  //   };
+  // }
+
+  // /**
+  //  * Get token price with market data from cached watchlist
+  //  * @returns token price with market data
+  //  */
+  // async fetchPriceWithMarketData(): Promise<SimplePriceResponse | undefined> {
+  //   try {
+  //     let data: SimplePriceResponse | undefined;
+  //     const cacheId = `fetchPriceWithMarketData`;
+
+  //     data = this.#getCache?.(cacheId) as SimplePriceResponse;
+
+  //     if (data === undefined) {
+  //       data = await watchlistCacheClient(this.#proxyApiUrl).simplePrice();
+  //       this.#setCache?.(cacheId, data);
+  //     }
+  //     return data;
+  //   } catch (e) {
+  //     return Promise.resolve(undefined);
+  //   }
+  // }
 
   /**
    * Get token price with market data for a list of addresses
@@ -68,7 +111,7 @@ export class TokenService {
    * @param currency the currency to be used
    * @returns a list of token price with market data
    */
-  async getPricesWithMarketDataByAddresses(
+  async getPricesByAddresses(
     tokenAddresses: string[],
     assetPlatformId: string,
     currency: VsCurrencyType = VsCurrencyType.USD,
@@ -83,7 +126,7 @@ export class TokenService {
     if (data === undefined) {
       try {
         data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
-          this.fetchPricesWithMarketDataByAddresses({
+          this.fetchPricesByAddresses({
             assetPlatformId,
             tokenAddresses,
             currency,
@@ -100,7 +143,7 @@ export class TokenService {
     return data;
   }
 
-  private async fetchPricesWithMarketDataByAddresses({
+  private async fetchPricesByAddresses({
     assetPlatformId,
     tokenAddresses,
     currency = VsCurrencyType.USD,
@@ -135,4 +178,59 @@ export class TokenService {
       change24: true,
     });
   }
+
+  private async simplePrice({
+    coinIds = [],
+    currencies = [VsCurrencyType.USD],
+    marketCap = false,
+    vol24 = false,
+    change24 = false,
+    lastUpdated = false,
+    useCoingeckoProxy = false,
+  }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse | CoingeckoError> {
+    if (useCoingeckoProxy) {
+      const rawData = await coingeckoProxyClient(this.#proxyApiUrl).simplePrice(undefined, {
+        queries: {
+          ids: coinIds?.join(','),
+          vs_currencies: currencies.join(','),
+          include_market_cap: String(marketCap),
+          include_24hr_vol: String(vol24),
+          include_24hr_change: String(change24),
+          include_last_updated_at: String(lastUpdated),
+        },
+      });
+      return this.transformSimplePriceResponse(rawData);
+    }
+    return simplePrice(coingeckoBasicClient, {
+      coinIds,
+      currencies,
+      marketCap,
+      vol24,
+      change24,
+      lastUpdated,
+      shouldThrow: true,
+    });
+  }
+
+  private transformSimplePriceResponse = (
+    data: RawSimplePriceResponse,
+    currencies = [VsCurrencyType.USD],
+  ): SimplePriceResponse => {
+    const formattedData: SimplePriceResponse = {};
+    Object.keys(data).forEach((id) => {
+      const tokenData = data[id];
+      formattedData[id] = {};
+      currencies.forEach((currency: VsCurrencyType) => {
+        formattedData[id] = {
+          [currency]: {
+            price: tokenData?.[currency],
+            change24: tokenData?.[`${currency}_24h_change`],
+            vol24: tokenData?.[`${currency}_24h_vol`],
+            marketCap: tokenData?.[`${currency}_market_cap`],
+          },
+        };
+      });
+    });
+    return formattedData;
+  };
 }

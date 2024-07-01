@@ -1,26 +1,7 @@
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
-import { array, boolean, date, number, object, record, string, tuple, z } from 'zod';
+import { array, boolean, number, object, record, string, tuple, z } from 'zod';
 
 export type SparklineData = number[];
-
-export const ChartDataSchema = object({
-  ranges: object({
-    minDate: number(),
-    maxDate: number(),
-    minPrice: number(),
-    maxPrice: number(),
-    diffValue: number(),
-    percentChange: number(),
-  }),
-  dataPoints: object({
-    date: string()
-      .or(date())
-      .transform((arg: string | Date) => new Date(arg)),
-    value: number(),
-  }).array(),
-});
-
-export type ChartData = z.infer<typeof ChartDataSchema>;
 
 export type PriceWithMarketData = {
   price: number;

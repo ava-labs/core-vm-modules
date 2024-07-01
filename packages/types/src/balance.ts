@@ -1,17 +1,51 @@
-import type { TokenUnit } from '@avalabs/utils-sdk';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import type { CacheProviderParams, Chain } from './common';
+import BN from 'bn.js';
 
 export type GetBalancesParams = Chain &
   CacheProviderParams & {
     chainId: string;
-    accountAddress: string;
+    addresses: string[]; // addressC of each account
     networkToken: NetworkToken;
     tokens: NetworkContractToken[];
     currency: string;
-    nativeTokenId?: string;
-    assetPlatformId?: string;
+    coingeckoPlatformId?: string;
+    coingeckoTokenId?: string;
   };
+
+export type TokenBalanceData = {
+  type: TokenType;
+  name: string;
+  symbol: string;
+  balance: BN;
+  balanceInCurrency: number;
+  balanceDisplayValue: string;
+  balanceCurrencyDisplayValue: string;
+  priceInCurrency: number;
+  priceChanges?: {
+    percentage?: number;
+    value?: number;
+  };
+  utxos?: BitcoinInputUTXOWithOptionalScript[];
+};
+
+interface TokenBalanceDataWithDecimals extends TokenBalanceData {
+  decimals: number;
+}
+
+export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
+  TokenMarketData &
+  NetworkContractToken & {
+    type: TokenType.ERC20;
+  };
+
+export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &
+  TokenMarketData & {
+    coingeckoId: string;
+    type: TokenType.NATIVE;
+  };
+
+export type TokenWithBalance = NetworkTokenWithBalance | TokenWithBalanceERC20;
 
 /**
  * Custom Bitcoin UTXO interface.
@@ -31,37 +65,8 @@ interface BitcoinInputUTXOWithOptionalScript extends Omit<BitcoinInputUTXO, 'scr
   script?: string;
 }
 
-export type TokenBalanceData = {
-  type: TokenType;
-  balance: TokenUnit;
-  balanceInCurrency: number;
-  balanceDisplayValue: string;
-  balanceCurrencyDisplayValue: string;
-  priceInCurrency: number;
-  utxos?: BitcoinInputUTXOWithOptionalScript[];
-};
-
-export interface TokenBalanceDataWithDecimals extends TokenBalanceData {
-  decimals: number;
-}
-
-export type TokenMarketData = {
+type TokenMarketData = {
   marketCap: number;
   change24: number;
   vol24: number;
 };
-
-export type TokenWithBalanceERC20 = TokenBalanceData &
-  TokenMarketData &
-  NetworkContractToken & {
-    type: TokenType.ERC20;
-  };
-
-export type NetworkTokenWithBalance = TokenBalanceData &
-  TokenMarketData &
-  NetworkToken & {
-    coingeckoId: string;
-    type: TokenType.NATIVE;
-  };
-
-export type TokenWithBalance = NetworkTokenWithBalance | TokenWithBalanceERC20;

@@ -1,31 +1,11 @@
 import { Zodios } from '@zodios/core';
-import {
-  CoinMarketSchema,
-  CoinsContractInfoResponseSchema,
-  CoinsSearchResponseSchema,
-  ContractMarketChartResponseSchema,
-  RawSimplePriceResponseSchema,
-  SimplePriceResponseSchema,
-} from './coingecko-types';
-import { boolean, number, string } from 'zod';
+import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from './coingecko-types';
+import { boolean, string } from 'zod';
 
 export const coingeckoProxyClient = (proxyApiUrl: string) =>
   new Zodios(
     `${proxyApiUrl}/proxy/coingecko`,
     [
-      {
-        method: 'post',
-        path: '/coins/markets',
-        parameters: [
-          { name: 'vs_currency', type: 'Query', schema: string() },
-          { name: 'ids', type: 'Query', schema: string().optional() },
-          { name: 'per_page', type: 'Query', schema: number().optional() },
-          { name: 'page', type: 'Query', schema: number().optional() },
-          { name: 'sparkline', type: 'Query', schema: boolean().optional() },
-        ],
-        alias: 'coinsMarket',
-        response: CoinMarketSchema.array(),
-      },
       {
         method: 'post',
         path: '/simple/price',
@@ -55,33 +35,6 @@ export const coingeckoProxyClient = (proxyApiUrl: string) =>
         ],
         alias: 'simplePrice',
         response: RawSimplePriceResponseSchema,
-      },
-      {
-        method: 'post',
-        path: '/coins/:id',
-        parameters: [{ name: 'id', type: 'Path', schema: string() }],
-        alias: 'marketDataByCoinId',
-        response: CoinsContractInfoResponseSchema,
-      },
-      {
-        method: 'post',
-        path: '/coins/:id/market_chart',
-        parameters: [
-          { name: 'id', type: 'Path', schema: string() },
-          { name: 'vs_currency', type: 'Query', schema: string() },
-          { name: 'days', type: 'Query', schema: string() },
-          { name: 'interval', type: 'Query', schema: string().optional() },
-          { name: 'precision', type: 'Query', schema: string().optional() },
-        ],
-        alias: 'marketChartByCoinId',
-        response: ContractMarketChartResponseSchema,
-      },
-      {
-        method: 'post',
-        path: '/search',
-        parameters: [{ name: 'query', type: 'Query', schema: string() }],
-        alias: 'searchCoins',
-        response: CoinsSearchResponseSchema,
       },
       {
         method: 'post',
