@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 0.0.11
+
+### Patch Changes
+
+- e62b48a: update getTransactionHistory:getTxType logic
+  - @avalabs/vm-module-types@0.0.11
+
 ## 0.0.10
 
 ### Patch Changes
