@@ -4,23 +4,27 @@ import startCase from 'lodash.startcase';
 
 export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
-  address: string,
+  userAddress: string,
   tokens: TxToken[],
 ): TransactionType => {
   const nativeOnly = !erc20Transfers && !erc721Transfers;
   const method = parseRawMethod(nativeTransaction.method?.methodName);
 
+  const address = userAddress.toLowerCase();
+
   const isSwap = method.toLowerCase().includes('swap');
-  const isNativeSend = nativeOnly && nativeTransaction.from.address === address;
-  const isNativeReceive = nativeOnly && nativeTransaction.to.address === address;
+  const isNativeSend = nativeOnly && nativeTransaction.from.address.toLowerCase() === address;
+  const isNativeReceive = nativeOnly && nativeTransaction.to.address.toLowerCase() === address;
   const isNFTPurchase = method === 'Market Buy Orders With Eth' || method === 'Buy NFT';
   const isApprove = method === 'Approve';
   const isTransfer = method.toLowerCase().includes('transfer');
   const isAirdrop = method.toLowerCase().includes('airdrop');
   const isUnwrap = method.toLowerCase().includes('unwrap');
   const isFillOrder = method === 'Fill Order';
-  const isNFTSend = isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address === address;
-  const isNFTReceive = isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address === address;
+  const isNFTSend =
+    isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address.toLowerCase() === address;
+  const isNFTReceive =
+    isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address.toLowerCase() === address;
 
   if (isSwap) return TransactionType.SWAP;
   if (isNativeSend) return TransactionType.SEND;

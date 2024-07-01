@@ -23,8 +23,8 @@ export const getSenderInfo = (
     to = erc721Transfers[0].to.address;
   }
 
-  const isOutgoing = isNativeSend || (isTransfer && from === address);
-  const isIncoming = isNativeReceive || (isTransfer && to === address);
+  const isOutgoing = isNativeSend || (isTransfer && from.toLowerCase() === address.toLowerCase());
+  const isIncoming = isNativeReceive || (isTransfer && to.toLowerCase() === address.toLowerCase());
 
   const isSender = from === address;
 
