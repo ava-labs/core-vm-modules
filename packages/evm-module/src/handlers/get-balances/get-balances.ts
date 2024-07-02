@@ -5,10 +5,11 @@ import type {
   TokenWithBalance,
   NetworkContractToken,
 } from '@avalabs/vm-module-types';
-import { getNativeTokenBalance } from './utils/get-native-token-balance';
-import { getProvider } from '../../utils/get-provider';
-import { getErc20Balances } from './utils/get-erc20-balance';
+import { getNativeTokenBalance } from './utils/get-native-token-balances';
+import { getErc20Balances } from './utils/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
+import { Glacier } from '@avalabs/glacier-sdk';
+import { getProvider } from '../../utils/get-provider';
 
 export const getBalances = async ({
   addresses,
@@ -16,10 +17,11 @@ export const getBalances = async ({
   currency,
   chainId,
   proxyApiUrl,
-  glacierApiKey,
   coingeckoPlatformId,
   coingeckoTokenId,
   customTokens,
+  glacierApiUrl,
+  glacierApiKey,
   chainName,
   rpcUrl,
   multiContractAddress,
@@ -35,6 +37,7 @@ export const getBalances = async ({
     coingeckoTokenId?: string;
     proxyApiUrl: string;
     customTokens: NetworkContractToken[];
+    glacierApiUrl: string;
   }): Promise<Record<string, Record<string, TokenWithBalance>>> => {
   const provider = getProvider({
     glacierApiKey,
@@ -44,6 +47,7 @@ export const getBalances = async ({
     multiContractAddress,
   });
   const tokenService = new TokenService({ getCache, setCache, proxyApiUrl });
+  const glacierSdk = new Glacier({ BASE: glacierApiUrl });
 
   const balances = await Promise.allSettled(
     addresses.map(async (address) => {
@@ -54,12 +58,15 @@ export const getBalances = async ({
         coingeckoTokenId,
         currency,
         networkToken,
+        chainId,
+        glacierApiUrl,
       });
 
       const erc20Tokens = await getErc20Balances({
         chainId,
         provider,
         tokenService,
+        glacierSdk,
         proxyApiUrl,
         coingeckoPlatformId,
         coingeckoTokenId,
