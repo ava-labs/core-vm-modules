@@ -1,55 +1,50 @@
-import type {
-  NetworkToken,
-  GetProviderParams,
-  CacheProviderParams,
-  NetworkContractToken,
-  GetBalancesResponse,
-} from '@avalabs/vm-module-types';
+import type { CacheProviderParams, GetBalancesResponse, GetBalancesParams } from '@avalabs/vm-module-types';
 import { getNativeTokenBalance } from './utils/get-native-token-balances';
 import { getErc20Balances } from './utils/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { getProvider } from '../../utils/get-provider';
+import { getNetworks } from '../../utils/get-networks';
 
 export const getBalances = async ({
   addresses,
-  networkToken,
   currency,
   chainId: caip2ChainId,
   proxyApiUrl,
-  coingeckoPlatformId,
-  coingeckoTokenId,
   customTokens,
   glacierApiUrl,
   glacierApiKey,
-  chainName,
-  rpcUrl,
-  multiContractAddress,
   getCache,
   setCache,
-}: GetProviderParams &
-  CacheProviderParams & {
-    chainId: string;
-    addresses: string[];
-    networkToken: NetworkToken;
-    currency: string;
-    coingeckoPlatformId?: string;
-    coingeckoTokenId?: string;
+}: CacheProviderParams &
+  GetBalancesParams & {
     proxyApiUrl: string;
-    customTokens: NetworkContractToken[];
     glacierApiUrl: string;
+    glacierApiKey?: string;
   }): Promise<GetBalancesResponse> => {
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
     throw new Error('Invalid chainId');
   }
 
+  const networks = await getNetworks({ proxyApiUrl });
+  if (networks.length === 0) {
+    throw new Error('Failed to fetch networks');
+  }
+
+  const network = networks.find((n) => n.chainId === Number(chainId));
+  if (network === undefined) {
+    throw new Error(`Failed to fetch network for chainId ${chainId}`);
+  }
+
+  const { chainName, rpcUrl, utilityAddresses, pricingProviders, networkToken } = network;
+
   const provider = getProvider({
     glacierApiKey,
     chainId,
     chainName,
     rpcUrl,
-    multiContractAddress,
+    multiContractAddress: utilityAddresses?.multicall,
   });
   const tokenService = new TokenService({ getCache, setCache, proxyApiUrl });
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
@@ -60,7 +55,7 @@ export const getBalances = async ({
         provider,
         tokenService,
         address,
-        coingeckoTokenId,
+        coingeckoTokenId: pricingProviders?.coingecko.nativeTokenId,
         currency,
         networkToken,
         chainId,
@@ -73,11 +68,11 @@ export const getBalances = async ({
         tokenService,
         glacierSdk,
         proxyApiUrl,
-        coingeckoPlatformId,
-        coingeckoTokenId,
+        coingeckoPlatformId: pricingProviders?.coingecko.assetPlatformId,
+        coingeckoTokenId: pricingProviders?.coingecko.nativeTokenId,
         address,
         currency,
-        customTokens,
+        customTokens: customTokens ?? [],
       });
 
       return {

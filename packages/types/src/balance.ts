@@ -1,17 +1,13 @@
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
-import type { CacheProviderParams, Chain } from './common';
+import type { CacheProviderParams } from './common';
 import BN from 'bn.js';
 
-export type GetBalancesParams = Chain &
-  CacheProviderParams & {
-    chainId: string;
-    addresses: string[]; // addressC of each account
-    networkToken: NetworkToken;
-    customTokens: NetworkContractToken[];
-    currency: string;
-    coingeckoPlatformId?: string;
-    coingeckoTokenId?: string;
-  };
+export type GetBalancesParams = CacheProviderParams & {
+  chainId: string;
+  addresses: string[]; // addressC of each account
+  customTokens?: NetworkContractToken[];
+  currency: string;
+};
 
 export type TokenBalanceData = {
   type: TokenType;
