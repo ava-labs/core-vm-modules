@@ -45,7 +45,7 @@ export const getErc20Balances = async ({
   if (chains.includes(chainId)) {
     return getErc20BalanceFromGlacier({ glacierSdk, currency, chainId, address, customTokens });
   }
-  return getErc20BalancesFromCoingecko({
+  return getErc20BalancesFromProvider({
     provider,
     tokenService,
     coingeckoPlatformId,
@@ -58,7 +58,7 @@ export const getErc20Balances = async ({
   });
 };
 
-const getErc20BalancesFromCoingecko = async ({
+const getErc20BalancesFromProvider = async ({
   provider,
   tokenService,
   coingeckoPlatformId,

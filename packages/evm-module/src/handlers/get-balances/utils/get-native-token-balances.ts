@@ -30,7 +30,7 @@ export const getNativeTokenBalance = async ({
   if (chains.includes(chainId)) {
     return getNativeTokenBalancesFromGlacier({ address, currency, chainId, glacierSdk });
   }
-  return getNativeTokenBalanceFromCoingecko({
+  return getNativeTokenBalanceFromProvider({
     provider,
     tokenService,
     address,
@@ -40,7 +40,7 @@ export const getNativeTokenBalance = async ({
   });
 };
 
-const getNativeTokenBalanceFromCoingecko = async ({
+const getNativeTokenBalanceFromProvider = async ({
   provider,
   tokenService,
   address,
