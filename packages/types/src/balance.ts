@@ -7,7 +7,7 @@ export type GetBalancesParams = Chain &
     chainId: string;
     addresses: string[]; // addressC of each account
     networkToken: NetworkToken;
-    tokens: NetworkContractToken[];
+    customTokens: NetworkContractToken[];
     currency: string;
     coingeckoPlatformId?: string;
     coingeckoTokenId?: string;

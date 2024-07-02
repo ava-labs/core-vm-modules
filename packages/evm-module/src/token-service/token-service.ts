@@ -63,47 +63,6 @@ export class TokenService {
     return data;
   }
 
-  // /**
-  //  * Get token price with market data for a coin
-  //  * @param coinId the coin id ie avalanche-2 for avax
-  //  * @param currency the currency to be used
-  //  * @returns the token price with market data
-  //  */
-  // async getPriceWithMarketDataByCoinId(
-  //   coinId: string,
-  //   currency: VsCurrencyType = VsCurrencyType.USD,
-  // ): Promise<PriceWithMarketData> {
-  //   const allPriceData = await this.fetchPriceWithMarketData();
-  //   const data = allPriceData?.[coinId]?.[currency];
-  //   return {
-  //     price: data?.price ?? 0,
-  //     change24: data?.change24 ?? 0,
-  //     marketCap: data?.marketCap ?? 0,
-  //     vol24: data?.vol24 ?? 0,
-  //   };
-  // }
-
-  // /**
-  //  * Get token price with market data from cached watchlist
-  //  * @returns token price with market data
-  //  */
-  // async fetchPriceWithMarketData(): Promise<SimplePriceResponse | undefined> {
-  //   try {
-  //     let data: SimplePriceResponse | undefined;
-  //     const cacheId = `fetchPriceWithMarketData`;
-
-  //     data = this.#getCache?.(cacheId) as SimplePriceResponse;
-
-  //     if (data === undefined) {
-  //       data = await watchlistCacheClient(this.#proxyApiUrl).simplePrice();
-  //       this.#setCache?.(cacheId, data);
-  //     }
-  //     return data;
-  //   } catch (e) {
-  //     return Promise.resolve(undefined);
-  //   }
-  // }
-
   /**
    * Get token price with market data for a list of addresses
    * @param tokenAddresses the token addresses

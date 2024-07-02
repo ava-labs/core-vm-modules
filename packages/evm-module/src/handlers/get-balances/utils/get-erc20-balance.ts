@@ -17,6 +17,7 @@ export const getErc20Balances = async ({
   currency,
   chainId: caip2ChainId,
   proxyApiUrl,
+  customTokens,
 }: {
   provider: Provider;
   tokenService: TokenService;
@@ -26,6 +27,7 @@ export const getErc20Balances = async ({
   currency: string;
   chainId: string;
   proxyApiUrl: string;
+  customTokens: NetworkContractToken[];
 }): Promise<Record<string, TokenWithBalance>> => {
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
@@ -33,10 +35,11 @@ export const getErc20Balances = async ({
   }
 
   const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
-  const tokenAddresses = tokens.map((token) => token.address);
+  const activeTokenList = [...tokens, ...customTokens];
+  const tokenAddresses = activeTokenList.map((token) => token.address);
 
   const tokensBalances = await Promise.allSettled(
-    tokens.map(async (token) => {
+    activeTokenList.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
       const balance = new TokenUnit(balanceBig, token.decimals ?? DEFAULT_DECIMALS, token.symbol);

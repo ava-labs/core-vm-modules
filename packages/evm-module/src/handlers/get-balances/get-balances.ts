@@ -1,4 +1,10 @@
-import type { NetworkToken, GetProviderParams, CacheProviderParams, TokenWithBalance } from '@avalabs/vm-module-types';
+import type {
+  NetworkToken,
+  GetProviderParams,
+  CacheProviderParams,
+  TokenWithBalance,
+  NetworkContractToken,
+} from '@avalabs/vm-module-types';
 import { getNativeTokenBalance } from './utils/get-native-token-balance';
 import { getProvider } from '../../utils/get-provider';
 import { getErc20Balances } from './utils/get-erc20-balance';
@@ -13,6 +19,7 @@ export const getBalances = async ({
   glacierApiKey,
   coingeckoPlatformId,
   coingeckoTokenId,
+  customTokens,
   chainName,
   rpcUrl,
   multiContractAddress,
@@ -27,6 +34,7 @@ export const getBalances = async ({
     coingeckoPlatformId?: string;
     coingeckoTokenId?: string;
     proxyApiUrl: string;
+    customTokens: NetworkContractToken[];
   }): Promise<Record<string, Record<string, TokenWithBalance>>> => {
   const provider = getProvider({
     glacierApiKey,
@@ -57,6 +65,7 @@ export const getBalances = async ({
         coingeckoTokenId,
         address,
         currency,
+        customTokens,
       });
 
       return {
