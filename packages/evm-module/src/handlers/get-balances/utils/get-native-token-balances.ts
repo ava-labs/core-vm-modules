@@ -124,6 +124,7 @@ const getNativeTokenBalancesFromGlacier = async ({
     symbol: nativeTokenBalance.symbol,
     decimals: nativeTokenBalance.decimals,
     type: TokenType.NATIVE,
+    logoUri: nativeTokenBalance.logoUri,
     balance,
     balanceDisplayValue,
     balanceInCurrency,

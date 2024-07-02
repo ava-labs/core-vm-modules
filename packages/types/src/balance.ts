@@ -40,6 +40,7 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
   };
 
 export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &
+  NetworkToken &
   TokenMarketData & {
     coingeckoId: string;
     type: TokenType.NATIVE;
@@ -70,3 +71,5 @@ type TokenMarketData = {
   change24: number;
   vol24: number;
 };
+
+export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance>>;

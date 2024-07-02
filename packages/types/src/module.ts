@@ -1,4 +1,4 @@
-import type { GetBalancesParams, TokenWithBalance } from './balance';
+import type { GetBalancesParams, GetBalancesResponse } from './balance';
 import type { Manifest } from './manifest';
 import type { GetNetworkFeeParams, NetworkFees } from './network-fee';
 import type { RpcRequest, RpcResponse } from './rpc';
@@ -7,7 +7,7 @@ import type { GetTransactionHistory, TransactionHistoryResponse } from './transa
 
 export interface Module {
   getManifest: () => Manifest | undefined;
-  getBalances: (params: GetBalancesParams) => Promise<Record<string, Record<string, TokenWithBalance>>>;
+  getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
   getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;

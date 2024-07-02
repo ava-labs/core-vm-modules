@@ -2,8 +2,8 @@ import type {
   NetworkToken,
   GetProviderParams,
   CacheProviderParams,
-  TokenWithBalance,
   NetworkContractToken,
+  GetBalancesResponse,
 } from '@avalabs/vm-module-types';
 import { getNativeTokenBalance } from './utils/get-native-token-balances';
 import { getErc20Balances } from './utils/get-erc20-balances';
@@ -38,7 +38,7 @@ export const getBalances = async ({
     proxyApiUrl: string;
     customTokens: NetworkContractToken[];
     glacierApiUrl: string;
-  }): Promise<Record<string, Record<string, TokenWithBalance>>> => {
+  }): Promise<GetBalancesResponse> => {
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
     throw new Error('Invalid chainId');
@@ -90,19 +90,16 @@ export const getBalances = async ({
     }),
   );
 
-  const filterBalances = balances.reduce(
-    (acc, result) => {
-      if (result.status === 'rejected') {
-        return acc;
-      }
+  const filterBalances = balances.reduce((acc, result) => {
+    if (result.status === 'rejected') {
+      return acc;
+    }
 
-      return {
-        ...acc,
-        [result.value.address]: result.value.balances,
-      };
-    },
-    {} as Record<string, Record<string, TokenWithBalance>>,
-  );
+    return {
+      ...acc,
+      [result.value.address]: result.value.balances,
+    };
+  }, {} as GetBalancesResponse);
 
   return filterBalances;
 };
