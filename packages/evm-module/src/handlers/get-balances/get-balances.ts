@@ -15,7 +15,7 @@ export const getBalances = async ({
   addresses,
   networkToken,
   currency,
-  chainId,
+  chainId: caip2ChainId,
   proxyApiUrl,
   coingeckoPlatformId,
   coingeckoTokenId,
@@ -39,6 +39,11 @@ export const getBalances = async ({
     customTokens: NetworkContractToken[];
     glacierApiUrl: string;
   }): Promise<Record<string, Record<string, TokenWithBalance>>> => {
+  const chainId = caip2ChainId.split(':')[1];
+  if (!chainId || isNaN(Number(chainId))) {
+    throw new Error('Invalid chainId');
+  }
+
   const provider = getProvider({
     glacierApiKey,
     chainId,
@@ -59,7 +64,7 @@ export const getBalances = async ({
         currency,
         networkToken,
         chainId,
-        glacierApiUrl,
+        glacierSdk,
       });
 
       const erc20Tokens = await getErc20Balances({

@@ -24,18 +24,20 @@ export const getNativeTokenBalance = async ({
   chainId: string;
   glacierSdk: Glacier;
 }): Promise<NetworkTokenWithBalance> => {
-  try {
+  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
+
+  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
+  if (chains.includes(chainId)) {
     return getNativeTokenBalancesFromGlacier({ address, currency, chainId, glacierSdk });
-  } catch {
-    return getNativeTokenBalanceFromCoingecko({
-      provider,
-      tokenService,
-      address,
-      coingeckoTokenId,
-      currency,
-      networkToken,
-    });
   }
+  return getNativeTokenBalanceFromCoingecko({
+    provider,
+    tokenService,
+    address,
+    coingeckoTokenId,
+    currency,
+    networkToken,
+  });
 };
 
 const getNativeTokenBalanceFromCoingecko = async ({
@@ -91,7 +93,7 @@ const getNativeTokenBalanceFromCoingecko = async ({
 const getNativeTokenBalancesFromGlacier = async ({
   address,
   currency,
-  chainId: caip2ChainId,
+  chainId,
   glacierSdk,
 }: {
   chainId: string;
@@ -99,11 +101,6 @@ const getNativeTokenBalancesFromGlacier = async ({
   currency: string;
   glacierSdk: Glacier;
 }): Promise<NetworkTokenWithBalance> => {
-  const chainId = caip2ChainId.split(':')[1];
-  if (!chainId || isNaN(Number(chainId))) {
-    throw new Error('Invalid chainId');
-  }
-
   const nativeBalance = await glacierSdk.evmBalances.getNativeBalance({
     chainId,
     address,

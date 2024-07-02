@@ -39,21 +39,23 @@ export const getErc20Balances = async ({
   coingeckoPlatformId?: string;
   coingeckoTokenId?: string;
 }) => {
-  try {
+  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
+
+  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
+  if (chains.includes(chainId)) {
     return getErc20BalanceFromGlacier({ glacierSdk, currency, chainId, address, customTokens });
-  } catch {
-    return getErc20BalancesFromCoingecko({
-      provider,
-      tokenService,
-      coingeckoPlatformId,
-      coingeckoTokenId,
-      address,
-      currency,
-      chainId,
-      proxyApiUrl,
-      customTokens,
-    });
   }
+  return getErc20BalancesFromCoingecko({
+    provider,
+    tokenService,
+    coingeckoPlatformId,
+    coingeckoTokenId,
+    address,
+    currency,
+    chainId,
+    proxyApiUrl,
+    customTokens,
+  });
 };
 
 const getErc20BalancesFromCoingecko = async ({
@@ -63,7 +65,7 @@ const getErc20BalancesFromCoingecko = async ({
   coingeckoTokenId,
   address: userAddress,
   currency,
-  chainId: caip2ChainId,
+  chainId,
   proxyApiUrl,
   customTokens,
 }: {
@@ -77,11 +79,6 @@ const getErc20BalancesFromCoingecko = async ({
   proxyApiUrl: string;
   customTokens: NetworkContractToken[];
 }): Promise<Record<string, TokenWithBalance>> => {
-  const chainId = caip2ChainId.split(':')[1];
-  if (!chainId || isNaN(Number(chainId))) {
-    throw new Error('Invalid chainId');
-  }
-
   const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
   const activeTokenList = [...tokens, ...customTokens];
   const tokenAddresses = activeTokenList.map((token) => token.address);
@@ -149,7 +146,7 @@ const getErc20BalancesFromCoingecko = async ({
 const getErc20BalanceFromGlacier = async ({
   glacierSdk,
   currency,
-  chainId: caip2ChainId,
+  chainId,
   address,
   customTokens,
 }: {
@@ -159,11 +156,6 @@ const getErc20BalanceFromGlacier = async ({
   chainId: string;
   customTokens: NetworkContractToken[];
 }): Promise<Record<string, TokenWithBalance>> => {
-  const chainId = caip2ChainId.split(':')[1];
-  if (!chainId || isNaN(Number(chainId))) {
-    throw new Error('Invalid chainId');
-  }
-
   const tokensWithBalance: TokenWithBalanceERC20[] = [];
   /**
    *  Load all pages to make sure we have all the tokens with balances
