@@ -159,8 +159,8 @@ importers:
         specifier: v2.8.0-alpha.187
         version: 2.8.0-alpha.187
       '@avalabs/utils-sdk':
-        specifier: 2.8.0-canary.b4769c9.0
-        version: 2.8.0-canary.b4769c9.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+        specifier: v2.8.0-alpha.187
+        version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
         specifier: 0.0.13
         version: link:../types
@@ -387,6 +387,7 @@ packages:
     transitivePeerDependencies:
       - node-fetch
       - supports-color
+    dev: true
 
   /@avalabs/wallets-sdk@2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-vAdWkbsd3PZRgvotL3pnfl/1EEzaF0zXnUMdVYz49tfTuGj6y69GR27iXXFupj59LMVivuM4CAwWAUu8CrXQoA==}

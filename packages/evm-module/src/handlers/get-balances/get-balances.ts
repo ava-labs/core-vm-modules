@@ -1,11 +1,13 @@
 import type { GetBalancesResponse, GetBalancesParams, Cache } from '@avalabs/vm-module-types';
-import { getNativeTokenBalance, getNativeTokenBalancesFromGlacier } from './utils/get-native-token-balances';
-import { getErc20BalanceFromGlacier, getErc20Balances } from './utils/get-erc20-balances';
+import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { getProvider } from '../../utils/get-provider';
 import { getNetworks } from '../../utils/get-networks';
 import { getTokens } from '../get-tokens/get-tokens';
+import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
+import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
+import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balance-service/get-erc20-balances';
 
 export const getBalances = async ({
   addresses,
@@ -36,10 +38,7 @@ export const getBalances = async ({
     throw new Error(`Failed to fetch network for chainId ${chainId}`);
   }
 
-  const tokenService = new TokenService({ cache, proxyApiUrl });
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
-  const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
-  const allTokens = [...tokens, ...customTokens];
   const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
   const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
 
@@ -54,8 +53,8 @@ export const getBalances = async ({
           glacierSdk,
         });
 
-        const erc20Tokens = await getErc20BalanceFromGlacier({
-          tokens: allTokens,
+        const erc20Tokens = await getErc20BalancesFromGlacier({
+          customTokens,
           glacierSdk,
           currency,
           chainId,
@@ -72,6 +71,9 @@ export const getBalances = async ({
       }),
     );
   } else {
+    const tokenService = new TokenService({ cache, proxyApiUrl });
+    const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
+    const allTokens = [...tokens, ...customTokens];
     const { chainName, rpcUrl, utilityAddresses } = network;
     const provider = getProvider({
       glacierApiKey,
@@ -83,7 +85,7 @@ export const getBalances = async ({
 
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
-        const nativeToken = await getNativeTokenBalance({
+        const nativeToken = await getNativeTokenBalances({
           network,
           tokenService,
           address,
