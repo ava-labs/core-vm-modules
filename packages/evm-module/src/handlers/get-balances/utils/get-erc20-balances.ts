@@ -7,84 +7,35 @@ import {
 } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
-import { getTokens } from '../../get-tokens/get-tokens';
 import type { TokenService } from '../../../token-service/token-service';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
-import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 import { CurrencyCode, Erc20TokenBalance, Glacier } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
+import type { Network } from '@avalabs/chains-sdk';
 
 const DEFAULT_DECIMALS = 18;
 
 export const getErc20Balances = async ({
   provider,
   tokenService,
-  glacierSdk,
-  currency,
-  chainId,
-  address,
-  customTokens,
-  coingeckoPlatformId,
-  coingeckoTokenId,
-  proxyApiUrl,
-}: {
-  provider: JsonRpcBatchInternal;
-  tokenService: TokenService;
-  glacierSdk: Glacier;
-  currency: string;
-  chainId: string;
-  address: string;
-  customTokens: NetworkContractToken[];
-  proxyApiUrl: string;
-  coingeckoPlatformId?: string;
-  coingeckoTokenId?: string;
-}) => {
-  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
-
-  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
-  if (chains.includes(chainId)) {
-    return getErc20BalanceFromGlacier({ glacierSdk, currency, chainId, address, customTokens });
-  }
-  return getErc20BalancesFromProvider({
-    provider,
-    tokenService,
-    coingeckoPlatformId,
-    coingeckoTokenId,
-    address,
-    currency,
-    chainId,
-    proxyApiUrl,
-    customTokens,
-  });
-};
-
-const getErc20BalancesFromProvider = async ({
-  provider,
-  tokenService,
-  coingeckoPlatformId,
-  coingeckoTokenId,
   address: userAddress,
   currency,
-  chainId,
-  proxyApiUrl,
-  customTokens,
+  tokens,
+  network,
 }: {
   provider: Provider;
   tokenService: TokenService;
   address: string;
-  coingeckoPlatformId?: string;
-  coingeckoTokenId?: string;
   currency: string;
-  chainId: string;
-  proxyApiUrl: string;
-  customTokens: NetworkContractToken[];
+  tokens: NetworkContractToken[];
+  network: Network;
 }): Promise<Record<string, TokenWithBalance>> => {
-  const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
-  const activeTokenList = [...tokens, ...customTokens];
-  const tokenAddresses = activeTokenList.map((token) => token.address);
+  const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId;
+  const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
+  const tokenAddresses = tokens.map((token) => token.address);
 
   const tokensBalances = await Promise.allSettled(
-    activeTokenList.map(async (token) => {
+    tokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
       const balance = new TokenUnit(balanceBig, token.decimals ?? DEFAULT_DECIMALS, token.symbol);
@@ -143,18 +94,18 @@ const getErc20BalancesFromProvider = async ({
   );
 };
 
-const getErc20BalanceFromGlacier = async ({
+export const getErc20BalanceFromGlacier = async ({
   glacierSdk,
   currency,
   chainId,
   address,
-  customTokens,
+  tokens,
 }: {
   glacierSdk: Glacier;
   address: string;
   currency: string;
   chainId: string;
-  customTokens: NetworkContractToken[];
+  tokens: NetworkContractToken[];
 }): Promise<Record<string, TokenWithBalance>> => {
   const tokensWithBalance: TokenWithBalanceERC20[] = [];
   /**
@@ -181,7 +132,7 @@ const getErc20BalanceFromGlacier = async ({
    * tokens are only used for swap, bridge and tx parsing.
    */
   return [
-    ...convertNetworkTokenToTokenWithBalance(customTokens),
+    ...convertNetworkTokenToTokenWithBalance(tokens),
     ...tokensWithBalance, // this needs to be second in the list so it overwrites its zero balance counterpart if there is one
   ].reduce(
     (acc, token) => {

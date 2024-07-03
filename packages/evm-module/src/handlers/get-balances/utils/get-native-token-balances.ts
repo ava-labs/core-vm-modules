@@ -1,60 +1,26 @@
 import { TokenUnit, bigToBN, bigintToBig, stringToBN } from '@avalabs/utils-sdk';
-import { TokenType, type NetworkToken, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
+import { TokenType, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import { TokenService } from '../../../token-service/token-service';
 import type { Provider } from 'ethers';
 import { Glacier, type CurrencyCode } from '@avalabs/glacier-sdk';
+import type { Network } from '@avalabs/chains-sdk';
 
 export const getNativeTokenBalance = async ({
   provider,
   tokenService,
   address,
-  coingeckoTokenId,
   currency,
-  networkToken,
-  chainId,
-  glacierSdk,
+  network,
 }: {
   provider: Provider;
   tokenService: TokenService;
   address: string;
-  coingeckoTokenId?: string;
   currency: string;
-  networkToken: NetworkToken;
-  chainId: string;
-  glacierSdk: Glacier;
+  network: Network;
 }): Promise<NetworkTokenWithBalance> => {
-  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
-
-  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
-  if (chains.includes(chainId)) {
-    return getNativeTokenBalancesFromGlacier({ address, currency, chainId, glacierSdk });
-  }
-  return getNativeTokenBalanceFromProvider({
-    provider,
-    tokenService,
-    address,
-    coingeckoTokenId,
-    currency,
-    networkToken,
-  });
-};
-
-const getNativeTokenBalanceFromProvider = async ({
-  provider,
-  tokenService,
-  address,
-  coingeckoTokenId,
-  currency,
-  networkToken,
-}: {
-  provider: Provider;
-  tokenService: TokenService;
-  address: string;
-  coingeckoTokenId?: string;
-  currency: string;
-  networkToken: NetworkToken;
-}): Promise<NetworkTokenWithBalance> => {
+  const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
+  const networkToken = network.networkToken;
   const simplePriceResponse = coingeckoTokenId
     ? await tokenService.getSimplePrice({
         coinIds: [coingeckoTokenId],
@@ -90,7 +56,7 @@ const getNativeTokenBalanceFromProvider = async ({
   };
 };
 
-const getNativeTokenBalancesFromGlacier = async ({
+export const getNativeTokenBalancesFromGlacier = async ({
   address,
   currency,
   chainId,

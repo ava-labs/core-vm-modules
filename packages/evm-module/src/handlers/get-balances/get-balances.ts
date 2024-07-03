@@ -1,17 +1,18 @@
 import type { GetBalancesResponse, GetBalancesParams, Cache } from '@avalabs/vm-module-types';
-import { getNativeTokenBalance } from './utils/get-native-token-balances';
-import { getErc20Balances } from './utils/get-erc20-balances';
+import { getNativeTokenBalance, getNativeTokenBalancesFromGlacier } from './utils/get-native-token-balances';
+import { getErc20BalanceFromGlacier, getErc20Balances } from './utils/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { getProvider } from '../../utils/get-provider';
 import { getNetworks } from '../../utils/get-networks';
+import { getTokens } from '../get-tokens/get-tokens';
 
 export const getBalances = async ({
   addresses,
   currency,
   chainId: caip2ChainId,
   proxyApiUrl,
-  customTokens,
+  customTokens = [],
   glacierApiUrl,
   glacierApiKey,
 }: GetBalancesParams & {
@@ -35,53 +36,80 @@ export const getBalances = async ({
     throw new Error(`Failed to fetch network for chainId ${chainId}`);
   }
 
-  const { chainName, rpcUrl, utilityAddresses, pricingProviders, networkToken } = network;
-
-  const provider = getProvider({
-    glacierApiKey,
-    chainId,
-    chainName,
-    rpcUrl,
-    multiContractAddress: utilityAddresses?.multicall,
-  });
   const tokenService = new TokenService({ cache, proxyApiUrl });
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
+  const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
+  const allTokens = [...tokens, ...customTokens];
+  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
+  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
 
-  const balances = await Promise.allSettled(
-    addresses.map(async (address) => {
-      const nativeToken = await getNativeTokenBalance({
-        provider,
-        tokenService,
-        address,
-        coingeckoTokenId: pricingProviders?.coingecko.nativeTokenId,
-        currency,
-        networkToken,
-        chainId,
-        glacierSdk,
-      });
+  let balances = [];
+  if (chains.includes(chainId)) {
+    balances = await Promise.allSettled(
+      addresses.map(async (address) => {
+        const nativeToken = await getNativeTokenBalancesFromGlacier({
+          address,
+          currency,
+          chainId,
+          glacierSdk,
+        });
 
-      const erc20Tokens = await getErc20Balances({
-        chainId,
-        provider,
-        tokenService,
-        glacierSdk,
-        proxyApiUrl,
-        coingeckoPlatformId: pricingProviders?.coingecko.assetPlatformId,
-        coingeckoTokenId: pricingProviders?.coingecko.nativeTokenId,
-        address,
-        currency,
-        customTokens: customTokens ?? [],
-      });
+        const erc20Tokens = await getErc20BalanceFromGlacier({
+          tokens: allTokens,
+          glacierSdk,
+          currency,
+          chainId,
+          address,
+        });
 
-      return {
-        address,
-        balances: {
-          [nativeToken.symbol]: nativeToken,
-          ...erc20Tokens,
-        },
-      };
-    }),
-  );
+        return {
+          address,
+          balances: {
+            [nativeToken.symbol]: nativeToken,
+            ...erc20Tokens,
+          },
+        };
+      }),
+    );
+  } else {
+    const { chainName, rpcUrl, utilityAddresses } = network;
+    const provider = getProvider({
+      glacierApiKey,
+      chainId: network.chainId.toString(),
+      chainName,
+      rpcUrl,
+      multiContractAddress: utilityAddresses?.multicall,
+    });
+
+    balances = await Promise.allSettled(
+      addresses.map(async (address) => {
+        const nativeToken = await getNativeTokenBalance({
+          network,
+          tokenService,
+          address,
+          currency,
+          provider,
+        });
+
+        const erc20Tokens = await getErc20Balances({
+          provider,
+          network,
+          tokenService,
+          address,
+          currency,
+          tokens: allTokens,
+        });
+
+        return {
+          address,
+          balances: {
+            [nativeToken.symbol]: nativeToken,
+            ...erc20Tokens,
+          },
+        };
+      }),
+    );
+  }
 
   const filterBalances = balances.reduce((acc, result) => {
     if (result.status === 'rejected') {
