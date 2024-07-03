@@ -1,4 +1,4 @@
-import type { CacheProviderParams, GetBalancesResponse, GetBalancesParams } from '@avalabs/vm-module-types';
+import type { GetBalancesResponse, GetBalancesParams, Cache } from '@avalabs/vm-module-types';
 import { getNativeTokenBalance } from './utils/get-native-token-balances';
 import { getErc20Balances } from './utils/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
@@ -14,14 +14,12 @@ export const getBalances = async ({
   customTokens,
   glacierApiUrl,
   glacierApiKey,
-  getCache,
-  setCache,
-}: CacheProviderParams &
-  GetBalancesParams & {
-    proxyApiUrl: string;
-    glacierApiUrl: string;
-    glacierApiKey?: string;
-  }): Promise<GetBalancesResponse> => {
+}: GetBalancesParams & {
+  proxyApiUrl: string;
+  glacierApiUrl: string;
+  glacierApiKey?: string;
+  cache?: Cache;
+}): Promise<GetBalancesResponse> => {
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
     throw new Error('Invalid chainId');
@@ -46,7 +44,7 @@ export const getBalances = async ({
     rpcUrl,
     multiContractAddress: utilityAddresses?.multicall,
   });
-  const tokenService = new TokenService({ getCache, setCache, proxyApiUrl });
+  const tokenService = new TokenService({ cache, proxyApiUrl });
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
 
   const balances = await Promise.allSettled(

@@ -8,11 +8,9 @@ export type Chain = {
 
 export type GetProviderParams = Chain & { glacierApiKey?: string };
 
-export type GetCache = (id: string) => unknown;
-export type SetCache = (id: string, data: unknown) => void;
-export type CacheProviderParams = {
-  getCache?: GetCache;
-  setCache?: SetCache;
+export type Cache = {
+  get: (id: string) => unknown;
+  set: (id: string, data: unknown) => void;
 };
 
 export type Caip2ChainId = string;
