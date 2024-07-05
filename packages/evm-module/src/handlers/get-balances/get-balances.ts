@@ -17,6 +17,7 @@ export const getBalances = async ({
   customTokens = [],
   glacierApiUrl,
   glacierApiKey,
+  cache,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   glacierApiUrl: string;
