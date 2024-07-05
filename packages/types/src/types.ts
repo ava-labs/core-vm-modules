@@ -40,9 +40,6 @@ export enum RpcMethod {
   SIGN_TYPED_DATA = 'eth_signTypedData',
   PERSONAL_SIGN = 'personal_sign',
   ETH_SIGN = 'eth_sign',
-  WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
-  WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
-  WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
 }
 
 export type DappInfo = {
