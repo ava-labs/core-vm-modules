@@ -18,7 +18,7 @@ export class TokenService {
   #cache?: Cache;
   #proxyApiUrl: string;
 
-  constructor({ cache, proxyApiUrl }: { proxyApiUrl: string; cache: Cache }) {
+  constructor({ cache, proxyApiUrl }: { proxyApiUrl: string; cache?: Cache }) {
     this.#cache = cache;
     this.#proxyApiUrl = proxyApiUrl;
   }
