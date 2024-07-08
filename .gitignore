@@ -10,3 +10,6 @@ server/dist
 public/dist
 .turbo
 tsconfig.tsbuildinfo
+
+# evm contract files
+packages/evm-module/src/contracts
