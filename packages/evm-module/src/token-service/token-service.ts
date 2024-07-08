@@ -44,20 +44,16 @@ export class TokenService {
     data = this.#cache?.get?.(cacheId) as SimplePriceResponse;
 
     if (data === undefined) {
-      try {
-        data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
-          this.simplePrice({
-            coinIds,
-            currencies,
-            marketCap: true,
-            vol24: true,
-            change24: true,
-            useCoingeckoProxy,
-          }),
-        );
-      } catch {
-        data = undefined;
-      }
+      data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
+        this.simplePrice({
+          coinIds,
+          currencies,
+          marketCap: true,
+          vol24: true,
+          change24: true,
+          useCoingeckoProxy,
+        }),
+      );
       this.#cache?.set?.(cacheId, data);
     }
 
@@ -84,19 +80,14 @@ export class TokenService {
     data = this.#cache?.get?.(cacheId) as SimplePriceResponse;
 
     if (data === undefined) {
-      try {
-        data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
-          this.fetchPricesByAddresses({
-            assetPlatformId,
-            tokenAddresses,
-            currency,
-            useCoingeckoProxy,
-          }),
-        );
-      } catch {
-        data = undefined;
-      }
-
+      data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
+        this.fetchPricesByAddresses({
+          assetPlatformId,
+          tokenAddresses,
+          currency,
+          useCoingeckoProxy,
+        }),
+      );
       this.#cache?.set?.(cacheId, data);
     }
 

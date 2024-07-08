@@ -1,4 +1,4 @@
-import type { Error } from '../../../token-service/coingecko-types';
+import type { Error } from '@avalabs/vm-module-types';
 import { RetryBackoffPolicy, retry } from '../../../utils/retry';
 
 export const coingeckoRetry = <T>(
