@@ -18,8 +18,8 @@ export type Network = {
 };
 
 export type Storage = {
-  get: (id: string) => unknown;
-  set: (id: string, data: unknown) => void;
+  get: <T>(id: string) => T;
+  set: <T>(id: string, data: T) => void;
 };
 
 export type Caip2ChainId = string;
