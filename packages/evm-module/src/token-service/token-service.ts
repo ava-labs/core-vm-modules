@@ -5,12 +5,15 @@ import {
   simpleTokenPrice,
   type SimplePriceParams,
 } from '@avalabs/coingecko-sdk';
-import type { SimplePriceResponse } from './coingecko-types';
 import { coingeckoRetry } from '../handlers/get-balances/utils/coingecko-retry';
 import { arrayHash } from '../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
-import type { Error as CoingeckoError } from './coingecko-types';
-import type { Cache, RawSimplePriceResponse } from '@avalabs/vm-module-types';
+import type {
+  Cache,
+  RawSimplePriceResponse,
+  Error as CoingeckoError,
+  SimplePriceResponse,
+} from '@avalabs/vm-module-types';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 

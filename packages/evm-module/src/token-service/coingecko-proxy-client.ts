@@ -1,5 +1,5 @@
 import { Zodios } from '@zodios/core';
-import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from './coingecko-types';
+import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from '@avalabs/vm-module-types';
 import { boolean, string } from 'zod';
 
 export const coingeckoProxyClient = (proxyApiUrl: string) =>
