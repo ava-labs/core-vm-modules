@@ -94,6 +94,7 @@ export const ethSendTransaction = async ({
   const displayData: DisplayData = {
     title: 'Approve Transaction',
     chain: {
+      chainId: chain.chainId,
       name: chain.chainName,
       logoUrl: chain.logoUrl,
     },

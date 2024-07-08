@@ -8,6 +8,7 @@ export const NonContractCallTypes = [TransactionType.SEND, TransactionType.RECEI
 export type DisplayData = {
   title: string;
   chain: {
+    chainId: Caip2ChainId;
     name: string;
     logoUrl?: string;
   };

@@ -70,6 +70,7 @@ const testRequestParams = () => ({
 const displayData = {
   title: 'Approve Transaction',
   chain: {
+    chainId: testChain.chainId,
     name: testChain.chainName,
     logoUrl: testChain.logoUrl,
   },
