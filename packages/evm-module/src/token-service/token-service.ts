@@ -9,7 +9,7 @@ import { coingeckoRetry } from '../handlers/get-balances/utils/coingecko-retry';
 import { arrayHash } from '../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
 import type {
-  Cache,
+  Storage,
   RawSimplePriceResponse,
   Error as CoingeckoError,
   SimplePriceResponse,
@@ -18,11 +18,11 @@ import type {
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
 export class TokenService {
-  #cache?: Cache;
+  #storage?: Storage;
   #proxyApiUrl: string;
 
-  constructor({ cache, proxyApiUrl }: { proxyApiUrl: string; cache?: Cache }) {
-    this.#cache = cache;
+  constructor({ storage, proxyApiUrl }: { proxyApiUrl: string; storage?: Storage }) {
+    this.#storage = storage;
     this.#proxyApiUrl = proxyApiUrl;
   }
 
@@ -41,7 +41,7 @@ export class TokenService {
 
     const cacheId = `getSimplePrice-${key}`;
 
-    data = this.#cache?.get?.(cacheId) as SimplePriceResponse;
+    data = this.#storage?.get?.(cacheId) as SimplePriceResponse;
 
     if (data === undefined) {
       data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
@@ -54,7 +54,7 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      this.#cache?.set?.(cacheId, data);
+      this.#storage?.set?.(cacheId, data);
     }
 
     return data;
@@ -77,7 +77,7 @@ export class TokenService {
     const key = `${arrayHash(tokenAddresses)}-${assetPlatformId}-${currency}`;
 
     const cacheId = `getPricesWithMarketDataByAddresses-${key}`;
-    data = this.#cache?.get?.(cacheId) as SimplePriceResponse;
+    data = this.#storage?.get?.(cacheId) as SimplePriceResponse;
 
     if (data === undefined) {
       data = await coingeckoRetry<SimplePriceResponse>((useCoingeckoProxy) =>
@@ -88,7 +88,7 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      this.#cache?.set?.(cacheId, data);
+      this.#storage?.set?.(cacheId, data);
     }
 
     return data;

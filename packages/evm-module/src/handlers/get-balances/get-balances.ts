@@ -1,4 +1,4 @@
-import type { GetBalancesResponse, GetBalancesParams, Cache } from '@avalabs/vm-module-types';
+import type { GetBalancesResponse, GetBalancesParams, Storage } from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
 import { Glacier } from '@avalabs/glacier-sdk';
@@ -17,12 +17,12 @@ export const getBalances = async ({
   customTokens = [],
   glacierApiUrl,
   glacierApiKey,
-  cache,
+  storage,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   glacierApiUrl: string;
   glacierApiKey?: string;
-  cache?: Cache;
+  storage?: Storage;
 }): Promise<GetBalancesResponse> => {
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
@@ -62,7 +62,7 @@ export const getBalances = async ({
       }),
     );
   } else {
-    const tokenService = new TokenService({ cache, proxyApiUrl });
+    const tokenService = new TokenService({ storage, proxyApiUrl });
     const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
     const allTokens = [...tokens, ...customTokens];
     const provider = getProvider({

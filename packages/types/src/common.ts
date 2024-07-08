@@ -19,7 +19,7 @@ export type Network = {
 
 export type GetProviderParams = { glacierApiKey?: string; network: Network };
 
-export type Cache = {
+export type Storage = {
   get: (id: string) => unknown;
   set: (id: string, data: unknown) => void;
 };

@@ -1,4 +1,4 @@
-import type { Cache, Network } from './common';
+import type { Storage, Network } from './common';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import BN from 'bn.js';
 
@@ -8,7 +8,7 @@ export type GetBalancesParams = {
   network: Network;
   customTokens?: NetworkContractToken[];
   currency: string;
-  cache?: Cache;
+  storage?: Storage;
 };
 
 export type TokenBalanceData = {
