@@ -93,7 +93,10 @@ export const ethSendTransaction = async ({
   // https://ava-labs.atlassian.net/browse/CP-8870
   const displayData: DisplayData = {
     title: 'Approve Transaction',
-    chain,
+    chain: {
+      name: chain.chainName,
+      logoUrl: chain.logoUrl,
+    },
     transactionDetails: {
       website: new URL(dappInfo.url).hostname,
       from: transaction.from,

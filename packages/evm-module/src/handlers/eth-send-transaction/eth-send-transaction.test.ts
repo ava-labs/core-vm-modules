@@ -40,6 +40,7 @@ const testChain = {
   chainId: 'eip155:1',
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
+  logoUrl: 'logoUrl',
   multiContractAddress: 'multiContractAddress' as Hex,
   networkToken: {
     type: TokenType.NATIVE,
@@ -68,7 +69,10 @@ const testRequestParams = () => ({
 
 const displayData = {
   title: 'Approve Transaction',
-  chain: testChain,
+  chain: {
+    name: testChain.chainName,
+    logoUrl: testChain.logoUrl,
+  },
   transactionDetails: {
     website: 'example.com',
     from: '0xfrom',

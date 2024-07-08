@@ -1,12 +1,5 @@
 import { DerivationPath } from '@avalabs/wallets-sdk';
-import {
-  TransactionType,
-  type Caip2ChainId,
-  type Chain,
-  type Hex,
-  type RpcError,
-  type RpcRequest,
-} from '@avalabs/vm-module-types';
+import { TransactionType, type Caip2ChainId, type Hex, type RpcError, type RpcRequest } from '@avalabs/vm-module-types';
 import type { TransactionRequest } from 'ethers';
 import type { Address } from 'viem';
 
@@ -14,7 +7,10 @@ export const NonContractCallTypes = [TransactionType.SEND, TransactionType.RECEI
 
 export type DisplayData = {
   title: string;
-  chain: Chain;
+  chain: {
+    name: string;
+    logoUrl?: string;
+  };
   messageDetails?: string;
   transactionDetails?: {
     website: string;
