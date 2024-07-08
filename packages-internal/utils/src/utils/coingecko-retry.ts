@@ -1,5 +1,5 @@
 import type { Error } from '@avalabs/vm-module-types';
-import { RetryBackoffPolicy, retry } from '../../../utils/retry';
+import { RetryBackoffPolicy, retry } from './retry';
 
 export const coingeckoRetry = <T>(
   operation: (useCoingeckoProxy: boolean) => Promise<T | Error>,

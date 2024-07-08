@@ -5,7 +5,7 @@ import {
   simpleTokenPrice,
   type SimplePriceParams,
 } from '@avalabs/coingecko-sdk';
-import { coingeckoRetry } from '../handlers/get-balances/utils/coingecko-retry';
+import { coingeckoRetry } from '../utils/coingecko-retry';
 import { arrayHash } from '../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
 import type {

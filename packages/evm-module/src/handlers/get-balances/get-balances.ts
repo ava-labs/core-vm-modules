@@ -1,6 +1,6 @@
 import type { GetBalancesResponse, GetBalancesParams, Storage } from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
-import { TokenService } from '../../token-service/token-service';
+import { TokenService } from '@internal/utils';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { getProvider } from '../../utils/get-provider';
 import { getTokens } from '../get-tokens/get-tokens';
