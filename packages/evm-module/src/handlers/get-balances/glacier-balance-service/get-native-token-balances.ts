@@ -24,7 +24,6 @@ export const getNativeTokenBalances = async ({
     nativeTokenBalance.decimals,
     nativeTokenBalance.symbol,
   );
-  // todo: simply return TokenUnit when we have all modules implemented
   const balance = stringToBN(nativeTokenBalance.balance, nativeTokenBalance.decimals);
   const balanceDisplayValue = balanceTokenUnit.toDisplay();
   const priceInCurrency = nativeTokenBalance.price?.value ?? 0;

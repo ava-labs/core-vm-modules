@@ -60,7 +60,6 @@ export const getErc20Balances = async ({
       const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
 
-      // todo: simply return TokenUnit when we have all modules implemented
       const balanceBig = bigintToBig(token.balance.toSubUnit(), token.balance.getMaxDecimals());
       const balance = bigToBN(balanceBig, token.balance.getMaxDecimals());
       const balanceInCurrency = Number(token.balance.mul(priceInCurrency).toSubUnit());

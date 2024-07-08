@@ -33,7 +33,6 @@ export const getNativeTokenBalances = async ({
   const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
 
   const balanceBigint = await provider.getBalance(address);
-  // todo: simply return TokenUnit when we have all modules implemented
   const balaceBig = bigintToBig(balanceBigint, networkToken.decimals);
   const balance = bigToBN(balaceBig, networkToken.decimals);
   const balanceTokenUnit = new TokenUnit(balanceBigint, networkToken.decimals, networkToken.symbol);
