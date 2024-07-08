@@ -3,7 +3,6 @@ import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '../../token-service/token-service';
 import { Glacier } from '@avalabs/glacier-sdk';
 import { getProvider } from '../../utils/get-provider';
-import { getNetworks } from '../../utils/get-networks';
 import { getTokens } from '../get-tokens/get-tokens';
 import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
 import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
@@ -13,6 +12,7 @@ export const getBalances = async ({
   addresses,
   currency,
   chainId: caip2ChainId,
+  network,
   proxyApiUrl,
   customTokens = [],
   glacierApiUrl,
@@ -27,16 +27,6 @@ export const getBalances = async ({
   const chainId = caip2ChainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
     throw new Error('Invalid chainId');
-  }
-
-  const networks = await getNetworks({ proxyApiUrl });
-  if (networks.length === 0) {
-    throw new Error('Failed to fetch networks');
-  }
-
-  const network = networks.find((n) => n.chainId === Number(chainId));
-  if (network === undefined) {
-    throw new Error(`Failed to fetch network for chainId ${chainId}`);
   }
 
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
@@ -75,13 +65,9 @@ export const getBalances = async ({
     const tokenService = new TokenService({ cache, proxyApiUrl });
     const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
     const allTokens = [...tokens, ...customTokens];
-    const { chainName, rpcUrl, utilityAddresses } = network;
     const provider = getProvider({
       glacierApiKey,
-      chainId: network.chainId.toString(),
-      chainName,
-      rpcUrl,
-      multiContractAddress: utilityAddresses?.multicall,
+      network,
     });
 
     balances = await Promise.allSettled(

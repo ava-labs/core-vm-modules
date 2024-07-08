@@ -1,12 +1,23 @@
-export type Chain = {
+import type { NetworkToken } from './token';
+
+export type Network = {
   isTestnet?: boolean;
-  chainId?: string; // caip2ChainId
-  chainName?: string;
-  rpcUrl?: string;
-  multiContractAddress?: string;
+  chainId: number;
+  chainName: string;
+  rpcUrl: string;
+  utilityAddresses?: {
+    multicall: string;
+  };
+  networkToken: NetworkToken;
+  pricingProviders?: {
+    coingecko: {
+      assetPlatformId?: string;
+      nativeTokenId?: string;
+    };
+  };
 };
 
-export type GetProviderParams = Chain & { glacierApiKey?: string };
+export type GetProviderParams = { glacierApiKey?: string; network: Network };
 
 export type Cache = {
   get: (id: string) => unknown;

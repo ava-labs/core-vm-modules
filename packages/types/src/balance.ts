@@ -1,10 +1,11 @@
-import type { Cache } from './common';
+import type { Cache, Network } from './common';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import BN from 'bn.js';
 
 export type GetBalancesParams = {
-  chainId: string;
+  chainId: string; // caip2ChainId
   addresses: string[]; // addressC of each account
+  network: Network;
   customTokens?: NetworkContractToken[];
   currency: string;
   cache?: Cache;

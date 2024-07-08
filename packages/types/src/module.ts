@@ -1,4 +1,5 @@
 import type { GetBalancesParams, GetBalancesResponse } from './balance';
+import type { Network } from './common';
 import type { Manifest } from './manifest';
 import type { NetworkFees } from './network-fee';
 import type { RpcRequest, RpcResponse } from './rpc';
@@ -9,7 +10,7 @@ export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
-  getNetworkFee: ({ chainId }: { chainId: string }) => Promise<NetworkFees>;
+  getNetworkFee: ({ network }: { network: Network }) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
   getTokens: (chainId: number) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;

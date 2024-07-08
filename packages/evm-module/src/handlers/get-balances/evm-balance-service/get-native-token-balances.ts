@@ -1,9 +1,8 @@
 import { TokenUnit, bigToBN, bigintToBig } from '@avalabs/utils-sdk';
-import { TokenType, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
+import { TokenType, type Network, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import { TokenService } from '../../../token-service/token-service';
 import type { Provider } from 'ethers';
-import type { Network } from '@avalabs/chains-sdk';
 
 export const getNativeTokenBalances = async ({
   provider,

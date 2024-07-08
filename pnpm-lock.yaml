@@ -146,9 +146,6 @@ importers:
 
   packages/evm-module:
     dependencies:
-      '@avalabs/chains-sdk':
-        specifier: v2.8.0-alpha.187
-        version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/coingecko-sdk':
         specifier: v2.8.0-alpha.187
         version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
