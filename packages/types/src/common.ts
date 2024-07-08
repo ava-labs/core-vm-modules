@@ -2,7 +2,7 @@ import type { NetworkToken } from './token';
 
 export type Network = {
   isTestnet?: boolean;
-  chainId: number;
+  chainId: string; // caip2ChainId
   chainName: string;
   rpcUrl: string;
   utilityAddresses?: {

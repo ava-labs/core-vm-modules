@@ -11,7 +11,6 @@ import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balan
 export const getBalances = async ({
   addresses,
   currency,
-  chainId: caip2ChainId,
   network,
   proxyApiUrl,
   customTokens = [],
@@ -24,7 +23,7 @@ export const getBalances = async ({
   glacierApiKey?: string;
   storage?: Storage;
 }): Promise<GetBalancesResponse> => {
-  const chainId = caip2ChainId.split(':')[1];
+  const chainId = network.chainId.split(':')[1];
   if (!chainId || isNaN(Number(chainId))) {
     throw new Error('Invalid chainId');
   }
@@ -67,7 +66,10 @@ export const getBalances = async ({
     const allTokens = [...tokens, ...customTokens];
     const provider = getProvider({
       glacierApiKey,
-      network,
+      chainId,
+      chainName: network.chainName,
+      rpcUrl: network.rpcUrl,
+      multiContractAddress: network.utilityAddresses?.multicall,
     });
 
     balances = await Promise.allSettled(

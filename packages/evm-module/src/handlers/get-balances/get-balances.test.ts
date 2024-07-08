@@ -63,9 +63,8 @@ describe('get-balances', () => {
     const balances = await getBalances({
       addresses: ['0x123'],
       currency: 'USD',
-      chainId: 'caip2:1',
       network: {
-        chainId: 1,
+        chainId: 'eip155:1',
         chainName: 'Ethereum',
         isTestnet: false,
         networkToken: {
@@ -190,9 +189,8 @@ describe('get-balances', () => {
     const balances = await getBalances({
       addresses: ['0x456'],
       currency: 'USD',
-      chainId: 'caip2:2',
       network: {
-        chainId: 2,
+        chainId: 'eip155:2',
         chainName: '2',
         isTestnet: false,
         networkToken: {
