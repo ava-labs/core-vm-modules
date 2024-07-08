@@ -7,8 +7,8 @@ import type {
   Environment,
   Network,
 } from '@avalabs/vm-module-types';
-import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
