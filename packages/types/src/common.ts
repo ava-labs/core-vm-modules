@@ -18,7 +18,7 @@ export type Network = {
 };
 
 export type Storage = {
-  get: <T>(id: string) => T;
+  get: <T>(id: string) => T | undefined;
   set: <T>(id: string, data: T) => void;
 };
 
