@@ -109,18 +109,8 @@ export const ethSendTransaction = async ({
     transactionSimulation: transactionSimulationResult,
   };
 
-  const typeFromPayload = transaction.maxFeePerGas ? 2 : 0;
-
-  /**
-   * We use EIP-1559 market fees (maxFeePerGas/maxPriorityFeePerGas),
-   * and they require `type` to be set accordingly (to a value of 2).
-   *
-   * If the transaction payload explicitly sets a higher `type`,
-   * we won't change it hoping it's still backwards-compatible.
-   *
-   * At the moment of writing this comment, "2" is the highest tx type available.
-   */
-  const typeToSign = Math.max(typeFromPayload, 2);
+  // hardcoding to 2 for now as we only support EIP-1559
+  const typeToSign = 2;
 
   const signingData: SigningData = {
     type: 'transaction',
