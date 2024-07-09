@@ -1,4 +1,4 @@
-import { TokenUnit, bigToBN, bigintToBig } from '@avalabs/utils-sdk';
+import { balanceToDisplayValue, bigToBN, bigintToBig, bnToBig } from '@avalabs/utils-sdk';
 import { TokenType, type Network, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import { TokenService } from '@internal/utils';
@@ -34,16 +34,16 @@ export const getNativeTokenBalances = async ({
   const balanceBigint = await provider.getBalance(address);
   const balaceBig = bigintToBig(balanceBigint, networkToken.decimals);
   const balance = bigToBN(balaceBig, networkToken.decimals);
-  const balanceTokenUnit = new TokenUnit(balanceBigint, networkToken.decimals, networkToken.symbol);
-  const balanceInCurrency = Number(balanceTokenUnit.mul(priceInCurrency).toSubUnit());
-  const balanceCurrencyDisplayValue = balanceTokenUnit.mul(priceInCurrency).toDisplay();
+  const balanceDisplayValue = balanceToDisplayValue(balance, networkToken.decimals);
+  const balanceInCurrency = bnToBig(balance, networkToken.decimals).mul(priceInCurrency).toNumber();
+  const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
 
   return {
     ...networkToken,
     coingeckoId: coingeckoTokenId ?? '',
     type: TokenType.NATIVE,
     balance,
-    balanceDisplayValue: balanceTokenUnit.toDisplay(),
+    balanceDisplayValue,
     balanceInCurrency,
     balanceCurrencyDisplayValue,
     priceInCurrency,

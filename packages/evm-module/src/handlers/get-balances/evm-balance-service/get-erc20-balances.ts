@@ -1,9 +1,10 @@
-import { TokenUnit, bigToBN, bigintToBig } from '@avalabs/utils-sdk';
+import { numberToBN, bnToBig, balanceToDisplayValue } from '@avalabs/utils-sdk';
 import { TokenType, type Network, type NetworkContractToken, type TokenWithBalance } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import BN from 'bn.js';
 
 const DEFAULT_DECIMALS = 18;
 
@@ -30,7 +31,7 @@ export const getErc20Balances = async ({
     tokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
-      const balance = new TokenUnit(balanceBig, token.decimals ?? DEFAULT_DECIMALS, token.symbol);
+      const balance = new BN(balanceBig) || numberToBN(0, token.decimals || DEFAULT_DECIMALS);
 
       const tokenWithBalance = {
         ...token,
@@ -40,7 +41,7 @@ export const getErc20Balances = async ({
       return tokenWithBalance;
     }),
   ).then((res) => {
-    return res.reduce<(NetworkContractToken & { balance: TokenUnit })[]>((acc, result) => {
+    return res.reduce<(NetworkContractToken & { balance: BN })[]>((acc, result) => {
       return result.status === 'fulfilled' && !result.value.balance.isZero() ? [...acc, result.value] : acc;
     }, []);
   });
@@ -59,18 +60,16 @@ export const getErc20Balances = async ({
       const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
 
-      const balanceBig = bigintToBig(token.balance.toSubUnit(), token.balance.getMaxDecimals());
-      const balance = bigToBN(balanceBig, token.balance.getMaxDecimals());
-      const balanceInCurrency = Number(token.balance.mul(priceInCurrency).toSubUnit());
-      const balanceDisplayValue = token.balance.toDisplay();
-      const balanceCurrencyDisplayValue = token.balance.mul(priceInCurrency).toDisplay();
+      const balanceInCurrency = bnToBig(token.balance, token.decimals).muln(priceInCurrency).toNumber();
+      const balanceDisplayValue = balanceToDisplayValue(token.balance, token.decimals);
+      const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
 
       return {
         ...acc,
         [token.address.toLowerCase()]: {
           ...token,
           type: TokenType.ERC20,
-          balance,
+          balance: token.balance,
           balanceDisplayValue,
           balanceInCurrency,
           balanceCurrencyDisplayValue,
