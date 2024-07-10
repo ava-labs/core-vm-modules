@@ -4,5 +4,5 @@
     "outDir": "./dist",
     "incremental": false // Need to turn off because of tsup dts
   },
-  "include": ["src"],
+  "include": ["src"]
 }

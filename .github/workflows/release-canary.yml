@@ -40,7 +40,7 @@ jobs:
       # (needs to be built before CI for other packages runs)
       - name: Build, Test & Lint the "types" package
         run: pnpm ci --filter=@avalabs/vm-module-types
-      
+
       # This will run all build, test, and lint scripts in parallel,
       # outlined in the turbo.json file, for all remaining packages
       - name: Build, Test, & Lint the remaining packages
