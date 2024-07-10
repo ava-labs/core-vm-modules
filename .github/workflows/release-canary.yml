@@ -43,7 +43,7 @@ jobs:
       
       # This will run all build, test, and lint scripts in parallel,
       # outlined in the turbo.json file, for all remaining packages
-      - name: Build, Test, & Lint
+      - name: Build, Test, & Lint the remaining packages
         run: pnpm ci --filter=!@avalabs/vm-module-types
 
       - name: Setup Local Github Actions
