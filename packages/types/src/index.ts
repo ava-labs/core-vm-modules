@@ -203,3 +203,5 @@ export type Manifest = z.infer<typeof manifestSchema>;
 export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
   return manifestSchema.safeParse(params);
 };
+
+export type { TestType } from './test-type';
