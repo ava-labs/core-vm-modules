@@ -1,0 +1,44 @@
+{
+  "name": "Avalanche",
+  "description": "",
+  "version": "0.0.1",
+  "sources": {
+    "module": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/bundle.js",
+          "packageName": "@avalabs/avalanche-module",
+          "registry": "https://registry.npmjs.org"
+        }
+      }
+    },
+    "provider": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/provider.js",
+          "packageName": "@avalabs/avalanche-module",
+          "registry": "https://registry.npmjs.org"
+        }
+      }
+    }
+  },
+  "network": {
+    "chainIds": [
+      "avax:2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM",
+      "avaxfuji:2JVSBoinj9C2J33VntvzYtVJNZdN2NKiwwKjcumHUWEb5DbBrm",
+      "avax:11111111111111111111111111111111LpoYY",
+      "avaxfuji:11111111111111111111111111111111LpoYY"
+    ],
+    "namespaces": ["avax", "avaxfuji"]
+  },
+  "cointype": "60",
+  "permissions": {
+    "rpc": {
+      "dapps": true,
+      "methods": ["avalanche_sendTransaction", "avalanche_*"]
+    }
+  },
+  "manifestVersion": "0.0"
+}
