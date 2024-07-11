@@ -1,13 +1,11 @@
-import type { ProviderParams } from '../types';
-import { getProvider } from './get-provider';
+import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 
 export const getNonce = async ({
   from,
-  providerParams: { glacierApiKey, chainId, chainName, rpcUrl, multiContractAddress },
+  provider,
 }: {
   from: string;
-  providerParams: ProviderParams;
+  provider: JsonRpcBatchInternal;
 }): Promise<number> => {
-  const provider = getProvider({ glacierApiKey, chainId, chainName, rpcUrl, multiContractAddress });
   return provider.getTransactionCount(from);
 };

@@ -3,14 +3,16 @@ import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getClientForChain } from '../../utils/get-client-for-chain';
 import { RpcMethod, TokenType, type Hex, type ApprovalController } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
+import { getProvider } from '../../utils/get-provider';
+
+const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
 jest.mock('./schema');
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
-jest.mock('../../utils/get-client-for-chain');
+jest.mock('../../utils/get-provider');
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
@@ -23,16 +25,16 @@ const mockApprovalController: jest.Mocked<ApprovalController> = {
 const mockParseRequestParams = parseRequestParams as jest.MockedFunction<typeof parseRequestParams>;
 const mockEstimateGasLimit = estimateGasLimit as jest.MockedFunction<typeof estimateGasLimit>;
 const mockGetNonce = getNonce as jest.MockedFunction<typeof getNonce>;
-const mockGetClientForChain = getClientForChain as jest.MockedFunction<typeof getClientForChain>;
+const mockSend = jest.fn();
+const mockWaitForTransaction = jest.fn();
 
-const mockSendRawTransaction = jest.fn();
-const mockWaitForTransactionReceipt = jest.fn();
+const mockProvider = {
+  send: mockSend,
+  waitForTransaction: mockWaitForTransaction,
+};
 
 // @ts-expect-error missing properties
-mockGetClientForChain.mockReturnValue({
-  sendRawTransaction: mockSendRawTransaction,
-  waitForTransactionReceipt: mockWaitForTransactionReceipt,
-});
+mockGetProvider.mockReturnValue(mockProvider);
 
 const testChain = {
   isTestnet: false,
@@ -63,7 +65,6 @@ const testRequestParams = () => ({
   },
   chain: testChain,
   approvalController: mockApprovalController,
-  transactionValidation: false,
 });
 
 const displayData = {
@@ -95,14 +96,6 @@ const signingData = {
     data: '0xdata',
     value: '0xvalue',
   },
-};
-
-const providerParams = {
-  chainId: 'eip155:1',
-  chainName: 'chainName',
-  rpcUrl: 'rpcUrl',
-  multiContractAddress: 'multiContractAddress',
-  glacierApiKey: undefined,
 };
 
 const testTxHash = '0xtxhash';
@@ -143,8 +136,16 @@ describe('eth_sendTransaction handler', () => {
 
     await ethSendTransaction(requestParams);
 
+    expect(mockGetProvider).toHaveBeenCalledWith({
+      chainId: 'eip155:1',
+      chainName: 'chainName',
+      rpcUrl: 'rpcUrl',
+      multiContractAddress: 'multiContractAddress',
+      pollingInterval: 1000,
+    });
+
     expect(mockEstimateGasLimit).toHaveBeenCalledWith({
-      providerParams,
+      provider: mockProvider,
       transactionParams: { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' },
     });
 
@@ -165,8 +166,16 @@ describe('eth_sendTransaction handler', () => {
     const requestParams = testRequestParams();
     await ethSendTransaction(requestParams);
 
+    expect(mockGetProvider).toHaveBeenCalledWith({
+      chainId: 'eip155:1',
+      chainName: 'chainName',
+      rpcUrl: 'rpcUrl',
+      multiContractAddress: 'multiContractAddress',
+      pollingInterval: 1000,
+    });
+
     expect(mockGetNonce).toHaveBeenCalledWith({
-      providerParams,
+      provider: mockProvider,
       from: '0xfrom',
     });
 
@@ -188,13 +197,21 @@ describe('eth_sendTransaction handler', () => {
     const requestParams = testRequestParams();
     await ethSendTransaction(requestParams);
 
+    expect(mockGetProvider).toHaveBeenCalledWith({
+      chainId: 'eip155:1',
+      chainName: 'chainName',
+      rpcUrl: 'rpcUrl',
+      multiContractAddress: 'multiContractAddress',
+      pollingInterval: 1000,
+    });
+
     expect(mockGetNonce).toHaveBeenCalledWith({
-      providerParams,
+      provider: mockProvider,
       from: '0xfrom',
     });
 
     expect(mockEstimateGasLimit).toHaveBeenCalledWith({
-      providerParams,
+      provider: mockProvider,
       transactionParams: { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' },
     });
 
@@ -241,40 +258,64 @@ describe('eth_sendTransaction handler', () => {
       jest.clearAllMocks();
 
       mockApprovalController.requestApproval.mockResolvedValue({ result: testTxHash });
-      mockSendRawTransaction.mockResolvedValue(testTxHash);
+      mockSend.mockResolvedValue(testTxHash);
     });
 
     it('should broadcast the signed transaction and return transaction hash', async () => {
       const requestParams = testRequestParams();
       const response = await ethSendTransaction(requestParams);
 
-      expect(mockSendRawTransaction).toHaveBeenCalledWith({ serializedTransaction: testTxHash });
+      expect(mockGetProvider).toHaveBeenCalledWith({
+        chainId: 'eip155:1',
+        chainName: 'chainName',
+        rpcUrl: 'rpcUrl',
+        multiContractAddress: 'multiContractAddress',
+        pollingInterval: 1000,
+      });
+
+      expect(mockSend).toHaveBeenCalledWith('eth_sendRawTransaction', [testTxHash]);
 
       expect(response).toStrictEqual({ result: testTxHash });
     });
 
     it('should notify when transaction is confirmed', async () => {
-      mockWaitForTransactionReceipt.mockResolvedValue({ status: 'success' });
+      mockWaitForTransaction.mockResolvedValue({ status: 1 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransaction(requestParams);
 
+      expect(mockGetProvider).toHaveBeenCalledWith({
+        chainId: 'eip155:1',
+        chainName: 'chainName',
+        rpcUrl: 'rpcUrl',
+        multiContractAddress: 'multiContractAddress',
+        pollingInterval: 1000,
+      });
+
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockWaitForTransactionReceipt).toHaveBeenCalledWith({ hash: testTxHash, pollingInterval: 1_000 });
+      expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
       expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash);
     });
 
     it('should notify when transaction is reverted', async () => {
-      mockWaitForTransactionReceipt.mockResolvedValue({ status: 'reverted' });
+      mockWaitForTransaction.mockResolvedValue({ status: 0 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransaction(requestParams);
 
+      expect(mockGetProvider).toHaveBeenCalledWith({
+        chainId: 'eip155:1',
+        chainName: 'chainName',
+        rpcUrl: 'rpcUrl',
+        multiContractAddress: 'multiContractAddress',
+        pollingInterval: 1000,
+      });
+
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockWaitForTransactionReceipt).toHaveBeenCalledWith({ hash: testTxHash, pollingInterval: 1_000 });
+      expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
       expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash);
     });

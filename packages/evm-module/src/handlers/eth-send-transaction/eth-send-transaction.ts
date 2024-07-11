@@ -8,12 +8,11 @@ import {
   SigningDataType,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
-import type { ProviderParams } from '../../types';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getClientForChain } from '../../utils/get-client-for-chain';
-import type { PublicClient } from 'viem';
+import { getProvider } from '../../utils/get-provider';
+import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 
 export const ethSendTransaction = async ({
   request,
@@ -46,25 +45,26 @@ export const ethSendTransaction = async ({
     };
   }
 
-  const providerParams: ProviderParams = {
+  const provider = getProvider({
     glacierApiKey,
     chainId,
     chainName: chain.chainName ?? '',
     rpcUrl: chain.rpcUrl ?? '',
     multiContractAddress: chain.multiContractAddress,
-  };
+    pollingInterval: 1000,
+  });
 
   // calculate gas limit if not provided/invalid
   if (!transaction.gas || Number(transaction.gas) < 0) {
     try {
       const gasLimit = await estimateGasLimit({
-        providerParams,
         transactionParams: {
           from: transaction.from,
           to: transaction.to,
           data: transaction.data,
           value: transaction.value,
         },
+        provider,
       });
 
       transaction.gas = '0x' + gasLimit.toString(16);
@@ -80,7 +80,7 @@ export const ethSendTransaction = async ({
     try {
       const nonce = await getNonce({
         from: transaction.from,
-        providerParams,
+        provider,
       });
       transaction.nonce = String(nonce);
     } catch (error) {
@@ -138,11 +138,10 @@ export const ethSendTransaction = async ({
   }
 
   // broadcast the signed transaction
-  const client = getClientForChain({ chain });
-  const txHash = await client.sendRawTransaction({ serializedTransaction: response.result });
+  const txHash = await provider.send('eth_sendRawTransaction', [response.result]);
 
   waitForTransactionReceipt({
-    client,
+    provider,
     txHash,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
@@ -152,18 +151,19 @@ export const ethSendTransaction = async ({
 };
 
 const waitForTransactionReceipt = async ({
-  client,
+  provider,
   txHash,
   onTransactionConfirmed,
   onTransactionReverted,
 }: {
-  client: PublicClient;
+  provider: JsonRpcBatchInternal;
   txHash: Hex;
   onTransactionConfirmed: (txHash: Hex) => void;
   onTransactionReverted: (txHash: Hex) => void;
 }) => {
-  const receipt = await client.waitForTransactionReceipt({ hash: txHash, pollingInterval: 1_000 });
-  const success = receipt?.status === 'success';
+  const receipt = await provider.waitForTransaction(txHash);
+
+  const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
 
   if (success) {
     onTransactionConfirmed(txHash);
