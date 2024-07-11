@@ -1,30 +1,23 @@
-import type { GetNetworkFeeParams } from '@avalabs/vm-module-types';
+import type { Network } from '@avalabs/vm-module-types';
 import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
-import { Network } from 'ethers';
+import { Network as EVMNetwork } from 'ethers';
+import { getChainId } from './get-chainid';
 
-export const getProvider = ({
-  glacierApiKey,
-  chainId: caip2ChainId,
-  chainName,
-  rpcUrl,
-  multiContractAddress,
-}: GetNetworkFeeParams & {
-  glacierApiUrl: string;
-  glacierApiKey?: string;
-}): JsonRpcBatchInternal => {
-  if (!caip2ChainId || !chainName || !rpcUrl) {
-    throw new Error('Missing required parameters');
-  }
+// this key is only needed in development to bypass rate limit
+// it should never be used in production
+const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
-  const chainId = caip2ChainId.split(':')[1];
-  if (!chainId || isNaN(Number(chainId))) {
-    throw new Error('Invalid chainId');
-  }
+type Params = Pick<Network, 'chainId' | 'chainName' | 'rpcUrl' | 'multiContractAddress'>;
+
+export const getProvider = (params: Params): JsonRpcBatchInternal => {
+  const { chainId: caip2ChainId, chainName, rpcUrl, multiContractAddress } = params;
+
+  const chainId = getChainId(caip2ChainId);
 
   const provider = new JsonRpcBatchInternal(
     { maxCalls: 40, multiContractAddress },
-    addGlacierAPIKeyIfNeeded(rpcUrl, glacierApiKey),
-    new Network(chainName, Number(chainId)),
+    addGlacierAPIKeyIfNeeded(rpcUrl, GLACIER_API_KEY),
+    new EVMNetwork(chainName, Number(chainId)),
   );
 
   provider.pollingInterval = 2000;

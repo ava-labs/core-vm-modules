@@ -1,4 +1,5 @@
 import { object, string, boolean, z } from 'zod';
+import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 
 export enum TransactionType {
   BRIDGE = 'Bridge',
@@ -44,12 +45,26 @@ export enum RpcMethod {
   WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
 }
 
-export type RpcRequest = {
-  method: RpcMethod;
-  params: unknown;
+export type DappInfo = {
+  name: string;
+  url: string;
+  icon: string;
 };
 
-export type RpcResponse<R = unknown, E extends Error = Error> =
+export type RpcRequest = {
+  requestId: string;
+  sessionId: string;
+  method: RpcMethod;
+  chainId: Caip2ChainId;
+  params: unknown;
+  dappInfo: DappInfo;
+};
+
+export type RpcError =
+  | JsonRpcError<OptionalDataWithOptionalCause>
+  | EthereumProviderError<OptionalDataWithOptionalCause>;
+
+export type RpcResponse<R = unknown, E extends RpcError = JsonRpcError<OptionalDataWithOptionalCause>> =
   | {
       result: R;
     }
@@ -57,35 +72,32 @@ export type RpcResponse<R = unknown, E extends Error = Error> =
       error: E;
     };
 
-export type Chain = {
-  isTestnet?: boolean;
-  chainId?: string;
-  chainName?: string;
-  rpcUrl?: string;
+export type Network = {
+  chainId: Caip2ChainId;
+  chainName: string;
+  rpcUrl: string;
+  networkToken: NetworkToken;
   multiContractAddress?: string;
+  logoUrl?: string;
+  isTestnet?: boolean;
+  explorerUrl?: string;
 };
-
-export type GetNetworkFeeParams = Chain;
 
 export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: () => Promise<string>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
-  getNetworkFee: (params: GetNetworkFeeParams) => Promise<NetworkFees>;
+  getNetworkFee: (network: Network) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
-  getTokens: (chainId: number) => Promise<NetworkContractToken[]>;
-  onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
+  getTokens: (network: Network) => Promise<NetworkContractToken[]>;
+  onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
 }
 
 export type GetTransactionHistory = {
-  chainId: number;
-  isTestnet: boolean;
-  networkToken: NetworkToken;
-  explorerUrl: string;
+  network: Network;
   address: string;
   nextPageToken?: string;
   offset?: number;
-  glacierApiUrl?: string;
 };
 
 export type TransactionHistoryResponse = {
@@ -203,3 +215,12 @@ export type Manifest = z.infer<typeof manifestSchema>;
 export const parseManifest = (params: unknown): z.SafeParseReturnType<unknown, Manifest> => {
   return manifestSchema.safeParse(params);
 };
+
+export type Caip2ChainId = string;
+
+export type Hex = `0x${string}`;
+
+export enum Environment {
+  PRODUCTION = 'production',
+  DEV = 'dev',
+}

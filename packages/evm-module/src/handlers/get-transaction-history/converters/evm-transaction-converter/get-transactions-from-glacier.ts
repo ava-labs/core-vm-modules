@@ -1,5 +1,6 @@
-import type { GetTransactionHistory, TransactionHistoryResponse } from '@avalabs/vm-module-types';
+import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { Glacier } from '@avalabs/glacier-sdk';
+import { rpcErrors } from '@metamask/rpc-errors';
 import { convertTransaction } from './convert-transaction';
 
 export const getTransactionsFromGlacier = async ({
@@ -10,9 +11,17 @@ export const getTransactionsFromGlacier = async ({
   nextPageToken,
   offset,
   glacierApiUrl,
-}: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
+}: {
+  chainId: number;
+  explorerUrl: string;
+  networkToken: NetworkToken;
+  address: string;
+  nextPageToken?: string;
+  offset?: number;
+  glacierApiUrl: string;
+}): Promise<TransactionHistoryResponse> => {
   if (!glacierApiUrl) {
-    throw new Error('Glacier API URL is required');
+    throw rpcErrors.invalidParams('Glacier API URL is required');
   }
 
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });

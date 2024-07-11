@@ -1,5 +1,6 @@
-import type { GetNetworkFeeParams, NetworkFees } from '@avalabs/vm-module-types';
+import type { NetworkFees, Caip2ChainId } from '@avalabs/vm-module-types';
 import { getProvider } from '../../utils/get-provider';
+import { rpcErrors } from '@metamask/rpc-errors';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,
@@ -11,33 +12,30 @@ const BASE_PRIORITY_FEE_WEI = 500000000n; //0.5 GWei
 
 /**
  * Returns {@link NetworkFees} based on {@link DEFAULT_PRESETS} multipliers.
- * @param glacierApiUrl
- * @param glacierApiKey
- * @params GetNetworkFeeParams
  * @throws Error if provider does not support eip-1559
  */
 export async function getNetworkFee({
-  glacierApiUrl,
-  glacierApiKey,
   chainId,
   chainName,
   rpcUrl,
   multiContractAddress,
-}: GetNetworkFeeParams & {
+}: {
+  chainId: Caip2ChainId;
+  chainName: string;
+  rpcUrl: string;
   glacierApiUrl: string;
-  glacierApiKey?: string;
+  multiContractAddress?: string;
 }): Promise<NetworkFees> {
   const provider = getProvider({
-    glacierApiUrl,
-    glacierApiKey,
     chainId,
     chainName,
     rpcUrl,
     multiContractAddress,
   });
+
   const { maxFeePerGas: maxFeePerGasInWei } = await provider.getFeeData();
   if (!maxFeePerGasInWei) {
-    throw new Error('Pre-EIP-1559 networks are not supported');
+    throw rpcErrors.internal('Pre-EIP-1559 networks are not supported');
   }
 
   const lowMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.LOW;
