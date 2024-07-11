@@ -38,6 +38,7 @@ describe('get-network-fee', () => {
         maxFeePerGas: 4000000000n,
         maxPriorityFeePerGas: 3000000000n,
       },
+      isFixedFee: false,
     });
   });
 });

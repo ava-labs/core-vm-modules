@@ -25,10 +25,11 @@ export enum TokenType {
 }
 
 export type NetworkFees = {
-  low: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
-  medium: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
-  high: { maxPriorityFeePerGas: bigint; maxFeePerGas: bigint };
+  low: { maxFeePerGas: bigint; maxPriorityFeePerGas?: bigint };
+  medium: { maxFeePerGas: bigint; maxPriorityFeePerGas?: bigint };
+  high: { maxFeePerGas: bigint; maxPriorityFeePerGas?: bigint };
   baseFee: bigint;
+  isFixedFee: boolean;
 };
 
 export enum RpcMethod {
