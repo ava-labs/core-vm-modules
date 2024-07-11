@@ -56,6 +56,7 @@ export type RpcRequest = {
   chainId: Caip2ChainId;
   params: unknown;
   dappInfo: DappInfo;
+  context?: Record<string, unknown>; // for storing additional context information that's only relevant to the consumer
 };
 
 export type RpcError =
