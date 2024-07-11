@@ -1,6 +1,6 @@
 import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
 import { isEthereumChainId } from './utils/is-ethereum-chain-id';
-import type { GetTransactionHistory, TransactionHistoryResponse } from '@avalabs/vm-module-types';
+import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
 
 export const getTransactionHistory = async ({
@@ -12,7 +12,16 @@ export const getTransactionHistory = async ({
   nextPageToken,
   offset,
   glacierApiUrl,
-}: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
+}: {
+  chainId: number;
+  isTestnet?: boolean;
+  networkToken: NetworkToken;
+  explorerUrl: string;
+  address: string;
+  nextPageToken?: string;
+  offset?: number;
+  glacierApiUrl: string;
+}): Promise<TransactionHistoryResponse> => {
   if (isEthereumChainId(chainId)) {
     return getTransactionFromEtherscan({
       isTestnet,
@@ -25,7 +34,6 @@ export const getTransactionHistory = async ({
     });
   }
   return getTransactionsFromGlacier({
-    isTestnet,
     networkToken,
     explorerUrl,
     chainId,

@@ -1,4 +1,5 @@
 import type { NetworkContractToken } from '@avalabs/vm-module-types';
+import { rpcErrors } from '@metamask/rpc-errors';
 
 export async function getTokens({
   chainId,
@@ -10,7 +11,7 @@ export async function getTokens({
   const response = await fetch(`${proxyApiUrl}/tokens?evmChainId=${chainId}`);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch tokens for chainId ${chainId}`);
+    throw rpcErrors.internal(`Failed to fetch tokens for chainId ${chainId}`);
   }
 
   return response.json();

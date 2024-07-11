@@ -21,5 +21,12 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-var-requires': 'off',
+    'no-console': ['error', { allow: ['error'] }],
+    'turbo/no-undeclared-env-vars': [
+      'error',
+      {
+        allowList: ['GLACIER_API_KEY'],
+      },
+    ],
   },
 };

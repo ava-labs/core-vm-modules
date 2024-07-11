@@ -16,6 +16,7 @@ export function run() {
     // replace all non-alphanumeric characters with a dash
     const sanitizedBranchName = rawBranchName.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '-');
 
+    // eslint-disable-next-line no-console
     console.info(
       colors.whiteBright('The subject of your canary deploy will be: '),
       colors.blueBright(sanitizedBranchName),

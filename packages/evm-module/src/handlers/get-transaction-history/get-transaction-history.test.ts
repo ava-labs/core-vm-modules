@@ -13,6 +13,7 @@ jest.mock('./converters/etherscan-transaction-converter/get-transaction-from-eth
 describe('get-transaction-history', () => {
   it('should have called getTransactionFromEtherscan', async () => {
     await getTransactionHistory({
+      glacierApiUrl: 'glacierApiUrl',
       chainId: 1,
       isTestnet: false,
       networkToken: {
@@ -31,6 +32,7 @@ describe('get-transaction-history', () => {
   });
   it('should have called getTransactionsFromGlacier', async () => {
     await getTransactionHistory({
+      glacierApiUrl: 'glacierApiUrl',
       chainId: 41334,
       isTestnet: false,
       networkToken: {

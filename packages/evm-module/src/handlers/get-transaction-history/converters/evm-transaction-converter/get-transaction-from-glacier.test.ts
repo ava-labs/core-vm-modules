@@ -46,7 +46,6 @@ describe('get-transactions-from-glacier', () => {
   it('should have returned error with missing glacier api url', async () => {
     try {
       await getTransactionsFromGlacier({
-        isTestnet: false,
         networkToken: {
           name: 'networkToken',
           symbol: 'networkToken',
@@ -59,6 +58,7 @@ describe('get-transactions-from-glacier', () => {
         address: 'address',
         nextPageToken: 'nextPageToken',
         offset: 1,
+        glacierApiUrl: 'glacierApiUrl',
       });
     } catch (error) {
       expect(error).toEqual(new Error('Glacier API URL is required'));
@@ -67,7 +67,6 @@ describe('get-transactions-from-glacier', () => {
   it('should have returned empty response when listTransaction failed', async () => {
     mockListTransactions.mockRejectedValue(new Error('failed to list transactions'));
     const result = await getTransactionsFromGlacier({
-      isTestnet: false,
       networkToken: {
         name: 'networkToken',
         symbol: 'networkToken',
@@ -101,7 +100,6 @@ describe('get-transactions-from-glacier', () => {
       ],
     });
     const result = await getTransactionsFromGlacier({
-      isTestnet: false,
       networkToken: {
         name: 'networkToken',
         symbol: 'networkToken',
@@ -135,7 +133,6 @@ describe('get-transactions-from-glacier', () => {
       ],
     });
     const result = await getTransactionsFromGlacier({
-      isTestnet: false,
       networkToken: {
         name: 'networkToken',
         symbol: 'networkToken',
@@ -159,7 +156,6 @@ describe('get-transactions-from-glacier', () => {
   it('should have returned response', async () => {
     mockListTransactions.mockResolvedValue(mockListTransactionDetailsResponse);
     const result = await getTransactionsFromGlacier({
-      isTestnet: false,
       networkToken: {
         name: 'networkToken',
         symbol: 'networkToken',
