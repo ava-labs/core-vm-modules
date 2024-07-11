@@ -6,7 +6,9 @@
       "outputs": ["dist/**"],
       "dependsOn": ["^build"]
     },
-    "test": {},
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "test:watch": {
       "cache": false
     },
