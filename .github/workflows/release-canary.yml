@@ -35,9 +35,8 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
-      # This will run all build, test, and lint scripts in parallel,
-      # outlined in the turbo.json file
-      - name: Build, Test, & Lint
+      # This will run all build, test, and lint scripts in parallel
+      - name: Build, Test, & Lint all packages
         run: pnpm ci
 
       - name: Setup Local Github Actions
