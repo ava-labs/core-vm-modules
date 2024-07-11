@@ -1,5 +1,5 @@
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
-import { TokenService } from './token-service';
+import { TokenService } from '../utils/token-service/token-service';
 
 const MOCK_DATA = { ethereum: { usd: { change24: 1, marketCap: 1, price: 1, vol24: 1 } } };
 

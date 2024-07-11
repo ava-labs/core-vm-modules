@@ -1,4 +1,4 @@
-import { retry } from './retry';
+import { retry } from '../utils/retry';
 
 describe('success case', () => {
   it('should last 1 second when succeeds on 2nd try', async () => {

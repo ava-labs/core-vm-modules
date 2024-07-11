@@ -1,1 +1,1 @@
-export { TokenService } from './token-service/token-service';
+export { TokenService } from './utils/token-service/token-service';

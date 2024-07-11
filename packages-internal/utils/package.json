@@ -1,9 +1,12 @@
 {
   "name": "@internal/utils",
   "version": "0.0.1",
-  "main": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "type": "module",
   "scripts": {
+    "build": "tsup",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest",
     "test:watch": "jest --watch"
@@ -16,6 +19,8 @@
     "@avalabs/vm-module-types": "0.0.11"
   },
   "devDependencies": {
+    "tsup": "7.2.0",
+    "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "eslint-config-custom": "workspace:*",
     "@types/jest": "29.5.7",

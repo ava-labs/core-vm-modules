@@ -5,8 +5,6 @@ import {
   simpleTokenPrice,
   type SimplePriceParams,
 } from '@avalabs/coingecko-sdk';
-import { coingeckoRetry } from '../utils/coingecko-retry';
-import { arrayHash } from '../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
 import type {
   Storage,
@@ -14,6 +12,8 @@ import type {
   Error as CoingeckoError,
   SimplePriceResponse,
 } from '@avalabs/vm-module-types';
+import { arrayHash } from '../array-hash';
+import { coingeckoRetry } from '../coingecko-retry';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
