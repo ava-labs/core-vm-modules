@@ -91,7 +91,7 @@ export interface Module {
   getNetworkFee: (network: Network) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
   getTokens: (network: Network) => Promise<NetworkContractToken[]>;
-  onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
+  onRpcRequest: (request: RpcRequest, network: Network) => Promise<RpcResponse>;
 }
 
 export type GetTransactionHistory = {
@@ -228,8 +228,8 @@ export enum Environment {
 
 export type DisplayData = {
   title: string;
-  chain: {
-    chainId: Caip2ChainId;
+  network: {
+    chainId: number;
     name: string;
     logoUrl?: string;
   };
@@ -268,13 +268,13 @@ export type SigningData =
   | {
       type: SigningDataType.EVM_TRANSACTION;
       account: string;
-      chainId: Caip2ChainId;
+      chainId: number;
       data: TransactionRequest;
     }
   | {
       type: SigningDataType.EVM_MESSAGE_ETH_SIGN;
       account: string;
-      chainId: Caip2ChainId;
+      chainId: number;
       data: string;
     };
 

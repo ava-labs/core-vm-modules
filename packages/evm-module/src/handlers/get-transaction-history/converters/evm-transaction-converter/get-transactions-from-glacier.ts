@@ -2,7 +2,6 @@ import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-modul
 import { Glacier } from '@avalabs/glacier-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { convertTransaction } from './convert-transaction';
-import { rpcErrors } from '@metamask/rpc-errors';
 
 export const getTransactionsFromGlacier = async ({
   chainId,

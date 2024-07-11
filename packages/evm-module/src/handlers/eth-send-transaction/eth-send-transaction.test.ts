@@ -3,7 +3,7 @@ import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { RpcMethod, TokenType, type Hex, type ApprovalController } from '@avalabs/vm-module-types';
+import { RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 
@@ -35,20 +35,19 @@ const mockProvider = {
 
 // @ts-expect-error missing properties
 mockGetProvider.mockReturnValue(mockProvider);
-
-const testChain = {
+const testNetwork: Network = {
   isTestnet: false,
-  chainId: 'eip155:1',
+  chainId: 1,
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
   logoUrl: 'logoUrl',
-  multiContractAddress: 'multiContractAddress' as Hex,
+  utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
-    type: TokenType.NATIVE,
-    address: 'address' as Hex,
     name: 'Ethereum',
     symbol: 'ETH',
     decimals: 9,
+    description: 'Ethereum Token',
+    logoUri: 'some logo uri',
   },
 };
 
@@ -63,16 +62,16 @@ const testRequestParams = () => ({
     dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
     params: [testParams],
   },
-  chain: testChain,
+  network: testNetwork,
   approvalController: mockApprovalController,
 });
 
 const displayData = {
   title: 'Approve Transaction',
-  chain: {
-    chainId: testChain.chainId,
-    name: testChain.chainName,
-    logoUrl: testChain.logoUrl,
+  network: {
+    chainId: testNetwork.chainId,
+    name: testNetwork.chainName,
+    logoUrl: testNetwork.logoUrl,
   },
   transactionDetails: {
     website: 'example.com',
@@ -86,7 +85,7 @@ const displayData = {
 const signingData = {
   type: 'evm_transaction',
   account: '0xfrom',
-  chainId: 'eip155:1',
+  chainId: 1,
   data: {
     type: 2,
     nonce: 12,
@@ -137,7 +136,7 @@ describe('eth_sendTransaction handler', () => {
     await ethSendTransaction(requestParams);
 
     expect(mockGetProvider).toHaveBeenCalledWith({
-      chainId: 'eip155:1',
+      chainId: 1,
       chainName: 'chainName',
       rpcUrl: 'rpcUrl',
       multiContractAddress: 'multiContractAddress',
@@ -167,7 +166,7 @@ describe('eth_sendTransaction handler', () => {
     await ethSendTransaction(requestParams);
 
     expect(mockGetProvider).toHaveBeenCalledWith({
-      chainId: 'eip155:1',
+      chainId: 1,
       chainName: 'chainName',
       rpcUrl: 'rpcUrl',
       multiContractAddress: 'multiContractAddress',
@@ -198,7 +197,7 @@ describe('eth_sendTransaction handler', () => {
     await ethSendTransaction(requestParams);
 
     expect(mockGetProvider).toHaveBeenCalledWith({
-      chainId: 'eip155:1',
+      chainId: 1,
       chainName: 'chainName',
       rpcUrl: 'rpcUrl',
       multiContractAddress: 'multiContractAddress',
@@ -266,7 +265,7 @@ describe('eth_sendTransaction handler', () => {
       const response = await ethSendTransaction(requestParams);
 
       expect(mockGetProvider).toHaveBeenCalledWith({
-        chainId: 'eip155:1',
+        chainId: 1,
         chainName: 'chainName',
         rpcUrl: 'rpcUrl',
         multiContractAddress: 'multiContractAddress',
@@ -285,7 +284,7 @@ describe('eth_sendTransaction handler', () => {
       const response = await ethSendTransaction(requestParams);
 
       expect(mockGetProvider).toHaveBeenCalledWith({
-        chainId: 'eip155:1',
+        chainId: 1,
         chainName: 'chainName',
         rpcUrl: 'rpcUrl',
         multiContractAddress: 'multiContractAddress',
@@ -306,7 +305,7 @@ describe('eth_sendTransaction handler', () => {
       const response = await ethSendTransaction(requestParams);
 
       expect(mockGetProvider).toHaveBeenCalledWith({
-        chainId: 'eip155:1',
+        chainId: 1,
         chainName: 'chainName',
         rpcUrl: 'rpcUrl',
         multiContractAddress: 'multiContractAddress',

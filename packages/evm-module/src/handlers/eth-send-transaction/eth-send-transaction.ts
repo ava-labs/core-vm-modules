@@ -1,5 +1,5 @@
 import {
-  type Chain,
+  type Network,
   type Hex,
   type RpcRequest,
   type ApprovalController,
@@ -16,16 +16,14 @@ import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 
 export const ethSendTransaction = async ({
   request,
-  chain,
+  network,
   approvalController,
-  glacierApiKey,
 }: {
   request: RpcRequest;
-  chain: Chain;
+  network: Network;
   approvalController: ApprovalController;
-  glacierApiKey?: string;
 }) => {
-  const { chainId, dappInfo, params } = request;
+  const { dappInfo, params } = request;
 
   // validate params
   const result = parseRequestParams(params);
@@ -46,11 +44,10 @@ export const ethSendTransaction = async ({
   }
 
   const provider = getProvider({
-    glacierApiKey,
-    chainId,
-    chainName: chain.chainName ?? '',
-    rpcUrl: chain.rpcUrl ?? '',
-    multiContractAddress: chain.multiContractAddress,
+    chainId: network.chainId,
+    chainName: network.chainName,
+    rpcUrl: network.rpcUrl,
+    multiContractAddress: network.utilityAddresses?.multicall,
     pollingInterval: 1000,
   });
 
@@ -98,10 +95,10 @@ export const ethSendTransaction = async ({
   // https://ava-labs.atlassian.net/browse/CP-8870
   const displayData: DisplayData = {
     title: 'Approve Transaction',
-    chain: {
-      chainId: chain.chainId,
-      name: chain.chainName,
-      logoUrl: chain.logoUrl,
+    network: {
+      chainId: network.chainId,
+      name: network.chainName,
+      logoUrl: network.logoUrl,
     },
     transactionDetails: {
       website: new URL(dappInfo.url).hostname,
@@ -115,7 +112,7 @@ export const ethSendTransaction = async ({
   const signingData: SigningData = {
     type: SigningDataType.EVM_TRANSACTION,
     account: transaction.from,
-    chainId,
+    chainId: network.chainId,
     data: {
       type: 2, // hardcoding to 2 for now as we only support EIP-1559
       nonce: Number(transaction.nonce),
