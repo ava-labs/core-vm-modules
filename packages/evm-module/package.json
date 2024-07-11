@@ -12,6 +12,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@tamagui/config": "1.102.1",
+    "tamagui": "1.102.1",
     "@avalabs/utils-sdk": "v2.8.0-alpha.187",
     "@avalabs/chains-sdk": "v2.8.0-alpha.187",
     "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
@@ -23,6 +27,8 @@
     "@metamask/rpc-errors": "6.3.0"
   },
   "devDependencies": {
+    "@types/react": "18.2.6",
+    "@types/react-dom": "18.2.21",
     "@types/bn.js": "5.1.5",
     "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",
