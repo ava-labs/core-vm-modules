@@ -1,4 +1,5 @@
 import { object, string, boolean, z } from 'zod';
+import type { TransactionRequest } from 'ethers';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 
 export enum TransactionType {
@@ -222,4 +223,76 @@ export type Hex = `0x${string}`;
 export enum Environment {
   PRODUCTION = 'production',
   DEV = 'dev',
+}
+
+export type DisplayData = {
+  title: string;
+  chain: {
+    chainId: Caip2ChainId;
+    name: string;
+    logoUrl?: string;
+  };
+  messageDetails?: string;
+  transactionDetails?: {
+    website: string;
+    from: string;
+    to: string;
+    data?: string;
+  };
+  networkFeeSelector?: boolean;
+};
+
+/**
+ * Enum for different types of signing data.
+ */
+export enum SigningDataType {
+  // EVM signing data types
+  EVM_TRANSACTION = 'evm_transaction',
+  EVM_MESSAGE_ETH_SIGN = 'evm_message_eth_sign',
+  EVM_MESSAGE_PERSONAL_SIGN = 'evm_message_personal_sign',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA = 'evm_message_eth_sign_typed_data',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V1 = 'evm_message_eth_sign_typed_data_v1',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V3 = 'evm_message_eth_sign_typed_data_v3',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V4 = 'evm_message_eth_sign_typed_data_v4',
+
+  // Avalanche signing data types
+  AVALANCHE_TRANSACTION = 'avalanche_transaction',
+  AVALANCHE_MESSAGE = 'avalanche_message',
+
+  // Bitcoin signing data types
+  BTC_TRANSACTION = 'btc_transaction',
+}
+
+export type SigningData =
+  | {
+      type: SigningDataType.EVM_TRANSACTION;
+      account: string;
+      chainId: Caip2ChainId;
+      data: TransactionRequest;
+    }
+  | {
+      type: SigningDataType.EVM_MESSAGE_ETH_SIGN;
+      account: string;
+      chainId: Caip2ChainId;
+      data: string;
+    };
+
+export type ApprovalParams = {
+  request: RpcRequest;
+  displayData: DisplayData;
+  signingData: SigningData;
+};
+
+export type ApprovalResponse =
+  | {
+      result: Hex;
+    }
+  | {
+      error: RpcError;
+    };
+
+export interface ApprovalController {
+  requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
+  onTransactionConfirmed: (txHash: Hex) => void;
+  onTransactionReverted: (txHash: Hex) => void;
 }

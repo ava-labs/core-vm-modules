@@ -4,8 +4,7 @@ import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getClientForChain } from '../../utils/get-client-for-chain';
-import { RpcMethod, TokenType, type Hex } from '@avalabs/vm-module-types';
-import type { ApprovalController } from '../../types';
+import { RpcMethod, TokenType, type Hex, type ApprovalController } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 
 jest.mock('./schema');
@@ -81,15 +80,12 @@ const displayData = {
     data: '0xdata',
   },
   networkFeeSelector: true,
-  transactionSimulation: undefined,
-  transactionValidation: undefined,
 };
 
 const signingData = {
-  type: 'transaction',
+  type: 'evm_transaction',
   account: '0xfrom',
   chainId: 'eip155:1',
-  derivationPath: 'bip44',
   data: {
     type: 2,
     nonce: 12,

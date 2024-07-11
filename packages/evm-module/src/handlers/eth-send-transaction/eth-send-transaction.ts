@@ -1,12 +1,19 @@
-import type { Chain, Hex, RpcRequest } from '@avalabs/vm-module-types';
+import {
+  type Chain,
+  type Hex,
+  type RpcRequest,
+  type ApprovalController,
+  type DisplayData,
+  type SigningData,
+  SigningDataType,
+} from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
-import type { ApprovalController, DisplayData, ProviderParams, SigningData } from '../../types';
+import type { ProviderParams } from '../../types';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getClientForChain } from '../../utils/get-client-for-chain';
 import type { PublicClient } from 'viem';
-import { DerivationPath } from '@avalabs/wallets-sdk';
 
 export const ethSendTransaction = async ({
   request,
@@ -86,7 +93,6 @@ export const ethSendTransaction = async ({
 
   // TODO: validate + simulate transaction
   // https://ava-labs.atlassian.net/browse/CP-8870
-  let transactionValidationResult, transactionSimulationResult;
 
   // generate display and signing data
   // TODO adjust title for different transaction types
@@ -105,20 +111,14 @@ export const ethSendTransaction = async ({
       data: transaction.data,
     },
     networkFeeSelector: true,
-    transactionValidation: transactionValidationResult,
-    transactionSimulation: transactionSimulationResult,
   };
 
-  // hardcoding to 2 for now as we only support EIP-1559
-  const typeToSign = 2;
-
   const signingData: SigningData = {
-    type: 'transaction',
+    type: SigningDataType.EVM_TRANSACTION,
     account: transaction.from,
     chainId,
-    derivationPath: DerivationPath.BIP44,
     data: {
-      type: typeToSign,
+      type: 2, // hardcoding to 2 for now as we only support EIP-1559
       nonce: Number(transaction.nonce),
       gasLimit: Number(transaction.gas),
       to: transaction.to,
