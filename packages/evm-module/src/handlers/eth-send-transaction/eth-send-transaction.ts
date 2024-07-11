@@ -24,7 +24,6 @@ export const ethSendTransaction = async ({
   request: RpcRequest;
   chain: Chain;
   approvalController: ApprovalController;
-  transactionValidation: boolean;
   glacierApiKey?: string;
 }) => {
   const { chainId, dappInfo, params } = request;
