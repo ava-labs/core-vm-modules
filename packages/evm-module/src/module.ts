@@ -14,7 +14,6 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import ManifestJson from './manifest.json';
 import { getEnv } from './env';
-import { getChainId } from './utils/get-chainid';
 
 export class EvmModule implements Module {
   #glacierApiUrl: string;
@@ -40,20 +39,19 @@ export class EvmModule implements Module {
   }
 
   getNetworkFee(network: Network): Promise<NetworkFees> {
-    const { chainId, chainName, rpcUrl, multiContractAddress } = network;
+    const { chainId, chainName, rpcUrl, utilityAddresses } = network;
     return getNetworkFee({
       chainId,
       chainName,
       rpcUrl,
-      multiContractAddress,
+      multiContractAddress: utilityAddresses?.multicall,
       glacierApiUrl: this.#glacierApiUrl,
     });
   }
 
   getTransactionHistory(params: GetTransactionHistory) {
     const { network, address, nextPageToken, offset } = params;
-    const { chainId: caip2ChainId, isTestnet, networkToken, explorerUrl = '' } = network;
-    const chainId = getChainId(caip2ChainId);
+    const { chainId, isTestnet, networkToken, explorerUrl = '' } = network;
 
     return getTransactionHistory({
       chainId,
@@ -68,8 +66,7 @@ export class EvmModule implements Module {
   }
 
   getTokens(network: Network) {
-    const { chainId: caip2ChainId } = network;
-    const chainId = getChainId(caip2ChainId);
+    const { chainId } = network;
     return getTokens({ chainId, proxyApiUrl: this.#proxyApiUrl });
   }
 

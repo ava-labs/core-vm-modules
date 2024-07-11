@@ -1,4 +1,4 @@
-import type { NetworkFees, Caip2ChainId } from '@avalabs/vm-module-types';
+import type { NetworkFees } from '@avalabs/vm-module-types';
 import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 
@@ -20,7 +20,7 @@ export async function getNetworkFee({
   rpcUrl,
   multiContractAddress,
 }: {
-  chainId: Caip2ChainId;
+  chainId: number;
   chainName: string;
   rpcUrl: string;
   glacierApiUrl: string;

@@ -73,11 +73,13 @@ export type RpcResponse<R = unknown, E extends RpcError = JsonRpcError<OptionalD
     };
 
 export type Network = {
-  chainId: Caip2ChainId;
+  chainId: number;
   chainName: string;
   rpcUrl: string;
   networkToken: NetworkToken;
-  multiContractAddress?: string;
+  utilityAddresses?: {
+    multicall: string;
+  };
   logoUrl?: string;
   isTestnet?: boolean;
   explorerUrl?: string;
