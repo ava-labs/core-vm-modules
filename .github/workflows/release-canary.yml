@@ -35,16 +35,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm i
 
-      # This will build the vm-module-types package, which
-      # is later internally referenced by other packages
-      # (needs to be built before CI for other packages runs)
-      - name: Build, Test & Lint the "types" package
-        run: pnpm ci --filter=@avalabs/vm-module-types
-
-      # This will run all build, test, and lint scripts in parallel,
-      # outlined in the turbo.json file, for all remaining packages
-      - name: Build, Test, & Lint the remaining packages
-        run: pnpm ci --filter=!@avalabs/vm-module-types
+      # This will run all build, test, and lint scripts in parallel
+      - name: Build, Test, & Lint all packages
+        run: pnpm ci
 
       - name: Setup Local Github Actions
         run: pnpm run build --filter=github-actions --force
