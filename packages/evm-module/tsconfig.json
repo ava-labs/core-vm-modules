@@ -2,7 +2,8 @@
   "extends": "@internal/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "incremental": false // Need to turn off because of tsup dts
+    "incremental": false, // Need to turn off because of tsup dts
+    "jsx": "react"
   },
   "include": ["src"]
 }
