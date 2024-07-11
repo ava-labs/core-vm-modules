@@ -60,7 +60,7 @@ export const getErc20Balances = async ({
       const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
 
-      const balanceInCurrency = bnToBig(token.balance, token.decimals).muln(priceInCurrency).toNumber();
+      const balanceInCurrency = bnToBig(token.balance, token.decimals).mul(priceInCurrency).toNumber();
       const balanceDisplayValue = balanceToDisplayValue(token.balance, token.decimals);
       const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
 
