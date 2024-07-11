@@ -38,7 +38,6 @@ pnpm build    # builds all packages
 - `github-actions`: custom github actions
 - `utils`: utils for all vm-module packages
 
-
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 ### Useful commands

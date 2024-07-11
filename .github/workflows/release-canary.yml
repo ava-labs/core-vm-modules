@@ -39,7 +39,7 @@ jobs:
 
       # This will run all build, test, and lint scripts in parallel
       - name: Build, Test, & Lint all packages
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Setup Local Github Actions
         run: pnpm run build --filter=github-actions --force

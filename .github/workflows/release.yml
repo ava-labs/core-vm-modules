@@ -37,7 +37,7 @@ jobs:
 
       # This will run all build, test, and lint scripts in parallel for all packages
       - name: Build, Test, & Lint all packages
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
