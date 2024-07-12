@@ -64,12 +64,19 @@ jobs:
         if: env.CURRENT_BRANCH == 'changeset-release/main'
         run: git reset --soft $(git merge-base main changeset-release/main)
 
-      - name: Commit and sign via api
+      - name: Get all changed files
         if: env.CURRENT_BRANCH == 'changeset-release/main'
-        uses: planetscale/ghcommit-action@v0.1.6
-        with:
-          commit_message: 'chore: changeset release'
-          repo: ${{ github.repository }}
-          branch: changeset-release/main
+        run: |
+          changed_files=$(git diff --name-only --cached)
+          echo "changed_files=$changed_files" >> $GITHUB_ENV
+
+      - name: Do a verified commit via api
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        uses: swinton/commit@v2.x
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            ${{ env.changed_files }}
+          commit-message: 'chore: changeset release'
+          ref: refs/heads/changeset-release/main
