@@ -6,23 +6,33 @@ import type {
   RpcRequest,
   Environment,
   Network,
+  ApprovalController,
 } from '@avalabs/vm-module-types';
-import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import ManifestJson from './manifest.json';
 import { getEnv } from './env';
+import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 
 export class EvmModule implements Module {
   #glacierApiUrl: string;
   #proxyApiUrl: string;
+  #approvalController: ApprovalController;
 
-  constructor({ environment }: { environment: Environment }) {
+  constructor({
+    approvalController,
+    environment,
+  }: {
+    approvalController: ApprovalController;
+    environment: Environment;
+  }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierApiUrl = glacierApiUrl;
     this.#proxyApiUrl = proxyApiUrl;
+    this.#approvalController = approvalController;
   }
 
   getAddress(): Promise<string> {
@@ -70,8 +80,14 @@ export class EvmModule implements Module {
     return getTokens({ chainId, proxyApiUrl: this.#proxyApiUrl });
   }
 
-  async onRpcRequest(request: RpcRequest, _network: Network) {
+  async onRpcRequest(request: RpcRequest, network: Network) {
     switch (request.method) {
+      case RpcMethod.ETH_SEND_TRANSACTION:
+        return ethSendTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+        });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }

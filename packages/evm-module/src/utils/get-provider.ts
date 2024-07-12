@@ -1,4 +1,3 @@
-import type { Network } from '@avalabs/vm-module-types';
 import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 import { Network as EVMNetwork } from 'ethers';
 
@@ -6,10 +5,16 @@ import { Network as EVMNetwork } from 'ethers';
 // it should never be used in production
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
-type Params = Pick<Network, 'chainId' | 'chainName' | 'rpcUrl'> & { multiContractAddress?: string };
+type ProviderParams = {
+  chainId: number;
+  chainName: string;
+  rpcUrl: string;
+  multiContractAddress?: string;
+  pollingInterval?: number;
+};
 
-export const getProvider = (params: Params): JsonRpcBatchInternal => {
-  const { chainId, chainName, rpcUrl, multiContractAddress } = params;
+export const getProvider = (params: ProviderParams): JsonRpcBatchInternal => {
+  const { chainId, chainName, rpcUrl, multiContractAddress, pollingInterval = 2000 } = params;
 
   const provider = new JsonRpcBatchInternal(
     { maxCalls: 40, multiContractAddress },
@@ -17,7 +22,7 @@ export const getProvider = (params: Params): JsonRpcBatchInternal => {
     new EVMNetwork(chainName, chainId),
   );
 
-  provider.pollingInterval = 2000;
+  provider.pollingInterval = pollingInterval;
 
   return provider;
 };
