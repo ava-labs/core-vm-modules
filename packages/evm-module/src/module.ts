@@ -13,7 +13,7 @@ import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
-import ManifestJson from './manifest.json';
+import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 
