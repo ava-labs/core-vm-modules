@@ -13,7 +13,13 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.0.12",
-    "@metamask/rpc-errors": "6.3.0"
+    "@metamask/rpc-errors": "6.3.0",
+    "@avalabs/utils-sdk": "v2.8.0-alpha.187",
+    "@avalabs/chains-sdk": "v2.8.0-alpha.187",
+    "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
+    "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
+    "@avalabs/wallets-sdk": "v2.8.0-alpha.187",
+    "big.js": "6.2.1"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
@@ -21,6 +27,7 @@
     "eslint-config-custom": "workspace:*",
     "jest": "29.7.0",
     "ts-jest": "29.1.1",
-    "tsup": "7.2.0"
+    "tsup": "7.2.0",
+    "@types/big.js": "6.2.2"
   }
 }

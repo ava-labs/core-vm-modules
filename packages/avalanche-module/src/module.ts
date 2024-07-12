@@ -8,7 +8,7 @@ import type {
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import ManifestJson from './manifest.json';
+import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';
 
 export class AvalancheModule implements Module {

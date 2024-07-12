@@ -18,6 +18,34 @@ export enum TransactionType {
   UNKNOWN = 'UNKNOWN',
 }
 
+export enum PChainTransactionType {
+  ADD_VALIDATOR_TX = 'AddValidatorTx',
+  ADD_SUBNET_VALIDATOR_TX = 'AddSubnetValidatorTx',
+  ADD_DELEGATOR_TX = 'AddDelegatorTx',
+  CREATE_CHAIN_TX = 'CreateChainTx',
+  CREATE_SUBNET_TX = 'CreateSubnetTx',
+  IMPORT_TX = 'ImportTx',
+  EXPORT_TX = 'ExportTx',
+  ADVANCE_TIME_TX = 'AdvanceTimeTx',
+  REWARD_VALIDATOR_TX = 'RewardValidatorTx',
+  REMOVE_SUBNET_VALIDATOR_TX = 'RemoveSubnetValidatorTx',
+  TRANSFORM_SUBNET_TX = 'TransformSubnetTx',
+  ADD_PERMISSIONLESS_VALIDATOR_TX = 'AddPermissionlessValidatorTx',
+  ADD_PERMISSIONLESS_DELEGATOR_TX = 'AddPermissionlessDelegatorTx',
+  BASE_TX = 'BaseTx',
+  TRANSFER_SUBNET_OWNERSHIP_TX = 'TransferSubnetOwnershipTx',
+  UNKNOWN = 'UNKNOWN',
+}
+
+export enum XChainTransactionType {
+  BASE_TX = 'BaseTx',
+  CREATE_ASSET_TX = 'CreateAssetTx',
+  OPERATION_TX = 'OperationTx',
+  IMPORT_TX = 'ImportTx',
+  EXPORT_TX = 'ExportTx',
+  UNKNOWN = 'UNKNOWN',
+}
+
 export enum TokenType {
   NATIVE = 'NATIVE',
   ERC20 = 'ERC20',
@@ -119,7 +147,7 @@ export type Transaction = {
   tokens: TxToken[];
   gasPrice?: string;
   gasUsed: string;
-  txType?: TransactionType;
+  txType?: TransactionType | PChainTransactionType | XChainTransactionType;
   chainId: string; // chainId from ActiveNetwork used to fetch tx
   method?: string;
   explorerLink: string;
