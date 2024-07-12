@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 0.0.13
+
+### Patch Changes
+
+- af68c81: Add getTransactionHistory to avalanche module
+- d9fa0f5: added getNetworkFee to avalanche module
+
 ## 0.0.12
 
 ### Patch Changes
