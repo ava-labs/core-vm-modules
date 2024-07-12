@@ -16,7 +16,7 @@
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
-    "@avalabs/vm-module-types": "0.0.11"
+    "@avalabs/vm-module-types": "0.0.12"
   },
   "devDependencies": {
     "tsup": "7.2.0",
