@@ -9,6 +9,7 @@ import type {
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from './manifest.json';
+import { getNetworkFee } from './handlers/get-network-fee';
 
 export class AvalancheModule implements Module {
   getAddress(): Promise<string> {
@@ -25,12 +26,7 @@ export class AvalancheModule implements Module {
   }
 
   getNetworkFee(_: Network): Promise<NetworkFees> {
-    return Promise.resolve({
-      low: { maxPriorityFeePerGas: 0n, maxFeePerGas: 0n },
-      medium: { maxPriorityFeePerGas: 0n, maxFeePerGas: 0n },
-      high: { maxPriorityFeePerGas: 0n, maxFeePerGas: 0n },
-      baseFee: 0n,
-    });
+    return getNetworkFee();
   }
 
   getTransactionHistory(_: GetTransactionHistory) {
