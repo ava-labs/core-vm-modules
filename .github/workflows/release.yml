@@ -67,9 +67,11 @@ jobs:
       - name: Get all changed files
         if: env.CURRENT_BRANCH == 'changeset-release/main'
         run: |
-          changed_files=$(git diff --name-only --cached)
-          echo "$changed_files" > changed_files.txt
-          echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
+          {
+            echo 'CHANGED_FILES<<EOF'
+            git diff --name-only --cached
+            echo EOF
+          } >> "$GITHUB_ENV"
 
       - name: Do a verified commit via api
         if: env.CURRENT_BRANCH == 'changeset-release/main'
@@ -77,6 +79,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: ${{ env.changed_files }}
+          files: ${{ env.CHANGED_FILES }}
           commit-message: 'chore: changeset release'
           ref: refs/heads/changeset-release/main
