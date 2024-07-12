@@ -5,7 +5,10 @@ on:
   pull_request:
     branches:
       - changeset-release/main
-  workflow_dispatch:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   sign-commit:
