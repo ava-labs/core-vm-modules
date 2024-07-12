@@ -64,17 +64,3 @@ jobs:
         with:
           commit_message: 'chore: update lock file'
           branch: changeset-release/main
-
-      # Update a dummy file so that we can commit + sign via api
-      - name: Update changeset.txt
-        run: git rev-parse HEAD > changeset.txt
-
-      - name: Commit and sign via api
-        uses: swinton/commit@v2.x
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: |
-            changeset.txt
-          commit-message: 'chore: sign commit'
-          ref: refs/heads/changeset-release/main
