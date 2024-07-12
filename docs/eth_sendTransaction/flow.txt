@@ -1,0 +1,32 @@
+title eth_sendTransaction flow
+
+participant user
+participant wallet
+participant approval-controller
+participant evm-module
+
+user->wallet: make a transaction
+wallet->evm-module: forward eth_sendTransaction request
+evm-module->evm-module: validate request params
+evm-module->evm-module: calculate gas limit if not provided 
+evm-module->evm-module: calculate nonce if not provided
+evm-module->evm-module: parse & validate transaction + simulate balance change 
+evm-module->evm-module: generate display and signing data
+evm-module->approval-controller: request approval\nwith the generated\ndisplay and signing data
+approval-controller->wallet: display approval popup\nwith the specified display 
+note over user: success case
+user->wallet:  approve
+wallet->wallet: sign transaction
+wallet-->approval-controller: return the signed transaction
+approval-controller-->evm-module: return the signed transaction
+evm-module->evm-module: broadcast the signed transaction
+evm-module-->wallet: return the transaction hash
+evm-module->evm-module: wait for transaction receipt
+evm-module->approval-controller: notify on transaction confirmed/reverted
+approval-controller->wallet: show success/error toast
+note over user: error case
+user->wallet: reject
+wallet-->approval-controller: return error
+approval-controller-->evm-module: return error
+evm-module-->wallet: return error
+wallet->wallet: show error toast
