@@ -49,36 +49,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-
-      - name: Get current branch
-        id: get_branch
-        run: echo "CURRENT_BRANCH=$(git branch --show-current)" >> $GITHUB_ENV
-
-      - name: Update lock file
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        run: pnpm install --lockfile-only
-
-      # Reset all changes and do a verified commit via api
-      # This is to ensure all commits are signed and the pr can be merged
-      - name: Reset all changes
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        run: git reset --soft $(git merge-base main changeset-release/main)
-
-      - name: Get all changed files
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        run: |
-          {
-            echo 'CHANGED_FILES<<EOF'
-            git diff --name-only --cached
-            echo EOF
-          } >> "$GITHUB_ENV"
-
-      - name: Do a verified commit via api
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        uses: swinton/commit@v2.x
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: ${{ env.CHANGED_FILES }}
-          commit-message: 'chore: changeset release'
-          ref: refs/heads/changeset-release/main
