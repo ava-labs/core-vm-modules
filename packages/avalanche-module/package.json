@@ -19,7 +19,8 @@
     "@avalabs/etherscan-sdk": "v2.8.0-alpha.187",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.187",
     "@avalabs/wallets-sdk": "v2.8.0-alpha.187",
-    "big.js": "6.2.1"
+    "big.js": "6.2.1",
+    "@internal/utils": "workspace:*",
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

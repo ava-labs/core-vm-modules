@@ -102,7 +102,7 @@ importers:
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
         specifier: 0.0.11
-        version: link:../../packages/types
+        version: 0.0.11
       '@zodios/core':
         specifier: 10.9.6
         version: 10.9.6(axios@1.7.2)(zod@3.23.8)
@@ -135,8 +135,11 @@ importers:
   packages/avalanche-module:
     dependencies:
       '@avalabs/vm-module-types':
-        specifier: 0.0.11
+        specifier: 0.0.12
         version: link:../types
+      '@internal/utils':
+        specifier: workspace:*
+        version: link:../../packages-internal/utils
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -175,11 +178,14 @@ importers:
         specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.11
+        specifier: 0.0.12
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+      '@internal/utils':
+        specifier: workspace:*
+        version: link:../../packages-internal/utils
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -384,6 +390,12 @@ packages:
     transitivePeerDependencies:
       - node-fetch
       - supports-color
+
+  /@avalabs/vm-module-types@0.0.11:
+    resolution: {integrity: sha512-LvS9XCP/hQr1gGZyRTuL23qGpQa0NpHgefU8zd1ae4uGONgBdoN26VRtLajze9zP0ymvfkksqTcH2ssuH/414A==}
+    dependencies:
+      zod: 3.23.8
+    dev: false
 
   /@avalabs/wallets-sdk@2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-mwZDKnQaE/6rQBK62yXReS8toI3KXP2yZwTvUVZJTtuS1ttLnSriLuhgvx6Yfb6BwpirS0aSTrtiDonjhp1nEg==}
