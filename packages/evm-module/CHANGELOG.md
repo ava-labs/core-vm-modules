@@ -1,5 +1,17 @@
 # @avalabs/evm-module
 
+## 0.0.12
+
+### Patch Changes
+
+- d0c2cc9: make module interface more consistent
+- 3d8a9a5: test auto sign commit
+- 7bc6c6e: add eth_sendTransaction handler
+- Updated dependencies [cd97708]
+- Updated dependencies [d0c2cc9]
+- Updated dependencies [7bc6c6e]
+  - @avalabs/vm-module-types@0.0.12
+
 ## 0.0.11
 
 ### Patch Changes
