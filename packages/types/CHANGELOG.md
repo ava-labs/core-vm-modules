@@ -1,5 +1,13 @@
 # @avalabs/vm-module-types
 
+## 0.0.12
+
+### Patch Changes
+
+- cd97708: fix: build types package
+- d0c2cc9: make module interface more consistent
+- 7bc6c6e: add eth_sendTransaction handler
+
 ## 0.0.11
 
 ## 0.0.10
