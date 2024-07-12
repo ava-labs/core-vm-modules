@@ -49,7 +49,7 @@ export type DisplayData = {
   network: {
     chainId: number;
     name: string;
-    logoUrl?: string;
+    logoUri?: string;
   };
   messageDetails?: string;
   transactionDetails?: {

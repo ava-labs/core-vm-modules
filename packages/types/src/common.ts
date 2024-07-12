@@ -16,6 +16,7 @@ export type Network = {
     };
   };
   explorerUrl?: string;
+  logoUri?: string;
 };
 
 export type Storage = {
