@@ -3,7 +3,7 @@ import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import BN from 'bn.js';
 
 export type GetBalancesParams = {
-  addresses: string[]; // addressC of each account
+  addresses: string[];
   network: Network;
   customTokens?: NetworkContractToken[];
   currency: string;
