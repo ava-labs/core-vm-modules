@@ -1,10 +1,8 @@
-import type { NetworkToken, TokenType } from './token';
+import type { Network } from './common';
+import type { TokenType } from './token';
 
 export type GetTransactionHistory = {
-  chainId: number;
-  isTestnet: boolean;
-  networkToken: NetworkToken;
-  explorerUrl: string;
+  network: Network;
   address: string;
   nextPageToken?: string;
   offset?: number;

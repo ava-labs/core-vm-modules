@@ -9,13 +9,13 @@ export const getNativeTokenBalances = async ({
   chainId,
   glacierSdk,
 }: {
-  chainId: string;
+  chainId: number;
   address: string;
   currency: string;
   glacierSdk: Glacier;
 }): Promise<NetworkTokenWithBalance> => {
   const nativeBalance = await glacierSdk.evmBalances.getNativeBalance({
-    chainId,
+    chainId: chainId.toString(),
     address,
     currency: currency.toLocaleLowerCase() as CurrencyCode,
   });

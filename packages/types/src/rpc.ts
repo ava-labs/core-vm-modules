@@ -1,5 +1,5 @@
 import type { TransactionRequest } from 'ethers';
-import { Caip2ChainId, Hex } from './common';
+import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 
 export enum RpcMethod {

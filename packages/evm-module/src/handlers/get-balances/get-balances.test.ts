@@ -64,7 +64,7 @@ describe('get-balances', () => {
       addresses: ['0x123'],
       currency: 'USD',
       network: {
-        chainId: 'eip155:1',
+        chainId: 1,
         chainName: 'Ethereum',
         isTestnet: false,
         networkToken: {
@@ -82,7 +82,6 @@ describe('get-balances', () => {
       },
       proxyApiUrl: 'proxyApiUrl',
       glacierApiUrl: 'glacierApiUrl',
-      glacierApiKey: 'glacierApiKey',
     });
     expect(balances).toEqual({
       '0x123': {
@@ -190,7 +189,7 @@ describe('get-balances', () => {
       addresses: ['0x456'],
       currency: 'USD',
       network: {
-        chainId: 'eip155:2',
+        chainId: 2,
         chainName: '2',
         isTestnet: false,
         networkToken: {
@@ -208,7 +207,6 @@ describe('get-balances', () => {
       },
       proxyApiUrl: 'proxyApiUrl',
       glacierApiUrl: 'glacierApiUrl',
-      glacierApiKey: 'glacierApiKey',
     });
     expect(balances).toEqual({
       '0x456': {

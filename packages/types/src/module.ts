@@ -10,8 +10,8 @@ export interface Module {
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
-  getNetworkFee: ({ network }: { network: Network }) => Promise<NetworkFees>;
+  getNetworkFee: (network: Network) => Promise<NetworkFees>;
   getAddress: () => Promise<string>;
-  getTokens: (chainId: number) => Promise<NetworkContractToken[]>;
-  onRpcRequest: (request: RpcRequest) => Promise<RpcResponse>;
+  getTokens: (network: Network) => Promise<NetworkContractToken[]>;
+  onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
 }

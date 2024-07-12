@@ -7,6 +7,8 @@ import type {
   Environment,
   Network,
   ApprovalController,
+  GetBalancesParams,
+  GetBalancesResponse,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
@@ -16,6 +18,7 @@ import { getTransactionHistory } from './handlers/get-transaction-history/get-tr
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
+import { getBalances } from './handlers/get-balances/get-balances';
 
 export class EvmModule implements Module {
   #glacierApiUrl: string;
@@ -39,8 +42,15 @@ export class EvmModule implements Module {
     return Promise.resolve('EVM address');
   }
 
-  getBalances(): Promise<string> {
-    return Promise.resolve('EVM balances');
+  getBalances({ addresses, network, currency, customTokens }: GetBalancesParams): Promise<GetBalancesResponse> {
+    return getBalances({
+      addresses,
+      currency,
+      network,
+      proxyApiUrl: this.#proxyApiUrl,
+      customTokens,
+      glacierApiUrl: this.#glacierApiUrl,
+    });
   }
 
   getManifest(): Manifest | undefined {

@@ -6,7 +6,7 @@ describe('get-native-token-balances', () => {
     const balance = getNativeTokenBalances({
       address: '0x123',
       currency: 'USD',
-      chainId: '123',
+      chainId: 123,
       glacierSdk: {
         evmBalances: {
           getNativeBalance: jest.fn().mockResolvedValue({
@@ -47,7 +47,7 @@ describe('get-native-token-balances', () => {
     const balance = getNativeTokenBalances({
       address: '0x123',
       currency: 'USD',
-      chainId: '123',
+      chainId: 123,
       glacierSdk: {
         evmBalances: {
           getNativeBalance: jest.fn().mockRejectedValue(new Error('Failed to get native balance')),

@@ -5,6 +5,8 @@ import type {
   GetTransactionHistory,
   RpcRequest,
   Network,
+  GetBalancesParams,
+  GetBalancesResponse,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -16,8 +18,8 @@ export class AvalancheModule implements Module {
     return Promise.resolve('Avalanche address');
   }
 
-  getBalances(): Promise<string> {
-    return Promise.resolve('Avalanche balances');
+  getBalances(_: GetBalancesParams): Promise<GetBalancesResponse> {
+    return Promise.resolve({});
   }
 
   getManifest(): Manifest | undefined {

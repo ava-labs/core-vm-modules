@@ -31,7 +31,7 @@ describe('get-erc20-balances', () => {
         },
       } as never,
       currency: 'USD',
-      chainId: '123',
+      chainId: 123,
       address: '0x123',
       customTokens: [],
     });
@@ -66,7 +66,7 @@ describe('get-erc20-balances', () => {
         },
       } as never,
       currency: 'USD',
-      chainId: '123',
+      chainId: 123,
       address: '0x123',
       customTokens: [],
     });

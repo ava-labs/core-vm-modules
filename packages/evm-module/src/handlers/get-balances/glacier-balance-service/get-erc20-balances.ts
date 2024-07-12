@@ -18,7 +18,7 @@ export const getErc20Balances = async ({
   glacierSdk: Glacier;
   address: string;
   currency: string;
-  chainId: string;
+  chainId: number;
   customTokens: NetworkContractToken[];
 }): Promise<Record<string, TokenWithBalance>> => {
   const tokensWithBalance: TokenWithBalanceERC20[] = [];
@@ -28,7 +28,7 @@ export const getErc20Balances = async ({
   let nextPageToken: string | undefined;
   do {
     const response = await glacierSdk.evmBalances.listErc20Balances({
-      chainId,
+      chainId: chainId.toString(),
       address,
       currency: currency.toLocaleLowerCase() as CurrencyCode,
       // glacier has a cap on page size of 100

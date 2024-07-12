@@ -15,25 +15,19 @@ export const getBalances = async ({
   proxyApiUrl,
   customTokens = [],
   glacierApiUrl,
-  glacierApiKey,
   storage,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   glacierApiUrl: string;
-  glacierApiKey?: string;
   storage?: Storage;
 }): Promise<GetBalancesResponse> => {
-  const chainId = network.chainId.split(':')[1];
-  if (!chainId || isNaN(Number(chainId))) {
-    throw new Error('Invalid chainId');
-  }
-
+  const chainId = network.chainId;
   const glacierSdk = new Glacier({ BASE: glacierApiUrl });
   const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
   const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
 
   let balances = [];
-  if (chains.includes(chainId)) {
+  if (chains.includes(chainId.toString())) {
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
         const nativeToken = await getNativeTokenBalancesFromGlacier({
@@ -65,7 +59,6 @@ export const getBalances = async ({
     const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
     const allTokens = [...tokens, ...customTokens];
     const provider = getProvider({
-      glacierApiKey,
       chainId,
       chainName: network.chainName,
       rpcUrl: network.rpcUrl,
