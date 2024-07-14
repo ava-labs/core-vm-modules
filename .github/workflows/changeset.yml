@@ -21,10 +21,10 @@ jobs:
       - name: Fetch all branches
         run: git fetch --all
 
-      - name: Switch to target branch changeset-release/main
+      - name: Switch to target branch test-changeset2
         run: |
-          git checkout changeset-release/main
-          git reset --hard origin/changeset-release/main
+          git checkout test-changeset2
+          git reset --hard origin/test-changeset2
 
       - name: Create .npmrc
         run: |
@@ -46,13 +46,7 @@ jobs:
       # Reset all changes and do a verified commit via api
       # This is to ensure all commits are signed and the pr can be merged
       - name: Reset all changes
-        run: git reset --soft $(git merge-base main changeset-release/main)
-
-      - name: List files in the project root
-        run: ls -la
-
-      - name: List files in the scripts directory
-        run: ls -la scripts/
+        run: git reset --soft $(git merge-base test-changeset1 test-changeset2)
 
       - name: Commit and sign via api
         run: |
