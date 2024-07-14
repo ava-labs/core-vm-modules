@@ -1,0 +1,60 @@
+name: Changeset
+
+on:
+  push:
+    # branches:
+    #   - changeset-release/main
+  workflow_dispatch:
+
+jobs:
+  sign-commit:
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          ref: main # Checkout the main branch
+          fetch-depth: 0
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Switch to target branch changeset-release/main
+        run: |
+          git checkout changeset-release/main
+          git reset --hard origin/changeset-release/main
+
+      - name: Create .npmrc
+        run: |
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
+
+      - name: Setup pnpm 7
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Setup Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.x
+
+      - name: Update lock file
+        run: pnpm install --lockfile-only
+
+      # Reset all changes and do a verified commit via api
+      # This is to ensure all commits are signed and the pr can be merged
+      - name: Reset all changes
+        run: git reset --soft $(git merge-base main changeset-release/main)
+
+      - name: List files in the project root
+        run: ls -la
+
+      - name: List files in the scripts directory
+        run: ls -la scripts/
+
+      - name: Commit and sign via api
+        run: |
+          ./scripts/signChangesetCommits.sh
+        shell: bash
