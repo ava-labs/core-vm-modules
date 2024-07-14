@@ -1,5 +1,21 @@
 # @avalabs/evm-module
 
+## 0.0.13
+
+### Patch Changes
+
+- 7990737: auto sign commit for changeset pr
+- 5ae309b: test auto sign commit for changeset pr
+- f013495: auto sign commit for changeset pr
+- 70ce3b7: test auto sign commit for changeset pr
+- 9d5c6ae: auto sign commit for changeset pr
+- d9fa0f5: added getNetworkFee to avalanche module
+- f372382: test auto sign pr commit
+- 1ed677e: auto sign commit for changeset pr
+- Updated dependencies [af68c81]
+- Updated dependencies [d9fa0f5]
+  - @avalabs/vm-module-types@0.0.13
+
 ## 0.0.12
 
 ### Patch Changes
