@@ -49,3 +49,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Get current branch
+        id: get_branch
+        run: echo "CURRENT_BRANCH=$(git branch --show-current)" >> $GITHUB_ENV
+
+      # Reset all changes and do a verified commit via api
+      # This is to ensure all commits are signed and the pr can be merged
+      - name: Reset all changes
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        run: git reset --soft $(git merge-base main changeset-release/main)
+
+      - name: Update lock file
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        run: pnpm install --lockfile-only
+
+      - name: Commit and sign via api
+        if: env.CURRENT_BRANCH == 'changeset-release/main'
+        uses: qoomon/actions--create-commit@v1
+        id: commit
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'chore: changeset release'
+          skip-empty: true
+
+      - name: Push commit
+        if: ${{ steps.commit.outputs.commit != null }}
+        run: git push
