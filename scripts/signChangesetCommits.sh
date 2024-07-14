@@ -73,4 +73,4 @@ ghcommit_args+=("${deletes[@]/#/--delete=}")
 
 [[ -n "${DEBUG:-}" ]] && echo "ghcommit args: '${ghcommit_args[*]}'"
 
-./ghcommit_linux_amd64 "${ghcommit_args[@]}"
+./scripts/ghcommit_linux_amd64 "${ghcommit_args[@]}"
