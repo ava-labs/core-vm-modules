@@ -1,35 +1,36 @@
 import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
+import type { GlacierService } from '@internal/utils';
 
 describe('get-erc20-balances', () => {
   it('should return erc20 token balances', async () => {
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listErc20Balances: jest.fn().mockResolvedValue({
+        erc20TokenBalances: [
+          {
+            address: '0x123',
+            name: 'Ethereum',
+            symbol: 'ETH',
+            decimals: 18,
+            logoUri: 'https://example.com/logo.png',
+            ercType: 'ERC20',
+            price: {
+              currency: 'USD',
+              value: 1000,
+            },
+            chainId: '123',
+            balance: '1000000000000000000',
+            balanceValue: {
+              currency: 'USD',
+              value: 1000,
+            },
+          },
+        ],
+      }),
+    };
     const balance = getErc20Balances({
-      glacierSdk: {
-        evmBalances: {
-          listErc20Balances: jest.fn().mockResolvedValue({
-            erc20TokenBalances: [
-              {
-                address: '0x123',
-                name: 'Ethereum',
-                symbol: 'ETH',
-                decimals: 18,
-                logoUri: 'https://example.com/logo.png',
-                ercType: 'ERC20',
-                price: {
-                  currency: 'USD',
-                  value: 1000,
-                },
-                chainId: '123',
-                balance: '1000000000000000000',
-                balanceValue: {
-                  currency: 'USD',
-                  value: 1000,
-                },
-              },
-            ],
-          }),
-        },
-      } as never,
+      glacierService: mockGlacierService,
       currency: 'USD',
       chainId: 123,
       address: '0x123',
@@ -59,12 +60,12 @@ describe('get-erc20-balances', () => {
   });
 
   it('should return native token object without balance data', async () => {
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listErc20Balances: jest.fn().mockRejectedValue(new Error('Failed to get erc20 balance')),
+    };
     const balance = getErc20Balances({
-      glacierSdk: {
-        evmBalances: {
-          listErc20Balances: jest.fn().mockRejectedValue(new Error('Failed to get erc20 balance')),
-        },
-      } as never,
+      glacierService: mockGlacierService,
       currency: 'USD',
       chainId: 123,
       address: '0x123',

@@ -4,14 +4,21 @@ import { Avalanche } from '@avalabs/wallets-sdk';
 import { TokenType, type Transaction } from '@avalabs/vm-module-types';
 import { getExplorerAddressByNetwork, getTokenValue } from './utils';
 
-export function convertPChainTransaction(
-  tx: PChainTransaction,
-  isTestnet: boolean,
-  address: string,
-  networkToken: NetworkToken,
-  explorerUrl: string,
-  chainId: number,
-): Transaction {
+export function convertPChainTransaction({
+  tx,
+  address,
+  networkToken,
+  chainId,
+  explorerUrl,
+  isTestnet,
+}: {
+  tx: PChainTransaction;
+  address: string;
+  networkToken: NetworkToken;
+  chainId: number;
+  explorerUrl?: string;
+  isTestnet?: boolean;
+}): Transaction {
   const froms = new Set(tx.consumedUtxos.flatMap((utxo) => utxo.addresses) || []);
   const tos = new Set(tx.emittedUtxos.flatMap((utxo) => utxo.addresses) || []);
 
@@ -45,7 +52,7 @@ export function convertPChainTransaction(
       },
     ],
     gasUsed: avaxBurnedAmount.toString(),
-    explorerLink: getExplorerAddressByNetwork(explorerUrl, tx.txHash, 'tx'),
+    explorerLink: getExplorerAddressByNetwork(explorerUrl ?? '', tx.txHash, 'tx'),
     txType: tx.txType,
     chainId: chainId.toString(),
   };
@@ -58,7 +65,7 @@ function getAmount({
   froms,
 }: {
   tx: PChainTransaction;
-  isTestnet: boolean;
+  isTestnet?: boolean;
   networkToken: NetworkToken;
   froms: Set<string>;
 }): Big {
@@ -105,7 +112,7 @@ function getBurnedAmount({
   networkToken,
 }: {
   tx: PChainTransaction;
-  isTestnet: boolean;
+  isTestnet?: boolean;
   networkToken: NetworkToken;
 }): Big {
   const nAvaxFee = tx.amountBurned

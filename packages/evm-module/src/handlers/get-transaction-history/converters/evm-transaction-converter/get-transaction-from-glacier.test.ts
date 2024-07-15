@@ -1,5 +1,6 @@
 import type { ListTransactionDetailsResponse } from '@avalabs/glacier-sdk';
 import { getTransactionsFromGlacier } from './get-transactions-from-glacier';
+import type { GlacierService } from '@internal/utils';
 
 const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
   nextPageToken: 'nextPageToken',
@@ -29,43 +30,15 @@ const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
   ],
 };
 
-const mockListTransactions = jest.fn();
-jest.mock('@avalabs/glacier-sdk', () => ({
-  Glacier: jest.fn(() => ({
-    evmTransactions: {
-      listTransactions: mockListTransactions,
-    },
-  })),
-}));
-
 describe('get-transactions-from-glacier', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  it('should have returned error with missing glacier api url', async () => {
-    try {
-      await getTransactionsFromGlacier({
-        networkToken: {
-          name: 'networkToken',
-          symbol: 'networkToken',
-          decimals: 1,
-          description: 'description',
-          logoUri: 'logoUri',
-        },
-        explorerUrl: 'explorerUrl',
-        chainId: 1,
-        address: 'address',
-        nextPageToken: 'nextPageToken',
-        offset: 1,
-        glacierApiUrl: 'glacierApiUrl',
-      });
-    } catch (error) {
-      expect(error).toEqual(new Error('Glacier API URL is required'));
-    }
-  });
   it('should have returned empty response when listTransaction failed', async () => {
-    mockListTransactions.mockRejectedValue(new Error('failed to list transactions'));
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listTransactions: jest.fn().mockRejectedValue(new Error('failed to list transactions')),
+    };
     const result = await getTransactionsFromGlacier({
       networkToken: {
         name: 'networkToken',
@@ -79,7 +52,7 @@ describe('get-transactions-from-glacier', () => {
       address: 'address',
       nextPageToken: 'nextPageToken',
       offset: 1,
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(result).toEqual({
       transactions: [],
@@ -87,18 +60,21 @@ describe('get-transactions-from-glacier', () => {
     });
   });
   it('should have returned filtered response with no transaction status of 0', async () => {
-    mockListTransactions.mockResolvedValue({
-      ...mockListTransactionDetailsResponse,
-      transactions: [
-        {
-          ...mockListTransactionDetailsResponse.transactions[0],
-          nativeTransaction: {
-            ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
-            txStatus: '0',
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listTransactions: jest.fn().mockResolvedValue({
+        ...mockListTransactionDetailsResponse,
+        transactions: [
+          {
+            ...mockListTransactionDetailsResponse.transactions[0],
+            nativeTransaction: {
+              ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
+              txStatus: '0',
+            },
           },
-        },
-      ],
-    });
+        ],
+      }),
+    };
     const result = await getTransactionsFromGlacier({
       networkToken: {
         name: 'networkToken',
@@ -112,7 +88,7 @@ describe('get-transactions-from-glacier', () => {
       address: 'address',
       nextPageToken: 'nextPageToken',
       offset: 1,
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(result).toEqual({
       transactions: [],
@@ -120,18 +96,21 @@ describe('get-transactions-from-glacier', () => {
     });
   });
   it('should have returned filtered response without transaction with amount 0', async () => {
-    mockListTransactions.mockResolvedValue({
-      ...mockListTransactionDetailsResponse,
-      transactions: [
-        {
-          ...mockListTransactionDetailsResponse.transactions[0],
-          nativeTransaction: {
-            ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
-            value: '0',
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listTransactions: jest.fn().mockResolvedValue({
+        ...mockListTransactionDetailsResponse,
+        transactions: [
+          {
+            ...mockListTransactionDetailsResponse.transactions[0],
+            nativeTransaction: {
+              ...mockListTransactionDetailsResponse.transactions[0]?.nativeTransaction,
+              txStatus: '0',
+            },
           },
-        },
-      ],
-    });
+        ],
+      }),
+    };
     const result = await getTransactionsFromGlacier({
       networkToken: {
         name: 'networkToken',
@@ -145,7 +124,7 @@ describe('get-transactions-from-glacier', () => {
       address: 'address',
       nextPageToken: 'nextPageToken',
       offset: 1,
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(result).toEqual({
       transactions: [],
@@ -154,7 +133,10 @@ describe('get-transactions-from-glacier', () => {
   });
 
   it('should have returned response', async () => {
-    mockListTransactions.mockResolvedValue(mockListTransactionDetailsResponse);
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      listTransactions: jest.fn().mockResolvedValue(mockListTransactionDetailsResponse),
+    };
     const result = await getTransactionsFromGlacier({
       networkToken: {
         name: 'networkToken',
@@ -168,7 +150,7 @@ describe('get-transactions-from-glacier', () => {
       address: 'address',
       nextPageToken: 'nextPageToken',
       offset: 1,
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(result).toEqual({
       transactions: [

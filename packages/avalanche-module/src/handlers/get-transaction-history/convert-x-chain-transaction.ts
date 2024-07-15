@@ -4,14 +4,21 @@ import { Avalanche } from '@avalabs/wallets-sdk';
 import { TokenType, type Transaction } from '@avalabs/vm-module-types';
 import { getExplorerAddressByNetwork, getTokenValue } from './utils';
 
-export function convertXChainTransaction(
-  tx: XChainNonLinearTransaction | XChainLinearTransaction,
-  isTestnet: boolean,
-  address: string,
-  networkToken: NetworkToken,
-  explorerUrl: string,
-  chainId: number,
-): Transaction {
+export function convertXChainTransaction({
+  tx,
+  address,
+  networkToken,
+  chainId,
+  explorerUrl,
+  isTestnet,
+}: {
+  tx: XChainNonLinearTransaction | XChainLinearTransaction;
+  address: string;
+  networkToken: NetworkToken;
+  chainId: number;
+  isTestnet?: boolean;
+  explorerUrl?: string;
+}): Transaction {
   const froms = new Set(tx.consumedUtxos.flatMap((utxo) => utxo.addresses) || []);
   const tos = new Set(tx.emittedUtxos.flatMap((utxo) => utxo.addresses) || []);
 
@@ -43,7 +50,7 @@ export function convertXChainTransaction(
       },
     ],
     gasUsed: avaxBurnedAmount.toString(),
-    explorerLink: getExplorerAddressByNetwork(explorerUrl, tx.txHash, 'tx'),
+    explorerLink: getExplorerAddressByNetwork(explorerUrl ?? '', tx.txHash, 'tx'),
     txType: tx.txType,
     chainId: chainId.toString(),
   };
@@ -55,7 +62,7 @@ function getAmount({
   networkToken,
 }: {
   tx: XChainNonLinearTransaction | XChainLinearTransaction;
-  isTestnet: boolean;
+  isTestnet?: boolean;
   networkToken: NetworkToken;
 }): Big {
   const isImportExport = ['ImportTx', 'ExportTx'].includes(tx.txType);
@@ -82,7 +89,7 @@ function getBurnedAmount({
   totalAmountCreated,
   networkToken,
 }: {
-  isTestnet: boolean;
+  isTestnet?: boolean;
   tx: XChainNonLinearTransaction | XChainLinearTransaction;
   totalAmountCreated: Big;
   networkToken: NetworkToken;

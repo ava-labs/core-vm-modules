@@ -1,22 +1,20 @@
 import type { GetTransactionHistory, Transaction, TransactionHistoryResponse } from '@avalabs/vm-module-types';
-import { BlockchainId, Network, SortOrder, Glacier } from '@avalabs/glacier-sdk';
+import { BlockchainId, Network, SortOrder } from '@avalabs/glacier-sdk';
 import { isPChainTransactions, isXChainTransactions } from './utils';
 import { convertPChainTransaction } from './convert-p-chain-transaction';
 import { convertXChainTransaction } from './convert-x-chain-transaction';
+import type { GlacierService } from '@internal/utils';
 
 export const getTransactionHistory = async ({
-  isTestnet,
   address,
   nextPageToken,
   offset,
-  glacierApiUrl,
-  networkToken,
-  explorerUrl,
-  chainId,
-}: GetTransactionHistory): Promise<TransactionHistoryResponse> => {
-  const glacierSdk = new Glacier({ BASE: glacierApiUrl });
+  network,
+  glacierService,
+}: GetTransactionHistory & { glacierService: GlacierService }): Promise<TransactionHistoryResponse> => {
+  const { isTestnet, networkToken, explorerUrl, chainId } = network;
 
-  const response = await glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions({
+  const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,
     blockchainId: getBlockchainIdByAddress(address),
     network: isTestnet ? Network.FUJI : Network.MAINNET,
@@ -28,12 +26,12 @@ export const getTransactionHistory = async ({
   let transactions: Transaction[] = [];
   if (isPChainTransactions(response)) {
     transactions = response.transactions.map((value) =>
-      convertPChainTransaction(value, isTestnet, address, networkToken, explorerUrl, chainId),
+      convertPChainTransaction({ tx: value, isTestnet, address, networkToken, explorerUrl, chainId }),
     );
   }
   if (isXChainTransactions(response)) {
     transactions = response.transactions.map((value) =>
-      convertXChainTransaction(value, isTestnet, address, networkToken, explorerUrl, chainId),
+      convertXChainTransaction({ tx: value, isTestnet, address, networkToken, explorerUrl, chainId }),
     );
   }
 

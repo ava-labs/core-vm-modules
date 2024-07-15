@@ -7,13 +7,23 @@ import type {
   Network,
   GetBalancesParams,
   GetBalancesResponse,
+  Environment,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getEnv, GlacierService } from '@internal/utils';
 
 export class AvalancheModule implements Module {
+  #glacierService: GlacierService;
+
+  constructor({ environment }: { environment: Environment }) {
+    const { glacierApiUrl } = getEnv(environment);
+    this.#glacierService = new GlacierService({ glacierApiUrl });
+  }
+
   getAddress(): Promise<string> {
     return Promise.resolve('Avalanche address');
   }
@@ -31,8 +41,8 @@ export class AvalancheModule implements Module {
     return getNetworkFee();
   }
 
-  getTransactionHistory(_: GetTransactionHistory) {
-    return Promise.resolve({ transactions: [] });
+  getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {
+    return getTransactionHistory({ network, address, nextPageToken, offset, glacierService: this.#glacierService });
   }
 
   getTokens(_: Network) {

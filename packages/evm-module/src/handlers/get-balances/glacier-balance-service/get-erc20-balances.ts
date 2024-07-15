@@ -5,17 +5,18 @@ import {
   type NetworkContractToken,
   type TokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { CurrencyCode, Erc20TokenBalance, Glacier } from '@avalabs/glacier-sdk';
+import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
+import type { GlacierService } from '@internal/utils';
 
 export const getErc20Balances = async ({
-  glacierSdk,
+  glacierService,
   currency,
   chainId,
   address,
   customTokens,
 }: {
-  glacierSdk: Glacier;
+  glacierService: GlacierService;
   address: string;
   currency: string;
   chainId: number;
@@ -27,7 +28,7 @@ export const getErc20Balances = async ({
    */
   let nextPageToken: string | undefined;
   do {
-    const response = await glacierSdk.evmBalances.listErc20Balances({
+    const response = await glacierService.listErc20Balances({
       chainId: chainId.toString(),
       address,
       currency: currency.toLocaleLowerCase() as CurrencyCode,

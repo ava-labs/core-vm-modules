@@ -5,19 +5,14 @@ import { BN } from 'bn.js';
 import * as GlacierERC20Token from './glacier-balance-service/get-erc20-balances';
 import * as EvmNativeToken from './evm-balance-service/get-native-token-balances';
 import * as EvmERC20Token from './evm-balance-service/get-erc20-balances';
-
-jest.mock('@avalabs/glacier-sdk', () => ({
-  Glacier: jest.fn(() => ({
-    evmChains: {
-      supportedChains: () => {
-        return { chains: [{ chainId: '1' }] };
-      },
-    },
-  })),
-}));
+import type { GlacierService } from '@internal/utils';
 
 describe('get-balances', () => {
   it('should get balances from glacier', async () => {
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      isNetworkSupported: () => true,
+    };
     jest.spyOn(GlacierNativeToken, 'getNativeTokenBalances').mockImplementationOnce(async () => {
       return {
         name: 'Ether',
@@ -81,7 +76,7 @@ describe('get-balances', () => {
         utilityAddresses: { multicall: '0x5ba1e12693dc8f9c48aad8770482f4739beed696' },
       },
       proxyApiUrl: 'proxyApiUrl',
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(balances).toEqual({
       '0x123': {
@@ -125,6 +120,10 @@ describe('get-balances', () => {
   });
 
   it('should get balances from evm', async () => {
+    const mockGlacierService: GlacierService = {
+      ...expect.any(Object),
+      isNetworkSupported: () => false,
+    };
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
@@ -206,7 +205,7 @@ describe('get-balances', () => {
         utilityAddresses: { multicall: '0x5ba1e12693dc8f9c48aad8770482f4739beed696' },
       },
       proxyApiUrl: 'proxyApiUrl',
-      glacierApiUrl: 'glacierApiUrl',
+      glacierService: mockGlacierService,
     });
     expect(balances).toEqual({
       '0x456': {

@@ -97,9 +97,15 @@ importers:
 
   packages-internal/utils:
     dependencies:
+      '@avalabs/chains-sdk':
+        specifier: v2.8.0-alpha.193
+        version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/coingecko-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk':
+        specifier: v2.8.0-alpha.193
+        version: 2.8.0-alpha.193
       '@avalabs/vm-module-types':
         specifier: 0.0.13
         version: link:../../packages/types

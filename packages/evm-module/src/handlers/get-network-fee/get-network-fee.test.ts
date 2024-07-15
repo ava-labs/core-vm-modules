@@ -2,7 +2,6 @@ import { getNetworkFee } from './get-network-fee';
 import { FeeData, JsonRpcProvider } from 'ethers';
 
 const params = {
-  glacierApiUrl: 'https://glacier-api.avax.network',
   chainId: 1,
   chainName: 'Ethereum Mainnet',
   rpcUrl: 'https://mainnet.infura.io/v3/1234567890',

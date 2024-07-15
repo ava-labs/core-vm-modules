@@ -1,7 +1,6 @@
 import type { GetBalancesResponse, GetBalancesParams, Storage } from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
-import { TokenService } from '@internal/utils';
-import { Glacier } from '@avalabs/glacier-sdk';
+import { GlacierService, TokenService } from '@internal/utils';
 import { getProvider } from '../../utils/get-provider';
 import { getTokens } from '../get-tokens/get-tokens';
 import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
@@ -14,32 +13,30 @@ export const getBalances = async ({
   network,
   proxyApiUrl,
   customTokens = [],
-  glacierApiUrl,
   storage,
+  glacierService,
 }: GetBalancesParams & {
   proxyApiUrl: string;
-  glacierApiUrl: string;
+  glacierService: GlacierService;
   storage?: Storage;
 }): Promise<GetBalancesResponse> => {
   const chainId = network.chainId;
-  const glacierSdk = new Glacier({ BASE: glacierApiUrl });
-  const supportedChainsResp = await glacierSdk.evmChains.supportedChains({});
-  const chains = supportedChainsResp.chains.map((chain) => chain.chainId);
+  const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
 
   let balances = [];
-  if (chains.includes(chainId.toString())) {
+  if (isNetworkSupported) {
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
         const nativeToken = await getNativeTokenBalancesFromGlacier({
           address,
           currency,
           chainId,
-          glacierSdk,
+          glacierService,
         });
 
         const erc20Tokens = await getErc20BalancesFromGlacier({
           customTokens,
-          glacierSdk,
+          glacierService,
           currency,
           chainId,
           address,

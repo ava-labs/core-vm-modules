@@ -16,12 +16,12 @@ import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import ManifestJson from '../manifest.json';
-import { getEnv } from './env';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 import { getBalances } from './handlers/get-balances/get-balances';
+import { getEnv, GlacierService } from '@internal/utils';
 
 export class EvmModule implements Module {
-  #glacierApiUrl: string;
+  #glacierService: GlacierService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
@@ -33,7 +33,7 @@ export class EvmModule implements Module {
     environment: Environment;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierApiUrl = glacierApiUrl;
+    this.#glacierService = new GlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
   }
@@ -49,7 +49,7 @@ export class EvmModule implements Module {
       network,
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
-      glacierApiUrl: this.#glacierApiUrl,
+      glacierService: this.#glacierService,
     });
   }
 
@@ -65,7 +65,6 @@ export class EvmModule implements Module {
       chainName,
       rpcUrl,
       multiContractAddress: utilityAddresses?.multicall,
-      glacierApiUrl: this.#glacierApiUrl,
     });
   }
 
@@ -81,7 +80,7 @@ export class EvmModule implements Module {
       address,
       nextPageToken,
       offset,
-      glacierApiUrl: this.#glacierApiUrl,
+      glacierService: this.#glacierService,
     });
   }
 
