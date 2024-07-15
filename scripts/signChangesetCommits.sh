@@ -5,7 +5,7 @@ set -euo pipefail
 
 COMMIT_MESSAGE="chore: changeset"
 REPO="ava-labs/vm-modules"
-BRANCH="changeset-release/main"
+BRANCH="changeset-release/main-t"
 EMPTY="false"
 
 read -r -a FILE_PATTERNS <<<"."
