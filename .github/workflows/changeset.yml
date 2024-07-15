@@ -48,6 +48,9 @@ jobs:
       - name: Reset all changes
         run: git reset --soft $(git merge-base test-changeset1 test-changeset2)
 
+      - name: Create branch
+        run: git checkout -b changeset-release/main-t && git push origin changeset-release/main-t
+
       - name: Commit and sign via api
         run: |
           ./scripts/signChangesetCommits.sh
