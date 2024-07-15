@@ -1,5 +1,14 @@
 # @avalabs/evm-module
 
+## 0.0.13
+
+### Patch Changes
+
+- d9fa0f5: added getNetworkFee to avalanche module
+- Updated dependencies [af68c81]
+- Updated dependencies [d9fa0f5]
+  - @avalabs/vm-module-types@0.0.13
+
 ## 0.0.12
 
 ### Patch Changes
