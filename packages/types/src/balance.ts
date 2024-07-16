@@ -1,6 +1,7 @@
 import type { Storage, Network } from './common';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
-import BN from 'bn.js';
+import type BN from 'bn.js';
+import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 
 export type GetBalancesParams = {
   addresses: string[];
@@ -23,18 +24,13 @@ export type TokenBalanceData = {
     percentage?: number;
     value?: number;
   };
-  utxos?: BitcoinInputUTXOWithOptionalScript[];
 };
 
-interface TokenBalanceDataWithDecimals extends TokenBalanceData {
-  decimals: number;
-}
-
-export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
-  TokenMarketData &
-  NetworkContractToken & {
-    type: TokenType.ERC20;
-  };
+type TokenMarketData = {
+  marketCap: number;
+  change24: number;
+  vol24: number;
+};
 
 export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &
   NetworkToken &
@@ -43,10 +39,23 @@ export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &
     type: TokenType.NATIVE;
   };
 
-export type TokenWithBalance = NetworkTokenWithBalance | TokenWithBalanceERC20;
+interface TokenBalanceDataWithDecimals extends TokenBalanceData {
+  decimals: number;
+}
 
 /**
- * Custom Bitcoin UTXO interface.
+ * EVM TokenWithBalance interface.
+ */
+export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
+  TokenMarketData &
+  NetworkContractToken & {
+    type: TokenType.ERC20;
+  };
+
+export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20;
+
+/**
+ * Bitcoin TokenWithBalance interface.
  */
 interface BitcoinInputUTXO {
   txHash: string;
@@ -63,10 +72,47 @@ interface BitcoinInputUTXOWithOptionalScript extends Omit<BitcoinInputUTXO, 'scr
   script?: string;
 }
 
-type TokenMarketData = {
-  marketCap: number;
-  change24: number;
-  vol24: number;
-};
+export interface TokenWithBalanceBTC extends NetworkTokenWithBalance {
+  logoUri: string;
+  utxos: BitcoinInputUTXOWithOptionalScript[];
+  utxosUnconfirmed?: BitcoinInputUTXOWithOptionalScript[];
+  unconfirmedBalance?: BN;
+  unconfirmedBalanceDisplayValue?: string;
+  unconfirmedBalanceCurrencyDisplayValue?: string;
+  unconfirmedBalanceInCurrency?: number;
+}
+
+/**
+ * Avalanche TokenWithBalance interface.
+ */
+export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
+  available?: BN;
+  availableInCurrency?: number;
+  availableDisplayValue?: string;
+  availableCurrencyDisplayValue?: string;
+  utxos?: PChainBalance;
+  lockedStaked: number;
+  lockedStakeable: number;
+  lockedPlatform: number;
+  atomicMemoryLocked: number;
+  atomicMemoryUnlocked: number;
+  unlockedUnstaked: number;
+  unlockedStaked: number;
+  pendingStaked: number;
+}
+
+export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
+  available?: BN;
+  availableInCurrency?: number;
+  availableDisplayValue?: string;
+  availableCurrencyDisplayValue?: string;
+  utxos?: XChainBalances;
+  locked: number;
+  unlocked: number;
+  atomicMemoryUnlocked: number;
+  atomicMemoryLocked: number;
+}
+
+export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance>>;

@@ -1,10 +1,10 @@
 import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 describe('get-erc20-balances', () => {
   it('should return erc20 token balances', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listErc20Balances: jest.fn().mockResolvedValue({
         erc20TokenBalances: [
@@ -60,7 +60,7 @@ describe('get-erc20-balances', () => {
   });
 
   it('should return native token object without balance data', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listErc20Balances: jest.fn().mockRejectedValue(new Error('Failed to get erc20 balance')),
     };

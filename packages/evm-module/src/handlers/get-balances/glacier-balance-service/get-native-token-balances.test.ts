@@ -1,10 +1,10 @@
 import { BN } from 'bn.js';
 import { getNativeTokenBalances } from './get-native-token-balances';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 describe('get-native-token-balances', () => {
   it('should return native token balances', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       getNativeBalance: jest.fn().mockResolvedValue({
         nativeTokenBalance: {
@@ -46,7 +46,7 @@ describe('get-native-token-balances', () => {
   });
 
   it('should return native token object without balance data', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       getNativeBalance: jest.fn().mockRejectedValue(new Error('Failed to get native balance')),
     };

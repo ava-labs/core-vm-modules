@@ -3,7 +3,7 @@ import { BlockchainId, Network, SortOrder } from '@avalabs/glacier-sdk';
 import { isPChainTransactions, isXChainTransactions } from './utils';
 import { convertPChainTransaction } from './convert-p-chain-transaction';
 import { convertXChainTransaction } from './convert-x-chain-transaction';
-import type { GlacierService } from '@internal/utils';
+import type { AvalancheGlacierService } from '../../services/glacier-service/glacier-service';
 
 export const getTransactionHistory = async ({
   address,
@@ -11,8 +11,15 @@ export const getTransactionHistory = async ({
   offset,
   network,
   glacierService,
-}: GetTransactionHistory & { glacierService: GlacierService }): Promise<TransactionHistoryResponse> => {
+}: GetTransactionHistory & { glacierService: AvalancheGlacierService }): Promise<TransactionHistoryResponse> => {
   const { isTestnet, networkToken, explorerUrl, chainId } = network;
+  const isHealthy = glacierService.isHealthy();
+  if (!isHealthy) {
+    return {
+      transactions: [],
+      nextPageToken: '',
+    };
+  }
 
   const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,

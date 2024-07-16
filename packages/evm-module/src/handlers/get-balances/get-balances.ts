@@ -1,11 +1,12 @@
 import type { GetBalancesResponse, GetBalancesParams, Storage } from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
-import { GlacierService, TokenService } from '@internal/utils';
+import { TokenService } from '@internal/utils';
 import { getProvider } from '../../utils/get-provider';
 import { getTokens } from '../get-tokens/get-tokens';
 import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
 import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
 import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balance-service/get-erc20-balances';
+import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
 
 export const getBalances = async ({
   addresses,
@@ -17,14 +18,15 @@ export const getBalances = async ({
   glacierService,
 }: GetBalancesParams & {
   proxyApiUrl: string;
-  glacierService: GlacierService;
+  glacierService: EvmGlacierService;
   storage?: Storage;
 }): Promise<GetBalancesResponse> => {
   const chainId = network.chainId;
   const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
+  const isHealthy = glacierService.isHealthy();
 
   let balances = [];
-  if (isNetworkSupported) {
+  if (isHealthy && isNetworkSupported) {
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
         const nativeToken = await getNativeTokenBalancesFromGlacier({

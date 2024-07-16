@@ -1,6 +1,6 @@
 import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { convertTransaction } from './convert-transaction';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../../../services/glacier-service/glacier-service';
 
 export const getTransactionsFromGlacier = async ({
   chainId,
@@ -17,7 +17,7 @@ export const getTransactionsFromGlacier = async ({
   address: string;
   nextPageToken?: string;
   offset?: number;
-  glacierService: GlacierService;
+  glacierService: EvmGlacierService;
 }): Promise<TransactionHistoryResponse> => {
   try {
     const response = await glacierService.listTransactions({

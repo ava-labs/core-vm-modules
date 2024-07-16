@@ -37,13 +37,15 @@ export interface TxToken {
   symbol: string;
   amount: string;
   imageUri?: string;
-  from?: RichAddress;
-  to?: RichAddress;
+  from?: TokenWithAddress;
+  to?: TokenWithAddress;
   collectableTokenId?: string;
   type: TokenType;
 }
 
-type RichAddress = {
+// this is RichAddress from @avalabs/glacier-sdk,
+// rename it to TokenWithAddress for better understanding
+type TokenWithAddress = {
   /**
    * The contract name.
    */

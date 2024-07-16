@@ -5,15 +5,10 @@ import {
   simpleTokenPrice,
   type SimplePriceParams,
 } from '@avalabs/coingecko-sdk';
+import type { Storage, RawSimplePriceResponse, SimplePriceResponse } from '@avalabs/vm-module-types';
+import { coingeckoRetry } from '../../utils/coingecko-retry';
+import { arrayHash } from '../../utils/array-hash';
 import { coingeckoProxyClient } from './coingecko-proxy-client';
-import type {
-  Storage,
-  RawSimplePriceResponse,
-  Error as CoingeckoError,
-  SimplePriceResponse,
-} from '@avalabs/vm-module-types';
-import { arrayHash } from '../array-hash';
-import { coingeckoRetry } from '../coingecko-retry';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
@@ -104,7 +99,7 @@ export class TokenService {
     tokenAddresses: string[];
     currency: VsCurrencyType;
     useCoingeckoProxy?: boolean;
-  }): Promise<SimplePriceResponse | CoingeckoError> {
+  }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
       return coingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses(undefined, {
         params: {
@@ -138,7 +133,7 @@ export class TokenService {
     change24 = false,
     lastUpdated = false,
     useCoingeckoProxy = false,
-  }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse | CoingeckoError> {
+  }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
       const rawData = await coingeckoProxyClient(this.#proxyApiUrl).simplePrice(undefined, {
         queries: {

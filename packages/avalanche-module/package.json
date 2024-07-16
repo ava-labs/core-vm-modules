@@ -15,7 +15,6 @@
     "@avalabs/vm-module-types": "0.0.13",
     "@metamask/rpc-errors": "6.3.0",
     "@avalabs/utils-sdk": "v2.8.0-alpha.193",
-    "@avalabs/chains-sdk": "v2.8.0-alpha.193",
     "@avalabs/etherscan-sdk": "v2.8.0-alpha.193",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
     "@avalabs/wallets-sdk": "v2.8.0-alpha.193",

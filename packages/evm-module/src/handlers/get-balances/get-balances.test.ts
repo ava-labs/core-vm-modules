@@ -5,13 +5,14 @@ import { BN } from 'bn.js';
 import * as GlacierERC20Token from './glacier-balance-service/get-erc20-balances';
 import * as EvmNativeToken from './evm-balance-service/get-native-token-balances';
 import * as EvmERC20Token from './evm-balance-service/get-erc20-balances';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
 
 describe('get-balances', () => {
   it('should get balances from glacier', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       isNetworkSupported: () => true,
+      isHealthy: () => true,
     };
     jest.spyOn(GlacierNativeToken, 'getNativeTokenBalances').mockImplementationOnce(async () => {
       return {
@@ -120,9 +121,10 @@ describe('get-balances', () => {
   });
 
   it('should get balances from evm', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       isNetworkSupported: () => false,
+      isHealthy: () => false,
     };
     global.fetch = jest.fn(() =>
       Promise.resolve({

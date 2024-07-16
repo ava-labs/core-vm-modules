@@ -7,7 +7,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 export const getErc20Balances = async ({
   glacierService,
@@ -16,7 +16,7 @@ export const getErc20Balances = async ({
   address,
   customTokens,
 }: {
-  glacierService: GlacierService;
+  glacierService: EvmGlacierService;
   address: string;
   currency: string;
   chainId: number;
