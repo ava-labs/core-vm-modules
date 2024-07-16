@@ -9,6 +9,10 @@ import {
   SortOrder,
 } from '@avalabs/glacier-sdk';
 
+class GlacierUnhealthyError extends Error {
+  override message = 'Glacier is unhealthy. Try again later.';
+}
+
 export class AvalancheGlacierService {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
@@ -43,7 +47,9 @@ export class AvalancheGlacierService {
     try {
       return this.glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions(params);
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }

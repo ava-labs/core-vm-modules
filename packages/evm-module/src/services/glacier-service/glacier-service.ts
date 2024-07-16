@@ -14,6 +14,10 @@ import {
   Network,
 } from '@avalabs/glacier-sdk';
 
+class GlacierUnhealthyError extends Error {
+  override message = 'Glacier is unhealthy. Try again later.';
+}
+
 export class EvmGlacierService {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
@@ -77,7 +81,9 @@ export class EvmGlacierService {
         tokenId,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -98,7 +104,9 @@ export class EvmGlacierService {
         tokenId,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -112,7 +120,9 @@ export class EvmGlacierService {
     try {
       return this.glacierSdk.primaryNetworkBalances.getBalancesByAddresses(params);
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -133,7 +143,9 @@ export class EvmGlacierService {
         currency: currency.toLocaleLowerCase() as CurrencyCode,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -157,7 +169,9 @@ export class EvmGlacierService {
         pageToken,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -181,7 +195,9 @@ export class EvmGlacierService {
         pageToken,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -208,7 +224,9 @@ export class EvmGlacierService {
         pageToken,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
@@ -232,7 +250,9 @@ export class EvmGlacierService {
         pageSize,
       });
     } catch (error) {
-      this.setGlacierToUnhealthy();
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
       throw error;
     }
   }
