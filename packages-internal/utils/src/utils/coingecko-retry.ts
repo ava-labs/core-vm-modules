@@ -1,5 +1,11 @@
-import type { Error } from '@avalabs/vm-module-types';
 import { RetryBackoffPolicy, retry } from './retry';
+
+type Error = {
+  status: {
+    error_code: number;
+    error_message: string;
+  };
+};
 
 export const coingeckoRetry = <T>(
   operation: (useCoingeckoProxy: boolean) => Promise<T | Error>,

@@ -12,6 +12,7 @@ describe('get-balances', () => {
     const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       isNetworkSupported: () => true,
+      getGlacierHealthStatus: () => true,
     };
     jest.spyOn(GlacierNativeToken, 'getNativeTokenBalances').mockImplementationOnce(async () => {
       return {
@@ -123,6 +124,7 @@ describe('get-balances', () => {
     const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       isNetworkSupported: () => false,
+      getGlacierHealthStatus: () => false,
     };
     global.fetch = jest.fn(() =>
       Promise.resolve({

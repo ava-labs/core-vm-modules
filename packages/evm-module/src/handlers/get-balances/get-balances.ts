@@ -23,9 +23,10 @@ export const getBalances = async ({
 }): Promise<GetBalancesResponse> => {
   const chainId = network.chainId;
   const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
+  const isGlacierHealthy = glacierService.getGlacierHealthStatus();
 
   let balances = [];
-  if (isNetworkSupported) {
+  if (isGlacierHealthy && isNetworkSupported) {
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
         const nativeToken = await getNativeTokenBalancesFromGlacier({

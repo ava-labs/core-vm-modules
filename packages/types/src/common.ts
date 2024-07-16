@@ -32,9 +32,3 @@ export enum Environment {
   PRODUCTION = 'production',
   DEV = 'dev',
 }
-export type Error = {
-  status: {
-    error_code: number;
-    error_message: string;
-  };
-};

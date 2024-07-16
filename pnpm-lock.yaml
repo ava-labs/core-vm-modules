@@ -281,6 +281,9 @@ importers:
       '@avalabs/coingecko-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk':
+        specifier: v2.8.0-alpha.193
+        version: 2.8.0-alpha.193
       '@avalabs/utils-sdk':
         specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
@@ -385,7 +388,6 @@ packages:
 
   /@avalabs/glacier-sdk@2.8.0-alpha.193:
     resolution: {integrity: sha512-TGanE86i/CvY6+c3qjwDcxOwTsnblHv82pv3tWgR4enJpGLI02fInGXts3E7Wh2KGykiS8J733oP0MOkU0jbYg==}
-    dev: false
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
