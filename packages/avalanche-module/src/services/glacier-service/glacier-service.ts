@@ -1,6 +1,6 @@
-import { ChainId } from '@avalabs/chains-sdk';
 import {
   BlockchainId,
+  Glacier,
   type ListCChainAtomicTransactionsResponse,
   type ListPChainTransactionsResponse,
   type ListXChainTransactionsResponse,
@@ -8,11 +8,25 @@ import {
   PrimaryNetworkTxType,
   SortOrder,
 } from '@avalabs/glacier-sdk';
-import { GlacierService } from '@internal/utils';
 
-export class AvalancheGlacierService extends GlacierService {
-  override getSupportedChainIds(): Promise<string[]> {
-    return Promise.resolve([ChainId.AVALANCHE_XP.toString(), ChainId.AVALANCHE_TEST_XP.toString()]);
+export class AvalancheGlacierService {
+  glacierSdk: Glacier;
+  isGlacierHealthy = true;
+
+  constructor({ glacierApiUrl }: { glacierApiUrl: string }) {
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl });
+  }
+
+  isHealthy = (): boolean => this.isGlacierHealthy;
+
+  setGlacierToUnhealthy(): void {
+    this.isGlacierHealthy = false;
+    setTimeout(
+      () => {
+        this.isGlacierHealthy = true;
+      },
+      5 * 60 * 1000,
+    ); // 5 minutes
   }
 
   async listLatestPrimaryNetworkTransactions(params: {
@@ -26,6 +40,11 @@ export class AvalancheGlacierService extends GlacierService {
     pageSize?: number;
     sortOrder?: SortOrder;
   }): Promise<ListPChainTransactionsResponse | ListXChainTransactionsResponse | ListCChainAtomicTransactionsResponse> {
-    return this.glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions(params);
+    try {
+      return this.glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions(params);
+    } catch (error) {
+      this.setGlacierToUnhealthy();
+      throw error;
+    }
   }
 }
