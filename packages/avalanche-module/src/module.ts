@@ -14,14 +14,15 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
-import { getEnv, GlacierService } from '@internal/utils';
+import { getEnv } from './env';
+import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
 
 export class AvalancheModule implements Module {
-  #glacierService: GlacierService;
+  #glacierService: AvalancheGlacierService;
 
   constructor({ environment }: { environment: Environment }) {
     const { glacierApiUrl } = getEnv(environment);
-    this.#glacierService = new GlacierService({ glacierApiUrl });
+    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
   }
 
   getAddress(): Promise<string> {

@@ -18,10 +18,11 @@ import { getTransactionHistory } from './handlers/get-transaction-history/get-tr
 import ManifestJson from '../manifest.json';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 import { getBalances } from './handlers/get-balances/get-balances';
-import { getEnv, GlacierService } from '@internal/utils';
+import { getEnv } from './env';
+import { EvmGlacierService } from './services/glacier-service/glacier-service';
 
 export class EvmModule implements Module {
-  #glacierService: GlacierService;
+  #glacierService: EvmGlacierService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
@@ -33,7 +34,7 @@ export class EvmModule implements Module {
     environment: Environment;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new GlacierService({ glacierApiUrl });
+    this.#glacierService = new EvmGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
   }

@@ -2,7 +2,7 @@ import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { TokenType, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
 import { BN } from 'bn.js';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 export const getNativeTokenBalances = async ({
   address,
@@ -13,7 +13,7 @@ export const getNativeTokenBalances = async ({
   chainId: number;
   address: string;
   currency: string;
-  glacierService: GlacierService;
+  glacierService: EvmGlacierService;
 }): Promise<NetworkTokenWithBalance> => {
   const nativeBalance = await glacierService.getNativeBalance({
     chainId: chainId.toString(),

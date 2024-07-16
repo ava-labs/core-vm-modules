@@ -1,7 +1,7 @@
 import { getTransactionHistory } from './get-transaction-history';
 import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
-import type { GlacierService } from '@internal/utils';
+import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
 
 jest.mock('./converters/evm-transaction-converter/get-transactions-from-glacier', () => ({
   getTransactionsFromGlacier: jest.fn(),
@@ -14,7 +14,7 @@ jest.mock('./converters/etherscan-transaction-converter/get-transaction-from-eth
 describe('get-transaction-history', () => {
   it('should have called getTransactionFromEtherscan', async () => {
     await getTransactionHistory({
-      glacierService: {} as GlacierService,
+      glacierService: {} as EvmGlacierService,
       chainId: 1,
       isTestnet: false,
       networkToken: {
@@ -33,7 +33,7 @@ describe('get-transaction-history', () => {
   });
   it('should have called getTransactionsFromGlacier', async () => {
     await getTransactionHistory({
-      glacierService: {} as GlacierService,
+      glacierService: {} as EvmGlacierService,
       chainId: 41334,
       isTestnet: false,
       networkToken: {

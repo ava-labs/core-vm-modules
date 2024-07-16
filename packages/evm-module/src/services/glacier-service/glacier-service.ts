@@ -1,58 +1,20 @@
 import {
   BlockchainId,
-  type ChainAddressChainIdMapListResponse,
   CurrencyCode,
   Erc1155Token,
   Erc721Token,
   type GetNativeBalanceResponse,
-  Glacier,
   type ListCChainAtomicBalancesResponse,
-  type ListCChainAtomicTransactionsResponse,
   type ListErc1155BalancesResponse,
   type ListErc20BalancesResponse,
   type ListErc721BalancesResponse,
   type ListPChainBalancesResponse,
-  type ListPChainTransactionsResponse,
   type ListXChainBalancesResponse,
-  type ListXChainTransactionsResponse,
   Network,
-  PrimaryNetworkTxType,
-  SortOrder,
 } from '@avalabs/glacier-sdk';
-import { ChainId } from '@avalabs/chains-sdk';
+import { GlacierService } from '@internal/utils';
 
-export class GlacierService {
-  private glacierSdk: Glacier;
-  private isGlacierHealthy = true;
-  private supportedChainIds: string[] = [];
-
-  constructor({ glacierApiUrl }: { glacierApiUrl: string }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl });
-    /**
-     * This is for performance, basically we just cache the health of glacier every 5 seconds and
-     * go off of that instead of every request
-     */
-    this.getSupportedChainIds().catch(() => {
-      // Noop. It will be retried by .isSupportedNetwork calls upon unlocking if necessary.
-    });
-  }
-
-  async isNetworkSupported(chainId: number): Promise<boolean> {
-    if (!this.isGlacierHealthy) return this.isGlacierHealthy;
-    const chainIds = await this.getSupportedChainIds();
-    return chainIds.some((id) => id === chainId.toString());
-  }
-
-  setGlacierToUnhealthy(): void {
-    this.isGlacierHealthy = false;
-    setTimeout(
-      () => {
-        this.isGlacierHealthy = true;
-      },
-      5 * 60 * 1000,
-    ); // 5 minutes
-  }
-
+export class EvmGlacierService extends GlacierService {
   async reindexNft({
     address,
     chainId,
@@ -92,44 +54,6 @@ export class GlacierService {
     addresses?: string;
   }): Promise<ListPChainBalancesResponse | ListXChainBalancesResponse | ListCChainAtomicBalancesResponse> {
     return this.glacierSdk.primaryNetworkBalances.getBalancesByAddresses(params);
-  }
-
-  async listLatestPrimaryNetworkTransactions(params: {
-    blockchainId: BlockchainId;
-    network: Network;
-    addresses?: string;
-    txTypes?: Array<PrimaryNetworkTxType>;
-    startTimestamp?: number;
-    endTimestamp?: number;
-    pageToken?: string;
-    pageSize?: number;
-    sortOrder?: SortOrder;
-  }): Promise<ListPChainTransactionsResponse | ListXChainTransactionsResponse | ListCChainAtomicTransactionsResponse> {
-    return this.glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions(params);
-  }
-  async getChainIdsForAddresses(params: {
-    addresses: string;
-    network: Network;
-  }): Promise<ChainAddressChainIdMapListResponse> {
-    return this.glacierSdk.primaryNetwork.getChainIdsForAddresses(params);
-  }
-
-  private async getSupportedChainIds(): Promise<string[]> {
-    if (this.supportedChainIds.length) {
-      return this.supportedChainIds;
-    }
-
-    try {
-      const supportedChains = await this.glacierSdk.evmChains.supportedChains({});
-      this.supportedChainIds = supportedChains.chains.map((chain) => chain.chainId);
-      //even though glacier supports X and P chains the SDK doesn't provide 'em as list
-      // so we push them manually
-      this.supportedChainIds.push(ChainId.AVALANCHE_XP.toString());
-      this.supportedChainIds.push(ChainId.AVALANCHE_TEST_XP.toString());
-      return this.supportedChainIds;
-    } catch {
-      return [];
-    }
   }
 
   async getNativeBalance({

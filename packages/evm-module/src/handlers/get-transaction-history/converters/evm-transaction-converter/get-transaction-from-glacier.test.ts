@@ -1,6 +1,6 @@
 import type { ListTransactionDetailsResponse } from '@avalabs/glacier-sdk';
 import { getTransactionsFromGlacier } from './get-transactions-from-glacier';
-import type { GlacierService } from '@internal/utils';
+import { EvmGlacierService } from '../../../../services/glacier-service/glacier-service';
 
 const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
   nextPageToken: 'nextPageToken',
@@ -35,7 +35,7 @@ describe('get-transactions-from-glacier', () => {
     jest.clearAllMocks();
   });
   it('should have returned empty response when listTransaction failed', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listTransactions: jest.fn().mockRejectedValue(new Error('failed to list transactions')),
     };
@@ -60,7 +60,7 @@ describe('get-transactions-from-glacier', () => {
     });
   });
   it('should have returned filtered response with no transaction status of 0', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listTransactions: jest.fn().mockResolvedValue({
         ...mockListTransactionDetailsResponse,
@@ -96,7 +96,7 @@ describe('get-transactions-from-glacier', () => {
     });
   });
   it('should have returned filtered response without transaction with amount 0', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listTransactions: jest.fn().mockResolvedValue({
         ...mockListTransactionDetailsResponse,
@@ -133,7 +133,7 @@ describe('get-transactions-from-glacier', () => {
   });
 
   it('should have returned response', async () => {
-    const mockGlacierService: GlacierService = {
+    const mockGlacierService: EvmGlacierService = {
       ...expect.any(Object),
       listTransactions: jest.fn().mockResolvedValue(mockListTransactionDetailsResponse),
     };

@@ -1,3 +1,2 @@
-export { TokenService } from './utils/token-service/token-service';
-export { GlacierService } from './utils/glacier-service/glacier-service';
-export { getEnv } from './utils/env';
+export { TokenService } from './services//token-service';
+export { GlacierService } from './services/glacier-service/glacier-service';
