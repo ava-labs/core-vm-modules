@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.15
+
+### Patch Changes
+
+- f536d58: add module functions to evm-module
+
 ## 0.0.14
 
 ### Patch Changes
