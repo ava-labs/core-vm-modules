@@ -1,3 +1,4 @@
+import { ChainId } from '@avalabs/chains-sdk';
 import {
   BlockchainId,
   type ListCChainAtomicTransactionsResponse,
@@ -10,6 +11,10 @@ import {
 import { GlacierService } from '@internal/utils';
 
 export class AvalancheGlacierService extends GlacierService {
+  override getSupportedChainIds(): Promise<string[]> {
+    return Promise.resolve([ChainId.AVALANCHE_XP.toString(), ChainId.AVALANCHE_TEST_XP.toString()]);
+  }
+
   async listLatestPrimaryNetworkTransactions(params: {
     blockchainId: BlockchainId;
     network: Network;

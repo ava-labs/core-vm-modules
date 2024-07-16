@@ -34,7 +34,7 @@ export class GlacierService {
     ); // 5 minutes
   }
 
-  private async getSupportedChainIds(): Promise<string[]> {
+  protected async getSupportedChainIds(): Promise<string[]> {
     if (this.supportedChainIds.length) {
       return this.supportedChainIds;
     }
