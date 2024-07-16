@@ -5,5 +5,10 @@
     "declaration": false,
     "incremental": false // Need to turn off because of tsup dts
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages-internal/utils"
+    }
+  ]
 }

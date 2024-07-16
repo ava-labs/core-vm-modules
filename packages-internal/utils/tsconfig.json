@@ -2,7 +2,8 @@
   "extends": "@internal/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "tsBuildInfoFile": ".tsbuildinfo"
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "composite": true,
   },
   "include": ["src"]
 }

@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.0.15",
-    "@internal/utils": "workspace:*",
     "@zodios/core": "10.9.6",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/utils-sdk": "2.8.0-alpha.193",
@@ -36,6 +35,7 @@
     "@types/jest": "29.5.7",
     "@types/lodash.startcase": "4.4.9",
     "eslint-config-custom": "workspace:*",
+    "@internal/utils": "workspace:*",
     "jest": "29.7.0",
     "ts-jest": "29.1.1",
     "tsup": "7.2.0",
