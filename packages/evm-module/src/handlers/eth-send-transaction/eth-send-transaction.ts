@@ -98,7 +98,7 @@ export const ethSendTransaction = async ({
     network: {
       chainId: network.chainId,
       name: network.chainName,
-      logoUrl: network.logoUrl,
+      logoUri: network.logoUri,
     },
     transactionDetails: {
       website: new URL(dappInfo.url).hostname,

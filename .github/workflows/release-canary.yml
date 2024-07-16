@@ -22,10 +22,12 @@ jobs:
         run: |
           echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
 
-      - name: Setup pnpm 7
-        uses: pnpm/action-setup@v2
+      # https://github.com/pnpm/action-setup/issues/135
+      # https://github.com/pnpm/action-setup/releases/tag/v2.4.1
+      - name: Setup pnpm 8.6.10
+        uses: pnpm/action-setup@v2.4.1
         with:
-          version: 7
+          version: 8.6.10
 
       - name: Setup Node.js 18.x
         uses: actions/setup-node@v2
@@ -37,7 +39,7 @@ jobs:
 
       # This will run all build, test, and lint scripts in parallel
       - name: Build, Test, & Lint all packages
-        run: pnpm ci
+        run: pnpm run ci
 
       - name: Setup Local Github Actions
         run: pnpm run build --filter=github-actions --force

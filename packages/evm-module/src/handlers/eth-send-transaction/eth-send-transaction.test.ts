@@ -40,7 +40,7 @@ const testNetwork: Network = {
   chainId: 1,
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
-  logoUrl: 'logoUrl',
+  logoUri: 'logoUri',
   utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
     name: 'Ethereum',
@@ -71,7 +71,7 @@ const displayData = {
   network: {
     chainId: testNetwork.chainId,
     name: testNetwork.chainName,
-    logoUrl: testNetwork.logoUrl,
+    logoUri: testNetwork.logoUri,
   },
   transactionDetails: {
     website: 'example.com',

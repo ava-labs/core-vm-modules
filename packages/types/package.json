@@ -17,6 +17,10 @@
   "devDependencies": {
     "tsup": "7.2.0",
     "@internal/tsup-config": "workspace:*",
+    "bn.js": "5.2.1",
+    "@types/bn.js": "5.1.5",
+    "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
+    "@avalabs/utils-sdk": "2.8.0-alpha.193",
     "eslint-config-custom": "workspace:*"
   },
   "peerDependencies": {

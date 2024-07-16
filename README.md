@@ -26,15 +26,17 @@ pnpm build    # builds all packages
 > These Packages are published to NPM
 
 - `evm-module`: EVM module
+- `avalanche-module`: Avalanche module
+- `types`: shared types for modules
 
 #### Internal
 
 > These packages are only used internally within this repo
 
-- `types`: shared types for modules
 - `tsconfig`: tsconfig for modules
 - `eslint-config-custom`: eslint config for modules
 - `github-actions`: custom github actions
+- `utils`: utils for all vm-module packages
 
 Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
 

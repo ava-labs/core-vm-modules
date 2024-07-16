@@ -23,7 +23,6 @@ export async function getNetworkFee({
   chainId: number;
   chainName: string;
   rpcUrl: string;
-  glacierApiUrl: string;
   multiContractAddress?: string;
 }): Promise<NetworkFees> {
   const provider = getProvider({
