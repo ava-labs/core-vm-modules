@@ -13,6 +13,13 @@ export const getTransactionHistory = async ({
   glacierService,
 }: GetTransactionHistory & { glacierService: AvalancheGlacierService }): Promise<TransactionHistoryResponse> => {
   const { isTestnet, networkToken, explorerUrl, chainId } = network;
+  const isHealthy = glacierService.isHealthy();
+  if (!isHealthy) {
+    return {
+      transactions: [],
+      nextPageToken: '',
+    };
+  }
 
   const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,

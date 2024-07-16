@@ -17,7 +17,7 @@ export class GlacierService {
     });
   }
 
-  getGlacierHealthStatus = (): boolean => this.isGlacierHealthy;
+  isHealthy = (): boolean => this.isGlacierHealthy;
 
   async isNetworkSupported(chainId: number): Promise<boolean> {
     const chainIds = await this.getSupportedChainIds();

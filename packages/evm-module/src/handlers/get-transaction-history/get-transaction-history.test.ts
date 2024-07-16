@@ -32,8 +32,12 @@ describe('get-transaction-history', () => {
     expect(getTransactionFromEtherscan).toHaveBeenCalled();
   });
   it('should have called getTransactionsFromGlacier', async () => {
+    const mockGlacierService: EvmGlacierService = {
+      ...expect.any(Object),
+      isHealthy: jest.fn().mockReturnValue(true),
+    };
     await getTransactionHistory({
-      glacierService: {} as EvmGlacierService,
+      glacierService: mockGlacierService,
       chainId: 41334,
       isTestnet: false,
       networkToken: {

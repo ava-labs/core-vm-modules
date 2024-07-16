@@ -34,6 +34,15 @@ export const getTransactionHistory = async ({
       offset,
     });
   }
+
+  const isHealthy = glacierService.isHealthy();
+  if (!isHealthy) {
+    return {
+      transactions: [],
+      nextPageToken: '',
+    };
+  }
+
   return getTransactionsFromGlacier({
     networkToken,
     explorerUrl,
