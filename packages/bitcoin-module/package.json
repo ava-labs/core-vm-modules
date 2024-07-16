@@ -1,0 +1,27 @@
+{
+  "name": "@avalabs/bitcoin-module",
+  "version": "0.0.1",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@avalabs/vm-module-types": "0.0.13",
+    "@avalabs/wallets-sdk": "2.8.0-alpha.188",
+    "@metamask/rpc-errors": "6.3.0"
+  },
+  "devDependencies": {
+    "@internal/tsup-config": "workspace:*",
+    "@types/jest": "29.5.7",
+    "eslint-config-custom": "workspace:*",
+    "jest": "29.7.0",
+    "ts-jest": "29.1.1",
+    "tsup": "7.2.0"
+  }
+}
