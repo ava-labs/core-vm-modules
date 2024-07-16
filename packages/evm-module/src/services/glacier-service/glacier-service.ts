@@ -15,6 +15,20 @@ import {
 import { GlacierService } from '@internal/utils';
 
 export class EvmGlacierService extends GlacierService {
+  override async getSupportedChainIds(): Promise<string[]> {
+    if (this.supportedChainIds.length) {
+      return this.supportedChainIds;
+    }
+
+    try {
+      const supportedChains = await this.glacierSdk.evmChains.supportedChains({});
+      this.supportedChainIds = supportedChains.chains.map((chain) => chain.chainId);
+      return this.supportedChainIds;
+    } catch {
+      return [];
+    }
+  }
+
   async reindexNft({
     address,
     chainId,
