@@ -11,7 +11,7 @@ export interface NetworkContractToken {
   chainId?: number;
   color?: string;
   contractType: string;
-  decimals: number;
+  decimals?: number;
   logoUri?: string;
   name: string;
   symbol: string;

@@ -13,15 +13,19 @@ import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
+import { simulateTransaction } from '../../utils/transaction-simulation';
+import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 
 export const ethSendTransaction = async ({
   request,
   network,
   approvalController,
+  proxyApiUrl,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
+  proxyApiUrl: string;
 }) => {
   const { dappInfo, params } = request;
 
@@ -87,8 +91,14 @@ export const ethSendTransaction = async ({
     }
   }
 
-  // TODO: validate + simulate transaction
-  // https://ava-labs.atlassian.net/browse/CP-8870
+  const transactionType = parseERC20TransactionType(transaction);
+
+  const { transactionValidation, transactionSimulation } = await simulateTransaction({
+    proxyApiUrl,
+    chainId: network.chainId,
+    params: transaction,
+    dAppUrl: request.dappInfo.url,
+  });
 
   // generate display and signing data
   // TODO adjust title for different transaction types
@@ -105,8 +115,11 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       to: transaction.to,
       data: transaction.data,
+      type: transactionType,
     },
     networkFeeSelector: true,
+    transactionValidation,
+    transactionSimulation,
   };
 
   const signingData: SigningData = {

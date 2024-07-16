@@ -9,10 +9,26 @@ import { getProvider } from '../../utils/get-provider';
 
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
+const PROXY_API_URL = 'https://proxy-api.avax.network';
+
 jest.mock('./schema');
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
+jest.mock('@blockaid/client', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      evm: {
+        transaction: {
+          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Success' } }),
+        },
+        jsonRpc: {
+          scan: jest.fn(),
+        },
+      },
+    };
+  });
+});
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
@@ -64,6 +80,7 @@ const testRequestParams = () => ({
   },
   network: testNetwork,
   approvalController: mockApprovalController,
+  proxyApiUrl: PROXY_API_URL,
 });
 
 const displayData = {

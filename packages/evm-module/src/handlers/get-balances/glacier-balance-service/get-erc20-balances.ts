@@ -9,6 +9,8 @@ import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
+const DEFAULT_DECIMALS = 18;
+
 export const getErc20Balances = async ({
   glacierService,
   currency,
@@ -61,6 +63,7 @@ const convertNetworkTokenToTokenWithBalance = (tokens: NetworkContractToken[]): 
   return tokens.map((token) => {
     return {
       ...token,
+      decimals: token.decimals ?? DEFAULT_DECIMALS,
       type: TokenType.ERC20,
       balance: new BN(0),
       balanceInCurrency: 0,
