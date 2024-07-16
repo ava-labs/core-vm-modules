@@ -1,6 +1,8 @@
 {
   "name": "@internal/utils",
   "main": "src/index.ts",
+  "module": "src/index.ts",
+  "type": "module",
   "scripts": {
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest",
