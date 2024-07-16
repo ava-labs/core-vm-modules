@@ -1,6 +1,6 @@
 {
   "name": "@internal/utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -16,7 +16,9 @@
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
-    "@avalabs/vm-module-types": "0.0.13"
+    "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
+    "@avalabs/chains-sdk": "v2.8.0-alpha.193",
+    "@avalabs/vm-module-types": "0.0.14"
   },
   "devDependencies": {
     "tsup": "7.2.0",

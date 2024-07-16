@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.14
+
+### Patch Changes
+
+- 0593258: add getBalances to evm-module
+
 ## 0.0.13
 
 ### Patch Changes
