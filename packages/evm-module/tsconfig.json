@@ -8,7 +8,7 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../../packages-internal/utils"
+      "path": "../../packages-internal/utils/tsconfig.json"
     }
   ]
 }
