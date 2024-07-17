@@ -1,5 +1,5 @@
 {
-  "name": "Avalanche",
+  "name": "Bitcoin",
   "description": "",
   "version": "0.0.1",
   "sources": {
@@ -8,7 +8,7 @@
       "location": {
         "npm": {
           "filePath": "dist/bundle.js",
-          "packageName": "@avalabs/avalanche-module",
+          "packageName": "@avalabs/bitcoin-module",
           "registry": "https://registry.npmjs.org"
         }
       }
@@ -18,26 +18,21 @@
       "location": {
         "npm": {
           "filePath": "dist/provider.js",
-          "packageName": "@avalabs/avalanche-module",
+          "packageName": "@avalabs/bitcoin-module",
           "registry": "https://registry.npmjs.org"
         }
       }
     }
   },
   "network": {
-    "chainIds": [
-      "avax:Rr9hnPVPxuUvrdCul-vjEsU1zmqKqRDo",
-      "avax:Sj7NVE3jXTbJvwFAiu7OEUo_8g8ctXMG",
-      "avax:imji8papUf2EhV3le337w1vgFauqkJg-",
-      "avax:8AJTpRj3SAqv1e80Mtl9em08LhvKEbkl"
-    ],
-    "namespaces": ["avax"]
+    "chainIds": ["bip122:000000000019d6689c085ae165831e93", "bip122:000000000933ea01ad0ee984209779ba"],
+    "namespaces": ["bip122"]
   },
-  "cointype": "9000",
+  "cointype": "0",
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["avalanche_sendTransaction", "avalanche_*"]
+      "methods": ["bitcoin_sendTransaction"]
     }
   },
   "manifestVersion": "0.0"
