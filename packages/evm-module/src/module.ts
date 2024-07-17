@@ -18,7 +18,7 @@ import { getTransactionHistory } from './handlers/get-transaction-history/get-tr
 import ManifestJson from '../manifest.json';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 import { getBalances } from './handlers/get-balances/get-balances';
-import { getEnv } from './env';
+import { getEnv } from '@internal/utils/src/utils/env';
 import { EvmGlacierService } from './services/glacier-service/glacier-service';
 
 export class EvmModule implements Module {
