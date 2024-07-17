@@ -18,10 +18,10 @@
     "@avalabs/etherscan-sdk": "v2.8.0-alpha.193",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
     "@avalabs/wallets-sdk": "v2.8.0-alpha.193",
-    "big.js": "6.2.1",
-    "@internal/utils": "workspace:*"
+    "big.js": "6.2.1"
   },
   "devDependencies": {
+    "@internal/utils": "workspace:*",
     "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",
     "eslint-config-custom": "workspace:*",
