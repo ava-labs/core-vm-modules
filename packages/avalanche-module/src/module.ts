@@ -16,6 +16,7 @@ import { getNetworkFee } from './handlers/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
+import { hashBlockchainId } from './utils/hash-blockchain-id';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -55,5 +56,9 @@ export class AvalancheModule implements Module {
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }
+  }
+
+  static getHashedBlockchainId({ blockchainId, isTestnet }: { blockchainId: string; isTestnet?: boolean }): string {
+    return hashBlockchainId({ blockchainId, isTestnet });
   }
 }
