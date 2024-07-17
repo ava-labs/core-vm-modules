@@ -244,9 +244,6 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
-      '@openzeppelin/contracts':
-        specifier: 4.9.3
-        version: 4.9.3
       '@zodios/core':
         specifier: 10.9.6
         version: 10.9.6(axios@1.7.2)(zod@3.23.8)
@@ -269,6 +266,9 @@ importers:
       '@internal/utils':
         specifier: workspace:*
         version: link:../../packages-internal/utils
+      '@openzeppelin/contracts':
+        specifier: 4.9.3
+        version: 4.9.3
       '@typechain/ethers-v6':
         specifier: 0.5.0
         version: 0.5.0(ethers@6.8.1)(typechain@8.3.1)(typescript@5.2.2)
@@ -2403,7 +2403,6 @@ packages:
 
   /@openzeppelin/contracts@4.9.3:
     resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
-    dev: false
 
   /@openzeppelin/contracts@4.9.6:
     resolution: {integrity: sha512-xSmezSupL+y9VkHZJGDoCBpmnB2ogM13ccaYDWqJTfS3dbuHkgjuwDFUmaFauBCboQMGB/S5UqUl2y54X99BmA==}
