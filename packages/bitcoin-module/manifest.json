@@ -28,7 +28,7 @@
     "chainIds": ["bip122:000000000019d6689c085ae165831e93", "bip122:000000000933ea01ad0ee984209779ba"],
     "namespaces": ["bip122"]
   },
-  "cointype": "60",
+  "cointype": "0",
   "permissions": {
     "rpc": {
       "dapps": true,
