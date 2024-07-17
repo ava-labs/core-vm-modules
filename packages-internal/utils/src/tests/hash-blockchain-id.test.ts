@@ -1,4 +1,4 @@
-import { hashBlockchainId } from './hash-blockchain-id';
+import { hashBlockchainId } from '../utils/hash-blockchain-id';
 
 describe('hashBlockchainId', () => {
   it('hashes the c-chain mainnet blockchain id', () => {
