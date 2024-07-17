@@ -5,19 +5,29 @@ import type {
   GetTransactionHistory,
   RpcRequest,
   Network,
+  Environment,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getEnv } from '@internal/utils/src/utils/env';
 
 import ManifestJson from '../manifest.json';
+import { getNetworkFee } from './handlers/get-network-fee';
 
 export class BitcoinModule implements Module {
+  #proxyApiUrl: string;
+
+  constructor({ environment }: { environment: Environment }) {
+    const { proxyApiUrl } = getEnv(environment);
+    this.#proxyApiUrl = proxyApiUrl;
+  }
+
   getAddress(): Promise<string> {
     return Promise.resolve('Bitcoin address');
   }
 
   getBalances() {
-    return Promise.resolve('Bitcoin balances');
+    return Promise.resolve({});
   }
 
   getManifest(): Manifest | undefined {
@@ -25,19 +35,10 @@ export class BitcoinModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee(_: Network): Promise<NetworkFees> {
-    return Promise.resolve({
-      baseFee: 1n,
-      low: {
-        maxFeePerGas: 1n,
-      },
-      medium: {
-        maxFeePerGas: 2n,
-      },
-      high: {
-        maxFeePerGas: 4n,
-      },
-      isFixedFee: false,
+  getNetworkFee(network: Network): Promise<NetworkFees> {
+    return getNetworkFee({
+      isTestnet: Boolean(network.isTestnet),
+      proxyApiUrl: this.#proxyApiUrl,
     });
   }
 
