@@ -3,7 +3,7 @@ import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
+import { NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 
@@ -49,6 +49,7 @@ const testNetwork: Network = {
     description: 'Ethereum Token',
     logoUri: 'some logo uri',
   },
+  vmName: NetworkVMType.EVM,
 };
 
 const testParams = { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' };
