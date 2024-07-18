@@ -8,8 +8,7 @@ import {
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
-
-const DEFAULT_DECIMALS = 18;
+import { DEFAULT_DECIMALS } from '../../../constants';
 
 export const getErc20Balances = async ({
   glacierService,

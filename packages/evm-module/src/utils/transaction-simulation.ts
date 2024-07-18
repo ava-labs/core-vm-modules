@@ -1,16 +1,15 @@
 import Blockaid from '@blockaid/client';
 import type { TransactionParams } from '../types';
 import {
-  type AssetExposure,
-  type AssetDiffs,
-  type AssetDiffItem,
   type NetworkContractToken,
   type NetworkToken,
-  type AssetDiff,
-  type TransactionSimulation,
-  type TransactionValidation,
   TokenType,
-  TransactionValidationResultType,
+  AlertType,
+  type Alert,
+  type BalanceChange,
+  type TokenApproval,
+  type TokenDiff,
+  type TokenDiffItem,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/utils-sdk';
 import { isHexString } from 'ethers';
@@ -26,9 +25,6 @@ export const simulateTransaction = async ({
   chainId: number;
   proxyApiUrl: string;
 }) => {
-  let transactionValidation: TransactionValidation | undefined = undefined;
-  let transactionSimulation: TransactionSimulation | undefined = undefined;
-
   const { validation, simulation } = await scanTransaction({
     proxyApiUrl,
     chainId,
@@ -36,26 +32,19 @@ export const simulateTransaction = async ({
     domain: dAppUrl,
   });
 
-  if (!validation || validation.result_type === 'Error') {
-    transactionValidation = {
-      resultType: TransactionValidationResultType.ERROR,
-      warningDetails: {
-        title: 'Suspicious Transaction',
-        description: 'Use caution, this transaction may be malicious.',
-      },
-    };
-  } else if (validation.result_type === 'Warning') {
-    transactionValidation = {
-      resultType: TransactionValidationResultType.WARNING,
-      warningDetails: {
+  let alert: Alert | undefined;
+  if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+    alert = {
+      type: AlertType.WARNING,
+      details: {
         title: 'Suspicious Transaction',
         description: 'Use caution, this transaction may be malicious.',
       },
     };
   } else if (validation.result_type === 'Malicious') {
-    transactionValidation = {
-      resultType: TransactionValidationResultType.MALICIOUS,
-      warningDetails: {
+    alert = {
+      type: AlertType.DANGER,
+      details: {
         title: 'Scam Transaction',
         description: 'This transaction is malicious, do not proceed.',
         actionTitles: {
@@ -64,23 +53,17 @@ export const simulateTransaction = async ({
         },
       },
     };
-  } else if (validation.result_type === 'Benign') {
-    transactionValidation = {
-      resultType: TransactionValidationResultType.BENIGN,
-    };
   }
+
+  let balanceChange: BalanceChange | undefined;
+  let tokenApprovals: TokenApproval[] = [];
 
   if (simulation?.status === 'Success') {
-    const exposures = getExposures(simulation);
-    const assetDiffs = getAssetDiffs(simulation);
-
-    transactionSimulation = {
-      assetDiffs,
-      exposures,
-    };
+    tokenApprovals = getTokenApprovals(simulation.account_summary.exposures);
+    balanceChange = getBalanceChange(simulation.account_summary.assets_diffs);
   }
 
-  return { transactionValidation, transactionSimulation };
+  return { alert, balanceChange, tokenApprovals };
 };
 
 const scanTransaction = async ({
@@ -115,10 +98,10 @@ const scanTransaction = async ({
   });
 };
 
-const getExposures = (transactionSimulation: Blockaid.TransactionSimulation): AssetExposure[] => {
-  const exposures: AssetExposure[] = [];
+const getTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApproval[] => {
+  const tokenApprovals: TokenApproval[] = [];
 
-  for (const exposurePerAsset of transactionSimulation.account_summary.exposures) {
+  for (const exposurePerAsset of exposures) {
     const asset = exposurePerAsset.asset;
     if (!asset || !asset.name || !asset.symbol) {
       continue;
@@ -135,7 +118,7 @@ const getExposures = (transactionSimulation: Blockaid.TransactionSimulation): As
 
     for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
       if (exposurePerSpender.exposure.length === 0) {
-        exposures.push({
+        tokenApprovals.push({
           token,
           spenderAddress,
           logoUri: asset.logo_url,
@@ -143,7 +126,7 @@ const getExposures = (transactionSimulation: Blockaid.TransactionSimulation): As
       } else {
         for (const exposure of exposurePerSpender.exposure) {
           if ('raw_value' in exposure) {
-            exposures.push({
+            tokenApprovals.push({
               token,
               spenderAddress,
               value: exposure.raw_value,
@@ -151,7 +134,7 @@ const getExposures = (transactionSimulation: Blockaid.TransactionSimulation): As
               logoUri: asset.logo_url,
             });
           } else {
-            exposures.push({
+            tokenApprovals.push({
               token,
               spenderAddress,
               logoUri: exposure.logo_url,
@@ -163,18 +146,17 @@ const getExposures = (transactionSimulation: Blockaid.TransactionSimulation): As
     }
   }
 
-  return exposures;
+  return tokenApprovals;
 };
 
-const getAssetDiffs = (transactionSimulation: Blockaid.TransactionSimulation): AssetDiffs => {
-  const assetDiffs = transactionSimulation.account_summary.assets_diffs;
+const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
 
   return { ins, outs };
 };
 
-const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out'): AssetDiff[] => {
+const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out'): TokenDiff[] => {
   return assetDiffs
     .filter((assetDiff) => assetDiff[type].length > 0)
     .sort((a, b) => a[type].length - b[type].length)
@@ -219,9 +201,9 @@ const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out')
 
           return value ? { value, usdPrice: diff.usd_price } : undefined;
         })
-        .filter((x): x is AssetDiffItem => x !== undefined);
+        .filter((x): x is TokenDiffItem => x !== undefined);
 
       return { token, items };
     })
-    .filter((x): x is AssetDiff => x !== undefined);
+    .filter((x): x is TokenDiff => x !== undefined);
 };

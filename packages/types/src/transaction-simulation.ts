@@ -1,13 +1,11 @@
 import type { NetworkContractToken, NetworkToken } from './token';
 
-export enum TransactionValidationResultType {
-  BENIGN = 'Benign',
-  MALICIOUS = 'Malicious',
+export enum AlertType {
   WARNING = 'Warning',
-  ERROR = 'Error',
+  DANGER = 'Danger',
 }
 
-export type TransactionValidationWarningDetails = {
+export type AlertDetails = {
   title: string;
   description: string;
   actionTitles?: {
@@ -16,32 +14,27 @@ export type TransactionValidationWarningDetails = {
   };
 };
 
-export type TransactionValidation = {
-  resultType: TransactionValidationResultType;
-  warningDetails?: TransactionValidationWarningDetails;
+export type Alert = {
+  type: AlertType;
+  details: AlertDetails;
 };
 
-export type TransactionSimulation = {
-  assetDiffs: AssetDiffs;
-  exposures: AssetExposure[];
+export type BalanceChange = {
+  ins: TokenDiff[];
+  outs: TokenDiff[];
 };
 
-export type AssetDiffs = {
-  ins: AssetDiff[];
-  outs: AssetDiff[];
-};
-
-export type AssetDiff = {
+export type TokenDiff = {
   token: NetworkContractToken | NetworkToken;
-  items: AssetDiffItem[];
+  items: TokenDiffItem[];
 };
 
-export type AssetDiffItem = {
+export type TokenDiffItem = {
   value: string;
   usdPrice: string | undefined;
 };
 
-export type AssetExposure = {
+export type TokenApproval = {
   token: NetworkContractToken;
   spenderAddress: string;
   value?: string;

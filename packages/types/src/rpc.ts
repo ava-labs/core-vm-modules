@@ -1,7 +1,7 @@
 import type { TransactionRequest } from 'ethers';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
-import type { TransactionSimulation, TransactionValidation } from './transaction-simulation';
+import type { Alert, BalanceChange, TokenApproval } from './transaction-simulation';
 
 export enum RpcMethod {
   /* EVM */
@@ -97,8 +97,9 @@ export type DisplayData = {
   };
   networkFeeSelector?: boolean;
   disclaimer?: string;
-  transactionValidation?: TransactionValidation;
-  transactionSimulation?: TransactionSimulation;
+  alert?: Alert;
+  balanceChange?: BalanceChange;
+  tokenApprovals: TokenApproval[];
 };
 
 export type SigningData =

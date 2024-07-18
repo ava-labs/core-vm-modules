@@ -93,7 +93,7 @@ export const ethSendTransaction = async ({
 
   const transactionType = parseERC20TransactionType(transaction);
 
-  const { transactionValidation, transactionSimulation } = await simulateTransaction({
+  const { alert, balanceChange, tokenApprovals } = await simulateTransaction({
     proxyApiUrl,
     chainId: network.chainId,
     params: transaction,
@@ -101,10 +101,13 @@ export const ethSendTransaction = async ({
   });
 
   // generate display and signing data
-  // TODO adjust title for different transaction types
-  // https://ava-labs.atlassian.net/browse/CP-8870
+  let title = 'Approve Transaction';
+  if (transactionType === 'APPROVE') {
+    title = 'Token Spend Approval';
+  }
+
   const displayData: DisplayData = {
-    title: 'Approve Transaction',
+    title,
     network: {
       chainId: network.chainId,
       name: network.chainName,
@@ -118,8 +121,9 @@ export const ethSendTransaction = async ({
       type: transactionType,
     },
     networkFeeSelector: true,
-    transactionValidation,
-    transactionSimulation,
+    alert,
+    balanceChange,
+    tokenApprovals,
   };
 
   const signingData: SigningData = {

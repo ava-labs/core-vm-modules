@@ -5,8 +5,7 @@ import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import BN from 'bn.js';
-
-const DEFAULT_DECIMALS = 18;
+import { DEFAULT_DECIMALS } from '../../../constants';
 
 export const getErc20Balances = async ({
   provider,

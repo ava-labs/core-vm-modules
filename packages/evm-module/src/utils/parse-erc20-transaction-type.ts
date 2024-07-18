@@ -16,6 +16,7 @@ export const parseERC20TransactionType = (transaction: { data?: string; value?: 
 
     return (description?.name ?? description?.fragment?.name)?.toUpperCase();
   } catch (e) {
+    console.error(e);
     return undefined;
   }
 };
