@@ -13,7 +13,7 @@ import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
-import { simulateTransaction } from '../../utils/transaction-simulation';
+import { processTransactionSimulation } from '../../utils/process-transaction-simulation';
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 import { ERC20TransactionType } from '../../types';
 
@@ -94,7 +94,7 @@ export const ethSendTransaction = async ({
 
   const transactionType = parseERC20TransactionType(transaction);
 
-  const { alert, balanceChange, tokenApprovals } = await simulateTransaction({
+  const { alert, balanceChange, tokenApprovals } = await processTransactionSimulation({
     proxyApiUrl,
     chainId: network.chainId,
     params: transaction,

@@ -13,8 +13,9 @@ import {
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/utils-sdk';
 import { isHexString } from 'ethers';
+import { scanTransaction } from './scan-transaction';
 
-export const simulateTransaction = async ({
+export const processTransactionSimulation = async ({
   dAppUrl,
   params,
   chainId,
@@ -59,46 +60,14 @@ export const simulateTransaction = async ({
   let tokenApprovals: TokenApproval[] = [];
 
   if (simulation?.status === 'Success') {
-    tokenApprovals = getTokenApprovals(simulation.account_summary.exposures);
-    balanceChange = getBalanceChange(simulation.account_summary.assets_diffs);
+    tokenApprovals = processTokenApprovals(simulation.account_summary.exposures);
+    balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
   }
 
   return { alert, balanceChange, tokenApprovals };
 };
 
-const scanTransaction = async ({
-  proxyApiUrl,
-  chainId,
-  params,
-  domain,
-}: {
-  proxyApiUrl: string;
-  chainId: number;
-  params: TransactionParams;
-  domain?: string;
-}): Promise<Blockaid.TransactionScanResponse> => {
-  const blockaid = new Blockaid({
-    baseURL: proxyApiUrl + '/proxy/blockaid/',
-    apiKey: 'DUMMY_API_KEY', // since we're using our own proxy and api key is handled there, we can use a dummy key here
-  });
-
-  return blockaid.evm.transaction.scan({
-    account_address: params.from,
-    chain: chainId.toString(),
-    options: ['validation', 'simulation'],
-    data: {
-      from: params.from,
-      to: params.to,
-      data: params.data,
-      value: params.value,
-      gas: params.gas,
-      gas_price: params.gasPrice,
-    },
-    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
-  });
-};
-
-const getTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApproval[] => {
+const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApproval[] => {
   const tokenApprovals: TokenApproval[] = [];
 
   for (const exposurePerAsset of exposures) {
@@ -149,7 +118,7 @@ const getTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApp
   return tokenApprovals;
 };
 
-export const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
+export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
 

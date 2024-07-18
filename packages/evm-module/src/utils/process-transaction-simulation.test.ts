@@ -1,5 +1,5 @@
 import Blockaid from '@blockaid/client';
-import { getBalanceChange } from './transaction-simulation';
+import { processBalanceChange } from './process-transaction-simulation';
 
 jest.mock('@blockaid/client', () => {
   return jest.fn().mockImplementation(() => {
@@ -7,7 +7,7 @@ jest.mock('@blockaid/client', () => {
   });
 });
 
-describe('getBalanceChange', () => {
+describe('processBalanceChange', () => {
   it('should sort asset diffs correctly within ins and outs', () => {
     const assetDiffs: Blockaid.AssetDiff[] = [
       {
@@ -42,7 +42,7 @@ describe('getBalanceChange', () => {
       },
     ];
 
-    const result = getBalanceChange(assetDiffs);
+    const result = processBalanceChange(assetDiffs);
 
     // Verify sorting logic for 'ins'
     expect(result?.ins).toEqual([
