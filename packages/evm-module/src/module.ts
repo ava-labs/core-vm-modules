@@ -26,12 +26,10 @@ export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
-  #storage: Storage;
 
   constructor({
     approvalController,
     environment,
-    storage,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
@@ -41,14 +39,19 @@ export class EvmModule implements Module {
     this.#glacierService = new EvmGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
-    this.#storage = storage;
   }
 
   getAddress(): Promise<string> {
     return Promise.resolve('EVM address');
   }
 
-  getBalances({ addresses, network, currency, customTokens }: GetBalancesParams): Promise<GetBalancesResponse> {
+  getBalances({
+    addresses,
+    network,
+    currency,
+    customTokens,
+    storage,
+  }: GetBalancesParams): Promise<GetBalancesResponse> {
     return getBalances({
       addresses,
       currency,
@@ -56,7 +59,7 @@ export class EvmModule implements Module {
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
       glacierService: this.#glacierService,
-      storage: this.#storage,
+      storage,
     });
   }
 
