@@ -9,6 +9,7 @@ import type {
   ApprovalController,
   GetBalancesParams,
   GetBalancesResponse,
+  Storage,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
@@ -26,18 +27,22 @@ export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
+  #storage: Storage;
 
   constructor({
     approvalController,
     environment,
+    storage,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
+    storage: Storage;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
+    this.#storage = storage;
   }
 
   getAddress(): Promise<string> {
@@ -52,6 +57,7 @@ export class EvmModule implements Module {
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
       glacierService: this.#glacierService,
+      storage: this.#storage,
     });
   }
 
