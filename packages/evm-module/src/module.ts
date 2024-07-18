@@ -20,6 +20,7 @@ import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-tra
 import { getBalances } from './handlers/get-balances/get-balances';
 import { getEnv } from './env';
 import { EvmGlacierService } from './services/glacier-service/glacier-service';
+import { ethSign } from './handlers/eth-sign/eth-sign';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -94,6 +95,17 @@ export class EvmModule implements Module {
     switch (request.method) {
       case RpcMethod.ETH_SEND_TRANSACTION:
         return ethSendTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+        });
+      case RpcMethod.PERSONAL_SIGN:
+      case RpcMethod.ETH_SIGN:
+      case RpcMethod.SIGN_TYPED_DATA:
+      case RpcMethod.SIGN_TYPED_DATA_V1:
+      case RpcMethod.SIGN_TYPED_DATA_V3:
+      case RpcMethod.SIGN_TYPED_DATA_V4:
+        return ethSign({
           request,
           network,
           approvalController: this.#approvalController,
