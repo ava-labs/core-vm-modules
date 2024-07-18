@@ -149,9 +149,13 @@ const getTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApp
   return tokenApprovals;
 };
 
-export const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange => {
+export const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
+
+  if (ins.length === 0 && outs.length === 0) {
+    return undefined;
+  }
 
   return { ins, outs };
 };

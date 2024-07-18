@@ -3,9 +3,10 @@ import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
+import { AlertType, RpcMethod, TokenType, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
+import Blockaid from '@blockaid/client';
 
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
@@ -20,7 +21,7 @@ jest.mock('@blockaid/client', () => {
     return {
       evm: {
         transaction: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Success' } }),
+          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
         },
         jsonRpc: {
           scan: jest.fn(),
@@ -241,6 +242,146 @@ describe('eth_sendTransaction handler', () => {
     });
   });
 
+  it('should add alert object with Warning type to displayData when validation result is Warning', async () => {
+    testWithValidationResultType('Warning');
+  });
+
+  it('should add alert object with Warning type to displayData when validation result is Error', async () => {
+    testWithValidationResultType('Error');
+  });
+
+  it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
+    testWithValidationResultType('Malicious');
+  });
+
+  it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Blockaid as any).mockImplementation(() => ({
+      evm: {
+        transaction: {
+          scan: jest.fn().mockResolvedValue({
+            validation: { result_type: 'Benign' },
+            simulation: {
+              status: 'Success',
+              account_summary: {
+                exposures: [
+                  {
+                    asset: {
+                      type: TokenType.ERC20,
+                      address: '0xTokenAddress',
+                      name: 'TokenName',
+                      symbol: 'TKN',
+                      decimals: 18,
+                      logo_url: 'logo_url',
+                    },
+                    spenders: {
+                      '0xSpenderAddress': {
+                        exposure: [{ raw_value: '1', usd_price: '1' }],
+                      },
+                    },
+                  },
+                ],
+                assets_diffs: [
+                  {
+                    asset: {
+                      name: 'TokenName',
+                      symbol: 'TKN',
+                      decimals: 18,
+                      logo_url: 'logo_url',
+                      type: TokenType.ERC20,
+                      address: '0xTokenAddress',
+                    },
+                    in: [{ value: '1', usd_price: '1' }],
+                    out: [{ value: '1', usd_price: '1' }],
+                  },
+                ],
+              },
+            },
+          }),
+        },
+      },
+    }));
+
+    mockParseRequestParams.mockReturnValue({
+      success: true,
+      data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
+    });
+
+    const requestParams = testRequestParams();
+
+    await ethSendTransaction(requestParams);
+
+    expect(mockGetProvider).toHaveBeenCalledWith({
+      chainId: 1,
+      chainName: 'chainName',
+      rpcUrl: 'rpcUrl',
+      multiContractAddress: 'multiContractAddress',
+      pollingInterval: 1000,
+    });
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      request: requestParams.request,
+      displayData: {
+        ...displayData,
+        tokenApprovals: [
+          {
+            token: {
+              contractType: TokenType.ERC20,
+              address: '0xTokenAddress',
+              name: 'TokenName',
+              symbol: 'TKN',
+              decimals: 18,
+              logoUri: 'logo_url',
+            },
+            spenderAddress: '0xSpenderAddress',
+            value: '1',
+            usdPrice: '1',
+            logoUri: 'logo_url',
+          },
+        ],
+        balanceChange: {
+          ins: [
+            {
+              token: {
+                contractType: TokenType.ERC20,
+                address: '0xTokenAddress',
+                name: 'TokenName',
+                symbol: 'TKN',
+                decimals: 18,
+                logoUri: 'logo_url',
+              },
+              items: [
+                {
+                  displayValue: '1',
+                  usdPrice: '1',
+                },
+              ],
+            },
+          ],
+          outs: [
+            {
+              token: {
+                contractType: TokenType.ERC20,
+                address: '0xTokenAddress',
+                name: 'TokenName',
+                symbol: 'TKN',
+                decimals: 18,
+                logoUri: 'logo_url',
+              },
+              items: [
+                {
+                  displayValue: '1',
+                  usdPrice: '1',
+                },
+              ],
+            },
+          ],
+        },
+      },
+      signingData,
+    });
+  });
+
   it('should return error if gas limit calculation fails', async () => {
     mockParseRequestParams.mockReturnValue({
       success: true,
@@ -351,3 +492,70 @@ describe('eth_sendTransaction handler', () => {
     });
   });
 });
+
+const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (Blockaid as any).mockImplementation(() => ({
+    evm: {
+      transaction: {
+        scan: jest.fn().mockResolvedValue({
+          validation: { result_type: resultType },
+          simulation: { status: 'Success', account_summary: { exposures: [], assets_diffs: [] } },
+        }),
+      },
+    },
+  }));
+
+  mockParseRequestParams.mockReturnValue({
+    success: true,
+    data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
+  });
+
+  const requestParams = testRequestParams();
+
+  await ethSendTransaction(requestParams);
+
+  expect(mockGetProvider).toHaveBeenCalledWith({
+    chainId: 1,
+    chainName: 'chainName',
+    rpcUrl: 'rpcUrl',
+    multiContractAddress: 'multiContractAddress',
+    pollingInterval: 1000,
+  });
+
+  if (resultType === 'Malicious') {
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      request: requestParams.request,
+      displayData: {
+        ...displayData,
+        alert: {
+          type: AlertType.DANGER,
+          details: {
+            title: 'Scam Transaction',
+            description: 'This transaction is malicious, do not proceed.',
+            actionTitles: {
+              reject: 'Reject Transaction',
+              proceed: 'Proceed Anyway',
+            },
+          },
+        },
+      },
+      signingData,
+    });
+  } else {
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      request: requestParams.request,
+      displayData: {
+        ...displayData,
+        alert: {
+          type: AlertType.WARNING,
+          details: {
+            title: 'Suspicious Transaction',
+            description: 'Use caution, this transaction may be malicious.',
+          },
+        },
+      },
+      signingData,
+    });
+  }
+};
