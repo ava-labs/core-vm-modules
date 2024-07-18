@@ -1,4 +1,4 @@
-import { TokenType } from '@avalabs/vm-module-types';
+import { NetworkVMType, TokenType } from '@avalabs/vm-module-types';
 import { getBalances } from './get-balances';
 import * as GlacierNativeToken from './glacier-balance-service/get-native-token-balances';
 import { BN } from 'bn.js';
@@ -75,6 +75,7 @@ describe('get-balances', () => {
         pricingProviders: { coingecko: { nativeTokenId: 'ethereum', assetPlatformId: 'ethereum' } },
         rpcUrl: 'https://proxy-api.avax.network/proxy/infura/mainnet',
         utilityAddresses: { multicall: '0x5ba1e12693dc8f9c48aad8770482f4739beed696' },
+        vmName: NetworkVMType.EVM,
       },
       proxyApiUrl: 'proxyApiUrl',
       glacierService: mockGlacierService,
@@ -205,6 +206,7 @@ describe('get-balances', () => {
         pricingProviders: { coingecko: { nativeTokenId: 'ethereum', assetPlatformId: 'ethereum' } },
         rpcUrl: 'https://proxy-api.avax.network/proxy/infura/mainnet',
         utilityAddresses: { multicall: '0x5ba1e12693dc8f9c48aad8770482f4739beed696' },
+        vmName: NetworkVMType.EVM,
       },
       proxyApiUrl: 'proxyApiUrl',
       glacierService: mockGlacierService,

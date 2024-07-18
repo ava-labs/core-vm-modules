@@ -1,17 +1,12 @@
 import {
-  BlockchainId,
   CurrencyCode,
   Erc1155Token,
   Erc721Token,
   type GetNativeBalanceResponse,
   Glacier,
-  type ListCChainAtomicBalancesResponse,
   type ListErc1155BalancesResponse,
   type ListErc20BalancesResponse,
   type ListErc721BalancesResponse,
-  type ListPChainBalancesResponse,
-  type ListXChainBalancesResponse,
-  Network,
 } from '@avalabs/glacier-sdk';
 
 class GlacierUnhealthyError extends Error {
@@ -103,22 +98,6 @@ export class EvmGlacierService {
         chainId,
         tokenId,
       });
-    } catch (error) {
-      if (error instanceof GlacierUnhealthyError) {
-        this.setGlacierToUnhealthy();
-      }
-      throw error;
-    }
-  }
-
-  async getChainBalance(params: {
-    blockchainId: BlockchainId;
-    network: Network;
-    blockTimestamp?: number;
-    addresses?: string;
-  }): Promise<ListPChainBalancesResponse | ListXChainBalancesResponse | ListCChainAtomicBalancesResponse> {
-    try {
-      return this.glacierSdk.primaryNetworkBalances.getBalancesByAddresses(params);
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
         this.setGlacierToUnhealthy();

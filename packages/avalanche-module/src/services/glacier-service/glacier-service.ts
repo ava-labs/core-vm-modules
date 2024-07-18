@@ -1,8 +1,11 @@
 import {
   BlockchainId,
   Glacier,
+  type ListCChainAtomicBalancesResponse,
   type ListCChainAtomicTransactionsResponse,
+  type ListPChainBalancesResponse,
   type ListPChainTransactionsResponse,
+  type ListXChainBalancesResponse,
   type ListXChainTransactionsResponse,
   Network,
   PrimaryNetworkTxType,
@@ -46,6 +49,22 @@ export class AvalancheGlacierService {
   }): Promise<ListPChainTransactionsResponse | ListXChainTransactionsResponse | ListCChainAtomicTransactionsResponse> {
     try {
       return this.glacierSdk.primaryNetworkTransactions.listLatestPrimaryNetworkTransactions(params);
+    } catch (error) {
+      if (error instanceof GlacierUnhealthyError) {
+        this.setGlacierToUnhealthy();
+      }
+      throw error;
+    }
+  }
+
+  async getChainBalance(params: {
+    blockchainId: BlockchainId;
+    network: Network;
+    blockTimestamp?: number;
+    addresses?: string;
+  }): Promise<ListPChainBalancesResponse | ListXChainBalancesResponse | ListCChainAtomicBalancesResponse> {
+    try {
+      return this.glacierSdk.primaryNetworkBalances.getBalancesByAddresses(params);
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
         this.setGlacierToUnhealthy();
