@@ -1,24 +1,5 @@
 import type { NetworkContractToken, NetworkToken } from './token';
 
-export enum AlertType {
-  WARNING = 'Warning',
-  DANGER = 'Danger',
-}
-
-export type AlertDetails = {
-  title: string;
-  description: string;
-  actionTitles?: {
-    proceed: string;
-    reject: string;
-  };
-};
-
-export type Alert = {
-  type: AlertType;
-  details: AlertDetails;
-};
-
 export type BalanceChange = {
   ins: TokenDiff[];
   outs: TokenDiff[];

@@ -1,7 +1,7 @@
 import type { TransactionRequest } from 'ethers';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
-import type { Alert, BalanceChange, TokenApproval } from './transaction-simulation';
+import type { BalanceChange, TokenApproval } from './transaction-simulation';
 
 export enum RpcMethod {
   /* EVM */
@@ -101,6 +101,46 @@ export type DisplayData = {
   balanceChange?: BalanceChange;
   tokenApprovals: TokenApproval[];
 };
+
+export enum AlertType {
+  WARNING = 'Warning',
+  DANGER = 'Danger',
+}
+
+export type AlertDetails = {
+  title: string;
+  description: string;
+  actionTitles?: {
+    proceed: string;
+    reject: string;
+  };
+};
+
+export type Alert = {
+  type: AlertType;
+  details: AlertDetails;
+};
+
+/**
+ * Enum for different types of signing data.
+ */
+export enum SigningDataType {
+  // EVM signing data types
+  EVM_TRANSACTION = 'evm_transaction',
+  EVM_MESSAGE_ETH_SIGN = 'evm_message_eth_sign',
+  EVM_MESSAGE_PERSONAL_SIGN = 'evm_message_personal_sign',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA = 'evm_message_eth_sign_typed_data',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V1 = 'evm_message_eth_sign_typed_data_v1',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V3 = 'evm_message_eth_sign_typed_data_v3',
+  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V4 = 'evm_message_eth_sign_typed_data_v4',
+
+  // Avalanche signing data types
+  AVALANCHE_TRANSACTION = 'avalanche_transaction',
+  AVALANCHE_MESSAGE = 'avalanche_message',
+
+  // Bitcoin signing data types
+  BTC_TRANSACTION = 'btc_transaction',
+}
 
 export type SigningData =
   | {
