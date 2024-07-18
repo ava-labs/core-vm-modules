@@ -97,6 +97,9 @@ const displayData = {
     data: '0xdata',
   },
   networkFeeSelector: true,
+  alert: undefined,
+  tokenApprovals: [],
+  balanceChange: undefined,
 };
 
 const signingData = {

@@ -149,7 +149,7 @@ const getTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApp
   return tokenApprovals;
 };
 
-const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange => {
+export const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
 
@@ -157,53 +157,59 @@ const getBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange => {
 };
 
 const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out'): TokenDiff[] => {
-  return assetDiffs
-    .filter((assetDiff) => assetDiff[type].length > 0)
-    .sort((a, b) => a[type].length - b[type].length)
-    .map((assetDiff) => {
-      const asset = assetDiff.asset;
-      if (!asset || !asset.name || !asset.symbol) {
-        return undefined;
-      }
+  return (
+    assetDiffs
+      .filter((assetDiff) => assetDiff[type].length > 0)
+      // sort asset diffs by length of in/out array
+      // this is done to ensure that the token with multiple in/out values are displayed last,
+      // to put them in groups with appropriate UI(i.e. accordion), after single in/out tokens
+      .sort((a, b) => a[type].length - b[type].length)
+      .map((assetDiff) => {
+        const asset = assetDiff.asset;
+        if (!asset || !asset.name || !asset.symbol) {
+          return undefined;
+        }
 
-      const token: NetworkToken | NetworkContractToken =
-        'address' in asset
-          ? {
-              contractType: asset.type,
-              address: asset.address,
-              name: asset.name,
-              symbol: asset.symbol,
-              decimals: 'decimals' in asset ? asset.decimals : undefined,
-              logoUri: asset.logo_url,
+        // convert blockaid asset to network token
+        const token: NetworkToken | NetworkContractToken =
+          'address' in asset
+            ? {
+                contractType: asset.type,
+                address: asset.address,
+                name: asset.name,
+                symbol: asset.symbol,
+                decimals: 'decimals' in asset ? asset.decimals : undefined,
+                logoUri: asset.logo_url,
+              }
+            : {
+                name: asset.name,
+                symbol: asset.symbol,
+                decimals: asset.decimals,
+                description: '',
+                logoUri: asset.logo_url,
+              };
+        const items = assetDiff[type]
+          .map((diff) => {
+            let displayValue;
+            if ('value' in diff && diff.value) {
+              if (token.decimals) {
+                const valueBN = numberToBN(diff.value, token.decimals);
+                displayValue = balanceToDisplayValue(valueBN, token.decimals);
+              } else if (isHexString(diff.value)) {
+                // for some token (like ERC1155) blockaid returns value in hex format
+                displayValue = parseInt(diff.value, 16).toString();
+              }
+            } else if ('contractType' in token && token.contractType === TokenType.ERC721) {
+              // for ERC721 type token, we just display 1 to indicate that a single NFT will be transferred
+              displayValue = '1';
             }
-          : {
-              name: asset.name,
-              symbol: asset.symbol,
-              decimals: asset.decimals,
-              description: '',
-              logoUri: asset.logo_url,
-            };
-      const items = assetDiff[type]
-        .map((diff) => {
-          let value;
-          if ('value' in diff && diff.value) {
-            if (token.decimals) {
-              const valueBN = numberToBN(diff.value, token.decimals);
-              value = balanceToDisplayValue(valueBN, token.decimals);
-            } else if (isHexString(diff.value)) {
-              // for some token (like ERC1155) blockaid returns value in hex format
-              value = parseInt(diff.value, 16).toString();
-            }
-          } else if ('contractType' in token && token.contractType === TokenType.ERC721) {
-            // for ERC721 type token, we just display 1 to indicate that a single NFT will be transferred
-            value = '1';
-          }
 
-          return value ? { value, usdPrice: diff.usd_price } : undefined;
-        })
-        .filter((x): x is TokenDiffItem => x !== undefined);
+            return displayValue ? { displayValue, usdPrice: diff.usd_price } : undefined;
+          })
+          .filter((x): x is TokenDiffItem => x !== undefined);
 
-      return { token, items };
-    })
-    .filter((x): x is TokenDiff => x !== undefined);
+        return { token, items };
+      })
+      .filter((x): x is TokenDiff => x !== undefined)
+  );
 };

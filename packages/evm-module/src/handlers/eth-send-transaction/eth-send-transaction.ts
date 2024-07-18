@@ -15,6 +15,7 @@ import { getProvider } from '../../utils/get-provider';
 import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
 import { simulateTransaction } from '../../utils/transaction-simulation';
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
+import { ERC20TransactionType } from '../../types';
 
 export const ethSendTransaction = async ({
   request,
@@ -102,7 +103,7 @@ export const ethSendTransaction = async ({
 
   // generate display and signing data
   let title = 'Approve Transaction';
-  if (transactionType === 'APPROVE') {
+  if (transactionType === ERC20TransactionType.APPROVE) {
     title = 'Token Spend Approval';
   }
 

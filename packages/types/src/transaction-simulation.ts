@@ -30,7 +30,7 @@ export type TokenDiff = {
 };
 
 export type TokenDiffItem = {
-  value: string;
+  displayValue: string;
   usdPrice: string | undefined;
 };
 
