@@ -9,7 +9,7 @@ import type {
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getEnv } from '@internal/utils/src/utils/env';
+import { getEnv } from './env';
 
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';

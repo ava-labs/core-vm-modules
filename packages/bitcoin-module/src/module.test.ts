@@ -1,8 +1,8 @@
 import { Environment, type Network } from '@avalabs/vm-module-types';
-import { devEnv, prodEnv } from '@internal/utils/src/utils/env';
 
 import { BitcoinModule } from './module';
 import { getNetworkFee } from './handlers/get-network-fee';
+import { devEnv, prodEnv } from './env';
 
 jest.mock('./handlers/get-network-fee');
 
