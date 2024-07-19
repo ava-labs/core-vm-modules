@@ -9,7 +9,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { toUtf8String } from 'ethers';
-import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message';
+import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message/beautify-message';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
