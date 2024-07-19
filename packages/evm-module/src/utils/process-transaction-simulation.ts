@@ -148,7 +148,7 @@ const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out')
                 // for some token (like ERC1155) blockaid returns value in hex format
                 displayValue = parseInt(diff.value, 16).toString();
               }
-            } else if ('contractType' in token && token.contractType === TokenType.ERC721) {
+            } else if ('type' in token && token.type === TokenType.ERC721) {
               // for ERC721 type token, we just display 1 to indicate that a single NFT will be transferred
               displayValue = '1';
             }
