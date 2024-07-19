@@ -1,4 +1,11 @@
-import type { GetBalancesResponse, GetBalancesParams, Storage } from '@avalabs/vm-module-types';
+import {
+  type GetBalancesResponse,
+  type GetBalancesParams,
+  type Storage,
+  TokenType,
+  type NetworkContractToken,
+  type ERC20Token,
+} from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '@internal/utils';
 import { getProvider } from '../../utils/get-provider';
@@ -37,7 +44,7 @@ export const getBalances = async ({
         });
 
         const erc20Tokens = await getErc20BalancesFromGlacier({
-          customTokens,
+          customTokens: customTokens.filter(isERC20Token),
           glacierService,
           currency,
           chainId,
@@ -80,7 +87,7 @@ export const getBalances = async ({
           tokenService,
           address,
           currency,
-          tokens: allTokens,
+          tokens: allTokens.filter(isERC20Token),
         });
 
         return {
@@ -107,3 +114,7 @@ export const getBalances = async ({
 
   return filterBalances;
 };
+
+function isERC20Token(token: NetworkContractToken): token is ERC20Token {
+  return token.type === TokenType.ERC20;
+}

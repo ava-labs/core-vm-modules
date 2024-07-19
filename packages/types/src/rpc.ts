@@ -99,7 +99,7 @@ export type DisplayData = {
   disclaimer?: string;
   alert?: Alert;
   balanceChange?: BalanceChange;
-  tokenApprovals: TokenApproval[];
+  tokenApprovals?: TokenApproval[];
 };
 
 export enum AlertType {

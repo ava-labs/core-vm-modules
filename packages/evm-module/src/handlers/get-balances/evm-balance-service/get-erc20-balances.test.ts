@@ -1,6 +1,7 @@
 import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
 import { ethers } from 'ethers';
+import { TokenType } from '@avalabs/vm-module-types';
 
 describe('get-erc20-balances', () => {
   it('should return erc20 token balances', async () => {
@@ -18,7 +19,7 @@ describe('get-erc20-balances', () => {
           symbol: 'ETH',
           decimals: 18,
           logoUri: 'https://example.com/logo.png',
-          contractType: 'ERC-20',
+          type: TokenType.ERC20,
         },
       ],
       provider: {
@@ -67,7 +68,6 @@ describe('get-erc20-balances', () => {
         balanceDisplayValue: '1',
         balanceInCurrency: 1000,
         priceInCurrency: 1000,
-        contractType: 'ERC-20',
         type: 'ERC20',
         change24: 0,
         marketCap: 0,

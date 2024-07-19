@@ -71,26 +71,17 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
   const tokenApprovals: TokenApproval[] = [];
 
   for (const exposurePerAsset of exposures) {
-    const asset = exposurePerAsset.asset;
-    if (!asset || !asset.name || !asset.symbol) {
+    const token = convertAssetToNetworkContractToken(exposurePerAsset.asset);
+    if (!token) {
       continue;
     }
-
-    const token: NetworkContractToken = {
-      contractType: asset.type,
-      address: asset.address,
-      decimals: 'decimals' in asset ? asset.decimals : undefined,
-      name: asset.name,
-      symbol: asset.symbol,
-      logoUri: asset.logo_url,
-    };
 
     for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
       if (exposurePerSpender.exposure.length === 0) {
         tokenApprovals.push({
           token,
           spenderAddress,
-          logoUri: asset.logo_url,
+          logoUri: token.logoUri,
         });
       } else {
         for (const exposure of exposurePerSpender.exposure) {
@@ -100,7 +91,7 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
               spenderAddress,
               value: exposure.raw_value,
               usdPrice: exposure.usd_price,
-              logoUri: asset.logo_url,
+              logoUri: token.logoUri,
             });
           } else {
             tokenApprovals.push({
@@ -139,33 +130,18 @@ const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out')
       .sort((a, b) => a[type].length - b[type].length)
       .map((assetDiff) => {
         const asset = assetDiff.asset;
-        if (!asset || !asset.name || !asset.symbol) {
+        // convert blockaid asset to network token
+        const token: NetworkToken | NetworkContractToken | undefined =
+          'address' in asset ? convertAssetToNetworkContractToken(asset) : convertNativeAssetToToken(asset);
+        if (!token) {
           return undefined;
         }
 
-        // convert blockaid asset to network token
-        const token: NetworkToken | NetworkContractToken =
-          'address' in asset
-            ? {
-                contractType: asset.type,
-                address: asset.address,
-                name: asset.name,
-                symbol: asset.symbol,
-                decimals: 'decimals' in asset ? asset.decimals : undefined,
-                logoUri: asset.logo_url,
-              }
-            : {
-                name: asset.name,
-                symbol: asset.symbol,
-                decimals: asset.decimals,
-                description: '',
-                logoUri: asset.logo_url,
-              };
         const items = assetDiff[type]
           .map((diff) => {
             let displayValue;
             if ('value' in diff && diff.value) {
-              if (token.decimals) {
+              if ('decimals' in token) {
                 const valueBN = numberToBN(diff.value, token.decimals);
                 displayValue = balanceToDisplayValue(valueBN, token.decimals);
               } else if (isHexString(diff.value)) {
@@ -185,4 +161,60 @@ const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out')
       })
       .filter((x): x is TokenDiff => x !== undefined)
   );
+};
+
+const convertAssetToNetworkContractToken = (
+  asset:
+    | Blockaid.Erc20TokenDetails
+    | Blockaid.Erc1155TokenDetails
+    | Blockaid.Erc721TokenDetails
+    | Blockaid.NonercTokenDetails,
+): NetworkContractToken | undefined => {
+  let token: NetworkContractToken | undefined;
+  if (asset.type === 'ERC20') {
+    token = {
+      type: TokenType.ERC20,
+      address: asset.address,
+      decimals: asset.decimals,
+      name: asset.name ?? asset.symbol ?? '',
+      symbol: asset.symbol ?? '',
+      logoUri: asset.logo_url,
+    };
+  } else if (asset.type === 'ERC1155') {
+    token = {
+      type: TokenType.ERC1155,
+      address: asset.address,
+      logoUri: asset.logo_url,
+      name: asset.name,
+      symbol: asset.symbol,
+    };
+  } else if (asset.type === 'ERC721') {
+    token = {
+      type: TokenType.ERC721,
+      address: asset.address,
+      logoUri: asset.logo_url,
+      name: asset.name,
+      symbol: asset.symbol,
+    };
+  } else if (asset.type === 'NONERC') {
+    token = {
+      type: TokenType.NONERC,
+      address: asset.address,
+      logoUri: asset.logo_url,
+      name: asset.name,
+      symbol: asset.symbol,
+    };
+  }
+
+  return token;
+};
+
+const convertNativeAssetToToken = (asset: Blockaid.NativeAssetDetails): NetworkToken => {
+  return {
+    name: asset.name ?? '',
+    symbol: asset.symbol ?? '',
+    decimals: asset.decimals,
+    description: '',
+    logoUri: asset.logo_url,
+  };
 };

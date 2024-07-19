@@ -1,5 +1,5 @@
 import { numberToBN, bnToBig, balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { TokenType, type Network, type NetworkContractToken, type TokenWithBalance } from '@avalabs/vm-module-types';
+import { TokenType, type ERC20Token, type Network, type TokenWithBalance } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
@@ -18,18 +18,15 @@ export const getErc20Balances = async ({
   tokenService: TokenService;
   address: string;
   currency: string;
-  tokens: NetworkContractToken[];
+  tokens: ERC20Token[];
   network: Network;
 }): Promise<Record<string, TokenWithBalance>> => {
   const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId;
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const tokenAddresses = tokens.map((token) => token.address);
 
-  // Filter tokens to ensure all have decimals defined
-  const validatedTokens = tokens.filter(hasDecimals);
-
   const tokensBalances = await Promise.allSettled(
-    validatedTokens.map(async (token) => {
+    tokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
       const balance = new BN(balanceBig) || numberToBN(0, token.decimals);
@@ -42,7 +39,7 @@ export const getErc20Balances = async ({
       return tokenWithBalance;
     }),
   ).then((res) => {
-    return res.reduce<(NetworkContractToken & { balance: BN; decimals: number })[]>((acc, result) => {
+    return res.reduce<(ERC20Token & { balance: BN })[]>((acc, result) => {
       return result.status === 'fulfilled' && !result.value.balance.isZero() ? [...acc, result.value] : acc;
     }, []);
   });
@@ -84,7 +81,3 @@ export const getErc20Balances = async ({
     {} as Record<string, TokenWithBalance>,
   );
 };
-
-function hasDecimals(token: NetworkContractToken): token is NetworkContractToken & { decimals: number } {
-  return token.decimals !== undefined;
-}

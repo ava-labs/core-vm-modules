@@ -48,7 +48,7 @@ describe('processBalanceChange', () => {
     expect(result?.ins).toEqual([
       {
         token: {
-          contractType: 'ERC20',
+          type: 'ERC20',
           address: '0xTokenAddress2',
           name: 'TokenName2',
           symbol: 'TKN2',
@@ -59,7 +59,7 @@ describe('processBalanceChange', () => {
       },
       {
         token: {
-          contractType: 'ERC20',
+          type: 'ERC20',
           address: '0xTokenAddress1',
           name: 'TokenName1',
           symbol: 'TKN1',
@@ -77,7 +77,7 @@ describe('processBalanceChange', () => {
     expect(result?.outs).toEqual([
       {
         token: {
-          contractType: 'ERC20',
+          type: 'ERC20',
           address: '0xTokenAddress2',
           name: 'TokenName2',
           symbol: 'TKN2',
@@ -88,7 +88,7 @@ describe('processBalanceChange', () => {
       },
       {
         token: {
-          contractType: 'ERC20',
+          type: 'ERC20',
           address: '0xTokenAddress1',
           name: 'TokenName1',
           symbol: 'TKN1',

@@ -2,8 +2,8 @@ import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
 import {
   TokenType,
   type TokenWithBalanceERC20,
-  type NetworkContractToken,
   type TokenWithBalance,
+  type ERC20Token,
 } from '@avalabs/vm-module-types';
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
 import BN from 'bn.js';
@@ -21,7 +21,7 @@ export const getErc20Balances = async ({
   address: string;
   currency: string;
   chainId: number;
-  customTokens: NetworkContractToken[];
+  customTokens: ERC20Token[];
 }): Promise<Record<string, TokenWithBalance>> => {
   const tokensWithBalance: TokenWithBalanceERC20[] = [];
   /**
@@ -38,7 +38,9 @@ export const getErc20Balances = async ({
       pageToken: nextPageToken,
     });
 
-    tokensWithBalance.push(...convertErc20ToTokenWithBalance(response.erc20TokenBalances, Number(chainId)));
+    tokensWithBalance.push(
+      ...convertErc20TokenWithBalanceToTokenWithBalance(response.erc20TokenBalances, Number(chainId)),
+    );
     nextPageToken = response.nextPageToken;
   } while (nextPageToken);
 
@@ -48,7 +50,7 @@ export const getErc20Balances = async ({
    * tokens are only used for swap, bridge and tx parsing.
    */
   return [
-    ...convertNetworkTokenToTokenWithBalance(customTokens),
+    ...convertErc20TokenToTokenWithBalance(customTokens),
     ...tokensWithBalance, // this needs to be second in the list so it overwrites its zero balance counterpart if there is one
   ].reduce(
     (acc, token) => {
@@ -58,7 +60,7 @@ export const getErc20Balances = async ({
   );
 };
 
-const convertNetworkTokenToTokenWithBalance = (tokens: NetworkContractToken[]): TokenWithBalanceERC20[] => {
+const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBalanceERC20[] => {
   return tokens.map((token) => {
     return {
       ...token,
@@ -76,7 +78,7 @@ const convertNetworkTokenToTokenWithBalance = (tokens: NetworkContractToken[]): 
   });
 };
 
-const convertErc20ToTokenWithBalance = (
+const convertErc20TokenWithBalanceToTokenWithBalance = (
   tokenBalances: Erc20TokenBalance[],
   chainId: number,
 ): TokenWithBalanceERC20[] => {
@@ -99,7 +101,6 @@ const convertErc20ToTokenWithBalance = (
       balanceDisplayValue,
       balanceInCurrency,
       priceInCurrency,
-      contractType: 'ERC-20',
       type: TokenType.ERC20,
       change24: 0,
       marketCap: 0,

@@ -326,7 +326,7 @@ describe('eth_sendTransaction handler', () => {
         tokenApprovals: [
           {
             token: {
-              contractType: TokenType.ERC20,
+              type: TokenType.ERC20,
               address: '0xTokenAddress',
               name: 'TokenName',
               symbol: 'TKN',
@@ -343,7 +343,7 @@ describe('eth_sendTransaction handler', () => {
           ins: [
             {
               token: {
-                contractType: TokenType.ERC20,
+                type: TokenType.ERC20,
                 address: '0xTokenAddress',
                 name: 'TokenName',
                 symbol: 'TKN',
@@ -361,7 +361,7 @@ describe('eth_sendTransaction handler', () => {
           outs: [
             {
               token: {
-                contractType: TokenType.ERC20,
+                type: TokenType.ERC20,
                 address: '0xTokenAddress',
                 name: 'TokenName',
                 symbol: 'TKN',
