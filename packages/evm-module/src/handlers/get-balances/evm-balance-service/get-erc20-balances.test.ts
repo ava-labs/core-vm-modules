@@ -1,4 +1,4 @@
-import BN from 'bn.js';
+import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
 import { ethers } from 'ethers';
 import { TokenType } from '@avalabs/vm-module-types';

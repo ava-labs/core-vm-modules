@@ -6,7 +6,7 @@ import {
   type ERC20Token,
 } from '@avalabs/vm-module-types';
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
-import { BN } from 'bn.js';
+import BN from 'bn.js';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 import { DEFAULT_DECIMALS } from '../../../constants';
 
