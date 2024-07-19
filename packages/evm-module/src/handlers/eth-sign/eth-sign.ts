@@ -8,7 +8,7 @@ import {
   BannerType,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { toUtf8 } from 'ethereumjs-util';
+import { toUtf8String } from 'ethers';
 import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedDataV1 } from './utils/typeguards';
@@ -77,7 +77,7 @@ export const ethSign = async ({
       data: data,
     };
 
-    messageDetails = toUtf8(data);
+    messageDetails = toUtf8String(data);
   } else if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
     signingData = {
       type: method,

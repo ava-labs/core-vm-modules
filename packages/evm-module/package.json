@@ -24,7 +24,6 @@
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
     "@metamask/rpc-errors": "6.3.0",
-    "ethereumjs-util": "7.1.5",
     "zod": "3.23.8"
   },
   "devDependencies": {
