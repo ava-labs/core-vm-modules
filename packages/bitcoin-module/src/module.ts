@@ -13,6 +13,7 @@ import { getEnv } from './env';
 
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';
+import { getTransactionHistory } from './handlers/get-transaction-history';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -42,8 +43,14 @@ export class BitcoinModule implements Module {
     });
   }
 
-  getTransactionHistory(_: GetTransactionHistory) {
-    return Promise.resolve({ transactions: [] });
+  async getTransactionHistory({ address, network }: GetTransactionHistory) {
+    return {
+      transactions: await getTransactionHistory({
+        address,
+        network,
+        proxyApiUrl: this.#proxyApiUrl,
+      }),
+    };
   }
 
   getTokens(_: Network) {
