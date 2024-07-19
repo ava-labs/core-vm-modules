@@ -11,9 +11,6 @@ export enum RpcMethod {
   SIGN_TYPED_DATA = 'eth_signTypedData',
   PERSONAL_SIGN = 'personal_sign',
   ETH_SIGN = 'eth_sign',
-  WALLET_ADD_ETHEREUM_CHAIN = 'wallet_addEthereumChain',
-  WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
-  WALLET_GET_ETHEREUM_CHAIN = 'wallet_getEthereumChain',
 }
 
 export type DappInfo = {
@@ -44,13 +41,51 @@ export type RpcResponse<R = unknown, E extends RpcError = JsonRpcError<OptionalD
       error: E;
     };
 
-export type DisplayData = {
+export interface MessageTypeProperty {
+  name: string;
+  type: string;
+}
+
+export interface MessageTypes {
+  EIP712Domain: MessageTypeProperty[];
+  [additionalProperties: string]: MessageTypeProperty[];
+}
+
+export interface TypedData<T extends MessageTypes> {
+  types: T;
+  primaryType: keyof T;
+  domain: Record<string, unknown>;
+  message: Record<string, unknown>;
+}
+
+export type TypedDataV1 = { name: string; type: string; value: unknown }[];
+
+export enum BannerType {
+  WARNING = 'warning',
+  INFO = 'info',
+}
+
+export type Banner = {
+  type: BannerType;
   title: string;
+  description: string;
+  detailedDescription?: string;
+};
+
+export type DisplayData = {
+  banner?: Banner;
+  title: string;
+  dAppInfo?: {
+    name: string;
+    action: string;
+    logoUri?: string;
+  };
   network: {
     chainId: number;
     name: string;
     logoUri?: string;
   };
+  account?: string;
   messageDetails?: string;
   transactionDetails?: {
     website: string;
@@ -59,41 +94,33 @@ export type DisplayData = {
     data?: string;
   };
   networkFeeSelector?: boolean;
+  disclaimer?: string;
 };
-
-/**
- * Enum for different types of signing data.
- */
-export enum SigningDataType {
-  // EVM signing data types
-  EVM_TRANSACTION = 'evm_transaction',
-  EVM_MESSAGE_ETH_SIGN = 'evm_message_eth_sign',
-  EVM_MESSAGE_PERSONAL_SIGN = 'evm_message_personal_sign',
-  EVM_MESSAGE_ETH_SIGN_TYPED_DATA = 'evm_message_eth_sign_typed_data',
-  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V1 = 'evm_message_eth_sign_typed_data_v1',
-  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V3 = 'evm_message_eth_sign_typed_data_v3',
-  EVM_MESSAGE_ETH_SIGN_TYPED_DATA_V4 = 'evm_message_eth_sign_typed_data_v4',
-
-  // Avalanche signing data types
-  AVALANCHE_TRANSACTION = 'avalanche_transaction',
-  AVALANCHE_MESSAGE = 'avalanche_message',
-
-  // Bitcoin signing data types
-  BTC_TRANSACTION = 'btc_transaction',
-}
 
 export type SigningData =
   | {
-      type: SigningDataType.EVM_TRANSACTION;
+      type: RpcMethod.ETH_SEND_TRANSACTION;
       account: string;
       chainId: number;
       data: TransactionRequest;
     }
   | {
-      type: SigningDataType.EVM_MESSAGE_ETH_SIGN;
+      type: RpcMethod.ETH_SIGN | RpcMethod.PERSONAL_SIGN;
       account: string;
       chainId: number;
       data: string;
+    }
+  | {
+      type: RpcMethod.SIGN_TYPED_DATA | RpcMethod.SIGN_TYPED_DATA_V1;
+      account: string;
+      chainId: number;
+      data: TypedData<MessageTypes> | TypedDataV1;
+    }
+  | {
+      type: RpcMethod.SIGN_TYPED_DATA_V3 | RpcMethod.SIGN_TYPED_DATA_V4;
+      account: string;
+      chainId: number;
+      data: TypedData<MessageTypes>;
     };
 
 export type ApprovalParams = {

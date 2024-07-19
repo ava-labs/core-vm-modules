@@ -13,6 +13,7 @@ module.exports = {
       'error',
       {
         argsIgnorePattern: '^_', // Ignore unused variables whose name starts with `_`
+        ignoreRestSiblings: true,
       },
     ],
     'unicorn/filename-case': [

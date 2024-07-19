@@ -83,7 +83,7 @@ const displayData = {
 };
 
 const signingData = {
-  type: 'evm_transaction',
+  type: 'eth_sendTransaction',
   account: '0xfrom',
   chainId: 1,
   data: {
