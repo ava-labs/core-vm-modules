@@ -5,7 +5,6 @@ import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import BN from 'bn.js';
-import { DEFAULT_DECIMALS } from '../../../constants';
 
 export const getErc20Balances = async ({
   provider,
@@ -26,11 +25,14 @@ export const getErc20Balances = async ({
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const tokenAddresses = tokens.map((token) => token.address);
 
+  // Filter tokens to ensure all have decimals defined
+  const validatedTokens = tokens.filter(hasDecimals);
+
   const tokensBalances = await Promise.allSettled(
-    tokens.map(async (token) => {
+    validatedTokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
-      const balance = new BN(balanceBig) || numberToBN(0, token.decimals || DEFAULT_DECIMALS);
+      const balance = new BN(balanceBig) || numberToBN(0, token.decimals);
 
       const tokenWithBalance = {
         ...token,
@@ -40,7 +42,7 @@ export const getErc20Balances = async ({
       return tokenWithBalance;
     }),
   ).then((res) => {
-    return res.reduce<(NetworkContractToken & { balance: BN })[]>((acc, result) => {
+    return res.reduce<(NetworkContractToken & { balance: BN; decimals: number })[]>((acc, result) => {
       return result.status === 'fulfilled' && !result.value.balance.isZero() ? [...acc, result.value] : acc;
     }, []);
   });
@@ -58,17 +60,15 @@ export const getErc20Balances = async ({
       const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? 0;
       const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
-      const decimals = token.decimals || DEFAULT_DECIMALS;
 
       const balanceInCurrency = bnToBig(token.balance, token.decimals).mul(priceInCurrency).toNumber();
-      const balanceDisplayValue = balanceToDisplayValue(token.balance, decimals);
+      const balanceDisplayValue = balanceToDisplayValue(token.balance, token.decimals);
       const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
 
       return {
         ...acc,
         [token.address.toLowerCase()]: {
           ...token,
-          decimals,
           type: TokenType.ERC20,
           balance: token.balance,
           balanceDisplayValue,
@@ -84,3 +84,7 @@ export const getErc20Balances = async ({
     {} as Record<string, TokenWithBalance>,
   );
 };
+
+function hasDecimals(token: NetworkContractToken): token is NetworkContractToken & { decimals: number } {
+  return token.decimals !== undefined;
+}
