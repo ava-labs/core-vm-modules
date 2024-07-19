@@ -14,7 +14,7 @@ jest.mock('ethers', () => ({
   toUtf8String: jest.fn(),
 }));
 
-jest.mock('./utils/beautify-message', () => ({
+jest.mock('./utils/beautify-message/beautify-message', () => ({
   beautifySimpleMessage: jest.fn(),
   beautifyComplexMessage: jest.fn(),
 }));
@@ -27,8 +27,8 @@ jest.mock('./utils/typeguards', () => ({
 const mockParseRequestParams = require('./schemas/parse-request-params/parse-request-params').parseRequestParams;
 const mockIsTypedDataValid = require('./utils/is-typed-data-valid').isTypedDataValid;
 const mockToUtf8 = require('ethers').toUtf8String;
-const mockBeautifySimpleMessage = require('./utils/beautify-message').beautifySimpleMessage;
-const mockBeautifyComplexMessage = require('./utils/beautify-message').beautifyComplexMessage;
+const mockBeautifySimpleMessage = require('./utils/beautify-message/beautify-message').beautifySimpleMessage;
+const mockBeautifyComplexMessage = require('./utils/beautify-message/beautify-message').beautifyComplexMessage;
 const mockIsTypedDataV1 = require('./utils/typeguards').isTypedDataV1;
 
 describe('ethSign', () => {
