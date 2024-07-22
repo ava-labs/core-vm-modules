@@ -12,7 +12,7 @@ import {
   type ListPChainBalancesResponse,
   type ListXChainBalancesResponse,
 } from '@avalabs/glacier-sdk';
-import type { TokenService } from '@internal/utils';
+import { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
@@ -23,15 +23,19 @@ export const getBalances = async ({
   currency,
   network,
   glacierService,
-  tokenService,
+  proxyApiUrl,
+  storage,
 }: GetBalancesParams & {
   glacierService: AvalancheGlacierService;
-  tokenService: TokenService;
+  proxyApiUrl: string;
 }): Promise<GetBalancesResponse> => {
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');
   }
+
+  const tokenService = new TokenService({ storage, proxyApiUrl });
+
   const address = addresses[0] ?? '';
   const networkToken = network.networkToken;
   const coingeckoTokenId = network.pricingProviders?.coingecko?.nativeTokenId ?? '';
