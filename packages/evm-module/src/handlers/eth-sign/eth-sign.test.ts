@@ -1,5 +1,5 @@
 import { ethSign } from './eth-sign';
-import { RpcMethod, BannerType } from '@avalabs/vm-module-types';
+import { AlertType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
@@ -120,11 +120,13 @@ describe('ethSign', () => {
       expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
         expect.objectContaining({
           displayData: expect.objectContaining({
-            banner: {
-              type: BannerType.WARNING,
-              title: 'Warning: Verify Message Content',
-              description: 'This message contains non-standard elements.',
-              detailedDescription: 'Invalid typed data',
+            alert: {
+              type: AlertType.INFO,
+              details: {
+                title: 'Warning: Verify Message Content',
+                description: 'This message contains non-standard elements.',
+                detailedDescription: 'Invalid typed data',
+              },
             },
           }),
         }),
