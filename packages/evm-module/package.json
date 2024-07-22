@@ -14,32 +14,32 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.0.15",
+    "@avalabs/coingecko-sdk": "2.8.0-alpha.187",
+    "@avalabs/etherscan-sdk": "2.8.0-alpha.187",
+    "@avalabs/glacier-sdk": "2.8.0-alpha.187",
+    "@avalabs/utils-sdk": "2.8.0-alpha.187",
+    "@avalabs/vm-module-types": "workspace:*",
+    "@avalabs/wallets-sdk": "2.8.0-alpha.187",
+    "@metamask/rpc-errors": "6.3.0",
     "@zodios/core": "10.9.6",
-    "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
-    "@avalabs/utils-sdk": "2.8.0-alpha.193",
-    "@avalabs/etherscan-sdk": "v2.8.0-alpha.193",
-    "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
-    "@avalabs/wallets-sdk": "v2.8.0-alpha.193",
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
-    "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
-    "typechain": "8.3.1",
-    "@typechain/ethers-v6": "0.5.0",
-    "@openzeppelin/contracts": "4.9.3",
-    "@types/bn.js": "5.1.5",
     "@internal/tsup-config": "workspace:*",
+    "@internal/utils": "workspace:*",
+    "@openzeppelin/contracts": "4.9.3",
+    "@typechain/ethers-v6": "0.5.0",
+    "@types/bn.js": "5.1.5",
     "@types/jest": "29.5.7",
     "@types/lodash.startcase": "4.4.9",
     "eslint-config-custom": "workspace:*",
-    "@internal/utils": "workspace:*",
+    "ethers": "6.8.1",
     "jest": "29.7.0",
     "ts-jest": "29.1.1",
     "tsup": "7.2.0",
-    "ethers": "6.8.1"
+    "typechain": "8.3.1"
   },
   "peerDependencies": {
     "ethers": "^6.8.1"
