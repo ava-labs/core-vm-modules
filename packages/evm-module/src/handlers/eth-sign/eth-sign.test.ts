@@ -1,5 +1,5 @@
 import { ethSign } from './eth-sign';
-import { AlertType, RpcMethod } from '@avalabs/vm-module-types';
+import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import Blockaid from '@blockaid/client';
 
@@ -81,6 +81,37 @@ const mockApprovalController = {
 };
 
 describe('ethSign', () => {
+  const mockRequest = {
+    method: RpcMethod.ETH_SIGN,
+    params: ['0x123'],
+    dappInfo: {
+      name: 'Test DApp',
+      url: 'test-url',
+      icon: 'test-icon-uri',
+    },
+    requestId: 'requestId',
+    sessionId: 'sessionId',
+    chainId: 'eip155:1',
+  };
+  const mockNetwork = {
+    chainId: 1,
+    chainName: 'Ethereum',
+    logoUri: 'test-logo-uri',
+    rpcUrl: 'rpcUrl',
+    networkToken: {
+      name: 'ethereum',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    vmName: NetworkVMType.EVM,
+  };
+
+  const mockApprovalController = {
+    requestApproval: jest.fn(),
+    onTransactionConfirmed: jest.fn(),
+    onTransactionReverted: jest.fn(),
+  };
+
   beforeEach(() => {
     mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
