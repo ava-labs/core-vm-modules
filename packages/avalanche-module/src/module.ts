@@ -21,12 +21,12 @@ import { getBalances } from './handlers/get-balances/get-balances';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
-  #proxyApiUrl: string;
+  // #proxyApiUrl: string;
 
   constructor({ environment }: { environment: Environment }) {
-    const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    const { glacierApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
-    this.#proxyApiUrl = proxyApiUrl;
+    // this.#proxyApiUrl = proxyApiUrl;
   }
 
   getAddress(): Promise<string> {
@@ -39,7 +39,7 @@ export class AvalancheModule implements Module {
       currency,
       network,
       glacierService: this.#glacierService,
-      proxyApiUrl: this.#proxyApiUrl,
+      proxyApiUrl: 'https://proxy-api-dev.avax.network',
       storage,
     });
   }
