@@ -34,7 +34,7 @@ export const getBalances = async ({
   }
   const address = addresses[0] ?? '';
   const networkToken = network.networkToken;
-  const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
+  const coingeckoId = network.pricingProviders?.coingecko.nativeTokenId;
 
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
   const networkName = network.isTestnet ? Network.FUJI : Network.MAINNET;
@@ -47,17 +47,17 @@ export const getBalances = async ({
     })
     .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances);
 
-  const simplePriceResponse = coingeckoTokenId
+  const simplePriceResponse = coingeckoId
     ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoTokenId],
+        coinIds: [coingeckoId],
         currencies: [currency] as VsCurrencyType[],
       })
     : {};
 
-  const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? 0;
-  const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? 0;
-  const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
-  const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
+  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.price ?? 0;
+  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.marketCap ?? 0;
+  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.vol24 ?? 0;
+  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.change24 ?? 0;
 
   let balance: TokenWithBalanceAVM | TokenWithBalancePVM;
   if (isPchainBalance(chainBalances)) {
@@ -68,6 +68,7 @@ export const getBalances = async ({
       marketCap,
       vol24,
       change24,
+      coingeckoId: coingeckoId ?? '',
     });
 
     return {
@@ -85,6 +86,7 @@ export const getBalances = async ({
       marketCap,
       vol24,
       change24,
+      coingeckoId: coingeckoId ?? '',
     });
     return {
       [address]: {

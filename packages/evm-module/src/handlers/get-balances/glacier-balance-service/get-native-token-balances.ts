@@ -9,10 +9,12 @@ export const getNativeTokenBalances = async ({
   currency,
   chainId,
   glacierService,
+  coingeckoId,
 }: {
   chainId: number;
   address: string;
   currency: string;
+  coingeckoId: string;
   glacierService: EvmGlacierService;
 }): Promise<NetworkTokenWithBalance> => {
   const nativeBalance = await glacierService.getNativeBalance({
@@ -41,6 +43,6 @@ export const getNativeTokenBalances = async ({
     marketCap: 0,
     vol24: 0,
     change24: 0,
-    coingeckoId: '',
+    coingeckoId,
   };
 };

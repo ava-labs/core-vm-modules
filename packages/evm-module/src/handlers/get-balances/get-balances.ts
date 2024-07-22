@@ -41,6 +41,7 @@ export const getBalances = async ({
           currency,
           chainId,
           glacierService,
+          coingeckoId: network.pricingProviders?.coingecko.nativeTokenId ?? '',
         });
 
         const erc20Tokens = await getErc20BalancesFromGlacier({

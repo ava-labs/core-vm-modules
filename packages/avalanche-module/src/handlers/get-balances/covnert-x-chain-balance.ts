@@ -10,6 +10,7 @@ export const convertXChainBalance = ({
   marketCap,
   vol24,
   change24,
+  coingeckoId,
 }: {
   balance: XChainBalances;
   networkToken: NetworkToken;
@@ -17,6 +18,7 @@ export const convertXChainBalance = ({
   marketCap: number;
   vol24: number;
   change24: number;
+  coingeckoId: string;
 }): TokenWithBalanceAVM => {
   const decimals = networkToken.decimals;
   const balancePerType: Record<string, number> = {};
@@ -49,7 +51,7 @@ export const convertXChainBalance = ({
 
   return {
     ...networkToken,
-    coingeckoId: '',
+    coingeckoId,
     type: TokenType.NATIVE,
     priceInCurrency,
     balance: totalBalance,
