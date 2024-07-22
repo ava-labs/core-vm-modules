@@ -20,7 +20,9 @@
     "@avalabs/wallets-sdk": "v2.8.0-alpha.193",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "big.js": "6.2.1",
-    "bn.js": "5.2.1"
+    "bn.js": "5.2.1",
+    "zod": "3.23.8",
+    "@zodios/core": "10.9.6"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.5",
