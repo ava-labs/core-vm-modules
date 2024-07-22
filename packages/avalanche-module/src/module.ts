@@ -16,6 +16,8 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
+import { hashBlockchainId, TokenService } from '@internal/utils';
+// import { getBalances } from './handlers/get-balances/get-balances';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -25,6 +27,10 @@ export class AvalancheModule implements Module {
     const { glacierApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     // this.#proxyApiUrl = proxyApiUrl;
+    new TokenService({
+      storage: { get: () => undefined, set: () => undefined },
+      proxyApiUrl: 'https://api.coingecko.com/api/v3',
+    });
   }
 
   getAddress(): Promise<string> {
@@ -34,7 +40,7 @@ export class AvalancheModule implements Module {
   getBalances(_: GetBalancesParams): Promise<GetBalancesResponse> {
     // const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
     // return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
-    return Promise.resolve({ result: {} });
+    return Promise.resolve({ balances: {} });
   }
 
   getManifest(): Manifest | undefined {
@@ -59,5 +65,9 @@ export class AvalancheModule implements Module {
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }
+  }
+
+  static getHashedBlockchainId({ blockchainId, isTestnet }: { blockchainId: string; isTestnet?: boolean }): string {
+    return hashBlockchainId({ blockchainId, isTestnet });
   }
 }
