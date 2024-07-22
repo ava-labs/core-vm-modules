@@ -228,7 +228,7 @@ export const processJsonRpcSimulation = async ({
 }: {
   dAppUrl?: string;
   accountAddress: string;
-  data: unknown;
+  data: { method: string; params: unknown };
   chainId: number;
   proxyApiUrl: string;
 }) => {

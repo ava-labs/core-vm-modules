@@ -61,20 +61,7 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
-export enum BannerType {
-  WARNING = 'warning',
-  INFO = 'info',
-}
-
-export type Banner = {
-  type: BannerType;
-  title: string;
-  description: string;
-  detailedDescription?: string;
-};
-
 export type DisplayData = {
-  banner?: Banner;
   title: string;
   dAppInfo?: {
     name: string;
@@ -105,11 +92,13 @@ export type DisplayData = {
 export enum AlertType {
   WARNING = 'Warning',
   DANGER = 'Danger',
+  INFO = 'Info',
 }
 
 export type AlertDetails = {
   title: string;
   description: string;
+  detailedDescription?: string;
   actionTitles?: {
     proceed: string;
     reject: string;
