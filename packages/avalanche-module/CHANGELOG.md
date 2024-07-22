@@ -1,5 +1,14 @@
 # @avalabs/avalanche-module
 
+## 0.0.16
+
+### Patch Changes
+
+- f39ff3a: Fixe internal dependencies
+- 2bb0a1a: add getHashedBlockchainId util to avalanche module
+- Updated dependencies [bc48457]
+  - @avalabs/vm-module-types@0.0.16
+
 ## 0.0.15
 
 ### Patch Changes

@@ -1,9 +1,8 @@
-# @avalabs/bitcoin-module
+# @internal/utils
 
-## 0.0.16
+## 0.0.2
 
 ### Patch Changes
 
-- de9824c: feat: created bitcoin module
 - Updated dependencies [bc48457]
   - @avalabs/vm-module-types@0.0.16

@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.16
+
+### Patch Changes
+
+- bc48457: add support for all eth_sign methods
+
 ## 0.0.15
 
 ### Patch Changes

@@ -107,7 +107,7 @@ importers:
         specifier: 2.8.0-alpha.187
         version: 2.8.0-alpha.187
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.0.16
         version: link:../../packages/types
       '@zodios/core':
         specifier: 10.9.6
@@ -150,7 +150,7 @@ importers:
         specifier: 2.8.0-alpha.187
         version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.0.16
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: 2.8.0-alpha.187
@@ -196,8 +196,8 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/vm-module-types':
-        specifier: 0.0.13
-        version: 0.0.13(ethers@6.13.1)
+        specifier: 0.0.16
+        version: link:../types
       '@avalabs/wallets-sdk':
         specifier: 2.8.0-alpha.188
         version: 2.8.0-alpha.188(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.1)(node-fetch@3.3.2)
@@ -208,6 +208,9 @@ importers:
       '@internal/tsup-config':
         specifier: workspace:*
         version: link:../../packages-internal/tsup-config
+      '@internal/utils':
+        specifier: workspace:*
+        version: link:../../packages-internal/utils
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7
@@ -239,7 +242,7 @@ importers:
         specifier: 2.8.0-alpha.187
         version: 2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.0.16
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: 2.8.0-alpha.187
@@ -559,20 +562,8 @@ packages:
       - supports-color
     dev: false
 
-  /@avalabs/vm-module-types@0.0.13(ethers@6.13.1):
-    resolution: {integrity: sha512-Ej+TQBAJs+kCG5i2gMWjuS+ncNNAxV0LCdU6d/daT0ya8xOZjLK3SjdR0e0oUMKEDmihk+g3jArFYxch1XC9yQ==}
-    peerDependencies:
-      ethers: ^6.8.1
-    dependencies:
-      '@metamask/rpc-errors': 6.3.0
-      ethers: 6.13.1
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@avalabs/wallets-sdk@2.8.0-alpha.187(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-vAdWkbsd3PZRgvotL3pnfl/1EEzaF0zXnUMdVYz49tfTuGj6y69GR27iXXFupj59LMVivuM4CAwWAUu8CrXQoA==}
+  /@avalabs/wallets-sdk@2.8.0-alpha.188(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
+    resolution: {integrity: sha512-NuP0V5dUuFHt//cWLT9R2tH51ws4i2rqUjSWd82UL1zm0Y2rC0LxIO5Kd6DuIaoxe3d3zLODb54YYgjtfGTJ3w==}
     peerDependencies:
       ethers: ^6.7.1
     dependencies:
@@ -4799,8 +4790,8 @@ packages:
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.9.1)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.47.0)
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.9.1)(eslint-import-resolver-typescript@3.6.1)(eslint@8.47.0)
-      eslint-plugin-jsx-a11y: 6.9.0(eslint@8.47.0)
-      eslint-plugin-react: 7.35.0(eslint@8.47.0)
+      eslint-plugin-jsx-a11y: 6.8.0(eslint@8.47.0)
+      eslint-plugin-react: 7.34.2(eslint@8.47.0)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.47.0)
       typescript: 5.5.3
     transitivePeerDependencies:
@@ -6428,32 +6419,6 @@ packages:
       - supports-color
     dev: true
 
-  /jest-cli@26.6.3:
-    resolution: {integrity: sha512-GF9noBSa9t08pSyl3CY4frMrqp+aQXFGFkf5hEPbh/pIUFYWMK6ZLTfbmadxJVcJrdRoChlWQsA2VkJcDFK8hg==}
-    engines: {node: '>= 10.14.2'}
-    hasBin: true
-    dependencies:
-      '@jest/core': 26.6.3
-      '@jest/test-result': 26.6.2
-      '@jest/types': 26.6.2
-      chalk: 4.1.2
-      exit: 0.1.2
-      graceful-fs: 4.2.11
-      import-local: 3.2.0
-      is-ci: 2.0.0
-      jest-config: 26.6.3
-      jest-util: 26.6.2
-      jest-validate: 26.6.2
-      prompts: 2.4.2
-      yargs: 15.4.1
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - ts-node
-      - utf-8-validate
-    dev: false
-
   /jest-cli@29.7.0(@types/node@20.12.13):
     resolution: {integrity: sha512-OVVobw2IubN/GSYsxETi+gOe7Ka59EFMR/twOU3Jb2GnKKeMGJB5SGUUrEz3SFVmJASUdZUzy83sLNNQ2gZslg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -6470,7 +6435,7 @@ packages:
       chalk: 4.1.2
       create-jest: 29.7.0(@types/node@20.12.13)
       exit: 0.1.2
-      import-local: 3.2.0
+      import-local: 3.1.0
       jest-config: 29.7.0(@types/node@20.12.13)
       jest-util: 29.7.0
       jest-validate: 29.7.0
@@ -6482,81 +6447,7 @@ packages:
       - ts-node
     dev: true
 
-  /jest-config@26.6.3:
-    resolution: {integrity: sha512-t5qdIj/bCj2j7NFVHb2nFB4aUdfucDn3JRKgrZnplb8nieAirAzRSHP8uDEd+qV6ygzg9Pz4YG7UTJf94LPSyg==}
-    engines: {node: '>= 10.14.2'}
-    peerDependencies:
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      ts-node:
-        optional: true
-    dependencies:
-      '@babel/core': 7.24.9
-      '@jest/test-sequencer': 26.6.3
-      '@jest/types': 26.6.2
-      babel-jest: 26.6.3(@babel/core@7.24.9)
-      chalk: 4.1.2
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-environment-jsdom: 26.6.2
-      jest-environment-node: 26.6.2
-      jest-get-type: 26.3.0
-      jest-jasmine2: 26.6.3
-      jest-regex-util: 26.0.0
-      jest-resolve: 26.6.2
-      jest-util: 26.6.2
-      jest-validate: 26.6.2
-      micromatch: 4.0.7
-      pretty-format: 26.6.2
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - utf-8-validate
-    dev: false
-
   /jest-config@29.7.0(@types/node@20.12.13):
-    resolution: {integrity: sha512-uXbpfeQ7R6TZBqI3/TxCU4q4ttk3u0PJeC+E0zbfSoSjq6bJ7buBPxzQPL0ifrkY4DNu4JUdk0ImlBUYi840eQ==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    peerDependencies:
-      '@types/node': '*'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      '@babel/core': 7.24.9
-      '@jest/test-sequencer': 29.7.0
-      '@jest/types': 29.6.3
-      '@types/node': 20.12.13
-      babel-jest: 29.7.0(@babel/core@7.24.9)
-      chalk: 4.1.2
-      ci-info: 3.9.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.7.0
-      jest-environment-node: 29.7.0
-      jest-get-type: 29.6.3
-      jest-regex-util: 29.6.3
-      jest-resolve: 29.7.0
-      jest-runner: 29.7.0
-      jest-util: 29.7.0
-      jest-validate: 29.7.0
-      micromatch: 4.0.7
-      parse-json: 5.2.0
-      pretty-format: 29.7.0
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - supports-color
-    dev: true
-
-  /jest-config@29.7.0(@types/node@20.14.11):
     resolution: {integrity: sha512-uXbpfeQ7R6TZBqI3/TxCU4q4ttk3u0PJeC+E0zbfSoSjq6bJ7buBPxzQPL0ifrkY4DNu4JUdk0ImlBUYi840eQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
@@ -7228,22 +7119,6 @@ packages:
       supports-color: 8.1.1
     dev: true
 
-  /jest@26.6.3:
-    resolution: {integrity: sha512-lGS5PXGAzR4RF7V5+XObhqz2KZIDUA1yD0DG6pBVmy10eh0ZIXQImRuzocsI/N2XZ1GrLFwTS27In2i2jlpq1Q==}
-    engines: {node: '>= 10.14.2'}
-    hasBin: true
-    dependencies:
-      '@jest/core': 26.6.3
-      import-local: 3.2.0
-      jest-cli: 26.6.3
-    transitivePeerDependencies:
-      - bufferutil
-      - canvas
-      - supports-color
-      - ts-node
-      - utf-8-validate
-    dev: false
-
   /jest@29.7.0(@types/node@20.12.13):
     resolution: {integrity: sha512-NIy3oAFp9shda19hy4HK0HRTWKtPJmGdnvywu01nOqNC2vZg+Z+fvJDxpMQA88eb2I9EcafcdjYgsDthnYTvGw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -7256,7 +7131,7 @@ packages:
     dependencies:
       '@jest/core': 29.7.0
       '@jest/types': 29.6.3
-      import-local: 3.2.0
+      import-local: 3.1.0
       jest-cli: 29.7.0(@types/node@20.12.13)
     transitivePeerDependencies:
       - '@types/node'
@@ -9476,42 +9351,6 @@ packages:
     dev: false
 
   /tsup@7.2.0(typescript@5.2.2):
-    resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
-    engines: {node: '>=16.14'}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.1.0'
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.2.1(esbuild@0.18.20)
-      cac: 6.7.14
-      chokidar: 3.6.0
-      debug: 4.3.5
-      esbuild: 0.18.20
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss-load-config: 4.0.2
-      resolve-from: 5.0.0
-      rollup: 3.29.4
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-      typescript: 5.2.2
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
-
-  /tsup@7.2.0(typescript@5.5.3):
     resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
     engines: {node: '>=16.14'}
     hasBin: true

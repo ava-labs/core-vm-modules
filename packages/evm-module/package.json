@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/evm-module",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "@avalabs/etherscan-sdk": "2.8.0-alpha.187",
     "@avalabs/glacier-sdk": "2.8.0-alpha.187",
     "@avalabs/utils-sdk": "2.8.0-alpha.187",
-    "@avalabs/vm-module-types": "workspace:*",
+    "@avalabs/vm-module-types": "0.0.16",
     "@avalabs/wallets-sdk": "2.8.0-alpha.187",
     "@metamask/rpc-errors": "6.3.0",
     "@zodios/core": "10.9.6",

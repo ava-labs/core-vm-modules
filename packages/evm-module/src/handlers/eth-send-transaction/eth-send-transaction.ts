@@ -5,7 +5,7 @@ import {
   type ApprovalController,
   type DisplayData,
   type SigningData,
-  SigningDataType,
+  RpcMethod,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
@@ -29,7 +29,7 @@ export const ethSendTransaction = async ({
   const result = parseRequestParams(params);
 
   if (!result.success) {
-    console.error(result.error);
+    console.error('invalid params', result.error);
     return {
       error: rpcErrors.invalidParams('Transaction params are invalid'),
     };
@@ -110,7 +110,7 @@ export const ethSendTransaction = async ({
   };
 
   const signingData: SigningData = {
-    type: SigningDataType.EVM_TRANSACTION,
+    type: RpcMethod.ETH_SEND_TRANSACTION,
     account: transaction.from,
     chainId: network.chainId,
     data: {

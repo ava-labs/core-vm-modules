@@ -1,5 +1,14 @@
 # @avalabs/evm-module
 
+## 0.0.16
+
+### Patch Changes
+
+- f39ff3a: Fixe internal dependencies
+- bc48457: add support for all eth_sign methods
+- Updated dependencies [bc48457]
+  - @avalabs/vm-module-types@0.0.16
+
 ## 0.0.15
 
 ### Patch Changes
