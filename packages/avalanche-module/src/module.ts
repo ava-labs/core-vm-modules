@@ -14,7 +14,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
-import { getEnv } from './env';
+// import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
 // import { hashBlockchainId } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
@@ -23,11 +23,11 @@ export class AvalancheModule implements Module {
   // #glacierService: AvalancheGlacierService;
   // #proxyApiUrl: string;
 
-  constructor({ environment }: { environment: Environment }) {
-    const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    if (!glacierApiUrl || !proxyApiUrl) {
-      throw new Error('Invalid environment');
-    }
+  constructor(_: { environment: Environment }) {
+    // const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    // if (!glacierApiUrl || !proxyApiUrl) {
+    //   throw new Error('Invalid environment');
+    // }
     // this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     // this.#proxyApiUrl = proxyApiUrl;
   }
