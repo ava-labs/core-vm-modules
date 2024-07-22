@@ -25,6 +25,7 @@ describe('get-native-token-balances', () => {
       currency: 'USD',
       chainId: 123,
       glacierService: mockGlacierService,
+      coingeckoId: '',
     });
 
     expect(balance).resolves.toEqual({
@@ -55,6 +56,7 @@ describe('get-native-token-balances', () => {
       currency: 'USD',
       chainId: 123,
       glacierService: mockGlacierService,
+      coingeckoId: '',
     });
     expect(balance).rejects.toEqual(new Error('Failed to get native balance'));
   });
