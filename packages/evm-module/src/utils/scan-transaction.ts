@@ -57,7 +57,7 @@ export const scanJsonRpc = async ({
     chain: chainId.toString(),
     options: ['validation', 'simulation'],
     account_address: accountAddress,
-    data: data,
+    data,
     metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
   });
 };

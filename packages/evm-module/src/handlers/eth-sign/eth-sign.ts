@@ -13,15 +13,18 @@ import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
+import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 
 export const ethSign = async ({
   request,
   network,
   approvalController,
+  proxyApiUrl,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
+  proxyApiUrl: string;
 }) => {
   const result = parseRequestParams({ method: request.method, params: request.params });
 
@@ -106,6 +109,14 @@ export const ethSign = async ({
     };
   }
 
+  const { alert, balanceChange, tokenApprovals } = await processJsonRpcSimulation({
+    proxyApiUrl,
+    accountAddress: address,
+    chainId: network.chainId,
+    data: result.data.data as unknown as { method: string; params: unknown[] },
+    dAppUrl: request.dappInfo.url,
+  });
+
   const displayData: DisplayData = {
     banner,
     title: 'Sign Message',
@@ -122,6 +133,9 @@ export const ethSign = async ({
     account: address,
     messageDetails,
     disclaimer,
+    alert,
+    balanceChange,
+    tokenApprovals,
   };
 
   // prompt user for approval
