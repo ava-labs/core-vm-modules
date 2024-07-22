@@ -16,7 +16,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { hashBlockchainId } from '@internal/utils';
+// import { hashBlockchainId } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 
 export class AvalancheModule implements Module {
@@ -68,7 +68,7 @@ export class AvalancheModule implements Module {
     }
   }
 
-  static getHashedBlockchainId({ blockchainId, isTestnet }: { blockchainId: string; isTestnet?: boolean }): string {
-    return hashBlockchainId({ blockchainId, isTestnet });
-  }
+  // static getHashedBlockchainId({ blockchainId, isTestnet }: { blockchainId: string; isTestnet?: boolean }): string {
+  //   return hashBlockchainId({ blockchainId, isTestnet });
+  // }
 }
