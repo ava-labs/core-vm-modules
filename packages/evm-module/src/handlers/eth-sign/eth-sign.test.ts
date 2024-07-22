@@ -1,5 +1,5 @@
 import { ethSign } from './eth-sign';
-import { RpcMethod, BannerType } from '@avalabs/vm-module-types';
+import { RpcMethod, BannerType, NetworkVMType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 jest.mock('./schemas/parse-request-params/parse-request-params', () => ({
@@ -54,6 +54,7 @@ describe('ethSign', () => {
       symbol: 'ETH',
       decimals: 18,
     },
+    vmName: NetworkVMType.EVM,
   };
 
   const mockApprovalController = {
