@@ -19,12 +19,12 @@ import { AvalancheGlacierService } from './services/glacier-service/glacier-serv
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
-  #proxyApiUrl: string;
+  // #proxyApiUrl: string;
 
   constructor({ environment }: { environment: Environment }) {
-    const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    const { glacierApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
-    this.#proxyApiUrl = proxyApiUrl;
+    // this.#proxyApiUrl = proxyApiUrl;
   }
 
   getAddress(): Promise<string> {
