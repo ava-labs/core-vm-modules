@@ -24,7 +24,10 @@ export class AvalancheModule implements Module {
   // #proxyApiUrl: string;
 
   constructor({ environment }: { environment: Environment }) {
-    const { glacierApiUrl } = getEnv(environment);
+    const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    if (!glacierApiUrl || !proxyApiUrl) {
+      throw new Error('Invalid environment');
+    }
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     // this.#proxyApiUrl = proxyApiUrl;
   }
