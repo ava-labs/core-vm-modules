@@ -47,11 +47,6 @@ export const convertXChainBalance = ({
   const balanceInCurrency = bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber();
   const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
 
-  const unlocked = getTokenValue(decimals, balancePerType['unlocked']);
-  const locked = getTokenValue(decimals, balancePerType['locked']);
-  const atomicMemoryUnlocked = getTokenValue(decimals, balancePerType['atomicMemoryUnlocked']);
-  const atomicMemoryLocked = getTokenValue(decimals, balancePerType['atomicMemoryLocked']);
-
   return {
     ...networkToken,
     coingeckoId: '',
@@ -62,10 +57,12 @@ export const convertXChainBalance = ({
     balanceDisplayValue,
     balanceCurrencyDisplayValue,
     utxos: balance,
-    unlocked,
-    locked,
-    atomicMemoryUnlocked,
-    atomicMemoryLocked,
+    balancePerType: {
+      unlocked: getTokenValue(decimals, balancePerType['unlocked']),
+      locked: getTokenValue(decimals, balancePerType['locked']),
+      atomicMemoryUnlocked: getTokenValue(decimals, balancePerType['atomicMemoryUnlocked']),
+      atomicMemoryLocked: getTokenValue(decimals, balancePerType['atomicMemoryLocked']),
+    },
     marketCap,
     vol24,
     change24,

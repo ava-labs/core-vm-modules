@@ -91,14 +91,16 @@ export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;
   utxos?: PChainBalance;
-  lockedStaked: number;
-  lockedStakeable: number;
-  lockedPlatform: number;
-  atomicMemoryLocked: number;
-  atomicMemoryUnlocked: number;
-  unlockedUnstaked: number;
-  unlockedStaked: number;
-  pendingStaked: number;
+  balancePerType: {
+    lockedStaked: number;
+    lockedStakeable: number;
+    lockedPlatform: number;
+    atomicMemoryLocked: number;
+    atomicMemoryUnlocked: number;
+    unlockedUnstaked: number;
+    unlockedStaked: number;
+    pendingStaked: number;
+  };
 }
 
 export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
@@ -107,10 +109,12 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;
   utxos?: XChainBalances;
-  locked: number;
-  unlocked: number;
-  atomicMemoryUnlocked: number;
-  atomicMemoryLocked: number;
+  balancePerType: {
+    locked: number;
+    unlocked: number;
+    atomicMemoryUnlocked: number;
+    atomicMemoryLocked: number;
+  };
 }
 
 export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
