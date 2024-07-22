@@ -14,7 +14,7 @@
     "@avalabs/chains-sdk": "2.8.0-alpha.187",
     "@avalabs/coingecko-sdk": "2.8.0-alpha.187",
     "@avalabs/glacier-sdk": "2.8.0-alpha.187",
-    "@avalabs/vm-module-types": "workspace:*",
+    "@avalabs/vm-module-types": "0.0.16",
     "@zodios/core": "10.9.6",
     "zod": "3.23.8"
   },
