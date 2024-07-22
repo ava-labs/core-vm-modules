@@ -34,7 +34,7 @@ export const getBalances = async ({
   }
   const address = addresses[0] ?? '';
   const networkToken = network.networkToken;
-  const coingeckoTokenId = network.pricingProviders?.coingecko?.nativeTokenId ?? '';
+  const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
 
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
   const networkName = network.isTestnet ? Network.FUJI : Network.MAINNET;
