@@ -254,7 +254,7 @@ describe('eth_sendTransaction handler', () => {
     testWithValidationResultType('Malicious');
   });
 
-  it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
+  it('should process transaction and add token approvals and balance changes to displayData', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Blockaid as any).mockImplementation(() => ({
       evm: {

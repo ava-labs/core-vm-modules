@@ -1,6 +1,7 @@
 import { ethSign } from './eth-sign';
 import { AlertType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import Blockaid from '@blockaid/client';
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
 
@@ -48,37 +49,38 @@ const mockBeautifySimpleMessage = require('./utils/beautify-message/beautify-mes
 const mockBeautifyComplexMessage = require('./utils/beautify-message/beautify-message').beautifyComplexMessage;
 const mockIsTypedDataV1 = require('./utils/typeguards').isTypedDataV1;
 
+const mockRequest = {
+  method: RpcMethod.ETH_SIGN,
+  params: ['0x123'],
+  dappInfo: {
+    name: 'Test DApp',
+    url: 'test-url',
+    icon: 'test-icon-uri',
+  },
+  requestId: 'requestId',
+  sessionId: 'sessionId',
+  chainId: 'eip155:1',
+};
+
+const mockNetwork = {
+  chainId: 1,
+  chainName: 'Ethereum',
+  logoUri: 'test-logo-uri',
+  rpcUrl: 'rpcUrl',
+  networkToken: {
+    name: 'ethereum',
+    symbol: 'ETH',
+    decimals: 18,
+  },
+};
+
+const mockApprovalController = {
+  requestApproval: jest.fn(),
+  onTransactionConfirmed: jest.fn(),
+  onTransactionReverted: jest.fn(),
+};
+
 describe('ethSign', () => {
-  const mockRequest = {
-    method: RpcMethod.ETH_SIGN,
-    params: ['0x123'],
-    dappInfo: {
-      name: 'Test DApp',
-      url: 'test-url',
-      icon: 'test-icon-uri',
-    },
-    requestId: 'requestId',
-    sessionId: 'sessionId',
-    chainId: 'eip155:1',
-  };
-  const mockNetwork = {
-    chainId: 1,
-    chainName: 'Ethereum',
-    logoUri: 'test-logo-uri',
-    rpcUrl: 'rpcUrl',
-    networkToken: {
-      name: 'ethereum',
-      symbol: 'ETH',
-      decimals: 18,
-    },
-  };
-
-  const mockApprovalController = {
-    requestApproval: jest.fn(),
-    onTransactionConfirmed: jest.fn(),
-    onTransactionReverted: jest.fn(),
-  };
-
   beforeEach(() => {
     mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
@@ -209,6 +211,18 @@ describe('ethSign', () => {
     },
   );
 
+  it('should add alert object with Warning type to displayData when validation result is Warning', async () => {
+    testWithValidationResultType('Warning');
+  });
+
+  it('should add alert object with Warning type to displayData when validation result is Error', async () => {
+    testWithValidationResultType('Error');
+  });
+
+  it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
+    testWithValidationResultType('Malicious');
+  });
+
   it('should handle success case for approvalController.requestApproval', async () => {
     mockParseRequestParams.mockReturnValueOnce({
       success: true,
@@ -242,3 +256,65 @@ describe('ethSign', () => {
     expect(result).toEqual({ error: 'User denied message signature' });
   });
 });
+
+const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (Blockaid as any).mockImplementation(() => ({
+    evm: {
+      jsonRpc: {
+        scan: jest.fn().mockResolvedValue({
+          validation: { result_type: resultType },
+          simulation: { status: 'Success', account_summary: { exposures: [], assets_diffs: [] } },
+        }),
+      },
+    },
+  }));
+
+  mockParseRequestParams.mockReturnValueOnce({
+    success: true,
+    data: { method: RpcMethod.ETH_SIGN, data: 'data', address: '0xabc' },
+  });
+
+  const result = await ethSign({
+    request: mockRequest,
+    network: mockNetwork,
+    approvalController: mockApprovalController,
+    proxyApiUrl: PROXY_API_URL,
+  });
+
+  expect(result).toEqual({ result: '0x1234' });
+
+  if (resultType === 'Malicious') {
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          alert: {
+            type: AlertType.DANGER,
+            details: {
+              title: 'Scam Transaction',
+              description: 'This transaction is malicious, do not proceed.',
+              actionTitles: {
+                reject: 'Reject Transaction',
+                proceed: 'Proceed Anyway',
+              },
+            },
+          },
+        }),
+      }),
+    );
+  } else {
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          alert: {
+            type: AlertType.WARNING,
+            details: {
+              title: 'Suspicious Transaction',
+              description: 'Use caution, this transaction may be malicious.',
+            },
+          },
+        }),
+      }),
+    );
+  }
+};
