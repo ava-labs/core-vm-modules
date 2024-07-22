@@ -56,7 +56,7 @@ export const convertPChainBalance = ({
 
   return {
     ...networkToken,
-    coingeckoId: 'networkToken.coingeckoId',
+    coingeckoId: '',
     type: TokenType.NATIVE,
     priceInCurrency,
     balance: totalBalance,

@@ -54,7 +54,7 @@ export const convertXChainBalance = ({
 
   return {
     ...networkToken,
-    coingeckoId: 'networkToken.coingeckoId',
+    coingeckoId: '',
     type: TokenType.NATIVE,
     priceInCurrency,
     balance: totalBalance,
