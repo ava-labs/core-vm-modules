@@ -20,7 +20,7 @@ import { AvalancheGlacierService } from './services/glacier-service/glacier-serv
 import { getBalances } from './handlers/get-balances/get-balances';
 
 export class AvalancheModule implements Module {
-  #glacierService: AvalancheGlacierService;
+  // #glacierService: AvalancheGlacierService;
   // #proxyApiUrl: string;
 
   constructor({ environment }: { environment: Environment }) {
@@ -28,7 +28,7 @@ export class AvalancheModule implements Module {
     if (!glacierApiUrl || !proxyApiUrl) {
       throw new Error('Invalid environment');
     }
-    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
+    // this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     // this.#proxyApiUrl = proxyApiUrl;
   }
 
@@ -41,7 +41,7 @@ export class AvalancheModule implements Module {
       addresses,
       currency,
       network,
-      glacierService: this.#glacierService,
+      glacierService: new AvalancheGlacierService({ glacierApiUrl: 'https://glacier-api-dev.avax.network' }),
       proxyApiUrl: 'https://proxy-api-dev.avax.network',
       storage,
     });
@@ -57,7 +57,13 @@ export class AvalancheModule implements Module {
   }
 
   getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {
-    return getTransactionHistory({ network, address, nextPageToken, offset, glacierService: this.#glacierService });
+    return getTransactionHistory({
+      network,
+      address,
+      nextPageToken,
+      offset,
+      glacierService: new AvalancheGlacierService({ glacierApiUrl: 'https://glacier-api-dev.avax.network' }),
+    });
   }
 
   getTokens(_: Network) {
