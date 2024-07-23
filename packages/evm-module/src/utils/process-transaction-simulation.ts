@@ -76,7 +76,7 @@ const processTokenApprovals = (
   request: RpcRequest,
   exposures: Blockaid.AddressAssetExposure[],
 ): TokenApprovals | undefined => {
-  const tokens: TokenApproval[] = [];
+  const approvals: TokenApproval[] = [];
 
   for (const exposurePerAsset of exposures) {
     const token = convertAssetToNetworkContractToken(exposurePerAsset.asset);
@@ -86,7 +86,7 @@ const processTokenApprovals = (
 
     for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
       if (exposurePerSpender.exposure.length === 0) {
-        tokens.push({
+        approvals.push({
           token,
           spenderAddress,
           logoUri: token.logoUri,
@@ -94,7 +94,7 @@ const processTokenApprovals = (
       } else {
         for (const exposure of exposurePerSpender.exposure) {
           if ('raw_value' in exposure) {
-            tokens.push({
+            approvals.push({
               token,
               spenderAddress,
               value: exposure.raw_value,
@@ -102,7 +102,7 @@ const processTokenApprovals = (
               logoUri: token.logoUri,
             });
           } else {
-            tokens.push({
+            approvals.push({
               token,
               spenderAddress,
               logoUri: exposure.logo_url,
@@ -114,16 +114,16 @@ const processTokenApprovals = (
     }
   }
 
-  if (tokens.length === 0) {
+  if (approvals.length === 0) {
     return undefined;
   }
 
   const isEditable =
-    tokens.length === 1 &&
-    tokens[0]?.token.type === TokenType.ERC20 &&
+    approvals.length === 1 &&
+    approvals[0]?.token.type === TokenType.ERC20 &&
     request.method === RpcMethod.ETH_SEND_TRANSACTION;
 
-  return { isEditable, tokens };
+  return { isEditable, approvals };
 };
 
 export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {

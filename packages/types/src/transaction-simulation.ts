@@ -25,5 +25,5 @@ export type TokenApproval = {
 
 export type TokenApprovals = {
   isEditable: boolean;
-  tokens: TokenApproval[];
+  approvals: TokenApproval[];
 };

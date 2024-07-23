@@ -325,7 +325,7 @@ describe('eth_sendTransaction handler', () => {
         ...displayData,
         tokenApprovals: {
           isEditable: true,
-          tokens: [
+          approvals: [
             {
               token: {
                 type: TokenType.ERC20,
