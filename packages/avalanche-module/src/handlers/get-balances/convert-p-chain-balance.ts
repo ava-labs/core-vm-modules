@@ -15,10 +15,10 @@ export const convertPChainBalance = ({
 }: {
   balance: PChainBalance;
   networkToken: NetworkToken;
-  priceInCurrency: number;
-  marketCap: number;
-  vol24: number;
-  change24: number;
+  priceInCurrency?: number;
+  marketCap?: number;
+  vol24?: number;
+  change24?: number;
   coingeckoId: string;
 }): TokenWithBalancePVM => {
   const decimals = networkToken.decimals;
@@ -50,10 +50,14 @@ export const convertPChainBalance = ({
   }
 
   const available = balancePerType['unlockedUnstaked'] ? new BN(balancePerType['unlockedUnstaked']) : new BN(0);
-  const availableInCurrency = bnToBig(available, decimals).mul(priceInCurrency).toNumber();
+  const availableInCurrency = priceInCurrency
+    ? bnToBig(available, decimals).mul(priceInCurrency).toNumber()
+    : undefined;
   const availableDisplayValue = balanceToDisplayValue(available, decimals);
   const totalBalance = calculateTotalBalance(balance);
-  const balanceInCurrency = bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber();
+  const balanceInCurrency = priceInCurrency
+    ? bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber()
+    : undefined;
   const balanceDisplayValue = balanceToDisplayValue(totalBalance, decimals);
 
   return {
@@ -63,7 +67,7 @@ export const convertPChainBalance = ({
     balance: totalBalance,
     balanceInCurrency,
     balanceDisplayValue,
-    balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2),
+    balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2) ?? '',
     available,
     availableInCurrency,
     availableDisplayValue,

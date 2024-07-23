@@ -54,10 +54,10 @@ export const getBalances = async ({
       })
     : {};
 
-  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.price ?? 0;
-  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.marketCap ?? 0;
-  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.vol24 ?? 0;
-  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.change24 ?? 0;
+  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.price;
+  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.marketCap;
+  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.vol24;
+  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.change24;
 
   let balance: TokenWithBalanceAVM | TokenWithBalancePVM;
   if (isPchainBalance(chainBalances)) {

@@ -14,10 +14,10 @@ export const convertXChainBalance = ({
 }: {
   balance: XChainBalances;
   networkToken: NetworkToken;
-  priceInCurrency: number;
-  marketCap: number;
-  vol24: number;
-  change24: number;
+  priceInCurrency?: number;
+  marketCap?: number;
+  vol24?: number;
+  change24?: number;
   coingeckoId: string;
 }): TokenWithBalanceAVM => {
   const decimals = networkToken.decimals;
@@ -46,8 +46,10 @@ export const convertXChainBalance = ({
 
   const totalBalance = calculateTotalBalance(balance);
   const balanceDisplayValue = balanceToDisplayValue(totalBalance, decimals);
-  const balanceInCurrency = bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber();
-  const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
+  const balanceInCurrency = priceInCurrency
+    ? bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber()
+    : undefined;
+  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
 
   return {
     ...networkToken,

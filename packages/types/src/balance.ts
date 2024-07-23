@@ -16,20 +16,20 @@ export type TokenBalanceData = {
   name: string;
   symbol: string;
   balance: BN;
-  balanceInCurrency: number;
+  balanceInCurrency?: number;
   balanceDisplayValue: string;
   balanceCurrencyDisplayValue: string;
-  priceInCurrency: number;
+};
+
+type TokenMarketData = {
+  priceInCurrency?: number;
   priceChanges?: {
     percentage?: number;
     value?: number;
   };
-};
-
-type TokenMarketData = {
-  marketCap: number;
-  change24: number;
-  vol24: number;
+  marketCap?: number;
+  change24?: number;
+  vol24?: number;
 };
 
 export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &

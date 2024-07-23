@@ -53,14 +53,16 @@ export const getErc20Balances = async ({
 
   return tokensBalances.reduce(
     (acc, token) => {
-      const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? 0;
-      const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? 0;
-      const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
-      const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
+      const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? undefined;
+      const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? undefined;
+      const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? undefined;
+      const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
 
-      const balanceInCurrency = bnToBig(token.balance, token.decimals).mul(priceInCurrency).toNumber();
+      const balanceInCurrency = priceInCurrency
+        ? bnToBig(token.balance, token.decimals).mul(priceInCurrency).toNumber()
+        : undefined;
       const balanceDisplayValue = balanceToDisplayValue(token.balance, token.decimals);
-      const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
+      const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
 
       return {
         ...acc,
