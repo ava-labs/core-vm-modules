@@ -13,12 +13,16 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.0.19",
-    "@avalabs/wallets-sdk": "2.8.0-alpha.188",
+    "@avalabs/wallets-sdk": "2.8.0-alpha.193",
+    "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
+    "@avalabs/utils-sdk": "2.8.0-alpha.193",
     "@metamask/rpc-errors": "6.3.0"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
     "@internal/utils": "workspace:*",
+    "@types/big.js": "6.2.2",
+    "@types/bn.js": "5.1.5",
     "@types/jest": "29.5.7",
     "eslint-config-custom": "workspace:*",
     "jest": "29.7.0",
