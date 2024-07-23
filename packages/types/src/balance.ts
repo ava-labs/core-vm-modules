@@ -117,6 +117,30 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
   };
 }
 
-export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
+export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type'> {
+  type: TokenType.ERC721 | TokenType.ERC1155;
+  address: string;
+  description: string;
+  logoUri: string;
+  logoSmall: string;
+  name: string;
+  symbol: string;
+  tokenId: string;
+  attributes: TokenAttribute[];
+  collectionName: string;
+  updatedAt?: number;
+}
+
+export interface TokenAttribute {
+  name: string;
+  value: string;
+}
+
+export type TokenWithBalance =
+  | TokenWithBalanceEVM
+  | TokenWithBalanceBTC
+  | TokenWithBalancePVM
+  | TokenWithBalanceAVM
+  | NftTokenWithBalance;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance>>;
