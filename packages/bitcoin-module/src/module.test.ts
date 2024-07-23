@@ -11,7 +11,7 @@ jest.mock('./handlers/get-balances');
 describe('bitcoin-module', () => {
   describe('getNetworkFee()', () => {
     it('uses the get-network-fee handler', async () => {
-      const devModule = new BitcoinModule({ environment: Environment.DEV });
+      const devModule = new BitcoinModule({ environment: Environment.DEV, approvalController: {} as any }); // eslint-disable-line
       await devModule.getNetworkFee({ isTestnet: true } as Network);
 
       expect(getNetworkFee).toHaveBeenCalledWith({
@@ -19,7 +19,7 @@ describe('bitcoin-module', () => {
         proxyApiUrl: devEnv.proxyApiUrl,
       });
 
-      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION });
+      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION, approvalController: {} as any }); // eslint-disable-line
       await prodModule.getNetworkFee({ isTestnet: false } as Network);
 
       expect(getNetworkFee).toHaveBeenCalledWith({
@@ -37,7 +37,7 @@ describe('bitcoin-module', () => {
         currency: 'USD',
       };
 
-      const devModule = new BitcoinModule({ environment: Environment.DEV });
+      const devModule = new BitcoinModule({ environment: Environment.DEV, approvalController: {} as any }); // eslint-disable-line
       await devModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({
@@ -45,7 +45,7 @@ describe('bitcoin-module', () => {
         proxyApiUrl: devEnv.proxyApiUrl,
       });
 
-      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION });
+      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION, approvalController: {} as any }); // eslint-disable-line
       await prodModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({

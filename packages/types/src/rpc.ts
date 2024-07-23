@@ -1,9 +1,10 @@
 import type { TransactionRequest } from 'ethers';
+import type { Avalanche, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
-import type { Avalanche } from '@avalabs/core-wallets-sdk';
-import type { BlockchainDetails, ChainDetails, ExportImportTxDetails, StakingDetails, SubnetDetails } from './staking';
+import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
+import type { TokenWithBalanceBTC } from './balance';
 
 export enum RpcMethod {
   /* BTC */
@@ -126,7 +127,23 @@ export type Alert = {
   details: AlertDetails;
 };
 
+type BitcoinTransactionData = {
+  amount: number;
+  feeRate: number;
+  fee: number;
+  to: string;
+  balance: TokenWithBalanceBTC;
+  inputs: BitcoinInputUTXO[];
+  outputs: BitcoinOutputUTXO[];
+};
+
 export type SigningData =
+  | {
+      type: RpcMethod.BITCOIN_SEND_TRANSACTION;
+      account: string;
+      chainId: number;
+      data: BitcoinTransactionData;
+    }
   | {
       type: RpcMethod.ETH_SEND_TRANSACTION;
       account: string;
