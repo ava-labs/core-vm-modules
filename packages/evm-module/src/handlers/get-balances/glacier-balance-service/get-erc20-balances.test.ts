@@ -51,9 +51,6 @@ describe('get-erc20-balances', () => {
         balanceInCurrency: 1000,
         priceInCurrency: 1000,
         type: 'ERC20',
-        change24: 0,
-        marketCap: 0,
-        vol24: 0,
       },
     });
   });

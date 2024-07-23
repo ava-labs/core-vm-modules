@@ -39,9 +39,6 @@ describe('get-native-token-balances', () => {
       balanceInCurrency: 1000,
       balanceCurrencyDisplayValue: '1000.00',
       priceInCurrency: 1000,
-      marketCap: 0,
-      vol24: 0,
-      change24: 0,
       coingeckoId: '',
     });
   });

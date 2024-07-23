@@ -88,15 +88,10 @@ describe('get-native-token-balances', () => {
       decimals: 18,
       logoUri: 'https://example.com/logo.png',
       balance: new BN('0'),
-      balanceCurrencyDisplayValue: '0.00',
+      balanceCurrencyDisplayValue: '',
       balanceDisplayValue: '0',
-      balanceInCurrency: 0,
-      priceInCurrency: 0,
       coingeckoId: '123',
       type: 'NATIVE',
-      marketCap: 0,
-      vol24: 0,
-      change24: 0,
     });
   });
 });
