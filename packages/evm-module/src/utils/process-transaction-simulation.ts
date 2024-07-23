@@ -10,17 +10,22 @@ import {
   type TokenApproval,
   type TokenDiff,
   type TokenDiffItem,
+  type TokenApprovals,
+  type RpcRequest,
+  RpcMethod,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/utils-sdk';
 import { isHexString } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 
 export const processTransactionSimulation = async ({
+  request,
   dAppUrl,
   params,
   chainId,
   proxyApiUrl,
 }: {
+  request: RpcRequest;
   dAppUrl?: string;
   params: TransactionParams;
   chainId: number;
@@ -57,18 +62,21 @@ export const processTransactionSimulation = async ({
   }
 
   let balanceChange: BalanceChange | undefined;
-  let tokenApprovals: TokenApproval[] = [];
+  let tokenApprovals: TokenApprovals | undefined;
 
   if (simulation?.status === 'Success') {
-    tokenApprovals = processTokenApprovals(simulation.account_summary.exposures);
+    tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
     balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
   }
 
   return { alert, balanceChange, tokenApprovals };
 };
 
-const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): TokenApproval[] => {
-  const tokenApprovals: TokenApproval[] = [];
+const processTokenApprovals = (
+  request: RpcRequest,
+  exposures: Blockaid.AddressAssetExposure[],
+): TokenApprovals | undefined => {
+  const tokens: TokenApproval[] = [];
 
   for (const exposurePerAsset of exposures) {
     const token = convertAssetToNetworkContractToken(exposurePerAsset.asset);
@@ -78,7 +86,7 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
 
     for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
       if (exposurePerSpender.exposure.length === 0) {
-        tokenApprovals.push({
+        tokens.push({
           token,
           spenderAddress,
           logoUri: token.logoUri,
@@ -86,7 +94,7 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
       } else {
         for (const exposure of exposurePerSpender.exposure) {
           if ('raw_value' in exposure) {
-            tokenApprovals.push({
+            tokens.push({
               token,
               spenderAddress,
               value: exposure.raw_value,
@@ -94,7 +102,7 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
               logoUri: token.logoUri,
             });
           } else {
-            tokenApprovals.push({
+            tokens.push({
               token,
               spenderAddress,
               logoUri: exposure.logo_url,
@@ -106,7 +114,16 @@ const processTokenApprovals = (exposures: Blockaid.AddressAssetExposure[]): Toke
     }
   }
 
-  return tokenApprovals;
+  if (tokens.length === 0) {
+    return undefined;
+  }
+
+  const isEditable =
+    tokens.length === 1 &&
+    tokens[0]?.token.type === TokenType.ERC20 &&
+    request.method === RpcMethod.ETH_SEND_TRANSACTION;
+
+  return { isEditable, tokens };
 };
 
 export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
@@ -220,12 +237,14 @@ const convertNativeAssetToToken = (asset: Blockaid.NativeAssetDetails): NetworkT
 };
 
 export const processJsonRpcSimulation = async ({
+  request,
   dAppUrl,
   accountAddress,
   chainId,
   data,
   proxyApiUrl,
 }: {
+  request: RpcRequest;
   dAppUrl?: string;
   accountAddress: string;
   data: { method: string; params: unknown };
@@ -264,10 +283,10 @@ export const processJsonRpcSimulation = async ({
   }
 
   let balanceChange: BalanceChange | undefined;
-  let tokenApprovals: TokenApproval[] = [];
+  let tokenApprovals: TokenApprovals | undefined;
 
   if (simulation?.status === 'Success') {
-    tokenApprovals = processTokenApprovals(simulation.account_summary.exposures);
+    tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
     balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
   }
 

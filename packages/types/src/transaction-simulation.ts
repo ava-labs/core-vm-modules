@@ -22,3 +22,8 @@ export type TokenApproval = {
   usdPrice?: string;
   logoUri?: string;
 };
+
+export type TokenApprovals = {
+  isEditable: boolean;
+  tokens: TokenApproval[];
+};

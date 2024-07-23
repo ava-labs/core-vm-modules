@@ -117,6 +117,7 @@ export const ethSign = async ({
     balanceChange,
     tokenApprovals,
   } = await processJsonRpcSimulation({
+    request,
     proxyApiUrl,
     accountAddress: address,
     chainId: network.chainId,

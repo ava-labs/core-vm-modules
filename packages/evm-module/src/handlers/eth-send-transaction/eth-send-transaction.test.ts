@@ -99,7 +99,7 @@ const displayData = {
   },
   networkFeeSelector: true,
   alert: undefined,
-  tokenApprovals: [],
+  tokenApprovals: undefined,
   balanceChange: undefined,
 };
 
@@ -323,22 +323,25 @@ describe('eth_sendTransaction handler', () => {
       request: requestParams.request,
       displayData: {
         ...displayData,
-        tokenApprovals: [
-          {
-            token: {
-              type: TokenType.ERC20,
-              address: '0xTokenAddress',
-              name: 'TokenName',
-              symbol: 'TKN',
-              decimals: 18,
+        tokenApprovals: {
+          isEditable: true,
+          tokens: [
+            {
+              token: {
+                type: TokenType.ERC20,
+                address: '0xTokenAddress',
+                name: 'TokenName',
+                symbol: 'TKN',
+                decimals: 18,
+                logoUri: 'logo_url',
+              },
+              spenderAddress: '0xSpenderAddress',
+              value: '1',
+              usdPrice: '1',
               logoUri: 'logo_url',
             },
-            spenderAddress: '0xSpenderAddress',
-            value: '1',
-            usdPrice: '1',
-            logoUri: 'logo_url',
-          },
-        ],
+          ],
+        },
         balanceChange: {
           ins: [
             {

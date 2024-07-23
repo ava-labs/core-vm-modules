@@ -95,6 +95,7 @@ export const ethSendTransaction = async ({
   const transactionType = parseERC20TransactionType(transaction);
 
   const { alert, balanceChange, tokenApprovals } = await processTransactionSimulation({
+    request,
     proxyApiUrl,
     chainId: network.chainId,
     params: transaction,

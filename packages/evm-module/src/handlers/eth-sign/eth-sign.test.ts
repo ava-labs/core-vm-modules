@@ -198,7 +198,7 @@ describe('ethSign', () => {
           },
           alert: undefined,
           balanceChange: undefined,
-          tokenApprovals: [],
+          tokenApprovals: undefined,
         },
         request: { ...mockRequest, method },
         signingData: {
