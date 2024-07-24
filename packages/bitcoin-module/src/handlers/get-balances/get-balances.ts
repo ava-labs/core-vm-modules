@@ -1,11 +1,11 @@
 import { TokenType, type GetBalancesParams, type GetBalancesResponse } from '@avalabs/vm-module-types';
 import { bigToBN, balanceToDisplayValue } from '@avalabs/utils-sdk';
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import Big from 'big.js';
 
 import { TokenService } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
-import { satoshiToBtc } from '../../utils/conversion';
 import { extractTokenMarketData } from '../../utils/extract-token-market-data';
 
 type GetBTCBalancesParams = Omit<GetBalancesParams, 'currency'> & {
@@ -51,15 +51,15 @@ export const getBalances = async ({
         utxosUnconfirmed,
       } = await provider.getUtxoBalance(address, withScripts);
 
-      const balanceBig = satoshiToBtc(balanceInSatoshis);
+      const balanceBig = new Big(balanceInSatoshis).div(10 ** denomination);
       const balance = bigToBN(balanceBig, denomination);
-      const balanceDisplayValue = balanceToDisplayValue(balance, network.networkToken.decimals);
+      const balanceDisplayValue = balanceToDisplayValue(balance, denomination);
       const balanceInCurrency =
         priceInCurrency === undefined ? undefined : balanceBig.times(priceInCurrency).toNumber();
 
       const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
 
-      const unconfirmedBalanceBig = satoshiToBtc(unconfirmedBalanceInSatoshis);
+      const unconfirmedBalanceBig = new Big(unconfirmedBalanceInSatoshis).div(10 ** denomination);
       const unconfirmedBalance = bigToBN(unconfirmedBalanceBig, denomination);
       const unconfirmedBalanceDisplayValue = balanceToDisplayValue(unconfirmedBalance, denomination);
       const unconfirmedBalanceInCurrency =
