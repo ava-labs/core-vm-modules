@@ -1,6 +1,7 @@
 import type { TransactionRequest } from 'ethers';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
+import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 
 export enum RpcMethod {
   /* EVM */
@@ -60,20 +61,7 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
-export enum BannerType {
-  WARNING = 'warning',
-  INFO = 'info',
-}
-
-export type Banner = {
-  type: BannerType;
-  title: string;
-  description: string;
-  detailedDescription?: string;
-};
-
 export type DisplayData = {
-  banner?: Banner;
   title: string;
   dAppInfo?: {
     name: string;
@@ -92,9 +80,34 @@ export type DisplayData = {
     from: string;
     to: string;
     data?: string;
+    type?: string;
   };
   networkFeeSelector?: boolean;
   disclaimer?: string;
+  alert?: Alert;
+  balanceChange?: BalanceChange;
+  tokenApprovals?: TokenApprovals;
+};
+
+export enum AlertType {
+  WARNING = 'Warning',
+  DANGER = 'Danger',
+  INFO = 'Info',
+}
+
+export type AlertDetails = {
+  title: string;
+  description: string;
+  detailedDescription?: string;
+  actionTitles?: {
+    proceed: string;
+    reject: string;
+  };
+};
+
+export type Alert = {
+  type: AlertType;
+  details: AlertDetails;
 };
 
 export type SigningData =

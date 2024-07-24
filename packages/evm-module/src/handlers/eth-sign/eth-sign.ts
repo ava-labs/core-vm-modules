@@ -5,7 +5,8 @@ import {
   type DisplayData,
   type RpcRequest,
   RpcMethod,
-  BannerType,
+  type Alert,
+  AlertType,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { toUtf8String } from 'ethers';
@@ -13,15 +14,18 @@ import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
+import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 
 export const ethSign = async ({
   request,
   network,
   approvalController,
+  proxyApiUrl,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
+  proxyApiUrl: string;
 }) => {
   const result = parseRequestParams({ method: request.method, params: request.params });
 
@@ -46,14 +50,16 @@ export const ethSign = async ({
   let signingData: SigningData | undefined;
   let messageDetails: string | undefined;
   let disclaimer: string | undefined;
-  let banner: DisplayData['banner'] | undefined;
+  let alert: Alert | undefined;
 
   if (typedDataValidationResult && !typedDataValidationResult.isValid) {
-    banner = {
-      type: BannerType.WARNING,
-      title: 'Warning: Verify Message Content',
-      description: 'This message contains non-standard elements.',
-      detailedDescription: (typedDataValidationResult.error as Error).toString(),
+    alert = {
+      type: AlertType.INFO,
+      details: {
+        title: 'Warning: Verify Message Content',
+        description: 'This message contains non-standard elements.',
+        detailedDescription: (typedDataValidationResult.error as Error).toString(),
+      },
     };
   }
 
@@ -106,8 +112,20 @@ export const ethSign = async ({
     };
   }
 
+  const {
+    alert: prioritizedAlert,
+    balanceChange,
+    tokenApprovals,
+  } = await processJsonRpcSimulation({
+    request,
+    proxyApiUrl,
+    accountAddress: address,
+    chainId: network.chainId,
+    data: { method, params: request.params },
+    dAppUrl: request.dappInfo.url,
+  });
+
   const displayData: DisplayData = {
-    banner,
     title: 'Sign Message',
     dAppInfo: {
       name: request.dappInfo.name,
@@ -122,6 +140,9 @@ export const ethSign = async ({
     account: address,
     messageDetails,
     disclaimer,
+    alert: prioritizedAlert ?? alert,
+    balanceChange,
+    tokenApprovals,
   };
 
   // prompt user for approval

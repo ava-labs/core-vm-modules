@@ -98,6 +98,7 @@ export class EvmModule implements Module {
           request,
           network,
           approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
         });
       case RpcMethod.PERSONAL_SIGN:
       case RpcMethod.ETH_SIGN:
@@ -109,6 +110,7 @@ export class EvmModule implements Module {
           request,
           network,
           approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
         });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };

@@ -1,12 +1,10 @@
 import { numberToBN, bnToBig, balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { TokenType, type Network, type NetworkContractToken, type TokenWithBalance } from '@avalabs/vm-module-types';
+import { TokenType, type ERC20Token, type Network, type TokenWithBalance } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import BN from 'bn.js';
-
-const DEFAULT_DECIMALS = 18;
 
 export const getErc20Balances = async ({
   provider,
@@ -20,7 +18,7 @@ export const getErc20Balances = async ({
   tokenService: TokenService;
   address: string;
   currency: string;
-  tokens: NetworkContractToken[];
+  tokens: ERC20Token[];
   network: Network;
 }): Promise<Record<string, TokenWithBalance>> => {
   const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId;
@@ -31,7 +29,7 @@ export const getErc20Balances = async ({
     tokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
       const balanceBig = await contract.balanceOf?.(userAddress);
-      const balance = new BN(balanceBig) || numberToBN(0, token.decimals || DEFAULT_DECIMALS);
+      const balance = new BN(balanceBig) || numberToBN(0, token.decimals);
 
       const tokenWithBalance = {
         ...token,
@@ -41,7 +39,7 @@ export const getErc20Balances = async ({
       return tokenWithBalance;
     }),
   ).then((res) => {
-    return res.reduce<(NetworkContractToken & { balance: BN })[]>((acc, result) => {
+    return res.reduce<(ERC20Token & { balance: BN })[]>((acc, result) => {
       return result.status === 'fulfilled' && !result.value.balance.isZero() ? [...acc, result.value] : acc;
     }, []);
   });

@@ -7,3 +7,4 @@ export * from './network-fee';
 export * from './rpc';
 export * from './token';
 export * from './transaction-history';
+export * from './transaction-simulation';

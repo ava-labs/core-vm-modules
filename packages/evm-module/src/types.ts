@@ -14,3 +14,12 @@ export type TransactionParams = {
   nonce?: string;
   chainId?: string;
 };
+
+export enum ERC20TransactionType {
+  TOTAL_SUPPLY = 'totalSupply',
+  BALANCE_OF = 'balanceOf',
+  TRANSFER = 'transfer',
+  TRANSFER_FROM = 'transferFrom',
+  APPROVE = 'approve',
+  ALLOWANCE = 'allowance',
+}

@@ -13,15 +13,20 @@ import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
+import { processTransactionSimulation } from '../../utils/process-transaction-simulation';
+import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
+import { ERC20TransactionType } from '../../types';
 
 export const ethSendTransaction = async ({
   request,
   network,
   approvalController,
+  proxyApiUrl,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
+  proxyApiUrl: string;
 }) => {
   const { dappInfo, params } = request;
 
@@ -87,14 +92,24 @@ export const ethSendTransaction = async ({
     }
   }
 
-  // TODO: validate + simulate transaction
-  // https://ava-labs.atlassian.net/browse/CP-8870
+  const transactionType = parseERC20TransactionType(transaction);
+
+  const { alert, balanceChange, tokenApprovals } = await processTransactionSimulation({
+    request,
+    proxyApiUrl,
+    chainId: network.chainId,
+    params: transaction,
+    dAppUrl: request.dappInfo.url,
+  });
 
   // generate display and signing data
-  // TODO adjust title for different transaction types
-  // https://ava-labs.atlassian.net/browse/CP-8870
+  let title = 'Approve Transaction';
+  if (transactionType === ERC20TransactionType.APPROVE) {
+    title = 'Token Spend Approval';
+  }
+
   const displayData: DisplayData = {
-    title: 'Approve Transaction',
+    title,
     network: {
       chainId: network.chainId,
       name: network.chainName,
@@ -105,8 +120,12 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       to: transaction.to,
       data: transaction.data,
+      type: transactionType,
     },
     networkFeeSelector: true,
+    alert,
+    balanceChange,
+    tokenApprovals,
   };
 
   const signingData: SigningData = {
