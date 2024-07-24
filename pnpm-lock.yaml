@@ -259,18 +259,12 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
-      '@zodios/core':
-        specifier: 10.9.6
-        version: 10.9.6(axios@1.7.2)(zod@3.23.8)
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
       lodash.startcase:
         specifier: 4.4.0
         version: 4.4.0
-      zod:
-        specifier: 3.23.8
-        version: 3.23.8
     devDependencies:
       '@internal/tsup-config':
         specifier: workspace:*
