@@ -25,7 +25,8 @@
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
     "@metamask/rpc-errors": "6.3.0",
-    "zod": "3.23.8"
+    "zod": "3.23.8",
+    "@zodios/core": "10.9.6"
   },
   "devDependencies": {
     "typechain": "8.3.1",
