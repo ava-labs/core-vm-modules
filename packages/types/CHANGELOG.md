@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.17
+
+### Patch Changes
+
+- 3590edf: Transaction parsing, validation and simulation for EVM
+
 ## 0.0.16
 
 ### Patch Changes
