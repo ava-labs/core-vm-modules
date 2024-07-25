@@ -265,6 +265,7 @@ export const processJsonRpcSimulation = async ({
     }
   } catch (error) {
     console.error('processJsonRpcSimulation error', error);
+    alert = transactionAlerts[AlertType.WARNING];
   }
 
   return { alert, balanceChange, tokenApprovals };
