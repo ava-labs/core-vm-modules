@@ -38,7 +38,7 @@ export class TokenService {
 
     data = this.#storage?.get?.<SimplePriceResponse>(cacheId);
 
-    if (data === undefined) {
+    if (!data) {
       data = await coingeckoRetry((useCoingeckoProxy) =>
         this.simplePrice({
           coinIds,
@@ -49,7 +49,7 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      this.#storage?.set?.(cacheId, data);
+      !!data && this.#storage?.set?.(cacheId, data);
     }
 
     return data;
@@ -74,7 +74,7 @@ export class TokenService {
     const cacheId = `getPricesWithMarketDataByAddresses-${key}`;
     data = this.#storage?.get?.<SimplePriceResponse>(cacheId);
 
-    if (data === undefined) {
+    if (!data) {
       data = await coingeckoRetry((useCoingeckoProxy) =>
         this.fetchPricesByAddresses({
           assetPlatformId,
@@ -83,7 +83,7 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      this.#storage?.set?.(cacheId, data);
+      !!data && this.#storage?.set?.(cacheId, data);
     }
 
     return data;
