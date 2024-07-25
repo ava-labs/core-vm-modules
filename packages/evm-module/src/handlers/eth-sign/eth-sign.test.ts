@@ -223,6 +223,44 @@ describe('ethSign', () => {
     testWithValidationResultType('Malicious');
   });
 
+  it('should add alert object with Warning type to displayData when schema validation error occurs in jsonRpc scan', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (Blockaid as any).mockImplementation(() => ({
+      evm: {
+        jsonRpc: {
+          scan: jest.fn().mockRejectedValue({ message: 'schema validation error' }),
+        },
+      },
+    }));
+
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method: RpcMethod.ETH_SIGN, data: 'data', address: '0xabc' },
+    });
+
+    const result = await ethSign({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: PROXY_API_URL,
+    });
+
+    expect(result).toEqual({ result: '0x1234' });
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          alert: {
+            type: AlertType.WARNING,
+            details: {
+              title: 'Suspicious Transaction',
+              description: 'Use caution, this transaction may be malicious.',
+            },
+          },
+        }),
+      }),
+    );
+  });
+
   it('should handle success case for approvalController.requestApproval', async () => {
     mockParseRequestParams.mockReturnValueOnce({
       success: true,
