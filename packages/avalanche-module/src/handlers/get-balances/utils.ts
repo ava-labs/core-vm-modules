@@ -3,8 +3,6 @@ import BN from 'bn.js';
 import { AvalancheGlacierService } from '../../services/glacier-service/glacier-service';
 import type { Storage } from '@avalabs/vm-module-types';
 
-const AVALANCHE_CHAIN_ID = '43114';
-
 export const isPchainBalance = (balanceResult: PChainBalance | XChainBalances): balanceResult is PChainBalance => {
   return Object.keys(balanceResult).includes('unlockedUnstaked');
 };
@@ -50,7 +48,7 @@ export const getTokenPrice = async ({
   if (cachedData) return cachedData;
 
   const nativeBalance = await glacierService.getNativeBalance({
-    chainId: AVALANCHE_CHAIN_ID,
+    chainId: chainId.toString(),
     address,
     currency: currency.toLowerCase() as CurrencyCode,
   });
