@@ -49,9 +49,11 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      !!data && this.#storage?.set?.(cacheId, data);
+      if (data) {
+        this.#storage?.set?.(cacheId, data);
+        return data;
+      }
     }
-
     return data;
   }
 
@@ -83,9 +85,11 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-      !!data && this.#storage?.set?.(cacheId, data);
+      if (data) {
+        this.#storage?.set?.(cacheId, data);
+        return data;
+      }
     }
-
     return data;
   }
 
