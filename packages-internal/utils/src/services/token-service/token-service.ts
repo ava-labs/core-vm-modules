@@ -40,21 +40,22 @@ export class TokenService {
 
     if (data) return data;
 
-    data = await coingeckoRetry((useCoingeckoProxy) =>
-      this.simplePrice({
-        coinIds,
-        currencies,
-        marketCap: true,
-        vol24: true,
-        change24: true,
-        useCoingeckoProxy,
-      }),
-    );
-
-    if (data) {
-      this.#storage?.set?.<SimplePriceResponse>(cacheId, data);
-      return data;
+    try {
+      data = await coingeckoRetry((useCoingeckoProxy) =>
+        this.simplePrice({
+          coinIds,
+          currencies,
+          marketCap: true,
+          vol24: true,
+          change24: true,
+          useCoingeckoProxy,
+        }),
+      );
+    } catch {
+      data = undefined;
     }
+    this.#storage?.set?.(cacheId, data);
+    return data;
   }
 
   /**
@@ -78,19 +79,20 @@ export class TokenService {
 
     if (data) return data;
 
-    data = await coingeckoRetry((useCoingeckoProxy) =>
-      this.fetchPricesByAddresses({
-        assetPlatformId,
-        tokenAddresses,
-        currency,
-        useCoingeckoProxy,
-      }),
-    );
-
-    if (data) {
-      this.#storage?.set?.<SimplePriceResponse>(cacheId, data);
-      return data;
+    try {
+      data = await coingeckoRetry((useCoingeckoProxy) =>
+        this.fetchPricesByAddresses({
+          assetPlatformId,
+          tokenAddresses,
+          currency,
+          useCoingeckoProxy,
+        }),
+      );
+    } catch {
+      data = undefined;
     }
+    this.#storage?.set?.(cacheId, data);
+    return data;
   }
 
   private async fetchPricesByAddresses({
