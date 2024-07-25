@@ -52,7 +52,7 @@ export class TokenService {
     );
 
     if (data) {
-      this.#storage?.set?.(cacheId, data);
+      this.#storage?.set?.<SimplePriceResponse>(cacheId, data);
       return data;
     }
   }
@@ -88,7 +88,7 @@ export class TokenService {
     );
 
     if (data) {
-      this.#storage?.set?.(cacheId, data);
+      this.#storage?.set?.<SimplePriceResponse>(cacheId, data);
       return data;
     }
   }
@@ -137,7 +137,7 @@ export class TokenService {
     change24 = false,
     lastUpdated = false,
     useCoingeckoProxy = false,
-    shouldThrow = false,
+    shouldThrow = true,
   }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
       const rawData = await coingeckoProxyClient(this.#proxyApiUrl).simplePrice(undefined, {
