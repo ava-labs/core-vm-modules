@@ -1,6 +1,6 @@
 {
   "name": "@internal/utils",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "type": "module",
@@ -16,7 +16,7 @@
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
     "@avalabs/chains-sdk": "v2.8.0-alpha.193",
-    "@avalabs/vm-module-types": "0.0.17"
+    "@avalabs/vm-module-types": "0.0.18"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

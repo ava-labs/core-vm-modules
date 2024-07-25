@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 0.0.18
+
+### Patch Changes
+
+- af310d3: handle blockaid schema error
+  - @avalabs/vm-module-types@0.0.18
+
 ## 0.0.17
 
 ### Patch Changes
