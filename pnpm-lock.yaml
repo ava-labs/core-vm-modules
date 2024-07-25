@@ -107,7 +107,7 @@ importers:
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193
       '@avalabs/vm-module-types':
-        specifier: 0.0.17
+        specifier: 0.0.18
         version: link:../../packages/types
       '@zodios/core':
         specifier: 10.9.6
@@ -147,7 +147,7 @@ importers:
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.17
+        specifier: 0.0.18
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: v2.8.0-alpha.193
@@ -187,7 +187,7 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/vm-module-types':
-        specifier: 0.0.17
+        specifier: 0.0.18
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: 2.8.0-alpha.188
@@ -233,7 +233,7 @@ importers:
         specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.17
+        specifier: 0.0.18
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: v2.8.0-alpha.193
