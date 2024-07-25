@@ -31,42 +31,31 @@ export const processTransactionSimulation = async ({
   chainId: number;
   proxyApiUrl: string;
 }) => {
-  const { validation, simulation } = await scanTransaction({
-    proxyApiUrl,
-    chainId,
-    params,
-    domain: dAppUrl,
-  });
-
   let alert: Alert | undefined;
-  if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
-    alert = {
-      type: AlertType.WARNING,
-      details: {
-        title: 'Suspicious Transaction',
-        description: 'Use caution, this transaction may be malicious.',
-      },
-    };
-  } else if (validation.result_type === 'Malicious') {
-    alert = {
-      type: AlertType.DANGER,
-      details: {
-        title: 'Scam Transaction',
-        description: 'This transaction is malicious, do not proceed.',
-        actionTitles: {
-          reject: 'Reject Transaction',
-          proceed: 'Proceed Anyway',
-        },
-      },
-    };
-  }
-
   let balanceChange: BalanceChange | undefined;
   let tokenApprovals: TokenApprovals | undefined;
 
-  if (simulation?.status === 'Success') {
-    tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
-    balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+  try {
+    const { validation, simulation } = await scanTransaction({
+      proxyApiUrl,
+      chainId,
+      params,
+      domain: dAppUrl,
+    });
+
+    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+      alert = transactionAlerts[AlertType.WARNING];
+    } else if (validation.result_type === 'Malicious') {
+      alert = transactionAlerts[AlertType.DANGER];
+    }
+
+    if (simulation?.status === 'Success') {
+      tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
+      balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+    }
+  } catch (error) {
+    console.error('processTransactionSimulation error', error);
+    alert = transactionAlerts[AlertType.WARNING];
   }
 
   return { alert, balanceChange, tokenApprovals };
@@ -251,44 +240,53 @@ export const processJsonRpcSimulation = async ({
   chainId: number;
   proxyApiUrl: string;
 }) => {
-  const { validation, simulation } = await scanJsonRpc({
-    proxyApiUrl,
-    chainId,
-    accountAddress,
-    data: data as Blockaid.Evm.JsonRpcScanParams.Data,
-    domain: dAppUrl,
-  });
-
   let alert: Alert | undefined;
-  if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
-    alert = {
-      type: AlertType.WARNING,
-      details: {
-        title: 'Suspicious Transaction',
-        description: 'Use caution, this transaction may be malicious.',
-      },
-    };
-  } else if (validation.result_type === 'Malicious') {
-    alert = {
-      type: AlertType.DANGER,
-      details: {
-        title: 'Scam Transaction',
-        description: 'This transaction is malicious, do not proceed.',
-        actionTitles: {
-          reject: 'Reject Transaction',
-          proceed: 'Proceed Anyway',
-        },
-      },
-    };
-  }
-
   let balanceChange: BalanceChange | undefined;
   let tokenApprovals: TokenApprovals | undefined;
 
-  if (simulation?.status === 'Success') {
-    tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
-    balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+  try {
+    const { validation, simulation } = await scanJsonRpc({
+      proxyApiUrl,
+      chainId,
+      accountAddress,
+      data: data as Blockaid.Evm.JsonRpcScanParams.Data,
+      domain: dAppUrl,
+    });
+
+    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+      alert = transactionAlerts[AlertType.WARNING];
+    } else if (validation.result_type === 'Malicious') {
+      alert = transactionAlerts[AlertType.DANGER];
+    }
+
+    if (simulation?.status === 'Success') {
+      tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
+      balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+    }
+  } catch (error) {
+    console.error('processJsonRpcSimulation error', error);
   }
 
   return { alert, balanceChange, tokenApprovals };
+};
+
+const transactionAlerts = {
+  [AlertType.WARNING]: {
+    type: AlertType.WARNING,
+    details: {
+      title: 'Suspicious Transaction',
+      description: 'Use caution, this transaction may be malicious.',
+    },
+  },
+  [AlertType.DANGER]: {
+    type: AlertType.DANGER,
+    details: {
+      title: 'Scam Transaction',
+      description: 'This transaction is malicious, do not proceed.',
+      actionTitles: {
+        reject: 'Reject Transaction',
+        proceed: 'Proceed Anyway',
+      },
+    },
+  },
 };
