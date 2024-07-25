@@ -16,15 +16,17 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { hashBlockchainId } from '@internal/utils';
+import { hashBlockchainId, TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
+  #proxyApiUrl: string;
 
   constructor({ environment }: { environment: Environment }) {
-    const { glacierApiUrl } = getEnv(environment);
+    const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
+    this.#proxyApiUrl = proxyApiUrl;
   }
 
   getAddress(): Promise<string> {
@@ -32,7 +34,8 @@ export class AvalancheModule implements Module {
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
-    return getBalances({ addresses, currency, network, glacierService: this.#glacierService, storage });
+    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
+    return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
   }
 
   getManifest(): Manifest | undefined {

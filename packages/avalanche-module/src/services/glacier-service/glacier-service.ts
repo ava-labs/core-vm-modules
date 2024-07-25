@@ -1,7 +1,5 @@
 import {
   BlockchainId,
-  CurrencyCode,
-  type GetNativeBalanceResponse,
   Glacier,
   type ListCChainAtomicBalancesResponse,
   type ListCChainAtomicTransactionsResponse,
@@ -67,29 +65,6 @@ export class AvalancheGlacierService {
   }): Promise<ListPChainBalancesResponse | ListXChainBalancesResponse | ListCChainAtomicBalancesResponse> {
     try {
       return this.glacierSdk.primaryNetworkBalances.getBalancesByAddresses(params);
-    } catch (error) {
-      if (error instanceof GlacierUnhealthyError) {
-        this.setGlacierToUnhealthy();
-      }
-      throw error;
-    }
-  }
-
-  async getNativeBalance({
-    chainId,
-    address,
-    currency,
-  }: {
-    chainId: string;
-    address: string;
-    currency: CurrencyCode;
-  }): Promise<GetNativeBalanceResponse> {
-    try {
-      return this.glacierSdk.evmBalances.getNativeBalance({
-        chainId,
-        address,
-        currency: currency.toLocaleLowerCase() as CurrencyCode,
-      });
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
         this.setGlacierToUnhealthy();
