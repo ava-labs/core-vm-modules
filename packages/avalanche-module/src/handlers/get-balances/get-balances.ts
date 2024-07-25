@@ -32,6 +32,8 @@ export const getBalances = async ({
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');
   }
+
+  const lowercaseCurrency = currency.toLowerCase();
   const address = addresses[0] ?? '';
   const networkToken = network.networkToken;
   const coingeckoId = network.pricingProviders?.coingecko.nativeTokenId;
@@ -50,14 +52,14 @@ export const getBalances = async ({
   const simplePriceResponse = coingeckoId
     ? await tokenService.getSimplePrice({
         coinIds: [coingeckoId],
-        currencies: [currency] as VsCurrencyType[],
+        currencies: [lowercaseCurrency] as VsCurrencyType[],
       })
     : {};
 
-  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.price ?? undefined;
-  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.marketCap ?? undefined;
-  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.vol24 ?? undefined;
-  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[currency]?.change24 ?? undefined;
+  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.price ?? undefined;
+  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.marketCap ?? undefined;
+  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.vol24 ?? undefined;
+  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.change24 ?? undefined;
 
   let balance: TokenWithBalanceAVM | TokenWithBalancePVM;
   if (isPchainBalance(chainBalances)) {
