@@ -38,23 +38,23 @@ export class TokenService {
 
     data = this.#storage?.get?.<SimplePriceResponse>(cacheId);
 
-    if (!data) {
-      data = await coingeckoRetry((useCoingeckoProxy) =>
-        this.simplePrice({
-          coinIds,
-          currencies,
-          marketCap: true,
-          vol24: true,
-          change24: true,
-          useCoingeckoProxy,
-        }),
-      );
-      if (data) {
-        this.#storage?.set?.(cacheId, data);
-        return data;
-      }
+    if (data) return data;
+
+    data = await coingeckoRetry((useCoingeckoProxy) =>
+      this.simplePrice({
+        coinIds,
+        currencies,
+        marketCap: true,
+        vol24: true,
+        change24: true,
+        useCoingeckoProxy,
+      }),
+    );
+
+    if (data) {
+      this.#storage?.set?.(cacheId, data);
+      return data;
     }
-    return data;
   }
 
   /**
@@ -76,21 +76,21 @@ export class TokenService {
     const cacheId = `getPricesWithMarketDataByAddresses-${key}`;
     data = this.#storage?.get?.<SimplePriceResponse>(cacheId);
 
-    if (!data) {
-      data = await coingeckoRetry((useCoingeckoProxy) =>
-        this.fetchPricesByAddresses({
-          assetPlatformId,
-          tokenAddresses,
-          currency,
-          useCoingeckoProxy,
-        }),
-      );
-      if (data) {
-        this.#storage?.set?.(cacheId, data);
-        return data;
-      }
+    if (data) return data;
+
+    data = await coingeckoRetry((useCoingeckoProxy) =>
+      this.fetchPricesByAddresses({
+        assetPlatformId,
+        tokenAddresses,
+        currency,
+        useCoingeckoProxy,
+      }),
+    );
+
+    if (data) {
+      this.#storage?.set?.(cacheId, data);
+      return data;
     }
-    return data;
   }
 
   private async fetchPricesByAddresses({
@@ -137,6 +137,7 @@ export class TokenService {
     change24 = false,
     lastUpdated = false,
     useCoingeckoProxy = false,
+    shouldThrow = false,
   }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
       const rawData = await coingeckoProxyClient(this.#proxyApiUrl).simplePrice(undefined, {
@@ -158,7 +159,7 @@ export class TokenService {
       vol24,
       change24,
       lastUpdated,
-      shouldThrow: true,
+      shouldThrow,
     });
   }
 
