@@ -155,7 +155,7 @@ export class TokenService {
           include_last_updated_at: String(lastUpdated),
         },
       });
-      return this.transformSimplePriceResponse(rawData);
+      return this.transformSimplePriceResponse(rawData, currencies);
     }
     return simplePrice(coingeckoBasicClient, {
       coinIds,
