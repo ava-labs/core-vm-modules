@@ -16,20 +16,20 @@ export type TokenBalanceData = {
   name: string;
   symbol: string;
   balance: BN;
-  balanceInCurrency: number;
+  balanceInCurrency?: number;
   balanceDisplayValue: string;
   balanceCurrencyDisplayValue: string;
-  priceInCurrency: number;
+};
+
+type TokenMarketData = {
+  priceInCurrency?: number;
   priceChanges?: {
     percentage?: number;
     value?: number;
   };
-};
-
-type TokenMarketData = {
-  marketCap: number;
-  change24: number;
-  vol24: number;
+  marketCap?: number;
+  change24?: number;
+  vol24?: number;
 };
 
 export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &
@@ -91,14 +91,16 @@ export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;
   utxos?: PChainBalance;
-  lockedStaked: number;
-  lockedStakeable: number;
-  lockedPlatform: number;
-  atomicMemoryLocked: number;
-  atomicMemoryUnlocked: number;
-  unlockedUnstaked: number;
-  unlockedStaked: number;
-  pendingStaked: number;
+  balancePerType: {
+    lockedStaked: number;
+    lockedStakeable: number;
+    lockedPlatform: number;
+    atomicMemoryLocked: number;
+    atomicMemoryUnlocked: number;
+    unlockedUnstaked: number;
+    unlockedStaked: number;
+    pendingStaked: number;
+  };
 }
 
 export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
@@ -107,12 +109,38 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;
   utxos?: XChainBalances;
-  locked: number;
-  unlocked: number;
-  atomicMemoryUnlocked: number;
-  atomicMemoryLocked: number;
+  balancePerType: {
+    locked: number;
+    unlocked: number;
+    atomicMemoryUnlocked: number;
+    atomicMemoryLocked: number;
+  };
 }
 
-export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
+export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type'> {
+  type: TokenType.ERC721 | TokenType.ERC1155;
+  address: string;
+  description: string;
+  logoUri: string;
+  logoSmall: string;
+  name: string;
+  symbol: string;
+  tokenId: string;
+  attributes: TokenAttribute[];
+  collectionName: string;
+  updatedAt?: number;
+}
+
+export interface TokenAttribute {
+  name: string;
+  value: string;
+}
+
+export type TokenWithBalance =
+  | TokenWithBalanceEVM
+  | TokenWithBalanceBTC
+  | TokenWithBalancePVM
+  | TokenWithBalanceAVM
+  | NftTokenWithBalance;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance>>;

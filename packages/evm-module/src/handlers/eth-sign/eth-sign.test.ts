@@ -1,5 +1,5 @@
 import { ethSign } from './eth-sign';
-import { AlertType, RpcMethod } from '@avalabs/vm-module-types';
+import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import Blockaid from '@blockaid/client';
 
@@ -72,6 +72,7 @@ const mockNetwork = {
     symbol: 'ETH',
     decimals: 18,
   },
+  vmName: NetworkVMType.EVM,
 };
 
 const mockApprovalController = {

@@ -1,6 +1,6 @@
 {
   "name": "@internal/utils",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "type": "module",
@@ -10,15 +10,13 @@
     "test:watch": "jest --watch"
   },
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
     "@avalabs/chains-sdk": "v2.8.0-alpha.193",
-    "@avalabs/vm-module-types": "0.0.18"
-  },
-  "devDependencies": {
+    "@avalabs/vm-module-types": "0.0.18",
     "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "eslint-config-custom": "workspace:*",

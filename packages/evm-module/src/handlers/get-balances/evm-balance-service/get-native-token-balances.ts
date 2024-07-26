@@ -26,17 +26,19 @@ export const getNativeTokenBalances = async ({
       })
     : {};
 
-  const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? 0;
-  const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? 0;
-  const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? 0;
-  const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? 0;
+  const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? undefined;
+  const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? undefined;
+  const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? undefined;
+  const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
 
   const balanceBigint = await provider.getBalance(address);
   const balaceBig = bigintToBig(balanceBigint, networkToken.decimals);
   const balance = bigToBN(balaceBig, networkToken.decimals);
   const balanceDisplayValue = balanceToDisplayValue(balance, networkToken.decimals);
-  const balanceInCurrency = bnToBig(balance, networkToken.decimals).mul(priceInCurrency).toNumber();
-  const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
+  const balanceInCurrency = priceInCurrency
+    ? bnToBig(balance, networkToken.decimals).mul(priceInCurrency).toNumber()
+    : undefined;
+  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
 
   return {
     ...networkToken,

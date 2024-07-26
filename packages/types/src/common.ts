@@ -17,7 +17,16 @@ export type Network = {
   };
   explorerUrl?: string;
   logoUri?: string;
+  vmName: NetworkVMType;
 };
+
+export enum NetworkVMType {
+  EVM = 'EVM',
+  BITCOIN = 'BITCOIN',
+  AVM = 'AVM',
+  PVM = 'PVM',
+  CoreEth = 'CoreEth',
+}
 
 export type Storage = {
   get: <T>(id: string) => T | undefined;

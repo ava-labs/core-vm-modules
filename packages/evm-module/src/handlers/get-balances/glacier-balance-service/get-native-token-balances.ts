@@ -9,10 +9,12 @@ export const getNativeTokenBalances = async ({
   currency,
   chainId,
   glacierService,
+  coingeckoId,
 }: {
   chainId: number;
   address: string;
   currency: string;
+  coingeckoId: string;
   glacierService: EvmGlacierService;
 }): Promise<NetworkTokenWithBalance> => {
   const nativeBalance = await glacierService.getNativeBalance({
@@ -23,9 +25,11 @@ export const getNativeTokenBalances = async ({
   const nativeTokenBalance = nativeBalance.nativeTokenBalance;
   const balance = new BN(nativeTokenBalance.balance);
   const balanceDisplayValue = balanceToDisplayValue(balance, nativeTokenBalance.decimals);
-  const priceInCurrency = nativeTokenBalance.price?.value ?? 0;
-  const balanceInCurrency = bnToBig(balance, nativeTokenBalance.decimals).mul(priceInCurrency).toNumber();
-  const balanceCurrencyDisplayValue = balanceInCurrency.toFixed(2);
+  const priceInCurrency = nativeTokenBalance.price?.value;
+  const balanceInCurrency = priceInCurrency
+    ? bnToBig(balance, nativeTokenBalance.decimals).mul(priceInCurrency).toNumber()
+    : undefined;
+  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
 
   return {
     name: nativeTokenBalance.name,
@@ -38,9 +42,6 @@ export const getNativeTokenBalances = async ({
     balanceInCurrency,
     balanceCurrencyDisplayValue,
     priceInCurrency,
-    marketCap: 0,
-    vol24: 0,
-    change24: 0,
-    coingeckoId: '',
+    coingeckoId,
   };
 };

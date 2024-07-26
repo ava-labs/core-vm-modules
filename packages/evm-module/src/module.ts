@@ -44,7 +44,13 @@ export class EvmModule implements Module {
     return Promise.resolve('EVM address');
   }
 
-  getBalances({ addresses, network, currency, customTokens }: GetBalancesParams): Promise<GetBalancesResponse> {
+  getBalances({
+    addresses,
+    network,
+    currency,
+    customTokens,
+    storage,
+  }: GetBalancesParams): Promise<GetBalancesResponse> {
     return getBalances({
       addresses,
       currency,
@@ -52,6 +58,7 @@ export class EvmModule implements Module {
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
       glacierService: this.#glacierService,
+      storage,
     });
   }
 
