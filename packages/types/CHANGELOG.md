@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.20
+
+### Patch Changes
+
+- 9bfa82d: Implement balance fetching for BitcoinModule
+
 ## 0.0.19
 
 ### Patch Changes
