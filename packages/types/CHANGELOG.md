@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.19
+
+### Patch Changes
+
+- 5af458b: Add getBalances to avalanche-module
+
 ## 0.0.18
 
 ## 0.0.17
