@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.0.18",
-    "@zodios/core": "10.9.6",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/utils-sdk": "2.8.0-alpha.193",
     "@avalabs/etherscan-sdk": "v2.8.0-alpha.193",
