@@ -29,7 +29,7 @@ export const getNativeTokenBalances = async ({
   const balanceInCurrency = priceInCurrency
     ? bnToBig(balance, nativeTokenBalance.decimals).mul(priceInCurrency).toNumber()
     : undefined;
-  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
+  const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
 
   return {
     name: nativeTokenBalance.name,

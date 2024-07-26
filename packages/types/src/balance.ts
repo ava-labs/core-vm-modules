@@ -16,12 +16,12 @@ export type TokenBalanceData = {
   name: string;
   symbol: string;
   balance: BN;
-  balanceInCurrency?: number;
   balanceDisplayValue: string;
-  balanceCurrencyDisplayValue: string;
+  balanceInCurrency?: number;
+  balanceCurrencyDisplayValue?: string;
 };
 
-type TokenMarketData = {
+export type TokenMarketData = {
   priceInCurrency?: number;
   priceChanges?: {
     percentage?: number;
