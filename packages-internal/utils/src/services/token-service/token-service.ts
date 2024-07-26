@@ -27,12 +27,15 @@ export class TokenService {
    * @returns token price with market data
    */
   async getSimplePrice({
-    coinIds = [],
-    currencies = [VsCurrencyType.USD],
-  }: SimplePriceParams): Promise<SimplePriceResponse | undefined> {
+    coinId,
+    currency = VsCurrencyType.USD,
+  }: {
+    coinId: string;
+    currency?: VsCurrencyType;
+  }): Promise<SimplePriceResponse | undefined> {
     let data: SimplePriceResponse | undefined;
 
-    const key = coinIds ? `${arrayHash(coinIds)}-${currencies.toString()}` : `${currencies.toString()}`;
+    const key = `${coinId}-${currency}`;
 
     const cacheId = `getSimplePrice-${key}`;
 
@@ -43,8 +46,8 @@ export class TokenService {
     try {
       data = await coingeckoRetry((useCoingeckoProxy) =>
         this.simplePrice({
-          coinIds,
-          currencies,
+          coinIds: [coinId],
+          currencies: [currency],
           marketCap: true,
           vol24: true,
           change24: true,

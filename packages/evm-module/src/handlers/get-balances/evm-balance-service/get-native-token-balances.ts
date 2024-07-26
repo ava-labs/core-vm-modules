@@ -21,8 +21,8 @@ export const getNativeTokenBalances = async ({
   const networkToken = network.networkToken;
   const simplePriceResponse = coingeckoTokenId
     ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoTokenId],
-        currencies: [currency] as VsCurrencyType[],
+        coinId: coingeckoTokenId,
+        currency: currency as VsCurrencyType,
       })
     : {};
 

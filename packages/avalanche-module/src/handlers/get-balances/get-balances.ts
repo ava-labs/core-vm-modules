@@ -51,8 +51,8 @@ export const getBalances = async ({
 
   const simplePriceResponse = coingeckoId
     ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoId],
-        currencies: [lowercaseCurrency] as VsCurrencyType[],
+        coinId: coingeckoId,
+        currency: lowercaseCurrency as VsCurrencyType,
       })
     : {};
 

@@ -32,8 +32,8 @@ export const getBalances = async ({
   const withPrices = typeof currency === 'string' && typeof coingeckoTokenId === 'string';
   const marketData = withPrices
     ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoTokenId],
-        currencies: [currency] as VsCurrencyType[],
+        coinId: coingeckoTokenId,
+        currency: currency as VsCurrencyType,
       })
     : undefined;
   const denomination = network.networkToken.decimals;

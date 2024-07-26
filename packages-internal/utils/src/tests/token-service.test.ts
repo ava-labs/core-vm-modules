@@ -23,8 +23,8 @@ describe('token-service', () => {
   it('should get simple price', async () => {
     const tokenService = new TokenService({ proxyApiUrl: 'https://api.com/api/v3' });
     const data = await tokenService.getSimplePrice({
-      coinIds: ['ethereum'],
-      currencies: [VsCurrencyType.USD],
+      coinId: 'ethereum',
+      currency: VsCurrencyType.USD,
     });
     expect(data).toEqual({
       ethereum: {
@@ -42,8 +42,8 @@ describe('token-service', () => {
     const tokenService = new TokenService({ proxyApiUrl: 'https://api.com/api/v3', storage: MOCK_STORAGE });
     mockGet.mockReturnValue(MOCK_DATA);
     await tokenService.getSimplePrice({
-      coinIds: ['ethereum'],
-      currencies: [VsCurrencyType.USD],
+      coinId: 'ethereum',
+      currency: VsCurrencyType.USD,
     });
     expect(MOCK_STORAGE.get).toHaveLastReturnedWith(MOCK_DATA);
     expect(MOCK_STORAGE.set).toHaveBeenCalledTimes(0);
