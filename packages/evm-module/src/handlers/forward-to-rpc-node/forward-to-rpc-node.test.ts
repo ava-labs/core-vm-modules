@@ -1,7 +1,7 @@
 import { forwardToRpcNode } from './forward-to-rpc-node';
 import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { RpcMethod } from '@avalabs/vm-module-types';
+import { NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 
 jest.mock('../../utils/get-provider');
 jest.mock('@metamask/rpc-errors', () => ({
@@ -23,6 +23,7 @@ const network = {
     symbol: 'ETH',
     decimals: 18,
   },
+  vmName: NetworkVMType.EVM,
 };
 
 describe('forwardToRpcNode', () => {
