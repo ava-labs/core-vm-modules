@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.0.21
+
+### Patch Changes
+
+- bb1478d: fix simplePrice caching logic
+  - @avalabs/vm-module-types@0.0.21
+
 ## 0.0.20
 
 ### Patch Changes
