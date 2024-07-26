@@ -67,7 +67,7 @@ export const convertPChainBalance = ({
     balance: totalBalance,
     balanceInCurrency,
     balanceDisplayValue,
-    balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2) ?? '',
+    balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2),
     available,
     availableInCurrency,
     availableDisplayValue,

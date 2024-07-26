@@ -85,7 +85,7 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
   return tokenBalances.map((token: Erc20TokenBalance): TokenWithBalanceERC20 => {
     const balance = new BN(token.balance);
     const balanceDisplayValue = balanceToDisplayValue(balance, token.decimals);
-    const balanceCurrencyDisplayValue = token.balanceValue?.value.toString() ?? '';
+    const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
     const priceInCurrency = token.price?.value;
     const balanceInCurrency = priceInCurrency
       ? bnToBig(balance, token.decimals).mul(priceInCurrency).toNumber()

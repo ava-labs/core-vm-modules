@@ -16,7 +16,9 @@
     "@avalabs/wallets-sdk": "2.8.0-alpha.193",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/utils-sdk": "2.8.0-alpha.193",
-    "@metamask/rpc-errors": "6.3.0"
+    "@metamask/rpc-errors": "6.3.0",
+    "big.js": "6.2.1",
+    "bn.js": "5.2.1"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

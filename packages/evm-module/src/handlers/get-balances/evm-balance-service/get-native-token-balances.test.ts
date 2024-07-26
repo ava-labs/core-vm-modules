@@ -88,7 +88,7 @@ describe('get-native-token-balances', () => {
       decimals: 18,
       logoUri: 'https://example.com/logo.png',
       balance: new BN('0'),
-      balanceCurrencyDisplayValue: '',
+      balanceCurrencyDisplayValue: undefined,
       balanceDisplayValue: '0',
       coingeckoId: '123',
       type: 'NATIVE',

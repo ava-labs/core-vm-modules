@@ -38,7 +38,7 @@ export const getNativeTokenBalances = async ({
   const balanceInCurrency = priceInCurrency
     ? bnToBig(balance, networkToken.decimals).mul(priceInCurrency).toNumber()
     : undefined;
-  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
+  const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
 
   return {
     ...networkToken,

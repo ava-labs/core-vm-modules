@@ -49,7 +49,7 @@ export const convertXChainBalance = ({
   const balanceInCurrency = priceInCurrency
     ? bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber()
     : undefined;
-  const balanceCurrencyDisplayValue = balanceInCurrency ? balanceInCurrency.toFixed(2) : '';
+  const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
 
   return {
     ...networkToken,

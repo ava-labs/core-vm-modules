@@ -215,6 +215,12 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
+      big.js:
+        specifier: 6.2.1
+        version: 6.2.1
+      bn.js:
+        specifier: 5.2.1
+        version: 5.2.1
     devDependencies:
       '@internal/tsup-config':
         specifier: workspace:*
