@@ -20,13 +20,14 @@ export const getBalances = async ({
   network,
   withScripts,
   proxyApiUrl,
+  storage,
 }: GetBTCBalancesParams): Promise<GetBalancesResponse> => {
   const provider = getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });
 
-  const tokenService = new TokenService({ proxyApiUrl });
+  const tokenService = new TokenService({ proxyApiUrl, storage });
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const withPrices = typeof currency === 'string' && typeof coingeckoTokenId === 'string';
   const marketData = withPrices

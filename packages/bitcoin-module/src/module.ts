@@ -29,12 +29,13 @@ export class BitcoinModule implements Module {
     return Promise.resolve('Bitcoin address');
   }
 
-  getBalances({ addresses, currency, network }: GetBalancesParams) {
+  getBalances({ addresses, currency, network, storage }: GetBalancesParams) {
     return getBalances({
       addresses,
       currency,
       network,
       proxyApiUrl: this.#proxyApiUrl,
+      storage,
     });
   }
 
