@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.0.22
+
+### Patch Changes
+
+- a841a90: handle all eth\_\* methods
+  - @avalabs/vm-module-types@0.0.22
+
 ## 0.0.21
 
 ### Patch Changes
