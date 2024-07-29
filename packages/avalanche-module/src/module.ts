@@ -16,8 +16,9 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { hashBlockchainId, TokenService } from '@internal/utils';
+import { TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
+import { hashBlockchainId } from './utils/hash-blockchain-id';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
