@@ -21,6 +21,7 @@ import { getBalances } from './handlers/get-balances/get-balances';
 import { getEnv } from './env';
 import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { ethSign } from './handlers/eth-sign/eth-sign';
+import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -120,7 +121,18 @@ export class EvmModule implements Module {
           proxyApiUrl: this.#proxyApiUrl,
         });
       default:
+        if (shouldForwardToRpcNode(request.method)) {
+          return forwardToRpcNode(request, network);
+        }
+
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }
   }
 }
+
+const shouldForwardToRpcNode = (method: RpcMethod) => {
+  return (
+    method.startsWith('eth_') ||
+    ['web3_clientVersion', 'web3_sha3', 'net_version', 'net_peerCount', 'net_listening'].includes(method)
+  );
+};
