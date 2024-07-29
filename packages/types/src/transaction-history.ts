@@ -25,7 +25,7 @@ export type Transaction = {
   tokens: TxToken[];
   gasPrice?: string;
   gasUsed: string;
-  txType?: TransactionType | PChainTransactionType | XChainTransactionType;
+  txType?: TransactionType | PChainTransactionType | XChainTransactionType | 'CreateAssetTx' | 'OperationTx';
   chainId: string; // chainId from ActiveNetwork used to fetch tx
   method?: string;
   explorerLink: string;
