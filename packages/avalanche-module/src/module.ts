@@ -8,8 +8,9 @@ import type {
   GetBalancesParams,
   GetBalancesResponse,
   Environment,
+  ApprovalController,
 } from '@avalabs/vm-module-types';
-import { parseManifest } from '@avalabs/vm-module-types';
+import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
@@ -18,15 +19,24 @@ import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
 import { hashBlockchainId, TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
+import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
   #proxyApiUrl: string;
+  #approvalController: ApprovalController;
 
-  constructor({ environment }: { environment: Environment }) {
+  constructor({
+    approvalController,
+    environment,
+  }: {
+    approvalController: ApprovalController;
+    environment: Environment;
+  }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
+    this.#approvalController = approvalController;
   }
 
   getAddress(): Promise<string> {
@@ -55,8 +65,10 @@ export class AvalancheModule implements Module {
     return Promise.resolve([]);
   }
 
-  async onRpcRequest(request: RpcRequest, _network: Network) {
+  async onRpcRequest(request: RpcRequest, network: Network) {
     switch (request.method) {
+      case RpcMethod.AVALANCHE_SIGN_MESSAGE:
+        return avalancheSignMessage({ request, network, approvalController: this.#approvalController });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }

@@ -67,7 +67,6 @@ export const ethSign = async ({
     signingData = {
       type: method,
       account: address,
-      chainId: network.chainId,
       data: data,
     };
 
@@ -79,7 +78,6 @@ export const ethSign = async ({
     signingData = {
       type: method,
       account: address,
-      chainId: network.chainId,
       data: data,
     };
 
@@ -88,7 +86,6 @@ export const ethSign = async ({
     signingData = {
       type: method,
       account: address,
-      chainId: network.chainId,
       data: data,
     };
 
@@ -97,7 +94,6 @@ export const ethSign = async ({
     signingData = {
       type: method,
       account: address,
-      chainId: network.chainId,
       data: data,
     };
 
@@ -112,11 +108,7 @@ export const ethSign = async ({
     };
   }
 
-  const {
-    alert: prioritizedAlert,
-    balanceChange,
-    tokenApprovals,
-  } = await processJsonRpcSimulation({
+  const simulationResult = await processJsonRpcSimulation({
     request,
     proxyApiUrl,
     accountAddress: address,
@@ -140,9 +132,9 @@ export const ethSign = async ({
     account: address,
     messageDetails,
     disclaimer,
-    alert: prioritizedAlert ?? alert,
-    balanceChange,
-    tokenApprovals,
+    alert: simulationResult?.alert ?? alert,
+    balanceChange: simulationResult?.balanceChange,
+    tokenApprovals: simulationResult?.tokenApprovals,
   };
 
   // prompt user for approval
