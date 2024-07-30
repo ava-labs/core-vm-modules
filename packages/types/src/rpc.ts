@@ -12,6 +12,9 @@ export enum RpcMethod {
   SIGN_TYPED_DATA = 'eth_signTypedData',
   PERSONAL_SIGN = 'personal_sign',
   ETH_SIGN = 'eth_sign',
+
+  /* AVALANCHE */
+  AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
 }
 
 export type DappInfo = {
@@ -114,26 +117,27 @@ export type SigningData =
   | {
       type: RpcMethod.ETH_SEND_TRANSACTION;
       account: string;
-      chainId: number;
       data: TransactionRequest;
     }
   | {
       type: RpcMethod.ETH_SIGN | RpcMethod.PERSONAL_SIGN;
       account: string;
-      chainId: number;
       data: string;
     }
   | {
       type: RpcMethod.SIGN_TYPED_DATA | RpcMethod.SIGN_TYPED_DATA_V1;
       account: string;
-      chainId: number;
       data: TypedData<MessageTypes> | TypedDataV1;
     }
   | {
       type: RpcMethod.SIGN_TYPED_DATA_V3 | RpcMethod.SIGN_TYPED_DATA_V4;
       account: string;
-      chainId: number;
       data: TypedData<MessageTypes>;
+    }
+  | {
+      type: RpcMethod.AVALANCHE_SIGN_MESSAGE;
+      data: string;
+      accountIndex?: number;
     };
 
 export type ApprovalParams = {

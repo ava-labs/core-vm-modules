@@ -10,8 +10,9 @@ import type {
   Environment,
   GetAddressParams,
   GetAddressResponse,
+  ApprovalController,
 } from '@avalabs/vm-module-types';
-import { parseManifest } from '@avalabs/vm-module-types';
+import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
@@ -22,15 +23,24 @@ import { TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
+import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
   #proxyApiUrl: string;
+  #approvalController: ApprovalController;
 
-  constructor({ environment }: { environment: Environment }) {
+  constructor({
+    approvalController,
+    environment,
+  }: {
+    approvalController: ApprovalController;
+    environment: Environment;
+  }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
+    this.#approvalController = approvalController;
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -59,8 +69,10 @@ export class AvalancheModule implements Module {
     return Promise.resolve([]);
   }
 
-  async onRpcRequest(request: RpcRequest, _network: Network) {
+  async onRpcRequest(request: RpcRequest, network: Network) {
     switch (request.method) {
+      case RpcMethod.AVALANCHE_SIGN_MESSAGE:
+        return avalancheSignMessage({ request, network, approvalController: this.#approvalController });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }
