@@ -145,6 +145,9 @@ importers:
       '@avalabs/glacier-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193
+      '@avalabs/types':
+        specifier: 2.8.0-alpha.193
+        version: 2.8.0-alpha.193
       '@avalabs/utils-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
@@ -203,6 +206,9 @@ importers:
       '@avalabs/coingecko-sdk':
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+      '@avalabs/types':
+        specifier: 2.8.0-alpha.193
+        version: 2.8.0-alpha.193
       '@avalabs/utils-sdk':
         specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
@@ -218,6 +224,9 @@ importers:
       big.js:
         specifier: 6.2.1
         version: 6.2.1
+      bitcoinjs-lib:
+        specifier: 5.2.0
+        version: 5.2.0
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
@@ -260,6 +269,9 @@ importers:
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/glacier-sdk':
         specifier: v2.8.0-alpha.193
+        version: 2.8.0-alpha.193
+      '@avalabs/types':
+        specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193
       '@avalabs/utils-sdk':
         specifier: 2.8.0-alpha.193
@@ -463,6 +475,10 @@ packages:
       - bufferutil
       - debug
       - utf-8-validate
+    dev: false
+
+  /@avalabs/types@2.8.0-alpha.193:
+    resolution: {integrity: sha512-Nd6B4NDdWp/aG+XYu2epa9DyAFRvOmdWTKp7hbuVzJpPZIbi8YYV8iweRnbtl+1diD4kQLUdeKMzNUnbjyrs2g==}
     dev: false
 
   /@avalabs/utils-sdk@2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):

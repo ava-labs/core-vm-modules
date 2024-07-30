@@ -18,7 +18,9 @@
     "@avalabs/utils-sdk": "2.8.0-alpha.193",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",
-    "bn.js": "5.2.1"
+    "bn.js": "5.2.1",
+    "@avalabs/types": "2.8.0-alpha.193",
+    "bitcoinjs-lib": "5.2.0"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
