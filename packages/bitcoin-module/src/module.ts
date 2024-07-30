@@ -7,6 +7,8 @@ import type {
   Network,
   Environment,
   GetBalancesParams,
+  GetAddressParams,
+  GetAddressResponse,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -16,6 +18,7 @@ import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history';
 import { getBalances } from './handlers/get-balances';
+import { getAddress } from './handlers/get-address/get-address';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -25,8 +28,8 @@ export class BitcoinModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
   }
 
-  getAddress(): Promise<string> {
-    return Promise.resolve('Bitcoin address');
+  getAddress({ accountIndex, xpub, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
+    return getAddress({ accountIndex, xpub, isTestnet, walletType });
   }
 
   getBalances({ addresses, currency, network, storage }: GetBalancesParams) {
