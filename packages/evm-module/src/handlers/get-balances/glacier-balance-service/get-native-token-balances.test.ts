@@ -1,4 +1,3 @@
-import { BN } from 'bn.js';
 import { getNativeTokenBalances } from './get-native-token-balances';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
@@ -8,7 +7,7 @@ describe('get-native-token-balances', () => {
       ...expect.any(Object),
       getNativeBalance: jest.fn().mockResolvedValue({
         nativeTokenBalance: {
-          balance: new BN('1000000000000000000'),
+          balance: 1000000000000000000n,
           decimals: 18,
           name: 'Ethereum',
           symbol: 'ETH',
@@ -34,7 +33,7 @@ describe('get-native-token-balances', () => {
       decimals: 18,
       type: 'NATIVE',
       logoUri: 'https://example.com/logo.png',
-      balance: new BN('1000000000000000000'),
+      balance: 1000000000000000000n,
       balanceDisplayValue: '1',
       balanceInCurrency: 1000,
       balanceCurrencyDisplayValue: '1000.00',

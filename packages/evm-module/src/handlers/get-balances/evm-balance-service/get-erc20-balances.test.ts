@@ -1,4 +1,3 @@
-import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
 import { ethers } from 'ethers';
 import { TokenType } from '@avalabs/vm-module-types';
@@ -7,7 +6,7 @@ describe('get-erc20-balances', () => {
   it('should return erc20 token balances', async () => {
     jest.spyOn(ethers, 'Contract').mockImplementation(() => {
       return {
-        balanceOf: jest.fn().mockResolvedValue(new BN('1000000000000000000')),
+        balanceOf: jest.fn().mockResolvedValue(1000000000000000000n),
       } as never;
     });
 
@@ -23,7 +22,7 @@ describe('get-erc20-balances', () => {
         },
       ],
       provider: {
-        getBalance: jest.fn().mockResolvedValue(new BN('1000000000000000000')),
+        getBalance: jest.fn().mockResolvedValue(1000000000000000000n),
       } as never,
       tokenService: {
         getPricesByAddresses: jest.fn().mockResolvedValue({
@@ -63,7 +62,7 @@ describe('get-erc20-balances', () => {
         symbol: 'ETH',
         decimals: 18,
         logoUri: 'https://example.com/logo.png',
-        balance: new BN('1000000000000000000'),
+        balance: 1000000000000000000n,
         balanceCurrencyDisplayValue: '1000.00',
         balanceDisplayValue: '1',
         balanceInCurrency: 1000,

@@ -1,10 +1,9 @@
-import { numberToBN, bnToBig, balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { TokenType, type ERC20Token, type Network, type TokenWithBalance } from '@avalabs/vm-module-types';
+import { TokenUnit } from '@avalabs/utils-sdk';
+import { type ERC20Token, type Network, TokenType, type TokenWithBalance } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/coingecko-sdk';
-import BN from 'bn.js';
 
 export const getErc20Balances = async ({
   provider,
@@ -28,19 +27,17 @@ export const getErc20Balances = async ({
   const tokensBalances = await Promise.allSettled(
     tokens.map(async (token) => {
       const contract = new ethers.Contract(token.address, ERC20.abi, provider);
-      const balanceBig = await contract.balanceOf?.(userAddress);
-      const balance = new BN(balanceBig) || numberToBN(0, token.decimals);
+      const balanceBig: bigint = await contract.balanceOf?.(userAddress);
+      const balance = balanceBig || 0n;
 
-      const tokenWithBalance = {
+      return {
         ...token,
         balance,
       };
-
-      return tokenWithBalance;
     }),
   ).then((res) => {
-    return res.reduce<(ERC20Token & { balance: BN })[]>((acc, result) => {
-      return result.status === 'fulfilled' && !result.value.balance.isZero() ? [...acc, result.value] : acc;
+    return res.reduce<(ERC20Token & { balance: bigint })[]>((acc, result) => {
+      return result.status === 'fulfilled' && result.value.balance !== 0n ? [...acc, result.value] : acc;
     }, []);
   });
 
@@ -58,11 +55,10 @@ export const getErc20Balances = async ({
       const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? undefined;
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
 
-      const balanceInCurrency = priceInCurrency
-        ? bnToBig(token.balance, token.decimals).mul(priceInCurrency).toNumber()
-        : undefined;
-      const balanceDisplayValue = balanceToDisplayValue(token.balance, token.decimals);
-      const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
+      const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
+      const balanceCurrencyDisplayValue = priceInCurrency ? balance.mul(priceInCurrency).toDisplay(2) : undefined;
+      const balanceInCurrency = balanceCurrencyDisplayValue ? Number(balanceCurrencyDisplayValue) : undefined;
+      const balanceDisplayValue = balance.toDisplay();
 
       return {
         ...acc,
