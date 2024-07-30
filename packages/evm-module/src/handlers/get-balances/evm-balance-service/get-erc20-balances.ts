@@ -1,5 +1,5 @@
 import { TokenUnit } from '@avalabs/utils-sdk';
-import { type ERC20Token, type Network, TokenType, type TokenWithBalance } from '@avalabs/vm-module-types';
+import { type ERC20Token, type Network, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
@@ -19,7 +19,7 @@ export const getErc20Balances = async ({
   currency: string;
   tokens: ERC20Token[];
   network: Network;
-}): Promise<Record<string, TokenWithBalance>> => {
+}): Promise<Record<string, TokenWithBalanceEVM>> => {
   const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId;
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const tokenAddresses = tokens.map((token) => token.address);
@@ -76,6 +76,6 @@ export const getErc20Balances = async ({
         },
       };
     },
-    {} as Record<string, TokenWithBalance>,
+    {} as Record<string, TokenWithBalanceEVM>,
   );
 };

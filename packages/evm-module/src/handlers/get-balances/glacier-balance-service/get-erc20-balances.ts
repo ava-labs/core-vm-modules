@@ -2,7 +2,7 @@ import { TokenUnit } from '@avalabs/utils-sdk';
 import {
   type ERC20Token,
   TokenType,
-  type TokenWithBalance,
+  type TokenWithBalanceEVM,
   type TokenWithBalanceERC20,
 } from '@avalabs/vm-module-types';
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
@@ -21,7 +21,7 @@ export const getErc20Balances = async ({
   currency: string;
   chainId: number;
   customTokens: ERC20Token[];
-}): Promise<Record<string, TokenWithBalance>> => {
+}): Promise<Record<string, TokenWithBalanceEVM>> => {
   const tokensWithBalance: TokenWithBalanceERC20[] = [];
   /**
    *  Load all pages to make sure we have all the tokens with balances
@@ -55,7 +55,7 @@ export const getErc20Balances = async ({
     (acc, token) => {
       return { ...acc, [token.address.toLowerCase()]: token };
     },
-    {} as Record<string, TokenWithBalance>,
+    {} as Record<string, TokenWithBalanceEVM>,
   );
 };
 
