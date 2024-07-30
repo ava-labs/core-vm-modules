@@ -1,7 +1,8 @@
 import type { GetAddressParams, GetAddressResponse } from '@avalabs/vm-module-types';
 import { getBech32AddressFromXPub, getBtcAddressFromPubKey } from '@avalabs/wallets-sdk';
 import { networks } from 'bitcoinjs-lib';
-import { NetworkVMType } from '@avalabs/vm-module-types';
+import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
+import { rpcErrors } from '@metamask/rpc-errors';
 
 type GetAddress = Omit<GetAddressParams, 'xpubXP'>;
 
@@ -12,9 +13,9 @@ export const getAddress = async ({
   walletType,
 }: GetAddress): Promise<GetAddressResponse> => {
   switch (walletType) {
-    case 'mnemonic':
-    case 'ledger':
-    case 'keystone': {
+    case WalletType.Mnemonic:
+    case WalletType.Ledger:
+    case WalletType.Keystone: {
       return {
         [NetworkVMType.BITCOIN]: getBech32AddressFromXPub(
           xpub,
@@ -23,14 +24,14 @@ export const getAddress = async ({
         ),
       };
     }
-    case 'ledger-live':
-    case 'seedless': {
+    case WalletType.LedgerLive:
+    case WalletType.Seedless: {
       const pubKeyBuffer = Buffer.from(xpub, 'hex');
       return {
         [NetworkVMType.BITCOIN]: getBtcAddressFromPubKey(pubKeyBuffer, isTestnet ? networks.testnet : networks.bitcoin),
       };
     }
     default:
-      throw new Error(`Unsupported wallet type: ${walletType}`);
+      throw rpcErrors.invalidParams(`Unsupported wallet type: ${walletType}`);
   }
 };

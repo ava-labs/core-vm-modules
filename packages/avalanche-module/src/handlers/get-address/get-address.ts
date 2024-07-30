@@ -1,6 +1,7 @@
 import type { GetAddressParams, GetAddressResponse } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/wallets-sdk';
-import { NetworkVMType } from '@avalabs/vm-module-types';
+import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
+import { rpcErrors } from '@metamask/rpc-errors';
 
 type GetAddress = Omit<GetAddressParams, 'xpub'>;
 
@@ -11,7 +12,7 @@ export const getAddress = async ({
   walletType,
 }: GetAddress): Promise<GetAddressResponse> => {
   if (xpubXP === undefined) {
-    throw new Error('xpubXP is required to get address');
+    throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
   const provXP = isTestnet
@@ -20,20 +21,20 @@ export const getAddress = async ({
   let xpPub: Buffer;
 
   switch (walletType) {
-    case 'mnemonic':
-    case 'ledger':
-    case 'keystone': {
+    case WalletType.Mnemonic:
+    case WalletType.Ledger:
+    case WalletType.Keystone: {
       // X and P addresses different derivation path m/44'/9000'/0'...
       xpPub = Avalanche.getAddressPublicKeyFromXpub(xpubXP, accountIndex);
       break;
     }
-    case 'ledger-live':
-    case 'seedless': {
+    case WalletType.LedgerLive:
+    case WalletType.Seedless: {
       xpPub = Buffer.from(xpubXP, 'hex');
       break;
     }
     default:
-      throw new Error(`Unsupported wallet type: ${walletType}`);
+      throw rpcErrors.invalidParams(`Unsupported wallet type: ${walletType}`);
   }
 
   return {
