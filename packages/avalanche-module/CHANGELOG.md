@@ -1,5 +1,14 @@
 # @avalabs/avalanche-module
 
+## 0.0.23
+
+### Patch Changes
+
+- bed2fcb: add transaction types for bitcoin module
+- 898dde1: Add getAddress function
+- Updated dependencies [fbdefd2]
+  - @avalabs/vm-module-types@0.0.23
+
 ## 0.0.22
 
 ### Patch Changes

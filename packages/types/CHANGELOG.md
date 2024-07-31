@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.0.23
+
+### Patch Changes
+
+- fbdefd2: Replace BN with bigint
+
 ## 0.0.22
 
 ## 0.0.21

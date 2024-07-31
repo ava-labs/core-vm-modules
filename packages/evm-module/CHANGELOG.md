@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.0.23
+
+### Patch Changes
+
+- fbdefd2: Replace BN with bigint
+- Updated dependencies [fbdefd2]
+  - @avalabs/vm-module-types@0.0.23
+
 ## 0.0.22
 
 ### Patch Changes

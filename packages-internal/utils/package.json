@@ -16,7 +16,7 @@
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
     "@avalabs/chains-sdk": "v2.8.0-alpha.193",
-    "@avalabs/vm-module-types": "0.0.22",
+    "@avalabs/vm-module-types": "0.0.23",
     "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "eslint-config-custom": "workspace:*",
