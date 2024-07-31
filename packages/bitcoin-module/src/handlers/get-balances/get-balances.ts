@@ -54,10 +54,10 @@ export const getBalances = async ({
 
       const balance = new TokenUnit(balanceInSatoshis, network.networkToken.decimals, network.networkToken.symbol);
       const balanceDisplayValue = balance.toDisplay();
+      const balanceCurrencyDisplayValue =
+        priceInCurrency === undefined ? undefined : balance.mul(priceInCurrency).toDisplay(2);
       const balanceInCurrency =
-        priceInCurrency === undefined ? undefined : Number(balance.mul(priceInCurrency).toDisplay(2));
-
-      const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
+        balanceCurrencyDisplayValue === undefined ? undefined : Number(balanceCurrencyDisplayValue.replaceAll(',', ''));
 
       const unconfirmedBalance = new TokenUnit(
         unconfirmedBalanceInSatoshis,
@@ -69,7 +69,7 @@ export const getBalances = async ({
         priceInCurrency === undefined ? undefined : unconfirmedBalance.mul(priceInCurrency).toDisplay(2);
       const unconfirmedBalanceInCurrency =
         unconfirmedBalanceCurrencyDisplayValue !== undefined
-          ? Number(unconfirmedBalanceCurrencyDisplayValue)
+          ? Number(unconfirmedBalanceCurrencyDisplayValue.replaceAll(',', ''))
           : undefined;
 
       const symbol = network.networkToken.symbol;

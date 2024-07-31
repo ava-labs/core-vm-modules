@@ -165,7 +165,7 @@ describe('get-balances', () => {
           balance: new TokenUnit(mockedBalance.balance, 8, '').toSubUnit(),
           balanceDisplayValue: '0.15',
           balanceInCurrency: 7500,
-          balanceCurrencyDisplayValue: '7500.00',
+          balanceCurrencyDisplayValue: '7,500.00',
           priceInCurrency: 50_000,
           marketCap: 1_500_000_000_000,
           vol24: 500_000_000_000,
@@ -173,7 +173,7 @@ describe('get-balances', () => {
           unconfirmedBalance: new TokenUnit(mockedBalance.balanceUnconfirmed, 8, '').toSubUnit(),
           unconfirmedBalanceDisplayValue: '0.05',
           unconfirmedBalanceInCurrency: 2500,
-          unconfirmedBalanceCurrencyDisplayValue: '2500.00',
+          unconfirmedBalanceCurrencyDisplayValue: '2,500.00',
         },
       },
     });
