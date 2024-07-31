@@ -1,6 +1,5 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { BN } from 'bn.js';
+import { TokenUnit } from '@avalabs/utils-sdk';
 import type { TxToken, NetworkToken } from '@avalabs/vm-module-types';
 import { TokenType } from '@avalabs/vm-module-types';
 import { resolve } from '../../utils/resolve';
@@ -16,8 +15,8 @@ export const getTokens = async (
 
   if (nativeTransaction.value !== '0') {
     const decimal = networkToken.decimals;
-    const amountBN = new BN(nativeTransaction.value);
-    const amountDisplayValue = balanceToDisplayValue(amountBN, decimal);
+    const amount = new TokenUnit(nativeTransaction.value, networkToken.decimals, networkToken.symbol);
+    const amountDisplayValue = amount.toDisplay();
     result.push({
       decimal: decimal.toString(),
       name: networkToken.name,
@@ -31,8 +30,8 @@ export const getTokens = async (
 
   erc20Transfers?.forEach((erc20Transfer) => {
     const decimals = erc20Transfer.erc20Token.decimals;
-    const amountBN = new BN(erc20Transfer.value);
-    const amountDisplayValue = balanceToDisplayValue(amountBN, decimals);
+    const amount = new TokenUnit(erc20Transfer.value, decimals, erc20Transfer.erc20Token.symbol);
+    const amountDisplayValue = amount.toDisplay();
 
     result.push({
       decimal: decimals.toString(),

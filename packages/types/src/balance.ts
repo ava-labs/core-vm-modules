@@ -1,6 +1,5 @@
 import type { Storage, Network } from './common';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
-import type BN from 'bn.js';
 import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 
 export type GetBalancesParams = {
@@ -15,7 +14,7 @@ export type TokenBalanceData = {
   type: TokenType;
   name: string;
   symbol: string;
-  balance: BN;
+  balance: bigint;
   balanceDisplayValue: string;
   balanceInCurrency?: number;
   balanceCurrencyDisplayValue?: string;
@@ -76,7 +75,7 @@ export interface TokenWithBalanceBTC extends NetworkTokenWithBalance {
   logoUri: string;
   utxos: BitcoinInputUTXOWithOptionalScript[];
   utxosUnconfirmed?: BitcoinInputUTXOWithOptionalScript[];
-  unconfirmedBalance?: BN;
+  unconfirmedBalance?: bigint;
   unconfirmedBalanceDisplayValue?: string;
   unconfirmedBalanceCurrencyDisplayValue?: string;
   unconfirmedBalanceInCurrency?: number;
@@ -86,7 +85,7 @@ export interface TokenWithBalanceBTC extends NetworkTokenWithBalance {
  * Avalanche TokenWithBalance interface.
  */
 export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
-  available?: BN;
+  available?: bigint;
   availableInCurrency?: number;
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;
@@ -104,7 +103,7 @@ export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
 }
 
 export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
-  available?: BN;
+  available?: bigint;
   availableInCurrency?: number;
   availableDisplayValue?: string;
   availableCurrencyDisplayValue?: string;

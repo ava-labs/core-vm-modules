@@ -1,7 +1,6 @@
 import { NetworkVMType, TokenType } from '@avalabs/vm-module-types';
 import { getBalances } from './get-balances';
 import * as GlacierNativeToken from './glacier-balance-service/get-native-token-balances';
-import { BN } from 'bn.js';
 import * as GlacierERC20Token from './glacier-balance-service/get-erc20-balances';
 import * as EvmNativeToken from './evm-balance-service/get-native-token-balances';
 import * as EvmERC20Token from './evm-balance-service/get-erc20-balances';
@@ -22,7 +21,7 @@ describe('get-balances', () => {
         type: TokenType.NATIVE,
         logoUri:
           'https://images.ctfassets.net/gcj8jwzm6086/6l56QLVZmvacuBfjHBTThP/791d743dd2c526692562780c2325fedf/eth-circle__1_.svg',
-        balance: new BN(1),
+        balance: 1n,
         balanceDisplayValue: '1',
         balanceInCurrency: 1,
         balanceCurrencyDisplayValue: '1',
@@ -43,7 +42,7 @@ describe('get-balances', () => {
           symbol: 'DAI',
           decimals: 18,
           logoUri: 'https://s3.us-east-2.amazonaws.com/nomics-api/static/images/currencies/dai.svg',
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,
@@ -67,7 +66,7 @@ describe('get-balances', () => {
           decimals: 18,
           symbol: 'ETH',
           description:
-            'Ether is used to pay for transaction fees and computational services on Etherum. Users can send Ether to other users, and developers can write smart contracts that receive, hold, and send Ether.',
+            'Ether is used to pay for transaction fees and computational services on Ethereum. Users can send Ether to other users, and developers can write smart contracts that receive, hold, and send Ether.',
           logoUri:
             'https://images.ctfassets.net/gcj8jwzm6086/6l56QLVZmvacuBfjHBTThP/791d743dd2c526692562780c2325fedf/eth-circle__1_.svg',
         },
@@ -83,7 +82,7 @@ describe('get-balances', () => {
       '0x123': {
         '0x123': {
           address: '0x123',
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,
@@ -99,7 +98,7 @@ describe('get-balances', () => {
           vol24: 0,
         },
         ETH: {
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,
@@ -150,7 +149,7 @@ describe('get-balances', () => {
         type: TokenType.NATIVE,
         logoUri:
           'https://images.ctfassets.net/gcj8jwzm6086/6l56QLVZmvacuBfjHBTThP/791d743dd2c526692562780c2325fedf/eth-circle__1_.svg',
-        balance: new BN(1),
+        balance: 1n,
         balanceDisplayValue: '1',
         balanceInCurrency: 1,
         balanceCurrencyDisplayValue: '1',
@@ -171,7 +170,7 @@ describe('get-balances', () => {
           symbol: 'DAI2',
           decimals: 18,
           logoUri: 'https://s3.us-east-2.amazonaws.com/nomics-api/static/images/currencies/dai.svg',
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,
@@ -195,7 +194,7 @@ describe('get-balances', () => {
           decimals: 18,
           symbol: 'ETH2',
           description:
-            'Ether is used to pay for transaction fees and computational services on Etherum. Users can send Ether to other users, and developers can write smart contracts that receive, hold, and send Ether.',
+            'Ether is used to pay for transaction fees and computational services on Ethereum. Users can send Ether to other users, and developers can write smart contracts that receive, hold, and send Ether.',
           logoUri:
             'https://images.ctfassets.net/gcj8jwzm6086/6l56QLVZmvacuBfjHBTThP/791d743dd2c526692562780c2325fedf/eth-circle__1_.svg',
         },
@@ -211,7 +210,7 @@ describe('get-balances', () => {
       '0x456': {
         '0x456': {
           address: '0x456',
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,
@@ -227,7 +226,7 @@ describe('get-balances', () => {
           vol24: 0,
         },
         ETH2: {
-          balance: new BN(1),
+          balance: 1n,
           balanceCurrencyDisplayValue: '1',
           balanceDisplayValue: '1',
           balanceInCurrency: 1,

@@ -1,11 +1,10 @@
-import { BN } from 'bn.js';
 import { getNativeTokenBalances } from './get-native-token-balances';
 
 describe('get-native-token-balances', () => {
   it('should return native token balances', async () => {
     const balance = getNativeTokenBalances({
       provider: {
-        getBalance: jest.fn().mockResolvedValue(new BN('1000000000000000000')),
+        getBalance: jest.fn().mockResolvedValue(1000000000000000000n),
       } as never,
       tokenService: {
         getSimplePrice: jest.fn().mockResolvedValue({
@@ -43,7 +42,7 @@ describe('get-native-token-balances', () => {
       symbol: 'ETH',
       decimals: 18,
       logoUri: 'https://example.com/logo.png',
-      balance: new BN('1000000000000000000'),
+      balance: 1000000000000000000n,
       balanceCurrencyDisplayValue: '1000.00',
       balanceDisplayValue: '1',
       balanceInCurrency: 1000,
@@ -59,7 +58,7 @@ describe('get-native-token-balances', () => {
   it('should return native token object without balance data', async () => {
     const balance = getNativeTokenBalances({
       provider: {
-        getBalance: jest.fn().mockResolvedValue(new BN('0')),
+        getBalance: jest.fn().mockResolvedValue(0n),
       } as never,
       tokenService: {
         getSimplePrice: jest.fn().mockResolvedValue({}),
@@ -87,7 +86,7 @@ describe('get-native-token-balances', () => {
       symbol: 'ETH',
       decimals: 18,
       logoUri: 'https://example.com/logo.png',
-      balance: new BN('0'),
+      balance: 0n,
       balanceCurrencyDisplayValue: undefined,
       balanceDisplayValue: '0',
       coingeckoId: '123',

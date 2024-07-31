@@ -1,7 +1,6 @@
 import type { NormalTx } from '@avalabs/etherscan-sdk';
 import { TokenType, TransactionType, type NetworkToken, type Transaction } from '@avalabs/vm-module-types';
-import { balanceToDisplayValue } from '@avalabs/utils-sdk';
-import { BN } from 'bn.js';
+import { TokenUnit } from '@avalabs/utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
 
 export const convertTransactionNormal = ({
@@ -20,8 +19,8 @@ export const convertTransactionNormal = ({
   const isSender = tx.from.toLowerCase() === address.toLowerCase();
   const timestamp = parseInt(tx.timeStamp) * 1000;
   const decimals = networkToken.decimals;
-  const amountBN = new BN(tx.value);
-  const amountDisplayValue = balanceToDisplayValue(amountBN, decimals);
+  const amount = new TokenUnit(tx.value, networkToken.decimals, networkToken.symbol);
+  const amountDisplayValue = amount.toDisplay();
   const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
 
   const { from, to, gasPrice, gasUsed, hash } = tx;

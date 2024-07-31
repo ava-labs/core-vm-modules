@@ -1,4 +1,3 @@
-import { BN } from 'bn.js';
 import { getErc20Balances } from './get-erc20-balances';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
@@ -45,7 +44,7 @@ describe('get-erc20-balances', () => {
         symbol: 'ETH',
         decimals: 18,
         logoUri: 'https://example.com/logo.png',
-        balance: new BN('1000000000000000000'),
+        balance: 1000000000000000000n,
         balanceCurrencyDisplayValue: '1000',
         balanceDisplayValue: '1',
         balanceInCurrency: 1000,

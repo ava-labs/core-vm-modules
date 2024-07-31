@@ -1,7 +1,6 @@
 import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { TokenType, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
-import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
-import { BN } from 'bn.js';
+import { TokenUnit } from '@avalabs/utils-sdk';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 export const getNativeTokenBalances = async ({
@@ -23,13 +22,15 @@ export const getNativeTokenBalances = async ({
     currency: currency.toLocaleLowerCase() as CurrencyCode,
   });
   const nativeTokenBalance = nativeBalance.nativeTokenBalance;
-  const balance = new BN(nativeTokenBalance.balance);
-  const balanceDisplayValue = balanceToDisplayValue(balance, nativeTokenBalance.decimals);
+  const balanceTokenUnit = new TokenUnit(
+    nativeTokenBalance.balance,
+    nativeTokenBalance.decimals,
+    nativeTokenBalance.symbol,
+  );
+  const balanceDisplayValue = balanceTokenUnit.toDisplay();
   const priceInCurrency = nativeTokenBalance.price?.value;
-  const balanceInCurrency = priceInCurrency
-    ? bnToBig(balance, nativeTokenBalance.decimals).mul(priceInCurrency).toNumber()
-    : undefined;
-  const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
+  const balanceCurrencyDisplayValue = priceInCurrency ? balanceTokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
+  const balanceInCurrency = balanceCurrencyDisplayValue ? Number(balanceCurrencyDisplayValue) : undefined;
 
   return {
     name: nativeTokenBalance.name,
@@ -37,7 +38,7 @@ export const getNativeTokenBalances = async ({
     decimals: nativeTokenBalance.decimals,
     type: TokenType.NATIVE,
     logoUri: nativeTokenBalance.logoUri,
-    balance,
+    balance: balanceTokenUnit.toSubUnit(),
     balanceDisplayValue,
     balanceInCurrency,
     balanceCurrencyDisplayValue,

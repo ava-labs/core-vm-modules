@@ -1,12 +1,11 @@
-import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/utils-sdk';
 import {
-  TokenType,
-  type TokenWithBalanceERC20,
-  type TokenWithBalance,
   type ERC20Token,
+  TokenType,
+  type TokenWithBalance,
+  type TokenWithBalanceERC20,
 } from '@avalabs/vm-module-types';
 import { CurrencyCode, Erc20TokenBalance } from '@avalabs/glacier-sdk';
-import BN from 'bn.js';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 import { DEFAULT_DECIMALS } from '../../../constants';
 
@@ -66,7 +65,7 @@ const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBal
       ...token,
       decimals: token.decimals ?? DEFAULT_DECIMALS,
       type: TokenType.ERC20,
-      balance: new BN(0),
+      balance: 0n,
       balanceInCurrency: 0,
       balanceDisplayValue: '0',
       balanceCurrencyDisplayValue: '0',
@@ -83,13 +82,11 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
   chainId: number,
 ): TokenWithBalanceERC20[] => {
   return tokenBalances.map((token: Erc20TokenBalance): TokenWithBalanceERC20 => {
-    const balance = new BN(token.balance);
-    const balanceDisplayValue = balanceToDisplayValue(balance, token.decimals);
+    const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
+    const balanceDisplayValue = balance.toDisplay();
     const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
     const priceInCurrency = token.price?.value;
-    const balanceInCurrency = priceInCurrency
-      ? bnToBig(balance, token.decimals).mul(priceInCurrency).toNumber()
-      : undefined;
+    const balanceInCurrency = priceInCurrency ? Number(balance.mul(priceInCurrency).toDisplay(2)) : undefined;
 
     return {
       chainId,
@@ -98,7 +95,7 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
       symbol: token.symbol,
       decimals: token.decimals,
       logoUri: token.logoUri,
-      balance,
+      balance: balance.toSubUnit(),
       balanceCurrencyDisplayValue,
       balanceDisplayValue,
       balanceInCurrency,
