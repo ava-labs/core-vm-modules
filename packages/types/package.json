@@ -19,9 +19,9 @@
     "@internal/tsup-config": "workspace:*",
     "bn.js": "5.2.1",
     "@types/bn.js": "5.1.5",
-    "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
-    "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
-    "@avalabs/utils-sdk": "2.8.0-alpha.193",
+    "@avalabs/coingecko-sdk": "v2.8.0-alpha.195",
+    "@avalabs/glacier-sdk": "v2.8.0-alpha.195",
+    "@avalabs/utils-sdk": "2.8.0-alpha.195",
     "eslint-config-custom": "workspace:*"
   },
   "peerDependencies": {

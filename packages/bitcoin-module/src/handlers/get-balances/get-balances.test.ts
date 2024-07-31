@@ -3,8 +3,8 @@ import type { BitcoinProvider } from '@avalabs/wallets-sdk';
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from './get-balances';
 import { TokenType, type Network } from '@avalabs/vm-module-types';
-import { BN } from 'bn.js';
 import { TokenService } from '@internal/utils';
+import { TokenUnit } from '@avalabs/utils-sdk';
 
 jest.mock('../../utils/get-provider');
 
@@ -128,7 +128,7 @@ describe('get-balances', () => {
             utxosUnconfirmed: mockedBalance.utxosUnconfirmed,
             coingeckoId: network.pricingProviders?.coingecko?.nativeTokenId,
             type: TokenType.NATIVE,
-            balance: new BN(mockedBalance.balance, 8),
+            balance: new TokenUnit(mockedBalance.balance, 8, '').toSubUnit(),
             balanceDisplayValue: '0.15',
             balanceInCurrency: undefined,
             balanceCurrencyDisplayValue: undefined,
@@ -136,7 +136,7 @@ describe('get-balances', () => {
             marketCap: undefined,
             vol24: undefined,
             change24: undefined,
-            unconfirmedBalance: new BN(mockedBalance.balanceUnconfirmed, 8),
+            unconfirmedBalance: new TokenUnit(mockedBalance.balanceUnconfirmed, 8, '').toSubUnit(),
             unconfirmedBalanceDisplayValue: '0.05',
             unconfirmedBalanceInCurrency: undefined,
             unconfirmedBalanceCurrencyDisplayValue: undefined,
@@ -162,7 +162,7 @@ describe('get-balances', () => {
           utxosUnconfirmed: mockedBalance.utxosUnconfirmed,
           coingeckoId: network.pricingProviders?.coingecko?.nativeTokenId,
           type: TokenType.NATIVE,
-          balance: new BN(mockedBalance.balance, 8),
+          balance: new TokenUnit(mockedBalance.balance, 8, '').toSubUnit(),
           balanceDisplayValue: '0.15',
           balanceInCurrency: 7500,
           balanceCurrencyDisplayValue: '7500.00',
@@ -170,7 +170,7 @@ describe('get-balances', () => {
           marketCap: 1_500_000_000_000,
           vol24: 500_000_000_000,
           change24: 0.01,
-          unconfirmedBalance: new BN(mockedBalance.balanceUnconfirmed, 8),
+          unconfirmedBalance: new TokenUnit(mockedBalance.balanceUnconfirmed, 8, '').toSubUnit(),
           unconfirmedBalanceDisplayValue: '0.05',
           unconfirmedBalanceInCurrency: 2500,
           unconfirmedBalanceCurrencyDisplayValue: '2500.00',

@@ -1,5 +1,5 @@
 import type { AggregatedAssetAmount, XChainBalances } from '@avalabs/glacier-sdk';
-import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/utils-sdk';
 import { calculateTotalBalance, getTokenValue } from './utils';
 import { TokenType, type NetworkToken, type TokenWithBalanceAVM } from '@avalabs/vm-module-types';
 
@@ -44,19 +44,17 @@ export const convertXChainBalance = ({
     });
   }
 
-  const totalBalance = calculateTotalBalance(balance);
-  const balanceDisplayValue = balanceToDisplayValue(totalBalance, decimals);
-  const balanceInCurrency = priceInCurrency
-    ? bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber()
-    : undefined;
-  const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
+  const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
+  const balanceDisplayValue = totalBalance.toDisplay();
+  const balanceCurrencyDisplayValue = priceInCurrency ? totalBalance.mul(priceInCurrency).toDisplay(2) : undefined;
+  const balanceInCurrency = balanceCurrencyDisplayValue ? Number(balanceCurrencyDisplayValue) : undefined;
 
   return {
     ...networkToken,
     coingeckoId,
     type: TokenType.NATIVE,
     priceInCurrency,
-    balance: totalBalance,
+    balance: totalBalance.toSubUnit(),
     balanceInCurrency,
     balanceDisplayValue,
     balanceCurrencyDisplayValue,
