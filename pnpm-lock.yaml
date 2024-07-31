@@ -224,6 +224,9 @@ importers:
       big.js:
         specifier: 6.2.1
         version: 6.2.1
+      bitcoinjs-lib:
+        specifier: 5.2.0
+        version: 5.2.0
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
