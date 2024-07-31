@@ -1,10 +1,10 @@
 import {
-  type GetBalancesResponse,
   type GetBalancesParams,
   type Storage,
   TokenType,
   type NetworkContractToken,
   type ERC20Token,
+  type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '@internal/utils';
@@ -14,6 +14,8 @@ import { getNativeTokenBalances } from './evm-balance-service/get-native-token-b
 import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
 import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balance-service/get-erc20-balances';
 import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
+
+type GetEvmBalancesResponse = Record<string, Record<string, TokenWithBalanceEVM>>;
 
 export const getBalances = async ({
   addresses,
@@ -27,7 +29,7 @@ export const getBalances = async ({
   proxyApiUrl: string;
   glacierService: EvmGlacierService;
   storage?: Storage;
-}): Promise<GetBalancesResponse> => {
+}): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
   const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
   const isHealthy = glacierService.isHealthy();
@@ -111,7 +113,7 @@ export const getBalances = async ({
       ...acc,
       [result.value.address]: result.value.balances,
     };
-  }, {} as GetBalancesResponse);
+  }, {} as GetEvmBalancesResponse);
 
   return filterBalances;
 };

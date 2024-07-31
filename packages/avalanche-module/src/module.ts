@@ -8,6 +8,8 @@ import type {
   GetBalancesParams,
   GetBalancesResponse,
   Environment,
+  GetAddressParams,
+  GetAddressResponse,
 } from '@avalabs/vm-module-types';
 import { parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -19,6 +21,7 @@ import { AvalancheGlacierService } from './services/glacier-service/glacier-serv
 import { TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
+import { getAddress } from './handlers/get-address/get-address';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -30,8 +33,8 @@ export class AvalancheModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
   }
 
-  getAddress(): Promise<string> {
-    return Promise.resolve('Avalanche address');
+  getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
+    return getAddress({ accountIndex, xpubXP, isTestnet, walletType });
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {

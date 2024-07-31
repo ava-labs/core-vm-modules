@@ -1,4 +1,4 @@
-import { TokenType, type GetBalancesParams, type GetBalancesResponse } from '@avalabs/vm-module-types';
+import { TokenType, type GetBalancesParams, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
 import { bigToBN, balanceToDisplayValue } from '@avalabs/utils-sdk';
 import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
 import Big from 'big.js';
@@ -7,6 +7,8 @@ import { TokenService } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
 import { extractTokenMarketData } from '../../utils/extract-token-market-data';
+
+type GetBtcBalancesResponse = Record<string, Record<string, TokenWithBalanceBTC>>;
 
 type GetBTCBalancesParams = Omit<GetBalancesParams, 'currency'> & {
   proxyApiUrl: string;
@@ -21,7 +23,7 @@ export const getBalances = async ({
   withScripts,
   proxyApiUrl,
   storage,
-}: GetBTCBalancesParams): Promise<GetBalancesResponse> => {
+}: GetBTCBalancesParams): Promise<GetBtcBalancesResponse> => {
   const provider = getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,

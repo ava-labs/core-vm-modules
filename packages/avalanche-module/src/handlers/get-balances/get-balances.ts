@@ -1,7 +1,6 @@
 import {
   NetworkVMType,
   type GetBalancesParams,
-  type GetBalancesResponse,
   type TokenWithBalanceAVM,
   type TokenWithBalancePVM,
 } from '@avalabs/vm-module-types';
@@ -18,6 +17,8 @@ import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
 import { convertXChainBalance } from './covnert-x-chain-balance';
 
+type GetAvalancheBalancesResponse = Record<string, Record<string, TokenWithBalanceAVM | TokenWithBalancePVM>>;
+
 export const getBalances = async ({
   addresses,
   currency,
@@ -27,7 +28,7 @@ export const getBalances = async ({
 }: GetBalancesParams & {
   glacierService: AvalancheGlacierService;
   tokenService: TokenService;
-}): Promise<GetBalancesResponse> => {
+}): Promise<GetAvalancheBalancesResponse> => {
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');

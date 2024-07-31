@@ -9,6 +9,8 @@ import type {
   ApprovalController,
   GetBalancesParams,
   GetBalancesResponse,
+  GetAddressParams,
+  GetAddressResponse,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
@@ -22,6 +24,7 @@ import { getEnv } from './env';
 import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { ethSign } from './handlers/eth-sign/eth-sign';
 import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
+import { getAddress } from './handlers/get-address/get-address';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -41,8 +44,8 @@ export class EvmModule implements Module {
     this.#approvalController = approvalController;
   }
 
-  getAddress(): Promise<string> {
-    return Promise.resolve('EVM address');
+  getAddress({ accountIndex, xpub, walletType }: GetAddressParams): Promise<GetAddressResponse> {
+    return getAddress({ accountIndex, xpub, walletType });
   }
 
   getBalances({
