@@ -12,10 +12,15 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+
+      - name: Create .npmrc
+        run: |
+          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
 
       # https://github.com/pnpm/action-setup/issues/135
       # https://github.com/pnpm/action-setup/releases/tag/v2.4.1
