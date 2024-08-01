@@ -461,6 +461,7 @@ packages:
       - ethers
       - node-fetch
       - supports-color
+    dev: false
 
   /@avalabs/core-utils-sdk@3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-+Wr7JA6dZgeTSuwoh0KcM8AK7CbJZnIdxZ2arm5piSkaTPZzuAkYUOE/sVDxGqrzPWZQptDclfvJxeIhfuijIw==}
@@ -531,7 +532,7 @@ packages:
     dev: false
 
   /@avalabs/types@3.0.1-alpha.1:
-    resolution: {integrity: sha512-KNv1IO7zHhVvbClUV2qf7ByPlwkk3fu6hTii+wkpifib1LNXDBzoT9RHfrxK5CfTog5RmPZphhssJwc6ouxGzA==}
+    resolution: {integrity: sha512-2Rysz0akLzn97VGNxBKuxKNY0GLgtVrbPw1RRJN2KHECAFGj5hMWdfQP5oI+7KfPegM3xenDmKlgrw41UOVbCg==}
     dev: false
 
   /@babel/code-frame@7.24.6:
