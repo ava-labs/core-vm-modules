@@ -20,18 +20,18 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.1.2",
-    "@avalabs/core-coingecko-sdk": "3.0.0",
-    "@avalabs/core-utils-sdk": "3.0.0",
-    "@avalabs/core-etherscan-sdk": "3.0.0",
-    "@avalabs/glacier-sdk": "3.0.0",
-    "@avalabs/core-wallets-sdk": "3.0.0",
+    "@avalabs/core-coingecko-sdk": "3.0.1-alpha.1",
+    "@avalabs/core-utils-sdk": "3.0.1-alpha.1",
+    "@avalabs/core-etherscan-sdk": "3.0.1-alpha.1",
+    "@avalabs/glacier-sdk": "3.0.1-alpha.1",
+    "@avalabs/core-wallets-sdk": "3.0.1-alpha.1",
     "@blockaid/client": "0.11.0",
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
     "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
-    "@avalabs/types": "3.0.0"
+    "@avalabs/types": "3.0.1-alpha.1"
   },
   "devDependencies": {
     "typechain": "8.3.1",

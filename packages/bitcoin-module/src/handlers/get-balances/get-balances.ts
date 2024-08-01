@@ -1,7 +1,6 @@
-import { TokenType, type GetBalancesParams, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { bigToBN, balanceToDisplayValue } from '@avalabs/core-utils-sdk';
+import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
-import Big from 'big.js';
 
 import { TokenService } from '@internal/utils';
 
@@ -38,7 +37,6 @@ export const getBalances = async ({
         currencies: [currency] as VsCurrencyType[],
       })
     : undefined;
-  const denomination = network.networkToken.decimals;
   const { priceInCurrency, change24, marketCap, vol24 } = extractTokenMarketData(
     coingeckoTokenId ?? '',
     currency,
@@ -54,20 +52,25 @@ export const getBalances = async ({
         utxosUnconfirmed,
       } = await provider.getUtxoBalance(address, withScripts);
 
-      const balanceBig = new Big(balanceInSatoshis).div(10 ** denomination);
-      const balance = bigToBN(balanceBig, denomination);
-      const balanceDisplayValue = balanceToDisplayValue(balance, denomination);
+      const balance = new TokenUnit(balanceInSatoshis, network.networkToken.decimals, network.networkToken.symbol);
+      const balanceDisplayValue = balance.toDisplay();
+      const balanceCurrencyDisplayValue =
+        priceInCurrency === undefined ? undefined : balance.mul(priceInCurrency).toDisplay(2);
       const balanceInCurrency =
-        priceInCurrency === undefined ? undefined : balanceBig.times(priceInCurrency).toNumber();
+        balanceCurrencyDisplayValue === undefined ? undefined : Number(balanceCurrencyDisplayValue.replaceAll(',', ''));
 
-      const balanceCurrencyDisplayValue = balanceInCurrency?.toFixed(2);
-
-      const unconfirmedBalanceBig = new Big(unconfirmedBalanceInSatoshis).div(10 ** denomination);
-      const unconfirmedBalance = bigToBN(unconfirmedBalanceBig, denomination);
-      const unconfirmedBalanceDisplayValue = balanceToDisplayValue(unconfirmedBalance, denomination);
+      const unconfirmedBalance = new TokenUnit(
+        unconfirmedBalanceInSatoshis,
+        network.networkToken.decimals,
+        network.networkToken.symbol,
+      );
+      const unconfirmedBalanceDisplayValue = unconfirmedBalance.toDisplay();
+      const unconfirmedBalanceCurrencyDisplayValue =
+        priceInCurrency === undefined ? undefined : unconfirmedBalance.mul(priceInCurrency).toDisplay(2);
       const unconfirmedBalanceInCurrency =
-        priceInCurrency === undefined ? undefined : unconfirmedBalanceBig.times(priceInCurrency).toNumber();
-      const unconfirmedBalanceCurrencyDisplayValue = unconfirmedBalanceInCurrency?.toFixed(2);
+        unconfirmedBalanceCurrencyDisplayValue !== undefined
+          ? Number(unconfirmedBalanceCurrencyDisplayValue.replaceAll(',', ''))
+          : undefined;
 
       const symbol = network.networkToken.symbol;
 
@@ -79,7 +82,7 @@ export const getBalances = async ({
             utxosUnconfirmed,
             coingeckoId: coingeckoTokenId ?? '',
             type: TokenType.NATIVE,
-            balance,
+            balance: balance.toSubUnit(),
             balanceDisplayValue,
             balanceInCurrency,
             balanceCurrencyDisplayValue,
@@ -87,7 +90,7 @@ export const getBalances = async ({
             marketCap,
             vol24,
             change24,
-            unconfirmedBalance,
+            unconfirmedBalance: unconfirmedBalance.toSubUnit(),
             unconfirmedBalanceDisplayValue,
             unconfirmedBalanceInCurrency,
             unconfirmedBalanceCurrencyDisplayValue,

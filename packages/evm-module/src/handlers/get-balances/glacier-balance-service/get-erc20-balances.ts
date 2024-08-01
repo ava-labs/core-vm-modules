@@ -86,7 +86,9 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
     const balanceDisplayValue = balance.toDisplay();
     const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
     const priceInCurrency = token.price?.value;
-    const balanceInCurrency = priceInCurrency ? Number(balance.mul(priceInCurrency).toDisplay(2)) : undefined;
+    const balanceInCurrency = priceInCurrency
+      ? Number(balance.mul(priceInCurrency).toDisplay(2).replaceAll(',', ''))
+      : undefined;
 
     return {
       chainId,

@@ -1,8 +1,7 @@
 import type { AggregatedAssetAmount, PChainBalance } from '@avalabs/glacier-sdk';
-import { balanceToDisplayValue, bnToBig } from '@avalabs/core-utils-sdk';
-import { BN } from 'bn.js';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { calculateTotalBalance, getTokenValue } from './utils';
-import { TokenType, type NetworkToken, type TokenWithBalancePVM } from '@avalabs/vm-module-types';
+import { type NetworkToken, TokenType, type TokenWithBalancePVM } from '@avalabs/vm-module-types';
 
 export const convertPChainBalance = ({
   balance,
@@ -49,26 +48,26 @@ export const convertPChainBalance = ({
     });
   }
 
-  const available = balancePerType['unlockedUnstaked'] ? new BN(balancePerType['unlockedUnstaked']) : new BN(0);
-  const availableInCurrency = priceInCurrency
-    ? bnToBig(available, decimals).mul(priceInCurrency).toNumber()
-    : undefined;
-  const availableDisplayValue = balanceToDisplayValue(available, decimals);
-  const totalBalance = calculateTotalBalance(balance);
-  const balanceInCurrency = priceInCurrency
-    ? bnToBig(totalBalance, decimals).mul(priceInCurrency).toNumber()
-    : undefined;
-  const balanceDisplayValue = balanceToDisplayValue(totalBalance, decimals);
+  const available = new TokenUnit(
+    balancePerType['unlockedUnstaked'] ? balancePerType['unlockedUnstaked'] : 0n,
+    networkToken.decimals,
+    networkToken.symbol,
+  );
+  const availableInCurrency = priceInCurrency ? Number(available.mul(priceInCurrency).toDisplay(2)) : undefined;
+  const availableDisplayValue = available.toDisplay();
+  const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
+  const balanceInCurrency = priceInCurrency ? Number(totalBalance.mul(priceInCurrency).toDisplay(2)) : undefined;
+  const balanceDisplayValue = totalBalance.toDisplay();
 
   return {
     ...networkToken,
     type: TokenType.NATIVE,
     priceInCurrency,
-    balance: totalBalance,
+    balance: totalBalance.toSubUnit(),
     balanceInCurrency,
     balanceDisplayValue,
     balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2),
-    available,
+    available: available.toSubUnit(),
     availableInCurrency,
     availableDisplayValue,
     availableCurrencyDisplayValue: availableInCurrency?.toFixed(2),

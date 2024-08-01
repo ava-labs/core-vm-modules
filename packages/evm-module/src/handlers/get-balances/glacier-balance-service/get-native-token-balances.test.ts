@@ -36,7 +36,7 @@ describe('get-native-token-balances', () => {
       balance: 1000000000000000000n,
       balanceDisplayValue: '1',
       balanceInCurrency: 1000,
-      balanceCurrencyDisplayValue: '1000.00',
+      balanceCurrencyDisplayValue: '1,000.00',
       priceInCurrency: 1000,
       coingeckoId: '',
     });

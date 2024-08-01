@@ -43,7 +43,7 @@ describe('get-native-token-balances', () => {
       decimals: 18,
       logoUri: 'https://example.com/logo.png',
       balance: 1000000000000000000n,
-      balanceCurrencyDisplayValue: '1000.00',
+      balanceCurrencyDisplayValue: '1,000.00',
       balanceDisplayValue: '1',
       balanceInCurrency: 1000,
       priceInCurrency: 1000,

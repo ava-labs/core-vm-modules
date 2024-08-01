@@ -1,5 +1,4 @@
 import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
-import BN from 'bn.js';
 
 export const isPchainBalance = (balanceResult: PChainBalance | XChainBalances): balanceResult is PChainBalance => {
   return Object.keys(balanceResult).includes('unlockedUnstaked');
@@ -9,7 +8,7 @@ export const isXchainBalance = (balanceResult: PChainBalance | XChainBalances): 
   return Object.keys(balanceResult).includes('locked');
 };
 
-export function calculateTotalBalance(uxtos: PChainBalance | XChainBalances): BN {
+export function calculateTotalBalance(uxtos: PChainBalance | XChainBalances): bigint {
   const sum = Object.values(uxtos).reduce(function (totalAcc, utxoList) {
     const typeSum = utxoList.reduce(function (typeAcc, utxo) {
       const balanceToAdd = Number(utxo.amount);
@@ -19,7 +18,7 @@ export function calculateTotalBalance(uxtos: PChainBalance | XChainBalances): BN
     return totalAcc + typeSum;
   }, 0);
 
-  return new BN(sum);
+  return BigInt(sum);
 }
 
 export function getTokenValue(decimals: number, amount?: number) {

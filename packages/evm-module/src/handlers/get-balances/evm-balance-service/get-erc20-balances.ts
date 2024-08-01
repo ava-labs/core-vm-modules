@@ -57,7 +57,9 @@ export const getErc20Balances = async ({
 
       const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
       const balanceCurrencyDisplayValue = priceInCurrency ? balance.mul(priceInCurrency).toDisplay(2) : undefined;
-      const balanceInCurrency = balanceCurrencyDisplayValue ? Number(balanceCurrencyDisplayValue) : undefined;
+      const balanceInCurrency = balanceCurrencyDisplayValue
+        ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
+        : undefined;
       const balanceDisplayValue = balance.toDisplay();
 
       return {
