@@ -107,7 +107,7 @@ importers:
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193
       '@avalabs/vm-module-types':
-        specifier: 0.0.23
+        specifier: 0.1.0
         version: link:../../packages/types
       '@internal/tsconfig':
         specifier: workspace:*
@@ -152,7 +152,7 @@ importers:
         specifier: v2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.23
+        specifier: 0.1.0
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: v2.8.0-alpha.193
@@ -210,7 +210,7 @@ importers:
         specifier: 2.8.0-alpha.193
         version: 2.8.0-alpha.193(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.23
+        specifier: 0.1.0
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: 2.8.0-alpha.193
@@ -280,7 +280,7 @@ importers:
         specifier: 2.8.0-alpha.195
         version: 2.8.0-alpha.195(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.0.23
+        specifier: 0.1.0
         version: link:../types
       '@avalabs/wallets-sdk':
         specifier: v2.8.0-alpha.195

@@ -1,11 +1,14 @@
 {
   "name": "@avalabs/bitcoin-module",
-  "version": "0.0.23",
+  "version": "0.1.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "type": "module",
-  "files": ["dist", "manifest.json"],
+  "files": [
+    "dist",
+    "manifest.json"
+  ],
   "license": "Limited Ecosystem License",
   "scripts": {
     "build": "tsup",
@@ -15,7 +18,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.0.23",
+    "@avalabs/vm-module-types": "0.1.0",
     "@avalabs/wallets-sdk": "2.8.0-alpha.193",
     "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
     "@avalabs/utils-sdk": "2.8.0-alpha.193",
