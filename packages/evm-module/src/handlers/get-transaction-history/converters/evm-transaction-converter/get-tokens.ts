@@ -1,5 +1,5 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { TxToken, NetworkToken } from '@avalabs/vm-module-types';
 import { TokenType } from '@avalabs/vm-module-types';
 import { resolve } from '../../utils/resolve';

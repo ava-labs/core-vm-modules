@@ -1,6 +1,6 @@
 import { TokenType, type GetBalancesParams, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { bigToBN, balanceToDisplayValue } from '@avalabs/utils-sdk';
-import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import { bigToBN, balanceToDisplayValue } from '@avalabs/core-utils-sdk';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import Big from 'big.js';
 
 import { TokenService } from '@internal/utils';

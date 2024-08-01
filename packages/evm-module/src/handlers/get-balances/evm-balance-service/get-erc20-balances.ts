@@ -1,9 +1,9 @@
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { type ERC20Token, type Network, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
 import { ethers, type Provider } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { TokenService } from '@internal/utils';
-import { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 export const getErc20Balances = async ({
   provider,

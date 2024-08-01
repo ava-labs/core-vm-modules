@@ -1,5 +1,5 @@
 import { NetworkVMType, WalletType, type GetAddressParams, type GetAddressResponse } from '@avalabs/vm-module-types';
-import { getAddressFromXPub, getEvmAddressFromPubKey } from '@avalabs/wallets-sdk';
+import { getAddressFromXPub, getEvmAddressFromPubKey } from '@avalabs/core-wallets-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 type GetAddress = Omit<GetAddressParams, 'isTestnet' | 'xpubXP'>;

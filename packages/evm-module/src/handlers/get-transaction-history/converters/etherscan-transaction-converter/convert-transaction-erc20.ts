@@ -1,6 +1,6 @@
-import type { Erc20Tx } from '@avalabs/etherscan-sdk';
+import type { Erc20Tx } from '@avalabs/core-etherscan-sdk';
 import { TokenType, TransactionType, type Transaction } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
 
 export function convertTransactionERC20({

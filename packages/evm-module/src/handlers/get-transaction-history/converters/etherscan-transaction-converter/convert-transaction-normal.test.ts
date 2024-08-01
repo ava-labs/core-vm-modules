@@ -1,6 +1,6 @@
 import { TokenType, TransactionType } from '@avalabs/vm-module-types';
 import { convertTransactionNormal } from './convert-transaction-normal';
-import type { NormalTx } from '@avalabs/etherscan-sdk';
+import type { NormalTx } from '@avalabs/core-etherscan-sdk';
 
 describe('convertTransactionNormal ', () => {
   it('correctly converts normal transaction data', () => {

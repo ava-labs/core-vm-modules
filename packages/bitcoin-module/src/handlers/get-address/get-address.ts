@@ -1,5 +1,5 @@
 import type { GetAddressParams, GetAddressResponse } from '@avalabs/vm-module-types';
-import { getBech32AddressFromXPub, getBtcAddressFromPubKey } from '@avalabs/wallets-sdk';
+import { getBech32AddressFromXPub, getBtcAddressFromPubKey } from '@avalabs/core-wallets-sdk';
 import { networks } from 'bitcoinjs-lib';
 import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';

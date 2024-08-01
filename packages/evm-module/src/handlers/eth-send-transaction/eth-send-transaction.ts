@@ -12,7 +12,7 @@ import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { getNonce } from '../../utils/get-nonce';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
-import type { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { processTransactionSimulation } from '../../utils/process-transaction-simulation';
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 import { ERC20TransactionType } from '../../types';

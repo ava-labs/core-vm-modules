@@ -6,4 +6,4 @@ This package implements the core logic for the Avalanche (Avalanche Virtual Mach
 
 ## Installation
 
-The module is privately available on NPM as `@avalabs/avalanche-module`
+The module is available on NPM as `@avalabs/avalanche-module`

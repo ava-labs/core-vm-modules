@@ -14,7 +14,7 @@ import {
   type RpcRequest,
   RpcMethod,
 } from '@avalabs/vm-module-types';
-import { balanceToDisplayValue, numberToBN } from '@avalabs/utils-sdk';
+import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 
