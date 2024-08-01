@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/avalanche-module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -17,7 +17,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.1.1",
+    "@avalabs/vm-module-types": "0.1.2",
     "@metamask/rpc-errors": "6.3.0",
     "@avalabs/core-utils-sdk": "3.0.0",
     "@avalabs/core-etherscan-sdk": "3.0.0",
