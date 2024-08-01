@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.1.1
+
+### Patch Changes
+
+- b666331: reference new sdks
+- Updated dependencies [b666331]
+  - @avalabs/vm-module-types@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
