@@ -1,5 +1,5 @@
 import type { AggregatedAssetAmount, XChainBalances } from '@avalabs/glacier-sdk';
-import { balanceToDisplayValue, bnToBig } from '@avalabs/utils-sdk';
+import { balanceToDisplayValue, bnToBig } from '@avalabs/core-utils-sdk';
 import { calculateTotalBalance, getTokenValue } from './utils';
 import { TokenType, type NetworkToken, type TokenWithBalanceAVM } from '@avalabs/vm-module-types';
 

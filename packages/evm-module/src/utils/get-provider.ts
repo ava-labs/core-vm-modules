@@ -1,4 +1,4 @@
-import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
+import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { Network as EVMNetwork } from 'ethers';
 
 // this key is only needed in development to bypass rate limit

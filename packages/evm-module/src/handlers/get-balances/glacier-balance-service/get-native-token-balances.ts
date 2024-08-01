@@ -1,6 +1,6 @@
 import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { TokenType, type NetworkTokenWithBalance } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { EvmGlacierService } from '../../../services/glacier-service/glacier-service';
 
 export const getNativeTokenBalances = async ({

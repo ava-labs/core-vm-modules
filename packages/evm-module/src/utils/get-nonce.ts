@@ -1,4 +1,4 @@
-import { JsonRpcBatchInternal } from '@avalabs/wallets-sdk';
+import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 export const getNonce = async ({
   from,

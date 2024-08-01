@@ -1,6 +1,6 @@
 import { TokenType } from '@avalabs/vm-module-types';
 import { getTransactionFromEtherscan } from './get-transaction-from-etherscan';
-import type { Erc20Tx, NormalTx } from '@avalabs/etherscan-sdk';
+import type { Erc20Tx, NormalTx } from '@avalabs/core-etherscan-sdk';
 
 const mockNormalTxs: NormalTx[] = [
   {
@@ -49,7 +49,7 @@ const mockErc20Txs: Erc20Tx[] = [
   },
 ];
 // const mockTransactions = jest.fn();
-jest.mock('@avalabs/etherscan-sdk', () => ({
+jest.mock('@avalabs/core-etherscan-sdk', () => ({
   getNormalTxs: () => mockNormalTxs,
   getErc20Txs: () => mockErc20Txs,
 }));

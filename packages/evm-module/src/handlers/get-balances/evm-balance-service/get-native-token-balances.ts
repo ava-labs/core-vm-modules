@@ -1,6 +1,6 @@
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { type Network, type NetworkTokenWithBalance, TokenType } from '@avalabs/vm-module-types';
-import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { TokenService } from '@internal/utils';
 import type { Provider } from 'ethers';
 

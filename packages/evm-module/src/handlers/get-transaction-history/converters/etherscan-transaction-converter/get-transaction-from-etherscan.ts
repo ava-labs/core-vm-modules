@@ -1,7 +1,7 @@
 import { convertTransactionNormal } from './convert-transaction-normal';
 import { convertTransactionERC20 } from './convert-transaction-erc20';
 import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-module-types';
-import { getErc20Txs, getNormalTxs } from '@avalabs/etherscan-sdk';
+import { getErc20Txs, getNormalTxs } from '@avalabs/core-etherscan-sdk';
 
 interface EtherscanPagination {
   queries: ('normal' | 'erc20')[];

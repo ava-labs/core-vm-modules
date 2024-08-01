@@ -1,4 +1,4 @@
-import type { BitcoinProvider } from '@avalabs/wallets-sdk';
+import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from './get-balances';

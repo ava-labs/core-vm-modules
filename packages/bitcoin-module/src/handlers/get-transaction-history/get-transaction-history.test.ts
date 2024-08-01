@@ -1,4 +1,4 @@
-import type { BitcoinHistoryTx, BitcoinProvider } from '@avalabs/wallets-sdk';
+import type { BitcoinHistoryTx, BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import type { Network } from '@avalabs/vm-module-types';
 
 import { getProvider } from '../../utils/get-provider';

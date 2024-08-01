@@ -1,5 +1,5 @@
 import { TokenType, TransactionType, type Network, type Transaction } from '@avalabs/vm-module-types';
-import type { BitcoinHistoryTx } from '@avalabs/wallets-sdk';
+import type { BitcoinHistoryTx } from '@avalabs/core-wallets-sdk';
 
 type ConverterOptions = {
   address: string;
