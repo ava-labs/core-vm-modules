@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.1.4
+
+### Patch Changes
+
+- 7ee953c: handle avalanche_signMessage
+  - @avalabs/vm-module-types@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
