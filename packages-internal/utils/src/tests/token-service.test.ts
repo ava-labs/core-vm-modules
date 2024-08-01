@@ -3,8 +3,8 @@ import { TokenService } from '../services/token-service/token-service';
 
 const MOCK_DATA = { ethereum: { usd: { change24: 1, marketCap: 1, price: 1, vol24: 1 } } };
 
-jest.mock('@avalabs/coingecko-sdk', () => ({
-  ...jest.requireActual('@avalabs/coingecko-sdk'),
+jest.mock('@avalabs/core-coingecko-sdk', () => ({
+  ...jest.requireActual('@avalabs/core-coingecko-sdk'),
   simplePrice: () => {
     return MOCK_DATA;
   },

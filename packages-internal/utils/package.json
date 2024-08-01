@@ -13,9 +13,9 @@
   "devDependencies": {
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
-    "@avalabs/coingecko-sdk": "v2.8.0-alpha.193",
-    "@avalabs/glacier-sdk": "v2.8.0-alpha.193",
-    "@avalabs/chains-sdk": "v2.8.0-alpha.193",
+    "@avalabs/core-coingecko-sdk": "3.0.1-alpha.1",
+    "@avalabs/glacier-sdk": "3.0.1-alpha.1",
+    "@avalabs/core-chains-sdk": "3.0.1-alpha.1",
     "@avalabs/vm-module-types": "0.1.0",
     "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",

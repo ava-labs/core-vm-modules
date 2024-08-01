@@ -49,7 +49,7 @@ const mockErc20Txs: Erc20Tx[] = [
   },
 ];
 // const mockTransactions = jest.fn();
-jest.mock('@avalabs/etherscan-sdk', () => ({
+jest.mock('@avalabs/core-etherscan-sdk', () => ({
   getNormalTxs: () => mockNormalTxs,
   getErc20Txs: () => mockErc20Txs,
 }));
