@@ -47,7 +47,9 @@ export const convertXChainBalance = ({
   const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
   const balanceDisplayValue = totalBalance.toDisplay();
   const balanceCurrencyDisplayValue = priceInCurrency ? totalBalance.mul(priceInCurrency).toDisplay(2) : undefined;
-  const balanceInCurrency = balanceCurrencyDisplayValue ? Number(balanceCurrencyDisplayValue) : undefined;
+  const balanceInCurrency = balanceCurrencyDisplayValue
+    ? Number(balanceCurrencyDisplayValue.replace(',', ''))
+    : undefined;
 
   return {
     ...networkToken,
