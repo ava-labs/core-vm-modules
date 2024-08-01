@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.0
+
+### Minor Changes
+
+- c5dca36: ci updates, docs updates
+
 ## 0.0.23
 
 ### Patch Changes
