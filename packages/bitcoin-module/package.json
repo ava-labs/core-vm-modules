@@ -6,6 +6,7 @@
   "typings": "dist/index.d.ts",
   "type": "module",
   "files": ["dist", "manifest.json"],
+  "license": "Limited Ecosystem License",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
