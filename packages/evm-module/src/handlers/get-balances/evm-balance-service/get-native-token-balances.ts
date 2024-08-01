@@ -36,7 +36,7 @@ export const getNativeTokenBalances = async ({
   const balanceDisplayValue = balanceUnit.toDisplay();
   const balanceCurrencyDisplayValue = priceInCurrency ? balanceUnit.mul(priceInCurrency).toDisplay(2) : undefined;
   const balanceInCurrency = balanceCurrencyDisplayValue
-    ? Number(balanceCurrencyDisplayValue.replace(',', ''))
+    ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
     : undefined;
 
   return {

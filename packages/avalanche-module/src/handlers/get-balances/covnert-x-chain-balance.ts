@@ -48,7 +48,7 @@ export const convertXChainBalance = ({
   const balanceDisplayValue = totalBalance.toDisplay();
   const balanceCurrencyDisplayValue = priceInCurrency ? totalBalance.mul(priceInCurrency).toDisplay(2) : undefined;
   const balanceInCurrency = balanceCurrencyDisplayValue
-    ? Number(balanceCurrencyDisplayValue.replace(',', ''))
+    ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
     : undefined;
 
   return {
