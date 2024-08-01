@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.1.2
+
+### Patch Changes
+
+- 2a4764c: check public/private
+  - @avalabs/vm-module-types@0.1.2
+
 ## 0.1.1
 
 ### Patch Changes
