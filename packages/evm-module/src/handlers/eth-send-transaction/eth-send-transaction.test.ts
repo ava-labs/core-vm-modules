@@ -114,7 +114,6 @@ const displayData = {
 const signingData = {
   type: 'eth_sendTransaction',
   account: '0xfrom',
-  chainId: 1,
   data: {
     type: 2,
     nonce: 12,

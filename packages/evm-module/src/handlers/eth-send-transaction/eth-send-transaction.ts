@@ -131,7 +131,6 @@ export const ethSendTransaction = async ({
   const signingData: SigningData = {
     type: RpcMethod.ETH_SEND_TRANSACTION,
     account: transaction.from,
-    chainId: network.chainId,
     data: {
       type: 2, // hardcoding to 2 for now as we only support EIP-1559
       nonce: Number(transaction.nonce),

@@ -204,7 +204,6 @@ describe('ethSign', () => {
         request: { ...mockRequest, method },
         signingData: {
           account: '0xabc',
-          chainId: 1,
           data: inputData,
           type: method,
         },
