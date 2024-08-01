@@ -1,4 +1,4 @@
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
   type ERC20Token,
   TokenType,

@@ -1,6 +1,6 @@
 import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/utils-sdk';
-import type { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 import { TokenService } from '@internal/utils';
 

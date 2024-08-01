@@ -1,10 +1,10 @@
-import type { BitcoinProvider } from '@avalabs/wallets-sdk';
+import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from './get-balances';
 import { TokenType, type Network } from '@avalabs/vm-module-types';
 import { TokenService } from '@internal/utils';
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 
 jest.mock('../../utils/get-provider');
 

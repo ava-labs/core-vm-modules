@@ -1,6 +1,6 @@
 import { type PChainTransaction, type NetworkToken } from '@avalabs/glacier-sdk';
 import Big from 'big.js';
-import { Avalanche } from '@avalabs/wallets-sdk';
+import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { TokenType, type Transaction } from '@avalabs/vm-module-types';
 import { getExplorerAddressByNetwork, getTokenValue } from './utils';
 

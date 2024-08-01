@@ -4,7 +4,7 @@ import {
   simplePrice,
   simpleTokenPrice,
   type SimplePriceParams,
-} from '@avalabs/coingecko-sdk';
+} from '@avalabs/core-coingecko-sdk';
 import type { Storage, RawSimplePriceResponse, SimplePriceResponse } from '@avalabs/vm-module-types';
 import { coingeckoRetry } from '../../utils/coingecko-retry';
 import { arrayHash } from '../../utils/array-hash';

@@ -1,4 +1,4 @@
-import { BitcoinProvider } from '@avalabs/wallets-sdk';
+import { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
 type ProviderParams = {
   isTestnet: boolean;

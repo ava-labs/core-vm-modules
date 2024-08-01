@@ -1,5 +1,5 @@
 import type { AggregatedAssetAmount, PChainBalance } from '@avalabs/glacier-sdk';
-import { TokenUnit } from '@avalabs/utils-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { calculateTotalBalance, getTokenValue } from './utils';
 import { type NetworkToken, TokenType, type TokenWithBalancePVM } from '@avalabs/vm-module-types';
 

@@ -12,7 +12,7 @@ import {
   type ListXChainBalancesResponse,
 } from '@avalabs/glacier-sdk';
 import type { TokenService } from '@internal/utils';
-import { VsCurrencyType } from '@avalabs/coingecko-sdk';
+import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
 import { convertXChainBalance } from './covnert-x-chain-balance';

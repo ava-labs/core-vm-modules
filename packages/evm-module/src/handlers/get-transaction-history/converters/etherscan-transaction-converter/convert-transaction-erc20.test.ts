@@ -1,6 +1,6 @@
 import { TokenType, TransactionType } from '@avalabs/vm-module-types';
 import { convertTransactionERC20 } from './convert-transaction-erc20';
-import type { Erc20Tx } from '@avalabs/etherscan-sdk';
+import type { Erc20Tx } from '@avalabs/core-etherscan-sdk';
 
 describe('convertTransactionERC20 ', () => {
   it('should correctly convert ERC20 transaction data', () => {

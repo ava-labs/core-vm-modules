@@ -1,5 +1,5 @@
 import type { GetAddressParams, GetAddressResponse } from '@avalabs/vm-module-types';
-import { Avalanche } from '@avalabs/wallets-sdk';
+import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
