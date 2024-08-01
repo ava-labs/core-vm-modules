@@ -1,5 +1,11 @@
 # @avalabs/evm-module
 
+## 0.1.4
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes
