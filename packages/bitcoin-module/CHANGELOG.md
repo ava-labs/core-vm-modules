@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 0.1.3
+
+### Patch Changes
+
+- 806c131: Replace BN with bigint
+- Updated dependencies [806c131]
+  - @avalabs/vm-module-types@0.1.3
+
 ## 0.1.2
 
 ### Patch Changes
