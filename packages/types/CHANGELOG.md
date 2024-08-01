@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.1
+
+### Patch Changes
+
+- b666331: reference new sdks
+
 ## 0.1.0
 
 ### Minor Changes

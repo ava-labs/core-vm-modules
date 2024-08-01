@@ -1,5 +1,14 @@
 # @avalabs/avalanche-module
 
+## 0.1.1
+
+### Patch Changes
+
+- 5f846a6: Update ipfs hostname
+- b666331: reference new sdks
+- Updated dependencies [b666331]
+  - @avalabs/vm-module-types@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
