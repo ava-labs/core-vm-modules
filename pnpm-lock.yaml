@@ -107,7 +107,7 @@ importers:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1
       '@avalabs/vm-module-types':
-        specifier: 0.1.0
+        specifier: 0.1.2
         version: link:../../packages/types
       '@internal/tsconfig':
         specifier: workspace:*
@@ -152,10 +152,10 @@ importers:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1
       '@avalabs/types':
-        specifier: 2.8.0-alpha.195
-        version: 2.8.0-alpha.195
+        specifier: 3.0.1-alpha.1
+        version: 3.0.1-alpha.1
       '@avalabs/vm-module-types':
-        specifier: 0.1.0
+        specifier: 0.1.2
         version: link:../types
       '@metamask/rpc-errors':
         specifier: 6.3.0
@@ -213,7 +213,7 @@ importers:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
-        specifier: 0.1.0
+        specifier: 0.1.2
         version: link:../types
       '@metamask/rpc-errors':
         specifier: 6.3.0
@@ -280,10 +280,10 @@ importers:
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1
       '@avalabs/types':
-        specifier: 2.8.0-alpha.193
-        version: 2.8.0-alpha.193
+        specifier: 3.0.1-alpha.1
+        version: 3.0.1-alpha.1
       '@avalabs/vm-module-types':
-        specifier: 0.1.0
+        specifier: 0.1.2
         version: link:../types
       '@blockaid/client':
         specifier: 0.11.0
@@ -461,7 +461,6 @@ packages:
       - ethers
       - node-fetch
       - supports-color
-    dev: false
 
   /@avalabs/core-utils-sdk@3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-+Wr7JA6dZgeTSuwoh0KcM8AK7CbJZnIdxZ2arm5piSkaTPZzuAkYUOE/sVDxGqrzPWZQptDclfvJxeIhfuijIw==}
@@ -531,12 +530,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@avalabs/types@2.8.0-alpha.193:
-    resolution: {integrity: sha512-Nd6B4NDdWp/aG+XYu2epa9DyAFRvOmdWTKp7hbuVzJpPZIbi8YYV8iweRnbtl+1diD4kQLUdeKMzNUnbjyrs2g==}
-    dev: false
-
-  /@avalabs/types@2.8.0-alpha.195:
-    resolution: {integrity: sha512-HkSIzLjcRCbHbtH3/x/iFtzelUQH8H/mm88cuFqkEnqxtN7RsJHVb5kABkLvN9p/7nOTVdQgM+pCKUt+5Gjobw==}
+  /@avalabs/types@3.0.1-alpha.1:
+    resolution: {integrity: sha512-KNv1IO7zHhVvbClUV2qf7ByPlwkk3fu6hTii+wkpifib1LNXDBzoT9RHfrxK5CfTog5RmPZphhssJwc6ouxGzA==}
     dev: false
 
   /@babel/code-frame@7.24.6:

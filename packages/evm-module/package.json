@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/evm-module",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -19,7 +19,7 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.1.0",
+    "@avalabs/vm-module-types": "0.1.2",
     "@avalabs/core-coingecko-sdk": "3.0.1-alpha.1",
     "@avalabs/core-utils-sdk": "3.0.1-alpha.1",
     "@avalabs/core-etherscan-sdk": "3.0.1-alpha.1",
@@ -31,7 +31,7 @@
     "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
-    "@avalabs/types": "2.8.0-alpha.193"
+    "@avalabs/types": "3.0.1-alpha.1"
   },
   "devDependencies": {
     "typechain": "8.3.1",

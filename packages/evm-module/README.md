@@ -6,4 +6,4 @@ This package implements the core logic for the EVM (Ethereum Virtual Machine) mo
 
 ## Installation
 
-The module is privately available on NPM as `@avalabs/evm-module`
+The module is available on NPM as `@avalabs/evm-module`

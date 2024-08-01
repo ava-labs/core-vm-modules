@@ -6,7 +6,7 @@
     ["@avalabs/evm-module", "@avalabs/avalanche-module", "@avalabs/vm-module-types", "@avalabs/bitcoin-module"]
   ],
   "linked": [],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []

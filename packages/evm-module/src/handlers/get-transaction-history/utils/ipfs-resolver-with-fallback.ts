@@ -1,6 +1,6 @@
 import { ipfsResolver } from '@avalabs/core-utils-sdk';
 
-export const CLOUDFLARE_IPFS_URL = 'https://cloudflare-ipfs.com';
+export const CLOUDFLARE_IPFS_URL = 'https://ipfs.io';
 
 export function ipfsResolverWithFallback(
   sourceUrl: string | undefined,
