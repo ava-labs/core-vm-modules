@@ -5,6 +5,8 @@
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "type": "module",
+  "files": ["dist", "manifest.json"],
+  "license": "Limited Ecosystem License",
   "scripts": {
     "build": "tsup",
     "lint": "eslint \"src/**/*.ts\""
