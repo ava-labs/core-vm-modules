@@ -36,27 +36,26 @@ export const avalancheSendTransaction = async ({
     };
   }
 
-  const { transactionHex, chainAlias, externalIndices, internalIndices, utxos: providedUtxoHexes } = result.data;
-
-  const vm = Avalanche.getVmByChainAlias(chainAlias);
-  const txBytes = utils.hexToBuffer(transactionHex);
-  const isTestnet = network.isTestnet ?? false;
-  const provider = getProvider({ isTestnet });
-  const currentAddress = request.context?.['currentAddress'];
-
-  if (!currentAddress || typeof currentAddress !== 'string') {
-    return {
-      error: rpcErrors.invalidRequest('No active account found'),
-    };
-  }
-
-  const providedUtxos = getProvidedUtxos({
-    utxoHexes: providedUtxoHexes,
-    vm,
-  });
-
   try {
-    console.error('avalancheSendTransaction', 1);
+    const { transactionHex, chainAlias, externalIndices, internalIndices, utxos: providedUtxoHexes } = result.data;
+
+    const vm = Avalanche.getVmByChainAlias(chainAlias);
+    const txBytes = utils.hexToBuffer(transactionHex);
+    const isTestnet = network.isTestnet ?? false;
+    const provider = getProvider({ isTestnet });
+    const currentAddress = request.context?.['currentAddress'];
+
+    if (!currentAddress || typeof currentAddress !== 'string') {
+      return {
+        error: rpcErrors.invalidRequest('No active account found'),
+      };
+    }
+
+    const providedUtxos = getProvidedUtxos({
+      utxoHexes: providedUtxoHexes,
+      vm,
+    });
+
     const utxos = providedUtxos.length
       ? providedUtxos
       : await Avalanche.getUtxosByTxFromGlacier({
@@ -67,8 +66,6 @@ export const avalancheSendTransaction = async ({
           token: GLACIER_API_KEY,
         });
 
-    console.error('avalancheSendTransaction', 2);
-
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
     if (chainAlias === 'C') {
       unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
@@ -78,18 +75,15 @@ export const avalancheSendTransaction = async ({
         fromAddress: currentAddress,
       });
     } else {
-      console.error('avalancheSendTransaction', 3);
       const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
       const xpubXP = request.context?.['xpubXP'];
 
       if (!xpubXP || typeof xpubXP !== 'string') {
-        console.error('Request should have xpubXP in context');
         return {
           error: rpcErrors.invalidParams('Request should have xpubXP in context'),
         };
       }
 
-      console.error('avalancheSendTransaction', 4);
       const externalAddresses = await getAddressesByIndices({
         indices: externalIndices ?? [],
         chainAlias,
@@ -98,8 +92,6 @@ export const avalancheSendTransaction = async ({
         xpubXP,
       });
 
-      console.error('avalancheSendTransaction', 5);
-
       const internalAddresses = await getAddressesByIndices({
         indices: internalIndices ?? [],
         chainAlias,
@@ -107,8 +99,6 @@ export const avalancheSendTransaction = async ({
         isTestnet,
         xpubXP,
       });
-
-      console.error('avalancheSendTransaction', 6);
 
       const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
 
@@ -120,8 +110,6 @@ export const avalancheSendTransaction = async ({
         provider,
         fromAddressBytes,
       });
-
-      console.error('avalancheSendTransaction', 7);
     }
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
@@ -149,7 +137,6 @@ export const avalancheSendTransaction = async ({
       },
     };
 
-    console.error('avalancheSendTransaction', 8);
     // prompt user for approval
     const response = await approvalController.requestApproval({ request, displayData, signingData });
 
@@ -161,7 +148,6 @@ export const avalancheSendTransaction = async ({
 
     return { result: response.result };
   } catch (error) {
-    console.error('avalancheSendTransaction', 9);
     console.error(error);
     return {
       error: rpcErrors.internal('Unable to create transaction'),
