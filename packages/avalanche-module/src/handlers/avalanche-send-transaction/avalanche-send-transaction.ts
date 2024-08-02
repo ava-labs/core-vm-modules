@@ -46,7 +46,6 @@ export const avalancheSendTransaction = async ({
 
   if (!currentAddress || typeof currentAddress !== 'string') {
     return {
-      success: false,
       error: rpcErrors.invalidRequest('No active account found'),
     };
   }
@@ -56,104 +55,105 @@ export const avalancheSendTransaction = async ({
     vm,
   });
 
-  const utxos = providedUtxos.length
-    ? providedUtxos
-    : await Avalanche.getUtxosByTxFromGlacier({
-        transactionHex,
+  try {
+    const utxos = providedUtxos.length
+      ? providedUtxos
+      : await Avalanche.getUtxosByTxFromGlacier({
+          transactionHex,
+          chainAlias,
+          isTestnet,
+          url: glacierApiUrl,
+          token: GLACIER_API_KEY,
+        });
+
+    let unsignedTx: UnsignedTx | EVMUnsignedTx;
+    if (chainAlias === 'C') {
+      unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
+        txBytes,
+        vm,
+        utxos,
+        fromAddress: currentAddress,
+      });
+    } else {
+      const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
+      const xpubXP = request.context?.['xpubXP'];
+
+      if (!xpubXP || typeof xpubXP !== 'string') {
+        console.error('Request should have xpubXP in context');
+        return {
+          error: rpcErrors.invalidParams('Request should have xpubXP in context'),
+        };
+      }
+
+      const externalAddresses = await getAddressesByIndices({
+        indices: externalIndices ?? [],
         chainAlias,
+        isChange: false,
         isTestnet,
-        url: glacierApiUrl,
-        token: GLACIER_API_KEY,
+        xpubXP,
       });
 
-  let unsignedTx: UnsignedTx | EVMUnsignedTx;
-  if (chainAlias === 'C') {
-    unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
-      txBytes,
-      vm,
-      utxos,
-      fromAddress: currentAddress,
-    });
-  } else {
-    const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
-    const xpubXP = request.context?.['xpubXP'];
+      const internalAddresses = await getAddressesByIndices({
+        indices: internalIndices ?? [],
+        chainAlias,
+        isChange: true,
+        isTestnet,
+        xpubXP,
+      });
 
-    if (!xpubXP || typeof xpubXP !== 'string') {
-      console.error('Request should have xpubXP in context');
+      const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
+
+      const fromAddressBytes = fromAddresses.map((address) => utils.parse(address)[2]);
+
+      unsignedTx = await Avalanche.createAvalancheUnsignedTx({
+        tx,
+        utxos,
+        provider,
+        fromAddressBytes,
+      });
+    }
+
+    const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+
+    // Throw an error if we can't parse the transaction
+    if (txData.type === 'unknown') {
       return {
-        error: rpcErrors.invalidParams('Request should have xpubXP in context'),
+        error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
       };
     }
 
-    const externalAddresses = await getAddressesByIndices({
-      indices: externalIndices ?? [],
-      chainAlias,
-      isChange: false,
-      isTestnet,
-      xpubXP,
-    });
+    const signingData: SigningData = {
+      type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
+      unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
+      data: txData,
+      vm,
+    };
 
-    const internalAddresses = await getAddressesByIndices({
-      indices: internalIndices ?? [],
-      chainAlias,
-      isChange: true,
-      isTestnet,
-      xpubXP,
-    });
+    const displayData: DisplayData = {
+      title: 'Sign Message',
+      network: {
+        chainId: network.chainId,
+        name: network.chainName,
+        logoUri: network.logoUri,
+      },
+    };
 
-    const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
+    // prompt user for approval
+    const response = await approvalController.requestApproval({ request, displayData, signingData });
 
-    const fromAddressBytes = fromAddresses.map((address) => utils.parse(address)[2]);
+    if ('error' in response) {
+      return {
+        error: response.error,
+      };
+    }
 
-    unsignedTx = await Avalanche.createAvalancheUnsignedTx({
-      tx,
-      utxos,
-      provider,
-      fromAddressBytes,
-    });
-  }
-
-  const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
-
-  // Throw an error if we can't parse the transaction
-  if (txData.type === 'unknown') {
+    return { result: response.result };
+  } catch (error) {
+    console.error(error);
     return {
-      success: false,
-      error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
+      error: rpcErrors.internal('Unable to create transaction'),
     };
   }
-
-  const signingData: SigningData = {
-    type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
-    unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
-    data: txData,
-    vm,
-  };
-
-  const displayData: DisplayData = {
-    title: 'Sign Message',
-    dAppInfo: {
-      name: request.dappInfo.name,
-      action: `${request.dappInfo.name} requests you to sign the following message`,
-      logoUri: request.dappInfo.icon,
-    },
-    network: {
-      chainId: network.chainId,
-      name: network.chainName,
-      logoUri: network.logoUri,
-    },
-  };
-
-  // prompt user for approval
-  const response = await approvalController.requestApproval({ request, displayData, signingData });
-
-  if ('error' in response) {
-    return {
-      error: response.error,
-    };
-  }
-
-  return { result: response.result };
 };
 
 const getAddressesByIndices = async ({
