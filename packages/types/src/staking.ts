@@ -1,15 +1,16 @@
 import type { NetworkVMType } from './common';
 
+export type TxDetails = StakingDetails | ExportImportTxDetails | ChainDetails | BlockchainDetails | SubnetDetails;
+
 export type StakingDetails =
   | AddPermissionlessDelegatorTx
   | AddPermissionlessValidatorTx
-  | ExportTx
-  | ImportTx
-  | BaseTx
   | AddSubnetValidatorTx
-  | CreateChainTx
-  | CreateSubnetTx
   | RemoveSubnetValidatorTx;
+export type ExportImportTxDetails = ExportTx | ImportTx;
+export type ChainDetails = BaseTx;
+export type BlockchainDetails = CreateChainTx;
+export type SubnetDetails = CreateSubnetTx;
 
 export type VM = NetworkVMType.AVM | NetworkVMType.EVM | NetworkVMType.PVM;
 

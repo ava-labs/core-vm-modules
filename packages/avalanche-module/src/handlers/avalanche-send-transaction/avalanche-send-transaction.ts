@@ -12,8 +12,15 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, EVMUnsignedTx, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
-import { parseStakingDetails } from './utils/parse-staking-details';
-import { parseDisplayDataTitle } from './utils/parse-display-data-title';
+import { parseTxDetails } from './utils/parse-tx-details';
+import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
+import {
+  isBlockchainDetails,
+  isChainDetails,
+  isStakingDetails,
+  isSubnetDetails,
+  isTransactionDetails,
+} from './typeguards';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -112,11 +119,11 @@ export const avalancheSendTransaction = async ({
     }
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
-    const stakingDetails = parseStakingDetails(txData);
-    const title = parseDisplayDataTitle(txData);
+    const txDetails = parseTxDetails(txData);
+    const title = parseTxDisplayTitle(txData);
 
     // Throw an error if we can't parse the transaction
-    if (txData.type === 'unknown' || stakingDetails === undefined) {
+    if (txData.type === 'unknown' || txDetails === undefined) {
       return {
         error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
       };
@@ -136,7 +143,11 @@ export const avalancheSendTransaction = async ({
         name: network.chainName,
         logoUri: network.logoUri,
       },
-      stakingDetails,
+      transactionDetails: isTransactionDetails(txDetails) ? txDetails : undefined,
+      stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
+      chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
+      blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
+      subnetDetails: isSubnetDetails(txDetails) ? txDetails : undefined,
       networkFeeSelector: false,
     };
 

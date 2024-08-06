@@ -3,7 +3,7 @@ import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
-import type { StakingDetails } from './staking';
+import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
 
 export enum RpcMethod {
   /* EVM */
@@ -89,8 +89,11 @@ export type DisplayData = {
   };
   account?: string;
   messageDetails?: string;
-  transactionDetails?: TransactionDetails;
+  transactionDetails?: TransactionDetails | ExportImportTxDetails;
   stakingDetails?: StakingDetails;
+  chainDetails?: ChainDetails;
+  blockchainDetails?: BlockchainDetails;
+  subnetDetails?: SubnetDetails;
   networkFeeSelector?: boolean;
   disclaimer?: string;
   alert?: Alert;

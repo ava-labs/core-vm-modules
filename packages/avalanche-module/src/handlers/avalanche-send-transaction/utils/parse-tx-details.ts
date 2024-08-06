@@ -1,7 +1,7 @@
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
-import { type VM, TxType, type StakingDetails } from '@avalabs/vm-module-types';
+import { type VM, TxType, type TxDetails } from '@avalabs/vm-module-types';
 
-export const parseStakingDetails = (tx: Avalanche.Tx): StakingDetails | undefined => {
+export const parseTxDetails = (tx: Avalanche.Tx): TxDetails | undefined => {
   switch (tx.type) {
     case TxType.AddPermissionlessDelegator:
     case TxType.AddSubnetValidator:

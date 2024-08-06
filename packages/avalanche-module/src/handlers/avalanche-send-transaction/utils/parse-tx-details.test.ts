@@ -1,5 +1,5 @@
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
-import { parseStakingDetails } from './parse-staking-details';
+import { parseTxDetails } from './parse-tx-details';
 import { TxType } from '@avalabs/vm-module-types';
 
 describe('parse-staking-details', () => {
@@ -13,7 +13,7 @@ describe('parse-staking-details', () => {
       stake: 1n,
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.AddPermissionlessDelegatorTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.AddPermissionlessDelegatorTx);
     expect(details).toEqual({
       type: TxType.AddPermissionlessDelegator,
       nodeID: 'nodeID',
@@ -36,7 +36,7 @@ describe('parse-staking-details', () => {
       publicKey: 'publicKey',
       signature: 'signature',
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.AddPermissionlessValidatorTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.AddPermissionlessValidatorTx);
     expect(details).toEqual({
       type: TxType.AddPermissionlessValidator,
       nodeID: 'nodeID',
@@ -58,7 +58,7 @@ describe('parse-staking-details', () => {
       chain: 'C',
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.ExportTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.ExportTx);
     expect(details).toEqual({
       type: TxType.Export,
       destination: 'P',
@@ -76,7 +76,7 @@ describe('parse-staking-details', () => {
       chain: 'C',
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.ImportTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.ImportTx);
     expect(details).toEqual({
       type: TxType.Import,
       source: 'P',
@@ -108,7 +108,7 @@ describe('parse-staking-details', () => {
       ],
       memo: 'memo',
     };
-    const details = parseStakingDetails({ ...tx } as unknown as Avalanche.BaseTx);
+    const details = parseTxDetails({ ...tx } as unknown as Avalanche.BaseTx);
     expect(details).toEqual({
       type: TxType.Base,
       chain: 'PVM',
@@ -141,7 +141,7 @@ describe('parse-staking-details', () => {
       end: '2',
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.AddSubnetValidatorTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.AddSubnetValidatorTx);
     expect(details).toEqual({
       type: TxType.AddSubnetValidator,
       nodeID: 'nodeID',
@@ -160,7 +160,7 @@ describe('parse-staking-details', () => {
       vmID: 'vmId',
       genesisData: 'genesisData',
     };
-    const details = parseStakingDetails({ ...tx } as Avalanche.CreateChainTx);
+    const details = parseTxDetails({ ...tx } as Avalanche.CreateChainTx);
     expect(details).toEqual({
       type: TxType.CreateChain,
       chainName: 'chainName',
@@ -177,7 +177,7 @@ describe('parse-staking-details', () => {
       controlKeys: [],
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as unknown as Avalanche.CreateSubnetTx);
+    const details = parseTxDetails({ ...tx } as unknown as Avalanche.CreateSubnetTx);
     expect(details).toEqual({
       type: TxType.CreateSubnet,
       threshold: 1,
@@ -193,7 +193,7 @@ describe('parse-staking-details', () => {
       subnetID: 'subnetID',
       txFee: 1n,
     };
-    const details = parseStakingDetails({ ...tx } as unknown as Avalanche.RemoveSubnetValidatorTx);
+    const details = parseTxDetails({ ...tx } as unknown as Avalanche.RemoveSubnetValidatorTx);
     expect(details).toEqual({
       type: TxType.RemoveSubnetValidator,
       nodeID: 'nodeID',

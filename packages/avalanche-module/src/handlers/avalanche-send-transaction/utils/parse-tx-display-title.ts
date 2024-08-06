@@ -1,7 +1,7 @@
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { TxType } from '@avalabs/vm-module-types';
 
-export const parseDisplayDataTitle = (tx: Avalanche.Tx): string => {
+export const parseTxDisplayTitle = (tx: Avalanche.Tx): string => {
   switch (tx.type) {
     case TxType.AddPermissionlessDelegator:
       return 'Add Delegator';
