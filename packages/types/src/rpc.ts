@@ -3,6 +3,7 @@ import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
+import type { StakingDetails } from './staking';
 
 export enum RpcMethod {
   /* EVM */
@@ -66,6 +67,14 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
+export type TransactionDetails = {
+  website: string;
+  from: string;
+  to: string;
+  data?: string;
+  type?: string;
+};
+
 export type DisplayData = {
   title: string;
   dAppInfo?: {
@@ -80,13 +89,8 @@ export type DisplayData = {
   };
   account?: string;
   messageDetails?: string;
-  transactionDetails?: {
-    website: string;
-    from: string;
-    to: string;
-    data?: string;
-    type?: string;
-  };
+  transactionDetails?: TransactionDetails;
+  stakingDetails?: StakingDetails;
   networkFeeSelector?: boolean;
   disclaimer?: string;
   alert?: Alert;

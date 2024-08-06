@@ -12,6 +12,8 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, EVMUnsignedTx, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
+import { parseStakingDetails } from './utils/parse-staking-details';
+import { parseDisplayDataTitle } from './utils/parse-display-data-title';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -29,8 +31,6 @@ export const avalancheSendTransaction = async ({
   const result = parseRequestParams(request.params);
 
   if (!result.success) {
-    console.error('invalid params', result.error);
-
     return {
       error: rpcErrors.invalidParams('Params are invalid'),
     };
@@ -38,7 +38,6 @@ export const avalancheSendTransaction = async ({
 
   try {
     const { transactionHex, chainAlias, externalIndices, internalIndices, utxos: providedUtxoHexes } = result.data;
-
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
     const isTestnet = network.isTestnet ?? false;
@@ -113,9 +112,11 @@ export const avalancheSendTransaction = async ({
     }
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+    const stakingDetails = parseStakingDetails(txData);
+    const title = parseDisplayDataTitle(txData);
 
     // Throw an error if we can't parse the transaction
-    if (txData.type === 'unknown') {
+    if (txData.type === 'unknown' || stakingDetails === undefined) {
       return {
         error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
       };
@@ -129,12 +130,14 @@ export const avalancheSendTransaction = async ({
     };
 
     const displayData: DisplayData = {
-      title: 'Sign Message',
+      title,
       network: {
         chainId: network.chainId,
         name: network.chainName,
         logoUri: network.logoUri,
       },
+      stakingDetails,
+      networkFeeSelector: false,
     };
 
     // prompt user for approval
