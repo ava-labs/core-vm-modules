@@ -36,7 +36,7 @@ export const isStakingDetails = (tx: TxDetails): tx is StakingDetails =>
   isAddPermissionlessValidatorTx(tx) ||
   isAddSubnetValidatorTx(tx) ||
   isRemoveSubnetValidatorTx(tx);
-export const isTransactionDetails = (tx: TxDetails): tx is ExportImportTxDetails => isExportTx(tx) || isImportTx(tx);
+export const isExportImportTxDetails = (tx: TxDetails): tx is ExportImportTxDetails => isExportTx(tx) || isImportTx(tx);
 export const isChainDetails = (tx: TxDetails): tx is ChainDetails => isBaseTx(tx);
 export const isBlockchainDetails = (tx: TxDetails): tx is BlockchainDetails => isCreateChainTx(tx);
 export const isSubnetDetails = (tx: TxDetails): tx is SubnetDetails => isCreateSubnetTx(tx);
