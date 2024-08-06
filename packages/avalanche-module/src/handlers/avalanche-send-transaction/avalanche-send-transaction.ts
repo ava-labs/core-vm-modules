@@ -19,7 +19,7 @@ import {
   isChainDetails,
   isStakingDetails,
   isSubnetDetails,
-  isTransactionDetails,
+  isExportImportTxDetails,
 } from './typeguards';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
@@ -143,7 +143,7 @@ export const avalancheSendTransaction = async ({
         name: network.chainName,
         logoUri: network.logoUri,
       },
-      transactionDetails: isTransactionDetails(txDetails) ? txDetails : undefined,
+      transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
       stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
       chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
       blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
