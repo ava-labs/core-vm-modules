@@ -22,6 +22,7 @@ import {
   isSubnetDetails,
   isExportImportTxDetails,
 } from './typeguards';
+import { getNetworkByChainAlias } from './utils/avalanche-networks';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -46,9 +47,10 @@ export const avalancheSendTransaction = async ({
 
   try {
     const { transactionHex, chainAlias, externalIndices, internalIndices, utxos: providedUtxoHexes } = result.data;
+    const avalancheNetwork = getNetworkByChainAlias(chainAlias, network);
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
-    const isTestnet = network.isTestnet ?? false;
+    const isTestnet = avalancheNetwork.isTestnet ?? false;
     const provider = getProvider({ isTestnet });
     const currentAddress = request.context?.['currentAddress'];
 
@@ -140,9 +142,9 @@ export const avalancheSendTransaction = async ({
     const displayData: DisplayData = {
       title,
       network: {
-        chainId: network.chainId,
-        name: network.chainName,
-        logoUri: network.logoUri,
+        chainId: avalancheNetwork.chainId,
+        name: avalancheNetwork.chainName,
+        logoUri: avalancheNetwork.logoUri,
       },
       transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
       stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
