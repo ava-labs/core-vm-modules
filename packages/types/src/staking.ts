@@ -89,6 +89,7 @@ export type CreateChainTx = {
   chainID: string;
   vmID: string;
   genesisData: string;
+  txFee: bigint;
 };
 
 export type CreateSubnetTx = {
