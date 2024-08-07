@@ -77,6 +77,7 @@ export interface BaseTx {
 export type AddSubnetValidatorTx = {
   type: TxType.AddSubnetValidator;
   nodeID: string;
+  subnetID: string;
   stake: bigint;
   start: string;
   end: string;
