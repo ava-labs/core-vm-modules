@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.5
+
+### Patch Changes
+
+- 9cf6498: added avalanche_sendTransaction handler
+
 ## 0.1.4
 
 ## 0.1.3
