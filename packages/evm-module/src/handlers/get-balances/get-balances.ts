@@ -11,11 +11,15 @@ import { TokenService } from '@internal/utils';
 import { getProvider } from '../../utils/get-provider';
 import { getTokens } from '../get-tokens/get-tokens';
 import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
-import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
-import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balance-service/get-erc20-balances';
 import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
+import { DeBankService } from '../../services/debank-service/debank-service';
+import { findAsync } from '../../utils/find-async';
+import type { BalanceServiceInterface } from './balance-service-interface';
+import type { CurrencyCode } from '@avalabs/glacier-sdk';
 
-type GetEvmBalancesResponse = Record<string, Record<string, TokenWithBalanceEVM>>;
+type AccountAddress = string;
+type TokenSymbol = string;
+type GetEvmBalancesResponse = Record<AccountAddress, Record<TokenSymbol, TokenWithBalanceEVM>>;
 
 export const getBalances = async ({
   addresses,
@@ -31,27 +35,29 @@ export const getBalances = async ({
   storage?: Storage;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
-  const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
-  const isHealthy = glacierService.isHealthy();
+  const services: BalanceServiceInterface[] = [glacierService, new DeBankService({ proxyApiUrl })];
 
-  let balances = [];
-  if (isHealthy && isNetworkSupported) {
+  const supportingService: BalanceServiceInterface | undefined = await findAsync(
+    services,
+    (balanceService: BalanceServiceInterface) => balanceService.isNetworkSupported(network.chainId),
+  );
+
+  let balances;
+  if (supportingService) {
     balances = await Promise.allSettled(
       addresses.map(async (address) => {
-        const nativeToken = await getNativeTokenBalancesFromGlacier({
+        const nativeToken = await supportingService.getNativeBalance({
           address,
-          currency,
+          currency: currency.toUpperCase() as CurrencyCode,
           chainId,
-          glacierService,
-          coingeckoId: network.pricingProviders?.coingecko.nativeTokenId ?? '',
         });
 
-        const erc20Tokens = await getErc20BalancesFromGlacier({
+        const erc20Tokens = await supportingService.listErc20Balances({
           customTokens: customTokens.filter(isERC20Token),
-          glacierService,
-          currency,
+          currency: currency.toUpperCase() as CurrencyCode,
           chainId,
           address,
+          pageSize: 100,
         });
 
         return {
