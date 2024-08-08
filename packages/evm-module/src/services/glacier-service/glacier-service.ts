@@ -1,19 +1,28 @@
 import {
   CurrencyCode,
   Erc1155Token,
+  Erc20TokenBalance,
   Erc721Token,
-  type GetNativeBalanceResponse,
   Glacier,
   type ListErc1155BalancesResponse,
-  type ListErc20BalancesResponse,
   type ListErc721BalancesResponse,
 } from '@avalabs/glacier-sdk';
+import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
+import {
+  type ERC20Token,
+  type NetworkTokenWithBalance,
+  TokenType,
+  type TokenWithBalanceERC20,
+  type TokenWithBalanceEVM,
+} from '@avalabs/vm-module-types';
+import { DEFAULT_DECIMALS } from '../../constants';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
 }
 
-export class EvmGlacierService {
+export class EvmGlacierService implements BalanceServiceInterface {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
   supportedChainIds: string[] = [];
@@ -110,17 +119,48 @@ export class EvmGlacierService {
     chainId,
     address,
     currency,
+    coingeckoId,
   }: {
-    chainId: string;
+    chainId: number;
     address: string;
     currency: CurrencyCode;
-  }): Promise<GetNativeBalanceResponse> {
+    coingeckoId?: string;
+  }): Promise<NetworkTokenWithBalance> {
     try {
-      return this.glacierSdk.evmBalances.getNativeBalance({
-        chainId,
+      const nativeBalance = await this.glacierSdk.evmBalances.getNativeBalance({
+        chainId: chainId.toString(),
         address,
         currency: currency.toLocaleLowerCase() as CurrencyCode,
       });
+
+      const nativeTokenBalance = nativeBalance.nativeTokenBalance;
+      const balanceTokenUnit = new TokenUnit(
+        nativeTokenBalance.balance,
+        nativeTokenBalance.decimals,
+        nativeTokenBalance.symbol,
+      );
+      const balanceDisplayValue = balanceTokenUnit.toDisplay();
+      const priceInCurrency = nativeTokenBalance.price?.value;
+      const balanceCurrencyDisplayValue = priceInCurrency
+        ? balanceTokenUnit.mul(priceInCurrency).toDisplay(2)
+        : undefined;
+      const balanceInCurrency = balanceCurrencyDisplayValue
+        ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
+        : undefined;
+
+      return {
+        name: nativeTokenBalance.name,
+        symbol: nativeTokenBalance.symbol,
+        decimals: nativeTokenBalance.decimals,
+        type: TokenType.NATIVE,
+        logoUri: nativeTokenBalance.logoUri,
+        balance: balanceTokenUnit.toSubUnit(),
+        balanceDisplayValue,
+        balanceInCurrency,
+        balanceCurrencyDisplayValue,
+        priceInCurrency,
+        coingeckoId: coingeckoId ?? '',
+      };
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
         this.setGlacierToUnhealthy();
@@ -185,23 +225,48 @@ export class EvmGlacierService {
     chainId,
     address,
     currency,
-    pageSize,
-    pageToken,
+    customTokens,
   }: {
-    chainId: string;
+    chainId: number;
     address: string;
     currency: CurrencyCode;
-    pageSize: number;
-    pageToken?: string;
-  }): Promise<ListErc20BalancesResponse> {
+    customTokens: ERC20Token[];
+  }): Promise<Record<string, TokenWithBalanceEVM>> {
     try {
-      return this.glacierSdk.evmBalances.listErc20Balances({
-        chainId,
-        address,
-        currency: currency.toLocaleLowerCase() as CurrencyCode,
-        pageSize,
-        pageToken,
-      });
+      const tokensWithBalance: TokenWithBalanceERC20[] = [];
+      /**
+       *  Load all pages to make sure we have all the tokens with balances
+       */
+      let nextPageToken: string | undefined = undefined;
+      do {
+        const response = await this.glacierSdk.evmBalances.listErc20Balances({
+          chainId: chainId.toString(),
+          address,
+          currency: currency.toLocaleLowerCase() as CurrencyCode,
+          pageSize: 100, // glacier has a cap on page size of 100
+          pageToken: nextPageToken,
+        });
+
+        tokensWithBalance.push(
+          ...convertErc20TokenWithBalanceToTokenWithBalance(response.erc20TokenBalances, Number(chainId)),
+        );
+        nextPageToken = response.nextPageToken;
+      } while (nextPageToken);
+
+      /**
+       * Glacier doesnt return tokens without balances so we need to polyfill that list
+       * from our own list of tokens. We just set the balance to 0, these zero balance
+       * tokens are only used for swap, bridge and tx parsing.
+       */
+      return [
+        ...convertErc20TokenToTokenWithBalance(customTokens),
+        ...tokensWithBalance, // this needs to be second in the list so it overwrites its zero balance counterpart if there is one
+      ].reduce(
+        (acc, token) => {
+          return { ...acc, [token.address.toLowerCase()]: token };
+        },
+        {} as Record<string, TokenWithBalanceEVM>,
+      );
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
         this.setGlacierToUnhealthy();
@@ -236,3 +301,51 @@ export class EvmGlacierService {
     }
   }
 }
+
+const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBalanceERC20[] => {
+  return tokens.map((token) => {
+    return {
+      ...token,
+      decimals: token.decimals ?? DEFAULT_DECIMALS,
+      type: TokenType.ERC20,
+      balance: 0n,
+      balanceInCurrency: 0,
+      balanceDisplayValue: '0',
+      balanceCurrencyDisplayValue: '0',
+      priceInCurrency: 0,
+      marketCap: 0,
+      change24: 0,
+      vol24: 0,
+    };
+  });
+};
+
+const convertErc20TokenWithBalanceToTokenWithBalance = (
+  tokenBalances: Erc20TokenBalance[],
+  chainId: number,
+): TokenWithBalanceERC20[] => {
+  return tokenBalances.map((token: Erc20TokenBalance): TokenWithBalanceERC20 => {
+    const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
+    const balanceDisplayValue = balance.toDisplay();
+    const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
+    const priceInCurrency = token.price?.value;
+    const balanceInCurrency = priceInCurrency
+      ? Number(balance.mul(priceInCurrency).toDisplay(2).replaceAll(',', ''))
+      : undefined;
+
+    return {
+      chainId,
+      address: token.address,
+      name: token.name,
+      symbol: token.symbol,
+      decimals: token.decimals,
+      logoUri: token.logoUri,
+      balance: balance.toSubUnit(),
+      balanceCurrencyDisplayValue,
+      balanceDisplayValue,
+      balanceInCurrency,
+      priceInCurrency,
+      type: TokenType.ERC20,
+    };
+  });
+};
