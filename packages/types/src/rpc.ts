@@ -2,6 +2,8 @@ import type { TransactionRequest } from 'ethers';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
+import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
 
 export enum RpcMethod {
   /* EVM */
@@ -15,6 +17,7 @@ export enum RpcMethod {
 
   /* AVALANCHE */
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
+  AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
 }
 
 export type DappInfo = {
@@ -64,6 +67,14 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
+export type TransactionDetails = {
+  website: string;
+  from: string;
+  to: string;
+  data?: string;
+  type?: string;
+};
+
 export type DisplayData = {
   title: string;
   dAppInfo?: {
@@ -78,13 +89,11 @@ export type DisplayData = {
   };
   account?: string;
   messageDetails?: string;
-  transactionDetails?: {
-    website: string;
-    from: string;
-    to: string;
-    data?: string;
-    type?: string;
-  };
+  transactionDetails?: TransactionDetails | ExportImportTxDetails;
+  stakingDetails?: StakingDetails;
+  chainDetails?: ChainDetails;
+  blockchainDetails?: BlockchainDetails;
+  subnetDetails?: SubnetDetails;
   networkFeeSelector?: boolean;
   disclaimer?: string;
   alert?: Alert;
@@ -138,6 +147,12 @@ export type SigningData =
       type: RpcMethod.AVALANCHE_SIGN_MESSAGE;
       data: string;
       accountIndex?: number;
+    }
+  | {
+      type: RpcMethod.AVALANCHE_SEND_TRANSACTION;
+      unsignedTxJson: string;
+      data: Avalanche.Tx;
+      vm: 'EVM' | 'AVM' | 'PVM';
     };
 
 export type ApprovalParams = {

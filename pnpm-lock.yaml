@@ -136,6 +136,12 @@ importers:
 
   packages/avalanche-module:
     dependencies:
+      '@avalabs/avalanchejs':
+        specifier: 4.0.5
+        version: 4.0.5
+      '@avalabs/core-chains-sdk':
+        specifier: 3.0.1-alpha.1
+        version: 3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@avalabs/core-coingecko-sdk':
         specifier: 3.0.1-alpha.1
         version: 3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
@@ -346,6 +352,9 @@ importers:
 
   packages/types:
     dependencies:
+      '@avalabs/core-wallets-sdk':
+        specifier: 3.0.1-alpha.1
+        version: 3.0.1-alpha.1(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0

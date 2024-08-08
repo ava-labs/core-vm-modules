@@ -56,7 +56,9 @@ export const convertPChainBalance = ({
   const availableInCurrency = priceInCurrency ? Number(available.mul(priceInCurrency).toDisplay(2)) : undefined;
   const availableDisplayValue = available.toDisplay();
   const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
-  const balanceInCurrency = priceInCurrency ? Number(totalBalance.mul(priceInCurrency).toDisplay(2)) : undefined;
+  const balanceInCurrency = priceInCurrency
+    ? Number(totalBalance.mul(priceInCurrency).toDisplay(2).replaceAll(',', ''))
+    : undefined;
   const balanceDisplayValue = totalBalance.toDisplay();
 
   return {

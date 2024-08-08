@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "0.1.4",
+    "@avalabs/core-chains-sdk": "3.0.1-alpha.1",
     "@metamask/rpc-errors": "6.3.0",
     "@avalabs/core-utils-sdk": "3.0.1-alpha.1",
     "@avalabs/core-etherscan-sdk": "3.0.1-alpha.1",
@@ -28,7 +29,8 @@
     "bn.js": "5.2.1",
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
-    "@avalabs/types": "3.0.1-alpha.1"
+    "@avalabs/types": "3.0.1-alpha.1",
+    "@avalabs/avalanchejs": "4.0.5"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.5",
