@@ -2,6 +2,7 @@ import { EvmGlacierService } from '../../services/glacier-service/glacier-servic
 import { findAsync } from '../../utils/find-async';
 import { getBalances } from './get-balances';
 import {
+  Environment,
   type Network,
   type NetworkContractToken,
   type NetworkTokenWithBalance,
@@ -12,8 +13,12 @@ import { getTokens } from '../get-tokens/get-tokens';
 import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
 import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '@internal/utils';
+import { getEnv } from '../../env';
+import { getProvider } from '../../utils/get-provider';
+import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 jest.mock('../../utils/find-async');
+jest.mock('../../utils/get-provider');
 jest.mock('../../services/debank-service/debank-service');
 jest.mock('../../services/glacier-service/glacier-service');
 jest.mock('../get-tokens/get-tokens');
@@ -22,7 +27,7 @@ jest.mock('./evm-balance-service/get-erc20-balances');
 jest.mock('@internal/utils');
 
 describe('getBalances', () => {
-  const proxyApiUrl = 'http://proxy.api.url';
+  const { proxyApiUrl } = getEnv(Environment.DEV);
   const glacierService = new EvmGlacierService({ glacierApiUrl: proxyApiUrl }) as jest.Mocked<EvmGlacierService>;
   const network = {
     chainId: 1,
@@ -66,6 +71,8 @@ describe('getBalances', () => {
   it('should retrieve balances successfully when no supporting service is found', async () => {
     const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
     mockFindAsync.mockResolvedValue(undefined);
+    const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
+    mockGetProvider.mockReturnValue({} as JsonRpcBatchInternal);
     (getTokens as jest.MockedFunction<typeof getTokens>).mockResolvedValue([]);
     (getNativeTokenBalances as jest.MockedFunction<typeof getNativeTokenBalances>).mockResolvedValue({
       symbol: 'ETH',

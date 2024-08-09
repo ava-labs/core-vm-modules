@@ -92,8 +92,8 @@ export type DeBankToken = {
   is_core: boolean;
   is_wallet: boolean;
   time_at: number;
-  amount: number;
-  raw_amount: number;
+  amount: bigint;
+  raw_amount: bigint;
 };
 
 /**
@@ -110,7 +110,7 @@ export type DeBankToken = {
  * }
  * ```
  */
-type DeBankChainInfo = {
+export type DeBankChainInfo = {
   id: string;
   community_id: number;
   name: string;
