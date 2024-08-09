@@ -6,7 +6,7 @@ const message = 'message to sign';
 
 const mockRequest = {
   method: RpcMethod.AVALANCHE_SIGN_MESSAGE,
-  params: [message],
+  params: [message, 0, 'P'],
   dappInfo: {
     name: 'Test DApp',
     url: 'test-url',
@@ -18,14 +18,15 @@ const mockRequest = {
 };
 
 const mockNetwork = {
-  chainId: 1,
-  chainName: 'Ethereum',
-  logoUri: 'test-logo-uri',
+  chainId: 4503599627370471,
+  chainName: 'Avalanche (P-Chain)',
+  logoUri:
+    'https://images.ctfassets.net/gcj8jwzm6086/42aMwoCLblHOklt6Msi6tm/1e64aa637a8cead39b2db96fe3225c18/pchain-square.svg',
   rpcUrl: 'rpcUrl',
   networkToken: {
-    name: 'ethereum',
-    symbol: 'ETH',
-    decimals: 18,
+    name: 'avalanche-2',
+    symbol: 'AVAX',
+    decimals: 9,
   },
   vmName: NetworkVMType.EVM,
 };
@@ -70,14 +71,15 @@ describe('avalanche_signMessage', () => {
           name: 'Test DApp',
         },
         network: {
-          chainId: 1,
-          logoUri: 'test-logo-uri',
-          name: 'Ethereum',
+          chainId: 4503599627370471,
+          logoUri:
+            'https://images.ctfassets.net/gcj8jwzm6086/42aMwoCLblHOklt6Msi6tm/1e64aa637a8cead39b2db96fe3225c18/pchain-square.svg',
+          name: 'Avalanche (P-Chain)',
         },
       },
       request: mockRequest,
       signingData: {
-        accountIndex: undefined,
+        accountIndex: 0,
         data: Buffer.from(message, 'utf-8').toString('hex'),
         type: RpcMethod.AVALANCHE_SIGN_MESSAGE,
       },
