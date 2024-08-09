@@ -8,6 +8,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getNetworkByChainAlias } from '../avalanche-send-transaction/utils/avalanche-networks';
 
 export const avalancheSignMessage = async ({
   request,
@@ -27,8 +28,10 @@ export const avalancheSignMessage = async ({
       error: rpcErrors.invalidParams('Params are invalid'),
     };
   }
-  const [message, accountIndex] = result.data;
+  const [message, accountIndex, chainAlias] = result.data;
   const msgHex = Buffer.from(message, 'utf-8').toString('hex');
+  const avalancheNetwork = getNetworkByChainAlias(chainAlias, network);
+
   const signingData: SigningData = {
     type: RpcMethod.AVALANCHE_SIGN_MESSAGE,
     data: msgHex,
@@ -43,9 +46,9 @@ export const avalancheSignMessage = async ({
       logoUri: request.dappInfo.icon,
     },
     network: {
-      chainId: network.chainId,
-      name: network.chainName,
-      logoUri: network.logoUri,
+      chainId: avalancheNetwork.chainId,
+      name: avalancheNetwork.chainName,
+      logoUri: avalancheNetwork.logoUri,
     },
     messageDetails: message,
   };
