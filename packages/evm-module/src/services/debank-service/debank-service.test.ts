@@ -62,7 +62,7 @@ describe('DeBankService', () => {
     it('should return the correct native balance', async () => {
       const mockChainInfo = { wrapped_token_id: 'wrapped-token-id' } as unknown as DeBankChainInfo;
       const mockTokenBalance = {
-        raw_amount: '1000000000000000000',
+        raw_amount: 1000000000000000000n,
         decimals: 18,
         symbol: 'ETH',
         name: 'Ethereum',
@@ -74,7 +74,7 @@ describe('DeBankService', () => {
       mockDeBank.getTokenBalance.mockResolvedValue(mockTokenBalance);
 
       const result = await deBankService.getNativeBalance({
-        chainId: 1,
+        chainId: 42161,
         address: '0x1234567890abcdef1234567890abcdef12345678',
         currency: CurrencyCode.USD,
       });
@@ -85,10 +85,10 @@ describe('DeBankService', () => {
         decimals: 18,
         type: TokenType.NATIVE,
         logoUri: 'http://logo.url',
-        balance: '1000000000000000000',
-        balanceDisplayValue: '1.000000000000000000',
+        balance: 1000000000000000000n,
+        balanceDisplayValue: '1',
         balanceInCurrency: 2000,
-        balanceCurrencyDisplayValue: '2000.00',
+        balanceCurrencyDisplayValue: '2,000.00',
         priceInCurrency: 2000,
       });
     });
