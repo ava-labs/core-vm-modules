@@ -18,16 +18,16 @@
     "zod": "3.23.8",
     "@metamask/rpc-errors": "6.3.0",
     "ethers": "6.8.1",
-    "@avalabs/core-wallets-sdk": "3.0.1-alpha.1"
+    "@avalabs/core-wallets-sdk": "3.0.1-alpha.3"
   },
   "devDependencies": {
     "tsup": "7.2.0",
     "@internal/tsup-config": "workspace:*",
     "bn.js": "5.2.1",
     "@types/bn.js": "5.1.5",
-    "@avalabs/core-coingecko-sdk": "3.0.1-alpha.1",
-    "@avalabs/glacier-sdk": "3.0.1-alpha.1",
-    "@avalabs/core-utils-sdk": "3.0.1-alpha.1",
+    "@avalabs/core-coingecko-sdk": "3.0.1-alpha.3",
+    "@avalabs/glacier-sdk": "3.0.1-alpha.3",
+    "@avalabs/core-utils-sdk": "3.0.1-alpha.3",
     "eslint-config-custom": "workspace:*"
   },
   "peerDependencies": {
