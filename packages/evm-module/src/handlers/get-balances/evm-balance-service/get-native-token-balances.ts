@@ -33,20 +33,16 @@ export const getNativeTokenBalances = async ({
 
   const balance = await provider.getBalance(address);
   const balanceUnit = new TokenUnit(balance, networkToken.decimals, networkToken.symbol);
-  const balanceDisplayValue = balanceUnit.toDisplay();
-  const balanceCurrencyDisplayValue = priceInCurrency ? balanceUnit.mul(priceInCurrency).toDisplay(2) : undefined;
-  const balanceInCurrency = balanceCurrencyDisplayValue
-    ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
-    : undefined;
+  const balanceInCurrency = priceInCurrency !== undefined ? balanceUnit.mul(priceInCurrency) : undefined;
 
   return {
     ...networkToken,
     coingeckoId: coingeckoTokenId ?? '',
     type: TokenType.NATIVE,
     balance,
-    balanceDisplayValue,
-    balanceInCurrency,
-    balanceCurrencyDisplayValue,
+    balanceDisplayValue: balanceUnit.toDisplay(),
+    balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+    balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
     priceInCurrency,
     marketCap,
     vol24,
