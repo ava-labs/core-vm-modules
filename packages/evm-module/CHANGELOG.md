@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+- Updated dependencies [5c3ee5b]
+  - @avalabs/vm-module-types@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes

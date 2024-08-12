@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+
 ## 0.1.5
 
 ### Patch Changes
