@@ -44,6 +44,14 @@ export const convertXChainBalance = ({
     });
   }
 
+  const available = new TokenUnit(
+    balancePerType['unlocked'] ? balancePerType['unlocked'] : 0n,
+    networkToken.decimals,
+    networkToken.symbol,
+  );
+  const availableInCurrency = priceInCurrency
+    ? available.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
+    : undefined;
   const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
   const balanceInCurrency = priceInCurrency !== undefined ? totalBalance.mul(priceInCurrency) : undefined;
 
@@ -56,6 +64,10 @@ export const convertXChainBalance = ({
     balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
     balanceDisplayValue: totalBalance.toDisplay(),
     balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
+    available: available.toSubUnit(),
+    availableInCurrency,
+    availableDisplayValue: available.toDisplay(),
+    availableCurrencyDisplayValue: availableInCurrency?.toFixed(2),
     utxos: balance,
     balancePerType: {
       unlocked: getTokenValue(decimals, balancePerType['unlocked']),
