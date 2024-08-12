@@ -22,17 +22,9 @@ export const getNativeTokenBalances = async ({
     currency: currency.toLocaleLowerCase() as CurrencyCode,
   });
   const nativeTokenBalance = nativeBalance.nativeTokenBalance;
-  const balanceTokenUnit = new TokenUnit(
-    nativeTokenBalance.balance,
-    nativeTokenBalance.decimals,
-    nativeTokenBalance.symbol,
-  );
-  const balanceDisplayValue = balanceTokenUnit.toDisplay();
+  const balance = new TokenUnit(nativeTokenBalance.balance, nativeTokenBalance.decimals, nativeTokenBalance.symbol);
   const priceInCurrency = nativeTokenBalance.price?.value;
-  const balanceCurrencyDisplayValue = priceInCurrency ? balanceTokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
-  const balanceInCurrency = balanceCurrencyDisplayValue
-    ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
-    : undefined;
+  const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
 
   return {
     name: nativeTokenBalance.name,
@@ -40,10 +32,10 @@ export const getNativeTokenBalances = async ({
     decimals: nativeTokenBalance.decimals,
     type: TokenType.NATIVE,
     logoUri: nativeTokenBalance.logoUri,
-    balance: balanceTokenUnit.toSubUnit(),
-    balanceDisplayValue,
-    balanceInCurrency,
-    balanceCurrencyDisplayValue,
+    balance: balance.toSubUnit(),
+    balanceDisplayValue: balance.toDisplay(),
+    balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+    balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
     priceInCurrency,
     coingeckoId,
   };

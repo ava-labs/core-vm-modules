@@ -53,13 +53,13 @@ export const convertPChainBalance = ({
     networkToken.decimals,
     networkToken.symbol,
   );
-  const availableInCurrency = priceInCurrency ? Number(available.mul(priceInCurrency).toDisplay(2)) : undefined;
-  const availableDisplayValue = available.toDisplay();
+  const availableInCurrency = priceInCurrency
+    ? available.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
+    : undefined;
   const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
   const balanceInCurrency = priceInCurrency
-    ? Number(totalBalance.mul(priceInCurrency).toDisplay(2).replaceAll(',', ''))
+    ? totalBalance.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
     : undefined;
-  const balanceDisplayValue = totalBalance.toDisplay();
 
   return {
     ...networkToken,
@@ -67,11 +67,11 @@ export const convertPChainBalance = ({
     priceInCurrency,
     balance: totalBalance.toSubUnit(),
     balanceInCurrency,
-    balanceDisplayValue,
+    balanceDisplayValue: totalBalance.toDisplay(),
     balanceCurrencyDisplayValue: balanceInCurrency?.toFixed(2),
     available: available.toSubUnit(),
     availableInCurrency,
-    availableDisplayValue,
+    availableDisplayValue: available.toDisplay(),
     availableCurrencyDisplayValue: availableInCurrency?.toFixed(2),
     utxos: balance,
     balancePerType: {

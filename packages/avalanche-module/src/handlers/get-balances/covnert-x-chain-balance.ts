@@ -45,11 +45,7 @@ export const convertXChainBalance = ({
   }
 
   const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
-  const balanceDisplayValue = totalBalance.toDisplay();
-  const balanceCurrencyDisplayValue = priceInCurrency ? totalBalance.mul(priceInCurrency).toDisplay(2) : undefined;
-  const balanceInCurrency = balanceCurrencyDisplayValue
-    ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
-    : undefined;
+  const balanceInCurrency = priceInCurrency !== undefined ? totalBalance.mul(priceInCurrency) : undefined;
 
   return {
     ...networkToken,
@@ -57,9 +53,9 @@ export const convertXChainBalance = ({
     type: TokenType.NATIVE,
     priceInCurrency,
     balance: totalBalance.toSubUnit(),
-    balanceInCurrency,
-    balanceDisplayValue,
-    balanceCurrencyDisplayValue,
+    balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+    balanceDisplayValue: totalBalance.toDisplay(),
+    balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
     utxos: balance,
     balancePerType: {
       unlocked: getTokenValue(decimals, balancePerType['unlocked']),

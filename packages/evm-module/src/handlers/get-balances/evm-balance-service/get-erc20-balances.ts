@@ -56,11 +56,7 @@ export const getErc20Balances = async ({
       const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
 
       const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
-      const balanceCurrencyDisplayValue = priceInCurrency ? balance.mul(priceInCurrency).toDisplay(2) : undefined;
-      const balanceInCurrency = balanceCurrencyDisplayValue
-        ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
-        : undefined;
-      const balanceDisplayValue = balance.toDisplay();
+      const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
 
       return {
         ...acc,
@@ -68,9 +64,9 @@ export const getErc20Balances = async ({
           ...token,
           type: TokenType.ERC20,
           balance: token.balance,
-          balanceDisplayValue,
-          balanceInCurrency,
-          balanceCurrencyDisplayValue,
+          balanceDisplayValue: balance.toDisplay(),
+          balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+          balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
           priceInCurrency,
           marketCap,
           change24,
