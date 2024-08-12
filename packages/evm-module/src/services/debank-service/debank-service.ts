@@ -4,6 +4,7 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import { type NetworkTokenWithBalance, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
 import { DE_BANK_SUPPORTED_CHAINS, DeBank, type DeBankToken, type TokenId } from './de-bank';
+import { rpcErrors } from '@metamask/rpc-errors';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -25,9 +26,9 @@ export class DeBankService implements BalanceServiceInterface {
     address: string;
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
-    if (!isHexString(address)) throw Error('getNativeBalance: not valid address: ' + address);
+    if (!isHexString(address)) throw rpcErrors.invalidParams('getNativeBalance: not valid address: ' + address);
     const chainIdString = DE_BANK_SUPPORTED_CHAINS[chainId];
-    if (!chainIdString) throw Error('getNativeBalance: not valid chainId: ' + chainId);
+    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
     const tokenId = chainInfo.wrapped_token_id;
     const nativeTokenBalance = await this.#deBank.getTokenBalance({ address, chainId: chainIdString, tokenId });
@@ -68,9 +69,9 @@ export class DeBankService implements BalanceServiceInterface {
     pageSize: number;
     pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM>> {
-    if (!isHexString(address)) throw Error('listErc20Balances: not valid address');
+    if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
     const chainIdString = DE_BANK_SUPPORTED_CHAINS[chainId];
-    if (!chainIdString) throw Error('getNativeBalance: not valid chainId: ' + chainId);
+    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const tokenList = await this.#deBank.getTokenList({ chainId: chainIdString, address });
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
     const erc20TokenList = tokenList.filter((token) => token.id !== chainInfo.native_token_id);
