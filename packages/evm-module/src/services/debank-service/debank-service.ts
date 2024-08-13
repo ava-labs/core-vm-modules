@@ -43,9 +43,11 @@ export class DeBankService implements BalanceServiceInterface {
     const exchangeRates = await getExchangeRates();
     const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
     const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * nativeTokenBalance.price : undefined;
-    const balanceCurrencyDisplayValue = priceInCurrency ? tokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
-    const balanceInCurrency = balanceCurrencyDisplayValue
-      ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
+    const balanceCurrencyDisplayValue = priceInCurrency
+      ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2 })
+      : undefined;
+    const balanceInCurrency = priceInCurrency
+      ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
       : undefined;
 
     return {
@@ -114,9 +116,11 @@ export class DeBankService implements BalanceServiceInterface {
       const exchangeRates = await getExchangeRates();
       const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
       const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * tokenBalance.price : undefined;
-      const balanceCurrencyDisplayValue = priceInCurrency ? tokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
-      const balanceInCurrency = balanceCurrencyDisplayValue
-        ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
+      const balanceCurrencyDisplayValue = priceInCurrency
+        ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2 })
+        : undefined;
+      const balanceInCurrency = priceInCurrency
+        ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
         : undefined;
 
       erc20TokenBalances[tokenBalance.id] = {
