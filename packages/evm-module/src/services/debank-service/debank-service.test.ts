@@ -22,7 +22,7 @@ describe('DeBankService', () => {
 
   describe('isNetworkSupported', () => {
     it('should return true if the network is supported', async () => {
-      mockDeBank.isNetworkSupported.mockReturnValue(true);
+      mockDeBank.isNetworkSupported.mockResolvedValue(true);
 
       const result = await deBankService.isNetworkSupported(1);
       expect(result).toBe(true);
@@ -30,7 +30,7 @@ describe('DeBankService', () => {
     });
 
     it('should return false if the network is not supported', async () => {
-      mockDeBank.isNetworkSupported.mockReturnValue(false);
+      mockDeBank.isNetworkSupported.mockResolvedValue(false);
 
       const result = await deBankService.isNetworkSupported(999);
       expect(result).toBe(false);
@@ -50,6 +50,7 @@ describe('DeBankService', () => {
     });
 
     it('should throw an error if the chainId is not supported', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
       await expect(
         deBankService.getNativeBalance({
           chainId: 999,
@@ -70,6 +71,7 @@ describe('DeBankService', () => {
         price: 2000,
       } as unknown as DeBankToken;
 
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 42161, id: 'arb' } as unknown as DeBankChainInfo]);
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenBalance.mockResolvedValue(mockTokenBalance);
 
@@ -107,6 +109,7 @@ describe('DeBankService', () => {
     });
 
     it('should throw an error if the chainId is not supported', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
       await expect(
         deBankService.listErc20Balances({
           chainId: 999,
@@ -164,6 +167,7 @@ describe('DeBankService', () => {
         price: 1,
       };
 
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 42161, id: 'arb' } as unknown as DeBankChainInfo]);
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenList.mockResolvedValue(mockTokenList);
       mockDeBank.getTokenBalance.mockResolvedValueOnce(mockTokenBalance1).mockResolvedValueOnce(mockTokenBalance2);

@@ -1,18 +1,11 @@
 import type { Hex } from '@avalabs/vm-module-types';
 
-export const DE_BANK_SUPPORTED_CHAINS: Record<number, string> = {
-  42161: 'arb',
-  56: 'bsc',
-  10: 'op',
-  137: 'matic',
-  8453: 'base',
-};
-
 export class DeBank {
   constructor(private baseUrl: string) {}
 
-  isNetworkSupported(chainId: number): boolean {
-    const chainIds = Object.keys(DE_BANK_SUPPORTED_CHAINS).map((value) => Number(value));
+  async isNetworkSupported(chainId: number): Promise<boolean> {
+    const chainList: DeBankChainInfo[] = await this.getChainList();
+    const chainIds = chainList.map((value) => value.community_id);
     return chainIds.some((id) => id === chainId);
   }
 
@@ -51,6 +44,11 @@ export class DeBank {
   async getTokenList({ chainId, address }: { chainId: string; address: Hex }): Promise<DeBankToken[]> {
     const response = await fetch(`${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
     return await response.json();
+  }
+
+  async getChainList(): Promise<DeBankChainInfo[]> {
+    const chainListResponse = await fetch(`${this.baseUrl}/v1/chain/list`);
+    return await chainListResponse.json();
   }
 }
 export type TokenId = Hex;

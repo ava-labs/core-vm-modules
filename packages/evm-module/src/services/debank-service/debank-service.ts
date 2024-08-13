@@ -3,7 +3,7 @@ import type { BalanceServiceInterface } from '../../handlers/get-balances/balanc
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import { type NetworkTokenWithBalance, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
-import { DE_BANK_SUPPORTED_CHAINS, DeBank, type DeBankToken, type TokenId } from './de-bank';
+import { DeBank, type DeBankToken, type TokenId } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 export class DeBankService implements BalanceServiceInterface {
@@ -27,7 +27,8 @@ export class DeBankService implements BalanceServiceInterface {
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('getNativeBalance: not valid address: ' + address);
-    const chainIdString = DE_BANK_SUPPORTED_CHAINS[chainId];
+    const chainList = await this.#deBank.getChainList();
+    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
     if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
     const tokenId = chainInfo.wrapped_token_id;
@@ -70,7 +71,8 @@ export class DeBankService implements BalanceServiceInterface {
     pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM>> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
-    const chainIdString = DE_BANK_SUPPORTED_CHAINS[chainId];
+    const chainList = await this.#deBank.getChainList();
+    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
     if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const tokenList = await this.#deBank.getTokenList({ chainId: chainIdString, address });
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });

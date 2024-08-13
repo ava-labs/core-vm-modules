@@ -11,14 +11,32 @@ describe('DeBank', () => {
   });
 
   describe('isNetworkSupported', () => {
-    it('should return true for supported chain IDs', () => {
-      expect(debank.isNetworkSupported(42161)).toBe(true);
-      expect(debank.isNetworkSupported(56)).toBe(true);
+    beforeEach(() => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          json: () => Promise.resolve([{ community_id: 42161 }, { community_id: 56 }]),
+        }),
+      ) as jest.Mock;
     });
 
-    it('should return false for unsupported chain IDs', () => {
-      expect(debank.isNetworkSupported(1)).toBe(false);
-      expect(debank.isNetworkSupported(100)).toBe(false);
+    it('should return true for supported chain IDs', async () => {
+      const isSupported1 = await debank.isNetworkSupported(42161);
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(isSupported1).toBe(true);
+
+      const isSupported2 = await debank.isNetworkSupported(56);
+      expect(isSupported2).toBe(true);
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+    });
+
+    it('should return false for unsupported chain IDs', async () => {
+      const isSupported1 = await debank.isNetworkSupported(-1);
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(isSupported1).toBe(false);
+
+      const isSupported2 = await debank.isNetworkSupported(-100);
+      expect(isSupported2).toBe(false);
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
     });
   });
 
