@@ -5,6 +5,7 @@ import { isHexString } from 'ethers';
 import { type NetworkTokenWithBalance, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
 import { DeBank, type DeBankToken, type TokenId } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getExchangeRates } from '@internal/utils';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -39,7 +40,9 @@ export class DeBankService implements BalanceServiceInterface {
       nativeTokenBalance.symbol,
     );
     const balanceDisplayValue = tokenUnit.toDisplay();
-    const priceInCurrency = currency === CurrencyCode.USD ? nativeTokenBalance.price : undefined;
+    const exchangeRates = await getExchangeRates();
+    const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
+    const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * nativeTokenBalance.price : undefined;
     const balanceCurrencyDisplayValue = priceInCurrency ? tokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
     const balanceInCurrency = balanceCurrencyDisplayValue
       ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
@@ -108,7 +111,9 @@ export class DeBankService implements BalanceServiceInterface {
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
-      const priceInCurrency = currency === CurrencyCode.USD ? tokenBalance.price : undefined;
+      const exchangeRates = await getExchangeRates();
+      const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
+      const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * tokenBalance.price : undefined;
       const balanceCurrencyDisplayValue = priceInCurrency ? tokenUnit.mul(priceInCurrency).toDisplay(2) : undefined;
       const balanceInCurrency = balanceCurrencyDisplayValue
         ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
