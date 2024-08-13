@@ -24,10 +24,12 @@ import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
 import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
+import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
   #proxyApiUrl: string;
+  #glacierApiUrl: string;
   #approvalController: ApprovalController;
 
   constructor({
@@ -40,6 +42,7 @@ export class AvalancheModule implements Module {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
+    this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
   }
 
@@ -73,6 +76,13 @@ export class AvalancheModule implements Module {
     switch (request.method) {
       case RpcMethod.AVALANCHE_SIGN_MESSAGE:
         return avalancheSignMessage({ request, network, approvalController: this.#approvalController });
+      case RpcMethod.AVALANCHE_SEND_TRANSACTION:
+        return avalancheSendTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          glacierApiUrl: this.#glacierApiUrl,
+        });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }

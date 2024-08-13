@@ -1,5 +1,23 @@
 # @avalabs/avalanche-module
 
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+- f987de4: add available balance fields to getBalances for xChain
+- 14cc94a: use network from request params for avalanche rpc requests
+- Updated dependencies [5c3ee5b]
+  - @avalabs/vm-module-types@0.1.6
+
+## 0.1.5
+
+### Patch Changes
+
+- 9cf6498: added avalanche_sendTransaction handler
+- Updated dependencies [9cf6498]
+  - @avalabs/vm-module-types@0.1.5
+
 ## 0.1.4
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @avalabs/vm-module-types
 
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+
+## 0.1.5
+
+### Patch Changes
+
+- 9cf6498: added avalanche_sendTransaction handler
+
 ## 0.1.4
 
 ## 0.1.3

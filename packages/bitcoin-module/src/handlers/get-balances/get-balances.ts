@@ -53,24 +53,16 @@ export const getBalances = async ({
       } = await provider.getUtxoBalance(address, withScripts);
 
       const balance = new TokenUnit(balanceInSatoshis, network.networkToken.decimals, network.networkToken.symbol);
+      const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
       const balanceDisplayValue = balance.toDisplay();
-      const balanceCurrencyDisplayValue =
-        priceInCurrency === undefined ? undefined : balance.mul(priceInCurrency).toDisplay(2);
-      const balanceInCurrency =
-        balanceCurrencyDisplayValue === undefined ? undefined : Number(balanceCurrencyDisplayValue.replaceAll(',', ''));
 
       const unconfirmedBalance = new TokenUnit(
         unconfirmedBalanceInSatoshis,
         network.networkToken.decimals,
         network.networkToken.symbol,
       );
-      const unconfirmedBalanceDisplayValue = unconfirmedBalance.toDisplay();
-      const unconfirmedBalanceCurrencyDisplayValue =
-        priceInCurrency === undefined ? undefined : unconfirmedBalance.mul(priceInCurrency).toDisplay(2);
       const unconfirmedBalanceInCurrency =
-        unconfirmedBalanceCurrencyDisplayValue !== undefined
-          ? Number(unconfirmedBalanceCurrencyDisplayValue.replaceAll(',', ''))
-          : undefined;
+        priceInCurrency !== undefined ? unconfirmedBalance.mul(priceInCurrency) : undefined;
 
       const symbol = network.networkToken.symbol;
 
@@ -84,16 +76,19 @@ export const getBalances = async ({
             type: TokenType.NATIVE,
             balance: balance.toSubUnit(),
             balanceDisplayValue,
-            balanceInCurrency,
-            balanceCurrencyDisplayValue,
+            balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+            balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
             priceInCurrency,
             marketCap,
             vol24,
             change24,
             unconfirmedBalance: unconfirmedBalance.toSubUnit(),
-            unconfirmedBalanceDisplayValue,
-            unconfirmedBalanceInCurrency,
-            unconfirmedBalanceCurrencyDisplayValue,
+            unconfirmedBalanceDisplayValue: unconfirmedBalance.toDisplay(),
+            unconfirmedBalanceInCurrency: unconfirmedBalanceInCurrency?.toDisplay({
+              fixedDp: 2,
+              asNumber: true,
+            }),
+            unconfirmedBalanceCurrencyDisplayValue: unconfirmedBalanceInCurrency?.toDisplay({ fixedDp: 2 }),
           },
         },
       };
