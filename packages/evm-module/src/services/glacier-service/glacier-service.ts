@@ -134,19 +134,9 @@ export class EvmGlacierService implements BalanceServiceInterface {
       });
 
       const nativeTokenBalance = nativeBalance.nativeTokenBalance;
-      const balanceTokenUnit = new TokenUnit(
-        nativeTokenBalance.balance,
-        nativeTokenBalance.decimals,
-        nativeTokenBalance.symbol,
-      );
-      const balanceDisplayValue = balanceTokenUnit.toDisplay();
+      const balance = new TokenUnit(nativeTokenBalance.balance, nativeTokenBalance.decimals, nativeTokenBalance.symbol);
       const priceInCurrency = nativeTokenBalance.price?.value;
-      const balanceCurrencyDisplayValue = priceInCurrency
-        ? balanceTokenUnit.mul(priceInCurrency).toDisplay(2)
-        : undefined;
-      const balanceInCurrency = balanceCurrencyDisplayValue
-        ? Number(balanceCurrencyDisplayValue.replaceAll(',', ''))
-        : undefined;
+      const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
 
       return {
         name: nativeTokenBalance.name,
@@ -154,10 +144,10 @@ export class EvmGlacierService implements BalanceServiceInterface {
         decimals: nativeTokenBalance.decimals,
         type: TokenType.NATIVE,
         logoUri: nativeTokenBalance.logoUri,
-        balance: balanceTokenUnit.toSubUnit(),
-        balanceDisplayValue,
-        balanceInCurrency,
-        balanceCurrencyDisplayValue,
+        balance: balance.toSubUnit(),
+        balanceDisplayValue: balance.toDisplay(),
+        balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
+        balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
         priceInCurrency,
         coingeckoId: coingeckoId ?? '',
       };
@@ -329,9 +319,10 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
     const balanceDisplayValue = balance.toDisplay();
     const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
     const priceInCurrency = token.price?.value;
-    const balanceInCurrency = priceInCurrency
-      ? Number(balance.mul(priceInCurrency).toDisplay(2).replaceAll(',', ''))
-      : undefined;
+    const balanceInCurrency =
+      priceInCurrency !== undefined
+        ? balance.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
+        : undefined;
 
     return {
       chainId,
