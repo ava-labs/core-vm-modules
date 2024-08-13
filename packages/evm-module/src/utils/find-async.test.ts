@@ -53,4 +53,16 @@ describe('findAsync', () => {
     const result = await findAsync(array, asyncCheckWithDelays);
     expect(result).toBe(4);
   });
+
+  it('should handle async checks even if some fail', async () => {
+    const checkIfEvenWithRejectOn3 = async (item: number, delay: number = 100) => {
+      if (item === 3) throw Error('forbidden');
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return item % 2 === 0;
+    };
+    const array = [1, 3, 4, 5, 10];
+    await expect(checkIfEvenWithRejectOn3(3)).rejects.toThrow(Error('forbidden'));
+    const result = await findAsync(array, checkIfEvenWithRejectOn3);
+    expect(result).toBe(4);
+  });
 });
