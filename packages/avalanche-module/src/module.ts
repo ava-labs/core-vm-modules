@@ -25,6 +25,7 @@ import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
 import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
 import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
+import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -76,6 +77,13 @@ export class AvalancheModule implements Module {
     switch (request.method) {
       case RpcMethod.AVALANCHE_SIGN_MESSAGE:
         return avalancheSignMessage({ request, network, approvalController: this.#approvalController });
+      case RpcMethod.AVALANCHE_SIGN_TRANSACTION:
+        return avalancheSignTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          glacierApiUrl: this.#glacierApiUrl,
+        });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
           request,
