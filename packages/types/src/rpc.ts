@@ -1,9 +1,9 @@
 import type { TransactionRequest } from 'ethers';
-import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
-import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
+import type { BlockchainDetails, ChainDetails, ExportImportTxDetails, StakingDetails, SubnetDetails } from './staking';
 
 export enum RpcMethod {
   /* BTC */
@@ -21,6 +21,7 @@ export enum RpcMethod {
   /* AVALANCHE */
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
+  AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
 }
 
 export type DappInfo = {
@@ -156,6 +157,13 @@ export type SigningData =
       unsignedTxJson: string;
       data: Avalanche.Tx;
       vm: 'EVM' | 'AVM' | 'PVM';
+    }
+  | {
+      type: RpcMethod.AVALANCHE_SIGN_TRANSACTION;
+      unsignedTxJson: string;
+      data: Avalanche.Tx;
+      vm: 'EVM' | 'AVM' | 'PVM';
+      ownSignatureIndices: [number, number][];
     };
 
 export type ApprovalParams = {
