@@ -38,6 +38,13 @@ describe('DeBank', () => {
       expect(isSupported2).toBe(false);
       expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
     });
+
+    it('should cache calls to chain/list', async () => {
+      await debank.isNetworkSupported(1);
+      await debank.isNetworkSupported(2);
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('getChainInfo', () => {
