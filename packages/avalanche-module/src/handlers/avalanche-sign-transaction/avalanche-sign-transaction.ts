@@ -168,5 +168,5 @@ export const avalancheSignTransaction = async ({
     };
   }
 
-  return { result: response.result };
+  return { result: response.signedTx };
 };
