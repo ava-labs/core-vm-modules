@@ -8,7 +8,7 @@ const paramsSchema = z.object({
   utxos: z.string().array().optional(),
 });
 
-export const parseRequestParams = (params: unknown): z.SafeParseReturnType<unknown, TransactionParams> => {
+export const parseRequestParams = (params: unknown) => {
   return paramsSchema.safeParse(params);
 };
 

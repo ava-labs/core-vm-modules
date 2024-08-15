@@ -3,7 +3,6 @@ import type { Avalanche, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/co
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
-import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
 import type { TokenWithBalanceBTC } from './balance';
 
 export enum RpcMethod {
@@ -72,13 +71,44 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
-export type TransactionDetails = {
-  website: string;
-  from: string;
-  to: string;
-  data?: string;
-  type?: string;
+export type DetailSection = {
+  title?: string;
+  items: DetailItem[];
 };
+
+export type BaseDetailItem = {
+  label: string;
+};
+
+export type TextItem = BaseDetailItem & {
+  type: 'text';
+  value: string;
+  alignment: 'vertical' | 'horizontal';
+};
+
+export type AddressItem = BaseDetailItem & {
+  type: 'address';
+  value: string;
+};
+
+export type NodeIDItem = BaseDetailItem & {
+  type: 'nodeID';
+  value: string;
+};
+
+export type CurrencyItem = BaseDetailItem & {
+  type: 'currency';
+  value: bigint;
+  maxDecimals: number;
+  symbol: string;
+};
+
+export type DataItem = BaseDetailItem & {
+  type: 'data';
+  value: string;
+};
+
+export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem;
 
 export type DisplayData = {
   title: string;
@@ -93,12 +123,7 @@ export type DisplayData = {
     logoUri?: string;
   };
   account?: string;
-  messageDetails?: string;
-  transactionDetails?: TransactionDetails | ExportImportTxDetails;
-  stakingDetails?: StakingDetails;
-  chainDetails?: ChainDetails;
-  blockchainDetails?: BlockchainDetails;
-  subnetDetails?: SubnetDetails;
+  details: DetailSection[];
   networkFeeSelector?: boolean;
   disclaimer?: string;
   alert?: Alert;

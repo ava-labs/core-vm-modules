@@ -6,11 +6,14 @@ import {
   type RpcRequest,
   RpcMethod,
   type SigningResult,
+  type DetailSection,
+  type DetailItem,
+  type Hex,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { avaxSerial, EVMUnsignedTx, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { avaxSerial, EVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
@@ -18,12 +21,28 @@ import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import {
   isBlockchainDetails,
   isChainDetails,
-  isStakingDetails,
   isSubnetDetails,
-  isExportImportTxDetails,
+  isExportTx,
+  isImportTx,
+  isAddPermissionlessDelegatorTx,
+  isAddPermissionlessValidatorTx,
+  isAddSubnetValidatorTx,
+  isRemoveSubnetValidatorTx,
 } from './typeguards';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { isPrimarySubnet } from './utils/is-primary-subnet';
+import { formatDate } from './utils/format-date';
+import { textItem, addressItem, currencyItem, nodeIDItem } from '@internal/utils';
+import { retry } from '@internal/utils/src/utils/retry';
+import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
+
+enum AvalancheChainStrings {
+  AVM = 'X Chain',
+  PVM = 'P Chain',
+  EVM = 'C Chain',
+}
 
 export const avalancheSendTransaction = async ({
   request,
@@ -120,6 +139,7 @@ export const avalancheSendTransaction = async ({
     }
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+
     const txDetails = parseTxDetails(txData);
     const title = parseTxDisplayTitle(txData);
 
@@ -137,6 +157,169 @@ export const avalancheSendTransaction = async ({
       vm,
     };
 
+    const details: DetailSection[] = [];
+
+    if (isChainDetails(txDetails)) {
+      const { chain, outputs, memo } = txDetails;
+
+      details.push({
+        title: 'Chain Details',
+        items: [textItem('Active chain', `Avalanche ${AvalancheChainStrings[chain]}`)],
+      });
+
+      outputs.forEach((output, index) => {
+        const balanceChangeItems: DetailItem[] = output.owners.flatMap((ownerAddress) => [
+          addressItem('To', ownerAddress),
+          textItem(
+            'Amount',
+            `${new TokenUnit(
+              output.amount,
+              network.networkToken.decimals,
+              network.networkToken.symbol,
+            ).toDisplay()} AVAX`,
+          ),
+        ]);
+
+        if (output.owners.length > 1) {
+          balanceChangeItems.push(textItem('Threshold', output.threshold.toString()));
+        }
+
+        details.push({
+          title: index === 0 ? 'Balance Change' : undefined,
+          items: balanceChangeItems,
+        });
+      });
+
+      if (chain !== PVM && !!memo) {
+        details.push({
+          title: 'Memo',
+          items: [memo],
+        });
+      }
+    } else if (isExportTx(txDetails)) {
+      const { amount, chain, destination, type } = txDetails;
+
+      details.push({
+        title: 'Transaction Details',
+        items: [
+          textItem('Source Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
+          textItem('Target Chain', `Avalanche ${AvalancheChainStrings[destination]}`),
+          textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
+          currencyItem('Amount', amount, network.networkToken.decimals, network.networkToken.symbol),
+        ],
+      });
+    } else if (isImportTx(txDetails)) {
+      // todo: test
+      const { amount, chain, source, type } = txDetails;
+
+      details.push({
+        title: 'Transaction Details',
+        items: [
+          textItem('Source Chain', `Avalanche ${AvalancheChainStrings[source]}`),
+          textItem('Destination Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
+          textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
+          currencyItem('Amount', amount, network.networkToken.decimals, network.networkToken.symbol),
+        ],
+      });
+    } else if (isSubnetDetails(txDetails)) {
+      const { threshold, controlKeys } = txDetails;
+
+      details.push({
+        title: 'Subnet Details',
+        items: [
+          textItem(controlKeys.length > 1 ? 'Owners' : 'Owner', controlKeys.join('\n'), 'vertical'),
+          textItem('Signature Threshold', `${threshold}/${controlKeys.length}`, 'vertical'),
+        ],
+      });
+    } else if (isAddPermissionlessDelegatorTx(txDetails)) {
+      const { nodeID, start, end, stake, subnetID } = txDetails;
+
+      const items: DetailItem[] = [
+        nodeIDItem('Node ID', nodeID),
+        isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
+        currencyItem('Stake Amount', stake, network.networkToken.decimals, network.networkToken.symbol),
+        textItem('Start Date', formatDate(parseInt(start))),
+        textItem('End Date', formatDate(parseInt(end))),
+      ];
+
+      details.push({
+        title: 'Staking Details',
+        items,
+      });
+    } else if (isAddPermissionlessValidatorTx(txDetails)) {
+      const { nodeID, delegationFee, start, end, stake, subnetID, signature, publicKey } = txDetails;
+
+      const items: DetailItem[] = [
+        nodeIDItem('Node ID', nodeID),
+        isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
+      ];
+
+      if (publicKey && signature) {
+        items.push(nodeIDItem('Public Key', publicKey), nodeIDItem('Proof', signature));
+      }
+
+      items.push(
+        currencyItem('Stake Amount', stake, network.networkToken.decimals, network.networkToken.symbol),
+        textItem('Delegation Fee', `${delegationFee / 10000} %`),
+        textItem('Start Date', formatDate(parseInt(start))),
+        textItem('End Date', formatDate(parseInt(end))),
+      );
+
+      details.push({
+        title: 'Staking Details',
+        items,
+      });
+    } else if (isBlockchainDetails(txDetails)) {
+      // todo: test
+      // handle genesis data similarly to how we handle data in transaction details
+      const { chainID, chainName, vmID, genesisData } = txDetails;
+
+      const items: DetailItem[] = [
+        textItem('Blockchain name', chainName, 'vertical'),
+        textItem('Blockchain ID', chainID, 'vertical'),
+        textItem('Virtual Machine ID', vmID, 'vertical'),
+        textItem('Genesis Data', genesisData, 'vertical'),
+      ];
+
+      details.push({
+        title: 'Blockchain Details',
+        items,
+      });
+    } else if (isAddSubnetValidatorTx(txDetails)) {
+      // todo: test
+      const { nodeID, start, end, subnetID } = txDetails;
+
+      const items: DetailItem[] = [
+        nodeIDItem('Subnet ID', subnetID),
+        nodeIDItem('Node ID', nodeID),
+        textItem('Start Date', formatDate(parseInt(start))),
+        textItem('End Date', formatDate(parseInt(end))),
+      ];
+
+      details.push({
+        title: 'Staking Details',
+        items,
+      });
+    } else if (isRemoveSubnetValidatorTx(txDetails)) {
+      // todo: test
+      const { nodeID, subnetID } = txDetails;
+
+      const items: DetailItem[] = [nodeIDItem('Node ID', nodeID), nodeIDItem('Subnet ID', subnetID)];
+
+      details.push({
+        title: 'Staking Details',
+        items,
+      });
+    }
+
+    const { txFee } = txDetails;
+    if (txFee) {
+      details.push({
+        title: 'Network Fee',
+        items: [currencyItem('Fee Amount', txFee, network.networkToken.decimals, network.networkToken.symbol)],
+      });
+    }
+
     const displayData: DisplayData = {
       title,
       network: {
@@ -144,11 +327,7 @@ export const avalancheSendTransaction = async ({
         name: network.chainName,
         logoUri: network.logoUri,
       },
-      transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
-      stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
-      chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
-      blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
-      subnetDetails: isSubnetDetails(txDetails) ? txDetails : undefined,
+      details,
       networkFeeSelector: false,
     };
 
@@ -161,9 +340,15 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    const txHash = await getTxHash(provider, response, vm);
+    const txHash = (await getTxHash(provider, response, vm)) as Hex;
 
-    // TODO wait for transaction confirmation
+    await waitForTransactionReceipt({
+      provider,
+      txHash,
+      vm,
+      onTransactionConfirmed: approvalController.onTransactionConfirmed,
+      onTransactionReverted: approvalController.onTransactionReverted,
+    });
 
     return { result: txHash };
   } catch (error) {
@@ -184,24 +369,42 @@ const getTxHash = async (provider: Avalanche.JsonRpcProvider, response: SigningR
   return txID;
 };
 
-const getAddressesByIndices = async ({
-  indices,
-  chainAlias,
-  isChange,
-  isTestnet,
-  xpubXP,
+const waitForTransactionReceipt = async ({
+  provider,
+  txHash,
+  vm,
+  onTransactionConfirmed,
+  onTransactionReverted,
 }: {
-  indices: number[];
-  chainAlias: 'X' | 'P';
-  isChange: boolean;
-  isTestnet: boolean;
-  xpubXP: string;
-}): Promise<string[]> => {
-  if (isChange && chainAlias !== 'X') {
-    return [];
+  provider: Avalanche.JsonRpcProvider;
+  txHash: Hex;
+  vm: 'EVM' | 'AVM' | 'PVM';
+  onTransactionConfirmed: (txHash: Hex) => void;
+  onTransactionReverted: (txHash: Hex) => void;
+}) => {
+  if (vm === EVM) {
+    const receipt = await provider.evmRpc.waitForTransaction(txHash);
+
+    const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
+
+    if (success) {
+      onTransactionConfirmed(txHash);
+    } else {
+      onTransactionReverted(txHash);
+    }
+  } else {
+    try {
+      const maxTransactionStatusCheckRetries = 7;
+
+      await retry({
+        operation: () => provider.getApiP().getTxStatus({ txID: txHash }),
+        isSuccess: (result) => result.status === 'Committed',
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      onTransactionConfirmed(txHash);
+    } catch (error) {
+      onTransactionReverted(txHash);
+    }
   }
-
-  const provider = getProvider({ isTestnet });
-
-  return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
 };

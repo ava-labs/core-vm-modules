@@ -14,7 +14,6 @@ import {
   type RemoveSubnetValidatorTx,
   type StakingDetails,
   type SubnetDetails,
-  type TransactionDetails,
   type TxDetails,
 } from '@avalabs/vm-module-types';
 
@@ -22,8 +21,8 @@ export const isAddPermissionlessDelegatorTx = (tx: TxDetails): tx is AddPermissi
   tx.type === TxType.AddPermissionlessDelegator;
 export const isAddPermissionlessValidatorTx = (tx: TxDetails): tx is AddPermissionlessValidatorTx =>
   tx.type === TxType.AddPermissionlessValidator;
-export const isExportTx = (tx: TxDetails | TransactionDetails): tx is ExportTx => tx.type === TxType.Export;
-export const isImportTx = (tx: TxDetails | TransactionDetails): tx is ImportTx => tx.type === TxType.Import;
+export const isExportTx = (tx: TxDetails): tx is ExportTx => tx.type === TxType.Export;
+export const isImportTx = (tx: TxDetails): tx is ImportTx => tx.type === TxType.Import;
 export const isBaseTx = (tx: TxDetails): tx is BaseTx => tx.type === TxType.Base;
 export const isAddSubnetValidatorTx = (tx: TxDetails): tx is AddSubnetValidatorTx =>
   tx.type === TxType.AddSubnetValidator;
@@ -37,8 +36,7 @@ export const isStakingDetails = (tx: TxDetails): tx is StakingDetails =>
   isAddPermissionlessValidatorTx(tx) ||
   isAddSubnetValidatorTx(tx) ||
   isRemoveSubnetValidatorTx(tx);
-export const isExportImportTxDetails = (tx: TxDetails | TransactionDetails): tx is ExportImportTxDetails =>
-  isExportTx(tx) || isImportTx(tx);
+export const isExportImportTxDetails = (tx: TxDetails): tx is ExportImportTxDetails => isExportTx(tx) || isImportTx(tx);
 export const isChainDetails = (tx: TxDetails): tx is ChainDetails => isBaseTx(tx);
 export const isBlockchainDetails = (tx: TxDetails): tx is BlockchainDetails => isCreateChainTx(tx);
 export const isSubnetDetails = (tx: TxDetails): tx is SubnetDetails => isCreateSubnetTx(tx);
