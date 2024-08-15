@@ -128,10 +128,10 @@ export type Alert = {
 };
 
 type BitcoinTransactionData = {
+  to: string;
   amount: number;
   feeRate: number;
   fee: number;
-  to: string;
   balance: TokenWithBalanceBTC;
   inputs: BitcoinInputUTXO[];
   outputs: BitcoinOutputUTXO[];
@@ -141,7 +141,6 @@ export type SigningData =
   | {
       type: RpcMethod.BITCOIN_SEND_TRANSACTION;
       account: string;
-      chainId: number;
       data: BitcoinTransactionData;
     }
   | {

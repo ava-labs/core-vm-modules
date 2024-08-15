@@ -10,3 +10,5 @@ const paramsSchema = z.object({
 export const parseRequestParams = (params: unknown) => {
   return paramsSchema.safeParse(params);
 };
+
+export type BitcoinSendTransactionParams = z.infer<typeof paramsSchema>;

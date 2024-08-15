@@ -33,7 +33,7 @@ export const bitcoinSendTransaction = async ({
   const { success, data: params, error: parseError } = parseRequestParams(rawParams);
 
   if (!success) {
-    console.error(parseError);
+    console.error('invalid params', parseError);
     return {
       error: rpcErrors.invalidParams('Transaction params are invalid'),
     };
@@ -87,15 +87,14 @@ export const bitcoinSendTransaction = async ({
 
   const signingData: SigningData = {
     type: RpcMethod.BITCOIN_SEND_TRANSACTION,
-    account: params.from,
-    chainId: network.chainId,
+    account: from,
     data: {
+      to,
       amount,
       fee,
       feeRate,
       inputs,
       outputs,
-      to,
       balance: btcBalance,
     },
   };
@@ -123,13 +122,11 @@ export const bitcoinSendTransaction = async ({
 };
 
 const getTxHash = async (provider: BitcoinProvider, response: SigningResult) => {
-  if ('result' in response && typeof response.result === 'string') {
-    return provider.issueRawTx(response.result);
-  } else if ('signedTx' in response && typeof response.signedTx === 'string') {
-    return provider.issueRawTx(response.signedTx);
+  if ('txHash' in response) {
+    return response.txHash;
   }
 
-  return response.txHash;
+  return provider.issueRawTx(response.signedData);
 };
 
 const waitForTransactionReceipt = async ({
