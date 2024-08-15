@@ -38,7 +38,7 @@ const mockApprovalController = {
 
 describe('avalanche_signMessage', () => {
   beforeEach(() => {
-    mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
   });
 
   it('should return error when params are invalid', async () => {

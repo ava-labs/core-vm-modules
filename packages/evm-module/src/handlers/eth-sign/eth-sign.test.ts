@@ -83,7 +83,7 @@ const mockApprovalController = {
 
 describe('ethSign', () => {
   beforeEach(() => {
-    mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
     mockBeautifyComplexMessage.mockReturnValue('beautified complex message');
   });

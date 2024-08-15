@@ -59,5 +59,11 @@ export const avalancheSignMessage = async ({
     };
   }
 
-  return { result: response.result };
+  if (!('signedData' in response)) {
+    return {
+      error: rpcErrors.internal('No signed data returned'),
+    };
+  }
+
+  return { result: response.signedData };
 };
