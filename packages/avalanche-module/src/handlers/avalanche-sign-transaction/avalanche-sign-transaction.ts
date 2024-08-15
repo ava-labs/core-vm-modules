@@ -46,7 +46,7 @@ export const avalancheSignTransaction = async ({
   if (!currentAddress) {
     return {
       success: false,
-      error: rpcErrors.invalidRequest('No active account found'),
+      error: rpcErrors.invalidRequest('currentAddress is missing'),
     };
   }
 
