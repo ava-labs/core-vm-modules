@@ -12,6 +12,13 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
+import {
+  isBlockchainDetails,
+  isChainDetails,
+  isExportImportTxDetails,
+  isStakingDetails,
+  isSubnetDetails,
+} from '../avalanche-send-transaction/typeguards';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -35,20 +42,12 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidParams('Params are invalid'),
     };
   }
-  const { transactionHex, chainAlias } = result.data;
+  const { transactionHex, chainAlias, from } = result.data;
 
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
   const isTestnet = network.isTestnet ?? false;
   const provider = getProvider({ isTestnet });
-  const currentAddress = request.context?.['currentAddress'] as string | undefined;
-
-  if (!currentAddress) {
-    return {
-      success: false,
-      error: rpcErrors.invalidRequest('currentAddress is missing'),
-    };
-  }
 
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
 
@@ -97,7 +96,7 @@ export const avalancheSignTransaction = async ({
   });
 
   // check if the current account's signature is needed
-  const signerAddress = utils.addressesFromBytes([utils.parse(currentAddress)[2]])[0];
+  const signerAddress = utils.addressesFromBytes([utils.parse(from)[2]])[0];
 
   if (!signerAddress) {
     return {
@@ -126,7 +125,7 @@ export const avalancheSignTransaction = async ({
   }
 
   // get display data for the UI
-  const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+  const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, from);
   const txDetails = parseTxDetails(txData);
 
   if (txData.type === 'unknown' || txDetails === undefined) {
@@ -156,7 +155,11 @@ export const avalancheSignTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    transactionDetails: txDetails,
+    transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
+    stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
+    chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
+    blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
+    subnetDetails: isSubnetDetails(txDetails) ? txDetails : undefined,
   };
 
   // prompt user for approval
@@ -168,5 +171,11 @@ export const avalancheSignTransaction = async ({
     };
   }
 
-  return { result: response.signedTx };
+  if (!('signedData' in response)) {
+    return {
+      success: false,
+      error: rpcErrors.invalidRequest('Unable to sign transaction data.'),
+    };
+  }
+  return { result: response.signedData };
 };
