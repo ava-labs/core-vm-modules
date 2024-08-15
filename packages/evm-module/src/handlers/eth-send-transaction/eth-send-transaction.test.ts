@@ -125,6 +125,7 @@ const signingData = {
   },
 };
 
+const testSignedTxHash = '0xsignedtxhash';
 const testTxHash = '0xtxhash';
 
 describe('eth_sendTransaction handler', () => {
@@ -136,7 +137,7 @@ describe('eth_sendTransaction handler', () => {
       data: [testParams],
     });
 
-    mockApprovalController.requestApproval.mockResolvedValue({ result: testTxHash });
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
   });
 
   it('should return error if request params are invalid', async () => {
@@ -427,7 +428,7 @@ describe('eth_sendTransaction handler', () => {
     beforeEach(() => {
       jest.clearAllMocks();
 
-      mockApprovalController.requestApproval.mockResolvedValue({ result: testTxHash });
+      mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
       mockSend.mockResolvedValue(testTxHash);
     });
 
@@ -443,7 +444,7 @@ describe('eth_sendTransaction handler', () => {
         pollingInterval: 1000,
       });
 
-      expect(mockSend).toHaveBeenCalledWith('eth_sendRawTransaction', [testTxHash]);
+      expect(mockSend).toHaveBeenCalledWith('eth_sendRawTransaction', [testSignedTxHash]);
 
       expect(response).toStrictEqual({ result: testTxHash });
     });

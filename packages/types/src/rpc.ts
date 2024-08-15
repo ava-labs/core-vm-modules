@@ -1,11 +1,14 @@
 import type { TransactionRequest } from 'ethers';
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
-import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
 
 export enum RpcMethod {
+  /* BTC */
+  BITCOIN_SEND_TRANSACTION = 'bitcoin_sendTransaction',
+
   /* EVM */
   ETH_SEND_TRANSACTION = 'eth_sendTransaction',
   SIGN_TYPED_DATA_V3 = 'eth_signTypedData_v3',
@@ -161,13 +164,26 @@ export type ApprovalParams = {
   signingData: SigningData;
 };
 
+/**
+ * We want to accept both a signed data (tx/message) and a tx hash as a response
+ * coming in from the client apps, hence the XORs here.
+ *
+ * The reason we need to support both is because extension allows importing
+ * external software wallets, such as Fireblocks or other apps that support
+ * the WalletConnect protocol.
+ *
+ * My experience is that WalletConnect apps rarely, if ever, support
+ * "eth_signTransaction" requests and more often only allow sending
+ * "eth_sendTransaction" calls, which means that all we'll get in response
+ * from them is the transaction hash (not a signed tx).
+ */
+export type SigningResult = { signedData: string } | { txHash: string };
+
 export type ApprovalResponse =
   | {
-      result: Hex;
-    }
-  | {
       error: RpcError;
-    };
+    }
+  | SigningResult;
 
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;

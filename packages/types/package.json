@@ -15,10 +15,11 @@
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.0",
     "zod": "3.23.8",
     "@metamask/rpc-errors": "6.3.0",
     "ethers": "6.8.1",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.0"
+    "bitcoinjs-lib": "5.2.0"
   },
   "devDependencies": {
     "tsup": "7.2.0",
@@ -28,6 +29,7 @@
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.0",
     "@avalabs/glacier-sdk": "3.1.0-alpha.0",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.0",
+    "@avalabs/core-wallets-sdk": "3.0.1-alpha.1",
     "eslint-config-custom": "workspace:*"
   },
   "peerDependencies": {

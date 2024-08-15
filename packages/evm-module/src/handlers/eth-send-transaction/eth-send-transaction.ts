@@ -6,6 +6,7 @@ import {
   type DisplayData,
   type SigningData,
   RpcMethod,
+  type SigningResult,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
@@ -152,8 +153,7 @@ export const ethSendTransaction = async ({
     };
   }
 
-  // broadcast the signed transaction
-  const txHash = await provider.send('eth_sendRawTransaction', [response.result]);
+  const txHash = await getTxHash(provider, response);
 
   waitForTransactionReceipt({
     provider,
@@ -163,6 +163,16 @@ export const ethSendTransaction = async ({
   });
 
   return { result: txHash };
+};
+
+const getTxHash = async (provider: JsonRpcBatchInternal, response: SigningResult) => {
+  if ('txHash' in response) {
+    return response.txHash;
+  }
+
+  // broadcast the signed transaction
+  const txHash = await provider.send('eth_sendRawTransaction', [response.signedData]);
+  return txHash;
 };
 
 const waitForTransactionReceipt = async ({

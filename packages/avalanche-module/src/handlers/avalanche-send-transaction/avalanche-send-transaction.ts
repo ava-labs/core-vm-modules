@@ -5,6 +5,7 @@ import {
   type DisplayData,
   type RpcRequest,
   RpcMethod,
+  type SigningResult,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -160,13 +161,27 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    return { result: response.result };
+    const txHash = await getTxHash(provider, response, vm);
+
+    // TODO wait for transaction confirmation
+
+    return { result: txHash };
   } catch (error) {
     console.error(error);
     return {
       error: rpcErrors.internal('Unable to create transaction'),
     };
   }
+};
+
+const getTxHash = async (provider: Avalanche.JsonRpcProvider, response: SigningResult, vm: 'EVM' | 'AVM' | 'PVM') => {
+  if ('txHash' in response) {
+    return response.txHash;
+  }
+
+  // broadcast the signed transaction
+  const { txID } = await provider.issueTxHex(response.signedData, vm);
+  return txID;
 };
 
 const getAddressesByIndices = async ({
