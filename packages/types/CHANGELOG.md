@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.8
+
+### Patch Changes
+
+- b3dcd76: adjust signing result type
+
 ## 0.1.7
 
 ## 0.1.6

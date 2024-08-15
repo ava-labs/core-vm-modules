@@ -1,5 +1,13 @@
 # @avalabs/avalanche-module
 
+## 0.1.8
+
+### Patch Changes
+
+- b3dcd76: adjust signing result type
+- Updated dependencies [b3dcd76]
+  - @avalabs/vm-module-types@0.1.8
+
 ## 0.1.7
 
 ### Patch Changes
