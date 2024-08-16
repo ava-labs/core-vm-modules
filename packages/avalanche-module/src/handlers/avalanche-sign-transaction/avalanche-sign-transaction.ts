@@ -100,7 +100,6 @@ export const avalancheSignTransaction = async ({
 
   if (!signerAddress) {
     return {
-      success: false,
       error: rpcErrors.invalidRequest('Missing signer address'),
     };
   }
@@ -109,7 +108,6 @@ export const avalancheSignTransaction = async ({
 
   if (!ownSignatureIndices) {
     return {
-      success: false,
       error: rpcErrors.invalidRequest('This account has nothing to sign'),
     };
   }
@@ -119,7 +117,6 @@ export const avalancheSignTransaction = async ({
 
   if (!needsToSign) {
     return {
-      success: false,
       error: rpcErrors.invalidRequest('This account has nothing to sign'),
     };
   }
@@ -130,7 +127,6 @@ export const avalancheSignTransaction = async ({
 
   if (txData.type === 'unknown' || txDetails === undefined) {
     return {
-      success: false,
       error: rpcErrors.invalidParams('Unable to parse transaction data. Unsupported tx type'),
     };
   }
@@ -173,7 +169,6 @@ export const avalancheSignTransaction = async ({
 
   if (!('signedData' in response)) {
     return {
-      success: false,
       error: rpcErrors.invalidRequest('No signed data returned'),
     };
   }
