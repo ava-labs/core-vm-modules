@@ -188,7 +188,7 @@ describe('avalanche-sign-transaction', () => {
     });
 
     expect(result).toEqual({
-      error: rpcErrors.invalidRequest('Unable to sign transaction data.'),
+      error: rpcErrors.invalidRequest('No signed data returned'),
     });
   });
 
