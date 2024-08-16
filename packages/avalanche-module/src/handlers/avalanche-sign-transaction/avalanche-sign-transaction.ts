@@ -174,7 +174,7 @@ export const avalancheSignTransaction = async ({
   if (!('signedData' in response)) {
     return {
       success: false,
-      error: rpcErrors.invalidRequest('Unable to sign transaction data.'),
+      error: rpcErrors.invalidRequest('No signed data returned'),
     };
   }
   return { result: response.signedData };
