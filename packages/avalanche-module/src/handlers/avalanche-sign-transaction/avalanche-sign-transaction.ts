@@ -42,8 +42,8 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidParams('Params are invalid'),
     };
   }
-  const { transactionHex, chainAlias, from, isTestnet } = result.data;
-
+  const { transactionHex, chainAlias, from, isTestnet: testnet } = result.data;
+  const isTestnet = testnet ?? network.isTestnet ?? false;
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
   const provider = getProvider({ isTestnet });
