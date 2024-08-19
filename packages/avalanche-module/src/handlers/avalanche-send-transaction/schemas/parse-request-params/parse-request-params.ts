@@ -11,11 +11,3 @@ const paramsSchema = z.object({
 export const parseRequestParams = (params: unknown) => {
   return paramsSchema.safeParse(params);
 };
-
-export type TransactionParams = {
-  externalIndices?: number[] | undefined;
-  internalIndices?: number[] | undefined;
-  utxos?: string[] | undefined;
-  transactionHex: string;
-  chainAlias: 'X' | 'P' | 'C';
-};
