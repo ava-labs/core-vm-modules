@@ -27,7 +27,6 @@
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.1",
     "big.js": "6.2.1",
     "bn.js": "5.2.1",
-    "date-fns": "2.28.0",
     "zod": "3.23.8",
     "@zodios/core": "10.9.6",
     "@avalabs/types": "3.1.0-alpha.1",

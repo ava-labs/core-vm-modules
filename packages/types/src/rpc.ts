@@ -108,7 +108,12 @@ export type DataItem = BaseDetailItem & {
   value: string;
 };
 
-export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem;
+export type DateItem = BaseDetailItem & {
+  type: 'date';
+  value: string;
+};
+
+export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem | DateItem;
 
 export type DisplayData = {
   title: string;

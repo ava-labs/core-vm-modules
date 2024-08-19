@@ -14,7 +14,7 @@ import { addressItem, currencyItem, nodeIDItem, textItem } from '@internal/utils
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { PVM } from '@avalabs/avalanchejs';
 import { isPrimarySubnet } from './is-primary-subnet';
-import { formatDate } from './format-date';
+import { dateItem } from '@internal/utils/src/utils/detail-item';
 
 export const getTransactionDetailSections = (txDetails: TxDetails, networkToken: NetworkToken) => {
   const details: DetailSection[] = [];
@@ -94,8 +94,8 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
       nodeIDItem('Node ID', nodeID),
       isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
       currencyItem('Stake Amount', stake, networkToken.decimals, networkToken.symbol),
-      textItem('Start Date', formatDate(parseInt(start))),
-      textItem('End Date', formatDate(parseInt(end))),
+      dateItem('Start Date', start),
+      dateItem('End Date', end),
     ];
 
     details.push({
@@ -117,8 +117,8 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
     items.push(
       currencyItem('Stake Amount', stake, networkToken.decimals, networkToken.symbol),
       textItem('Delegation Fee', `${delegationFee / 10000} %`),
-      textItem('Start Date', formatDate(parseInt(start))),
-      textItem('End Date', formatDate(parseInt(end))),
+      dateItem('Start Date', start),
+      dateItem('End Date', end),
     );
 
     details.push({
@@ -148,8 +148,8 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
     const items: DetailItem[] = [
       nodeIDItem('Subnet ID', subnetID),
       nodeIDItem('Node ID', nodeID),
-      textItem('Start Date', formatDate(parseInt(start))),
-      textItem('End Date', formatDate(parseInt(end))),
+      dateItem('Start Date', start),
+      dateItem('End Date', end),
     ];
 
     details.push({
