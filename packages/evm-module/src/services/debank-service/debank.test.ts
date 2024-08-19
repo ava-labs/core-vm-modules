@@ -47,11 +47,11 @@ describe('DeBank', () => {
     });
   });
 
-  describe('getChainInfo', () => {
+  describe('getChainList', () => {
     beforeEach(() => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
-          json: () => Promise.resolve({ chain: 'info' }),
+          json: () => Promise.resolve([{ id: 'eth', chain: 'info' }]),
         }),
       ) as jest.Mock;
     });
@@ -59,8 +59,8 @@ describe('DeBank', () => {
     it('should fetch chain info from the API', async () => {
       const chainId = 'eth';
       const chainInfo = await debank.getChainInfo({ chainId });
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain?id=${chainId}`);
-      expect(chainInfo).toEqual({ chain: 'info' });
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(chainInfo).toEqual({ id: 'eth', chain: 'info' });
     });
   });
 
