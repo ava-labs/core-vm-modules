@@ -12,13 +12,7 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
-import {
-  isBlockchainDetails,
-  isChainDetails,
-  isExportImportTxDetails,
-  isStakingDetails,
-  isSubnetDetails,
-} from '../avalanche-send-transaction/typeguards';
+import { getTransactionDetailSections } from '../avalanche-send-transaction/utils/get-transaction-detail-sections';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -138,6 +132,8 @@ export const avalancheSignTransaction = async ({
     ownSignatureIndices,
   };
 
+  const details = getTransactionDetailSections(txDetails, network.networkToken);
+
   const displayData: DisplayData = {
     title: 'Sign Transaction',
     dAppInfo: {
@@ -150,11 +146,7 @@ export const avalancheSignTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
-    stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
-    chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
-    blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
-    subnetDetails: isSubnetDetails(txDetails) ? txDetails : undefined,
+    details,
   };
 
   // prompt user for approval
