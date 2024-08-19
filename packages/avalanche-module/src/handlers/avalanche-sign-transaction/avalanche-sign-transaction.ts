@@ -42,11 +42,10 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidParams('Params are invalid'),
     };
   }
-  const { transactionHex, chainAlias, from } = result.data;
+  const { transactionHex, chainAlias, from, isTestnet } = result.data;
 
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
-  const isTestnet = network.isTestnet ?? false;
   const provider = getProvider({ isTestnet });
 
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
