@@ -127,7 +127,7 @@ export type Alert = {
   details: AlertDetails;
 };
 
-type BitcoinTransactionData = {
+export type BitcoinTransactionData = {
   to: string;
   amount: number;
   feeRate: number;

@@ -7,12 +7,12 @@ type ConverterOptions = {
 };
 
 export const convertBtcTransaction = (tx: BitcoinHistoryTx, { address, network }: ConverterOptions): Transaction => {
-  const { explorerUrl, isTestnet, networkToken } = network;
+  const { explorerUrl, networkToken } = network;
   const txAddress = tx.addresses[0] ?? '';
 
   return {
     chainId: network.chainId.toString(),
-    explorerLink: `${explorerUrl}/${isTestnet ? 'btc-testnet' : 'btc'}/tx/${tx.hash}`,
+    explorerLink: `${explorerUrl}/tx/${tx.hash}`,
     from: tx.isSender ? address : txAddress,
     gasUsed: tx.fee.toString(),
     hash: tx.hash,
