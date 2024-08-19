@@ -1,11 +1,17 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
+import type { BalanceServiceInterface, TokenId } from '../../handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
-import { type NetworkTokenWithBalance, TokenType, type TokenWithBalanceEVM } from '@avalabs/vm-module-types';
-import { DeBank, type DeBankToken, type TokenId } from './de-bank';
+import {
+  type NetworkTokenWithBalance,
+  TokenType,
+  type TokenWithBalanceEVM,
+  type Error,
+} from '@avalabs/vm-module-types';
+import { DeBank } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
+import { addIdToPromise, settleAllIdPromises } from '../../utils/id-promise';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -32,7 +38,8 @@ export class DeBankService implements BalanceServiceInterface {
     const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
     if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
-    const tokenId = chainInfo.wrapped_token_id;
+    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    const tokenId = chainInfo.native_token_id;
     const nativeTokenBalance = await this.#deBank.getTokenBalance({ address, chainId: chainIdString, tokenId });
     const tokenUnit = new TokenUnit(
       nativeTokenBalance.raw_amount,
@@ -74,42 +81,37 @@ export class DeBankService implements BalanceServiceInterface {
     currency: CurrencyCode;
     pageSize: number;
     pageToken?: string;
-  }): Promise<Record<TokenId, TokenWithBalanceEVM>> {
+  }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
     const chainList = await this.#deBank.getChainList();
     const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
     if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const tokenList = await this.#deBank.getTokenList({ chainId: chainIdString, address });
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
+    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
     const erc20TokenList = tokenList.filter((token) => token.id !== chainInfo.native_token_id);
 
     const tokenBalancePromises = erc20TokenList.map((token) => {
-      return this.#deBank
-        .getTokenBalance({ chainId: chainIdString, tokenId: token.id, address })
-        .then((value) => ({ id: token.id, status: 'fulfilled', value }))
-        .catch((reason) => ({ id: token.id, status: 'rejected', reason }));
-    });
-
-    let tokenBalancesResults: Record<TokenId, DeBankToken> = {};
-    await Promise.allSettled(tokenBalancePromises).then((results) => {
-      tokenBalancesResults = results.reduce(
-        (acc, result) => {
-          if (result.status === 'fulfilled' && 'value' in result.value) {
-            acc[result.value.id] = result.value.value;
-          }
-          return acc;
-        },
-        {} as Record<TokenId, DeBankToken>,
+      return addIdToPromise(
+        this.#deBank.getTokenBalance({ chainId: chainIdString, tokenId: token.id, address }),
+        token.id,
       );
     });
 
+    const tokenBalancesResults = await settleAllIdPromises(tokenBalancePromises);
+
     const tokenIds = Object.keys(tokenBalancesResults);
-    const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM> = {};
+    const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
     for (let i = 0; i < tokenIds.length; i++) {
       const tokenId = tokenIds[i];
-      if (tokenId === undefined || !isHexString(tokenId)) continue;
+      if (tokenId === undefined) continue;
       const tokenBalance = tokenBalancesResults[tokenId];
-      if (tokenBalance === undefined) continue;
+      if (tokenBalance === undefined || 'error' in tokenBalance) {
+        erc20TokenBalances[tokenId] = {
+          error: `deBank:getTokenBalance failed: ${tokenBalance?.error ?? 'unknown error'}`,
+        };
+        continue;
+      }
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
