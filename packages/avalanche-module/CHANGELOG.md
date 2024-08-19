@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.1.9
+
+### Patch Changes
+
+- c281470: add avalanche_signTransaction
+  - @avalabs/vm-module-types@0.1.9
+
 ## 0.1.8
 
 ### Patch Changes
