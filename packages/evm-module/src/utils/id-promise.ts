@@ -1,9 +1,10 @@
+import { type Error } from '@avalabs/vm-module-types';
+
 type Id = string;
 export type IdPromise<T> =
   | { id: string; status: 'fulfilled'; value: T }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { id: string; status: 'rejected'; reason: any };
-export type Error = { error: string };
 
 /**
  * The addIdToPromise function takes an existing promise and an id string as input and returns a new promise that

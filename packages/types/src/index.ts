@@ -1,6 +1,7 @@
 export * from './common';
 export * from './coingecko';
 export * from './balance';
+export * from './error';
 export * from './manifest';
 export * from './module';
 export * from './network-fee';

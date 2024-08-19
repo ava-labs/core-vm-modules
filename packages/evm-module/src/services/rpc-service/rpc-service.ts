@@ -6,10 +6,11 @@ import {
   type NetworkContractToken,
   type NetworkTokenWithBalance,
   type Storage,
+  type Error,
   TokenType,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import { addIdToPromise, type Error, settleAllIdPromises } from '../../utils/id-promise';
+import { addIdToPromise, settleAllIdPromises } from '../../utils/id-promise';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { ethers } from 'ethers';

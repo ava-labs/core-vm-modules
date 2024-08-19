@@ -1,5 +1,7 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { ERC20Token, NetworkTokenWithBalance, TokenWithBalanceEVM } from '@avalabs/vm-module-types';
+import type { ERC20Token, Error, Hex, NetworkTokenWithBalance, TokenWithBalanceEVM } from '@avalabs/vm-module-types';
+
+export type TokenId = Hex | string;
 
 export interface BalanceServiceInterface {
   isNetworkSupported(chainId: number): Promise<boolean>;
@@ -28,5 +30,5 @@ export interface BalanceServiceInterface {
     pageSize: number;
     pageToken?: string;
     customTokens: ERC20Token[];
-  }): Promise<Record<string, TokenWithBalanceEVM>>;
+  }): Promise<Record<string, TokenWithBalanceEVM | Error>>;
 }

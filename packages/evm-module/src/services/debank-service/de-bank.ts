@@ -71,7 +71,6 @@ export class DeBank {
     return this.#supportedChainIds;
   }
 }
-export type TokenId = Hex;
 /**
  * Example:
  * ```json
