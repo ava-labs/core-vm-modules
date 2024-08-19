@@ -1,3 +1,4 @@
+import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import type { GetAddressParams, GetAddressResponse } from './account';
 import type { GetBalancesParams, GetBalancesResponse } from './balance';
 import type { Network } from './common';
@@ -8,6 +9,7 @@ import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 
 export interface Module {
+  getProvider: (network: Network) => JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;

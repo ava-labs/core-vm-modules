@@ -21,6 +21,8 @@ import { getTransactionHistory } from './handlers/get-transaction-history';
 import { getBalances } from './handlers/get-balances';
 import { getAddress } from './handlers/get-address/get-address';
 import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction';
+import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -37,6 +39,13 @@ export class BitcoinModule implements Module {
 
     this.#approvalController = approvalController;
     this.#proxyApiUrl = proxyApiUrl;
+  }
+
+  getProvider(network: Network): BitcoinProvider {
+    return getProvider({
+      isTestnet: Boolean(network.isTestnet),
+      proxyApiUrl: this.#proxyApiUrl,
+    });
   }
 
   getAddress({ accountIndex, xpub, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
