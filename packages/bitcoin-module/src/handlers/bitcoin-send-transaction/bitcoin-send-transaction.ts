@@ -107,7 +107,15 @@ export const bitcoinSendTransaction = async ({
     };
   }
 
-  const txHash = await getTxHash(provider, response);
+  let txHash;
+
+  try {
+    txHash = await getTxHash(provider, response);
+  } catch (error) {
+    return {
+      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+    };
+  }
 
   waitForTransactionReceipt({
     provider,
