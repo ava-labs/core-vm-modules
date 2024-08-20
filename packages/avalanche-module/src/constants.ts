@@ -1,0 +1,1 @@
+export const AVAX_NONEVM_DENOMINATION = 9;
