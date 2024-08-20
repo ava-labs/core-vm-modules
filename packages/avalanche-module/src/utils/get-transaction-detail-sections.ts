@@ -14,6 +14,7 @@ import { addressItem, currencyItem, nodeIDItem, textItem, dateItem } from '@inte
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { PVM } from '@avalabs/avalanchejs';
 import { isPrimarySubnet } from '../handlers/avalanche-send-transaction/utils/is-primary-subnet';
+import { AVAX_DENOMINATION } from '../constants';
 
 export const getTransactionDetailSections = (txDetails: TxDetails, networkToken: NetworkToken) => {
   const details: DetailSection[] = [];
@@ -60,7 +61,7 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
         textItem('Source Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
         textItem('Target Chain', `Avalanche ${AvalancheChainStrings[destination]}`),
         textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
-        currencyItem('Amount', amount, networkToken.decimals, networkToken.symbol),
+        currencyItem('Amount', amount, AVAX_DENOMINATION, networkToken.symbol),
       ],
     });
   } else if (isImportTx(txDetails)) {
@@ -73,7 +74,7 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
         textItem('Source Chain', `Avalanche ${AvalancheChainStrings[source]}`),
         textItem('Destination Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
         textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
-        currencyItem('Amount', amount, networkToken.decimals, networkToken.symbol),
+        currencyItem('Amount', amount, AVAX_DENOMINATION, networkToken.symbol),
       ],
     });
   } else if (isSubnetDetails(txDetails)) {
@@ -92,7 +93,7 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
     const items: DetailItem[] = [
       nodeIDItem('Node ID', nodeID),
       isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
-      currencyItem('Stake Amount', stake, networkToken.decimals, networkToken.symbol),
+      currencyItem('Stake Amount', stake, AVAX_DENOMINATION, networkToken.symbol),
       dateItem('Start Date', start),
       dateItem('End Date', end),
     ];
@@ -114,7 +115,7 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
     }
 
     items.push(
-      currencyItem('Stake Amount', stake, networkToken.decimals, networkToken.symbol),
+      currencyItem('Stake Amount', stake, AVAX_DENOMINATION, networkToken.symbol),
       textItem('Delegation Fee', `${delegationFee / 10000} %`),
       dateItem('Start Date', start),
       dateItem('End Date', end),
@@ -171,7 +172,7 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
   if (txFee) {
     details.push({
       title: 'Network Fee',
-      items: [currencyItem('Fee Amount', txFee, networkToken.decimals, networkToken.symbol)],
+      items: [currencyItem('Fee Amount', txFee, AVAX_DENOMINATION, networkToken.symbol)],
     });
   }
 
