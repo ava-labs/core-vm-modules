@@ -24,7 +24,7 @@ export const avalancheSignMessage = async ({
     console.error('invalid params', result.error);
 
     return {
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
     };
   }
   const [message, accountIndex] = result.data;

@@ -37,7 +37,7 @@ export const ethSendTransaction = async ({
   if (!result.success) {
     console.error('invalid params', result.error);
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
@@ -45,7 +45,7 @@ export const ethSendTransaction = async ({
 
   if (!transaction) {
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 

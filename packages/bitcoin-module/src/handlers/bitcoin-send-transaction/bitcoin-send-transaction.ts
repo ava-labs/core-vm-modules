@@ -35,7 +35,7 @@ export const bitcoinSendTransaction = async ({
   if (!success) {
     console.error('invalid params', parseError);
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: parseError } }),
     };
   }
 

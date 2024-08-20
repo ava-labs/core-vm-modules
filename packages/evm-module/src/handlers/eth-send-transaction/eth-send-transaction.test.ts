@@ -141,15 +141,16 @@ describe('eth_sendTransaction handler', () => {
   });
 
   it('should return error if request params are invalid', async () => {
+    const testError = new Error('Invalid params') as ZodError;
     mockParseRequestParams.mockReturnValue({
       success: false,
-      error: new Error('Invalid params') as ZodError,
+      error: testError,
     });
 
     const response = await ethSendTransaction(testRequestParams());
 
     expect(response).toEqual({
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: testError } }),
     });
   });
 

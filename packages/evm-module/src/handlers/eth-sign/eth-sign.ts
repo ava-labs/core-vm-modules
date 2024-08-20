@@ -34,7 +34,7 @@ export const ethSign = async ({
 
     return {
       success: false,
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
     };
   }
   const { method, data, address } = result.data;
