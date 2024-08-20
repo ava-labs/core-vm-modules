@@ -14,6 +14,7 @@ describe('DeBank', () => {
     beforeEach(() => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
+          ok: true,
           json: () => Promise.resolve([{ community_id: 42161 }, { community_id: 56 }]),
         }),
       ) as jest.Mock;
@@ -51,6 +52,7 @@ describe('DeBank', () => {
     beforeEach(() => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
+          ok: true,
           json: () => Promise.resolve([{ id: 'eth', chain: 'info' }]),
         }),
       ) as jest.Mock;
@@ -68,6 +70,7 @@ describe('DeBank', () => {
     beforeEach(() => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
+          ok: true,
           json: () => Promise.resolve({ token: 'balance' }),
         }),
       ) as jest.Mock;
@@ -89,6 +92,7 @@ describe('DeBank', () => {
     beforeEach(() => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
+          ok: true,
           json: () => Promise.resolve([{ token: 'list' }]),
         }),
       ) as jest.Mock;

@@ -10,25 +10,25 @@ import {
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
 import { getTokens } from '../get-tokens/get-tokens';
-import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
-import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
 import { TokenService } from '@internal/utils';
 import { getEnv } from '../../env';
 import { getProvider } from '../../utils/get-provider';
 import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { RpcService } from '../../services/rpc-service/rpc-service';
+import { DeBankService } from '../../services/debank-service/debank-service';
 
 jest.mock('../../utils/find-async');
 jest.mock('../../utils/get-provider');
 jest.mock('../../services/debank-service/debank-service');
 jest.mock('../../services/glacier-service/glacier-service');
+jest.mock('../../services/rpc-service/rpc-service');
 jest.mock('../get-tokens/get-tokens');
-jest.mock('./evm-balance-service/get-native-token-balances');
-jest.mock('./evm-balance-service/get-erc20-balances');
 jest.mock('@internal/utils');
 
 describe('getBalances', () => {
   const { proxyApiUrl } = getEnv(Environment.DEV);
   const glacierService = new EvmGlacierService({ glacierApiUrl: proxyApiUrl }) as jest.Mocked<EvmGlacierService>;
+  const deBankService = new DeBankService({ proxyApiUrl }) as jest.Mocked<DeBankService>;
   const network = {
     chainId: 1,
     chainName: 'Ethereum',
@@ -69,16 +69,23 @@ describe('getBalances', () => {
   });
 
   it('should retrieve balances successfully when no supporting service is found', async () => {
+    const mockedRpcService = new RpcService({
+      customTokens: [],
+      network: {} as Network,
+      proxyApiUrl: '',
+    }) as jest.Mocked<RpcService>;
     const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
-    mockFindAsync.mockResolvedValue(undefined);
+    mockFindAsync.mockResolvedValue(mockedRpcService);
+    glacierService.isNetworkSupported.mockResolvedValue(false);
+    deBankService.isNetworkSupported.mockResolvedValue(false);
     const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
     mockGetProvider.mockReturnValue({} as JsonRpcBatchInternal);
     (getTokens as jest.MockedFunction<typeof getTokens>).mockResolvedValue([]);
-    (getNativeTokenBalances as jest.MockedFunction<typeof getNativeTokenBalances>).mockResolvedValue({
+    mockedRpcService.getNativeBalance.mockResolvedValue({
       symbol: 'ETH',
       balance: 10000n,
     } as NetworkTokenWithBalance);
-    (getErc20Balances as jest.MockedFunction<typeof getErc20Balances>).mockResolvedValue({
+    mockedRpcService.listErc20Balances.mockResolvedValue({
       '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } as TokenWithBalanceEVM,
     });
     const tokenService = new TokenService({ proxyApiUrl }) as jest.Mocked<TokenService>;
@@ -115,6 +122,13 @@ describe('getBalances', () => {
       glacierService,
     });
 
-    expect(result).toEqual({});
+    expect(result).toEqual({
+      '0xAddress1': {
+        error: 'listErc20Balances failed: unknown error',
+      },
+      '0xAddress2': {
+        error: 'listErc20Balances failed: unknown error',
+      },
+    });
   });
 });
