@@ -11,7 +11,6 @@ import {
 import { DeBank } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
-import { addIdToPromise, settleAllIdPromises } from '../../utils/id-promise';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -86,30 +85,15 @@ export class DeBankService implements BalanceServiceInterface {
     const chainList = await this.#deBank.getChainList();
     const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
     if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const tokenList = await this.#deBank.getTokenList({ chainId: chainIdString, address });
     const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
     if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const erc20TokenList = tokenList.filter((token) => token.id !== chainInfo.native_token_id);
 
-    const tokenBalancePromises = erc20TokenList.map((token) => {
-      return addIdToPromise(
-        this.#deBank.getTokenBalance({ chainId: chainIdString, tokenId: token.id, address }),
-        token.id,
-      );
-    });
+    const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
 
-    const tokenBalancesResults = await settleAllIdPromises(tokenBalancePromises);
-
-    const tokenIds = Object.keys(tokenBalancesResults);
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
-    for (let i = 0; i < tokenIds.length; i++) {
-      const tokenId = tokenIds[i];
-      if (tokenId === undefined) continue;
-      const tokenBalance = tokenBalancesResults[tokenId];
-      if (tokenBalance === undefined || 'error' in tokenBalance) {
-        erc20TokenBalances[tokenId] = {
-          error: `deBank:getTokenBalance failed: ${tokenBalance?.error ?? 'unknown error'}`,
-        };
+    for (const tokenBalance of tokenBalances) {
+      //skip native token
+      if (tokenBalance.id === chainInfo.native_token_id) {
         continue;
       }
 
