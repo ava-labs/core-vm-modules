@@ -171,7 +171,7 @@ export const avalancheSendTransaction = async ({
   } catch (error) {
     console.error(error);
     return {
-      error: rpcErrors.internal('Unable to create transaction'),
+      error: rpcErrors.internal({ message: 'Unable to create transaction', data: { cause: error } }),
     };
   }
 };
