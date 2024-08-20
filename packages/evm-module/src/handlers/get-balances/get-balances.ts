@@ -8,8 +8,6 @@ import {
   type Error,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
-import { DeBankService } from '../../services/debank-service/debank-service';
 import { findAsync } from '../../utils/find-async';
 import type { BalanceServiceInterface } from './balance-service-interface';
 import type { CurrencyCode } from '@avalabs/glacier-sdk';
@@ -27,16 +25,15 @@ export const getBalances = async ({
   proxyApiUrl,
   customTokens = [],
   storage,
-  glacierService,
+  balanceServices = [],
 }: GetBalancesParams & {
   proxyApiUrl: string;
-  glacierService: EvmGlacierService;
+  balanceServices: BalanceServiceInterface[];
   storage?: Storage;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
   const services: BalanceServiceInterface[] = [
-    glacierService,
-    new DeBankService({ proxyApiUrl }),
+    ...balanceServices,
     new RpcService({ network, storage, proxyApiUrl, customTokens }),
   ];
 

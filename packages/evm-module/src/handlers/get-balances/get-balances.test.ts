@@ -59,7 +59,7 @@ describe('getBalances', () => {
       network,
       proxyApiUrl,
       customTokens,
-      glacierService,
+      balanceServices: [glacierService, deBankService],
     });
 
     expect(result).toEqual({
@@ -97,7 +97,7 @@ describe('getBalances', () => {
       network,
       proxyApiUrl,
       customTokens,
-      glacierService,
+      balanceServices: [glacierService, deBankService],
     });
 
     expect(result).toEqual({
@@ -119,7 +119,7 @@ describe('getBalances', () => {
       network,
       proxyApiUrl,
       customTokens,
-      glacierService,
+      balanceServices: [glacierService, deBankService],
     });
 
     expect(result).toEqual({
