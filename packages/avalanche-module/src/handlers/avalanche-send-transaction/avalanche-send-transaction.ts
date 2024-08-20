@@ -11,14 +11,14 @@ import {
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { avaxSerial, EVM, EVMUnsignedTx, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { retry } from '@internal/utils/src/utils/retry';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
-import { getTransactionDetailSections } from './utils/get-transaction-detail-sections';
+import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -159,7 +159,7 @@ export const avalancheSendTransaction = async ({
 
     const txHash = (await getTxHash(provider, response, vm)) as Hex;
 
-    await waitForTransactionReceipt({
+    waitForTransactionReceipt({
       provider,
       txHash,
       vm,
@@ -199,17 +199,9 @@ const waitForTransactionReceipt = async ({
   onTransactionConfirmed: (txHash: Hex) => void;
   onTransactionReverted: (txHash: Hex) => void;
 }) => {
-  if (vm === EVM) {
-    const receipt = await provider.evmRpc.waitForTransaction(txHash);
+  const maxTransactionStatusCheckRetries = 7;
 
-    const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
-
-    if (success) {
-      onTransactionConfirmed(txHash);
-    } else {
-      onTransactionReverted(txHash);
-    }
-  } else {
+  if (vm === PVM) {
     try {
       const maxTransactionStatusCheckRetries = 7;
 
@@ -221,6 +213,34 @@ const waitForTransactionReceipt = async ({
 
       onTransactionConfirmed(txHash);
     } catch (error) {
+      onTransactionReverted(txHash);
+    }
+  } else if (vm === AVM) {
+    try {
+      await retry({
+        operation: () => provider.getApiX().getTxStatus({ txID: txHash }),
+        isSuccess: (result) => result.status === 'Accepted',
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      onTransactionConfirmed(txHash);
+    } catch (error) {
+      console.error(error);
+      onTransactionReverted(txHash);
+    }
+  } else {
+    try {
+      const receipt = await provider.evmRpc.waitForTransaction(txHash);
+
+      const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
+
+      if (success) {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    } catch (error) {
+      console.error(error);
       onTransactionReverted(txHash);
     }
   }

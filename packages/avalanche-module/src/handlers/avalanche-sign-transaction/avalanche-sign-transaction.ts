@@ -12,7 +12,7 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
-import { getTransactionDetailSections } from '../avalanche-send-transaction/utils/get-transaction-detail-sections';
+import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 

@@ -80,36 +80,45 @@ export type BaseDetailItem = {
   label: string;
 };
 
+export enum DetailItemType {
+  TEXT = 'text',
+  ADDRESS = 'address',
+  NODE_ID = 'nodeID',
+  CURRENCY = 'currency',
+  DATA = 'data',
+  DATE = 'date',
+}
+
 export type TextItem = BaseDetailItem & {
-  type: 'text';
+  type: DetailItemType.TEXT;
   value: string;
   alignment: 'vertical' | 'horizontal';
 };
 
 export type AddressItem = BaseDetailItem & {
-  type: 'address';
+  type: DetailItemType.ADDRESS;
   value: string;
 };
 
 export type NodeIDItem = BaseDetailItem & {
-  type: 'nodeID';
+  type: DetailItemType.NODE_ID;
   value: string;
 };
 
 export type CurrencyItem = BaseDetailItem & {
-  type: 'currency';
+  type: DetailItemType.CURRENCY;
   value: bigint;
   maxDecimals: number;
   symbol: string;
 };
 
 export type DataItem = BaseDetailItem & {
-  type: 'data';
+  type: DetailItemType.DATA;
   value: string;
 };
 
 export type DateItem = BaseDetailItem & {
-  type: 'date';
+  type: DetailItemType.DATE;
   value: string;
 };
 

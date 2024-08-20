@@ -1,8 +1,16 @@
-import type { AddressItem, CurrencyItem, NodeIDItem, TextItem, DataItem, DateItem } from '@avalabs/vm-module-types';
+import {
+  type AddressItem,
+  type CurrencyItem,
+  type NodeIDItem,
+  type TextItem,
+  type DataItem,
+  type DateItem,
+  DetailItemType,
+} from '@avalabs/vm-module-types';
 
 export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({
   label,
-  type: 'currency',
+  type: DetailItemType.CURRENCY,
   value,
   maxDecimals,
   symbol,
@@ -15,30 +23,30 @@ export const textItem = (
 ): TextItem => ({
   label,
   alignment,
-  type: 'text',
+  type: DetailItemType.TEXT,
   value,
 });
 
 export const addressItem = (label: string, value: string): AddressItem => ({
   label,
-  type: 'address',
+  type: DetailItemType.ADDRESS,
   value,
 });
 
 export const nodeIDItem = (label: string, value: string): NodeIDItem => ({
   label,
-  type: 'nodeID',
+  type: DetailItemType.NODE_ID,
   value,
 });
 
 export const dataItem = (label: string, value: string): DataItem => ({
   label,
-  type: 'data',
+  type: DetailItemType.DATA,
   value,
 });
 
 export const dateItem = (label: string, value: string): DateItem => ({
   label,
-  type: 'date',
+  type: DetailItemType.DATE,
   value,
 });

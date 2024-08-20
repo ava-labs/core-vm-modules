@@ -30,7 +30,7 @@ const mockApprovalController: jest.Mocked<ApprovalController> = {
 const mockGetAddressesByIndices = getAddressesByIndices as jest.MockedFunction<typeof getAddressesByIndices>;
 
 const issueTxHexMock = jest.fn();
-const mockGetTxStatus = jest.fn().mockResolvedValue({ status: 'Committed' });
+const mockGetTxStatus = jest.fn().mockResolvedValue({ status: 'Accepted' });
 const mockWaitForTransaction = jest.fn().mockResolvedValue({ status: '1' });
 
 const mockGetApiP = jest.fn().mockReturnValue({
@@ -73,10 +73,10 @@ const testNetwork: Network = {
   logoUri: 'logoUri',
   utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
-    name: 'Ethereum',
-    symbol: 'ETH',
+    name: 'Avalanche',
+    symbol: 'AVAX',
     decimals: 9,
-    description: 'Ethereum Token',
+    description: 'Avalanche Token',
     logoUri: 'some logo uri',
   },
   vmName: NetworkVMType.EVM,
@@ -279,7 +279,7 @@ describe('avalanche_sendTransaction handler', () => {
                 type: 'currency',
                 value: undefined,
                 maxDecimals: 9,
-                symbol: 'ETH',
+                symbol: 'AVAX',
               },
             ],
           },
@@ -350,7 +350,7 @@ describe('avalanche_sendTransaction handler', () => {
                 type: 'currency',
                 value: undefined,
                 maxDecimals: 9,
-                symbol: 'ETH',
+                symbol: 'AVAX',
               },
             ],
           },

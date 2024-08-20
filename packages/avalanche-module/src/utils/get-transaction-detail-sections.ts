@@ -9,12 +9,11 @@ import {
   isImportTx,
   isRemoveSubnetValidatorTx,
   isSubnetDetails,
-} from '../typeguards';
-import { addressItem, currencyItem, nodeIDItem, textItem } from '@internal/utils';
+} from '../handlers/avalanche-send-transaction/typeguards';
+import { addressItem, currencyItem, nodeIDItem, textItem, dateItem } from '@internal/utils';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { PVM } from '@avalabs/avalanchejs';
-import { isPrimarySubnet } from './is-primary-subnet';
-import { dateItem } from '@internal/utils/src/utils/detail-item';
+import { isPrimarySubnet } from '../handlers/avalanche-send-transaction/utils/is-primary-subnet';
 
 export const getTransactionDetailSections = (txDetails: TxDetails, networkToken: NetworkToken) => {
   const details: DetailSection[] = [];

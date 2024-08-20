@@ -19,8 +19,7 @@ import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { processTransactionSimulation } from '../../utils/process-transaction-simulation';
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 import { ERC20TransactionType } from '../../types';
-import { addressItem, textItem } from '@internal/utils';
-import { dataItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, textItem, dataItem } from '@internal/utils';
 
 export const ethSendTransaction = async ({
   request,
