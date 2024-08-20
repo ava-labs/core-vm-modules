@@ -171,6 +171,7 @@ describe('DeBankService', () => {
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenList.mockResolvedValue(mockTokenList);
       mockDeBank.getTokenBalance.mockResolvedValueOnce(mockTokenBalance1).mockResolvedValueOnce(mockTokenBalance2);
+      mockDeBank.getTokensBalanceOnChain.mockResolvedValueOnce([mockTokenBalance1, mockTokenBalance2]);
 
       const result = await deBankService.listErc20Balances({
         chainId: 42161,
