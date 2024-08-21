@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.1.10
+
+### Patch Changes
+
+- 4d3c33c: Improve balance fetching and error handling
+- Updated dependencies [4d3c33c]
+  - @avalabs/vm-module-types@0.1.10
+
 ## 0.1.9
 
 ### Patch Changes
