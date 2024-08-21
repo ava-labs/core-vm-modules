@@ -65,7 +65,6 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
       ],
     });
   } else if (isImportTx(txDetails)) {
-    // todo: test
     const { amount, chain, source, type } = txDetails;
 
     details.push({
@@ -126,7 +125,6 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
       items,
     });
   } else if (isBlockchainDetails(txDetails)) {
-    // todo: test
     // handle genesis data similarly to how we handle data in transaction details
     const { chainID, chainName, vmID, genesisData } = txDetails;
 
@@ -142,7 +140,6 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
       items,
     });
   } else if (isAddSubnetValidatorTx(txDetails)) {
-    // todo: test
     const { nodeID, start, end, subnetID } = txDetails;
 
     const items: DetailItem[] = [
@@ -157,7 +154,6 @@ export const getTransactionDetailSections = (txDetails: TxDetails, networkToken:
       items,
     });
   } else if (isRemoveSubnetValidatorTx(txDetails)) {
-    // todo: test
     const { nodeID, subnetID } = txDetails;
 
     const items: DetailItem[] = [nodeIDItem('Node ID', nodeID), nodeIDItem('Subnet ID', subnetID)];
