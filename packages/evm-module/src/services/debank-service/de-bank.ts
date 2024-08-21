@@ -14,15 +14,15 @@ export class DeBank {
   /**
    * @param chainId - DeBank chain id (ex. "base", "eth")
    */
-  async getChainInfo({ chainId }: { chainId: string }): Promise<DeBankChainInfo> {
-    const chainInfoResponse = await fetch(`${this.baseUrl}/v1/chain?id=${chainId}`);
-    return await chainInfoResponse.json();
+  async getChainInfo({ chainId }: { chainId: string }): Promise<DeBankChainInfo | undefined> {
+    const chainList = await this.getChainList();
+    return chainList.find((chain) => chain.id === chainId);
   }
 
   /**
    * @param chainId - DeBank chain id (ex. "base", "eth")
    * @param address - account address
-   * @param tokenId - DeBank token id (ex. "0x19225f002b65eefb22950b9739fc8b448d900d44")
+   * @param tokenId - The address of the token contract or a native token id (eth, matic, bsc)
    */
   async getTokenBalance({
     chainId,
@@ -31,12 +31,31 @@ export class DeBank {
   }: {
     chainId: string;
     address: Hex;
-    tokenId: Hex;
+    tokenId: Hex | string;
   }): Promise<DeBankToken> {
     const tokenBalanceResponse = await fetch(
       `${this.baseUrl}/v1/user/token?id=${address}&chain_id=${chainId}&token_id=${tokenId}`,
     );
-    return await tokenBalanceResponse.json();
+    if (tokenBalanceResponse.ok) {
+      return await tokenBalanceResponse.json();
+    } else {
+      throw new Error(`${tokenBalanceResponse.status}:${tokenBalanceResponse.statusText}`);
+    }
+  }
+
+  /**
+   * @param chainId - DeBank chain id (ex. "base", "eth")
+   * @param address - account address
+   */
+  async getTokensBalanceOnChain({ chainId, address }: { chainId: string; address: Hex }): Promise<DeBankToken[]> {
+    const tokenBalanceResponse = await fetch(
+      `${this.baseUrl}/v1/user/all_token_list?id=${address}&chain_ids=${chainId}`,
+    );
+    if (tokenBalanceResponse.ok) {
+      return await tokenBalanceResponse.json();
+    } else {
+      throw new Error(`${tokenBalanceResponse.status}:${tokenBalanceResponse.statusText}`);
+    }
   }
 
   /**
@@ -45,7 +64,11 @@ export class DeBank {
    */
   async getTokenList({ chainId, address }: { chainId: string; address: Hex }): Promise<DeBankToken[]> {
     const response = await fetch(`${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
-    return await response.json();
+    if (response.ok) {
+      return await response.json();
+    } else {
+      throw new Error(`${response.status}:${response.statusText}`);
+    }
   }
 
   /**
@@ -54,12 +77,15 @@ export class DeBank {
   async getChainList(): Promise<DeBankChainInfo[]> {
     if (this.#supportedChainIds.length === 0) {
       const chainListResponse = await fetch(`${this.baseUrl}/v1/chain/list`);
-      this.#supportedChainIds = await chainListResponse.json();
+      if (chainListResponse.ok) {
+        this.#supportedChainIds = await chainListResponse.json();
+      } else {
+        throw new Error(`${chainListResponse.status}:${chainListResponse.statusText}`);
+      }
     }
     return this.#supportedChainIds;
   }
 }
-export type TokenId = Hex;
 /**
  * Example:
  * ```json
@@ -86,7 +112,7 @@ export type TokenId = Hex;
  * ```
  */
 export type DeBankToken = {
-  id: Hex;
+  id: Hex | string; //address or native token id (eth, matic, bsc)
   chain: string;
   name: string;
   symbol: string;

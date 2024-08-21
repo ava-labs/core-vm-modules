@@ -10,6 +10,7 @@ import {
 import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
+  type Error,
   type ERC20Token,
   type NetworkTokenWithBalance,
   TokenType,
@@ -221,7 +222,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
     address: string;
     currency: CurrencyCode;
     customTokens: ERC20Token[];
-  }): Promise<Record<string, TokenWithBalanceEVM>> {
+  }): Promise<Record<string, TokenWithBalanceEVM | Error>> {
     try {
       const tokensWithBalance: TokenWithBalanceERC20[] = [];
       /**

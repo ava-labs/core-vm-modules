@@ -1,4 +1,5 @@
 import type { Storage, Network } from './common';
+import type { Error } from './error';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 
@@ -142,4 +143,4 @@ export type TokenWithBalance =
   | TokenWithBalanceAVM
   | NftTokenWithBalance;
 
-export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance>>;
+export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;
