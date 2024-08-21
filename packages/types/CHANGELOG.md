@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.11
+
+### Patch Changes
+
+- d8dd608: feat: bitcoin_sendTransaction
+
 ## 0.1.10
 
 ### Patch Changes
