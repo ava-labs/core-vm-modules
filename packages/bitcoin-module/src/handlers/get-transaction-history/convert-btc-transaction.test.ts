@@ -10,7 +10,7 @@ const btcMain: Network = {
     name: 'Bitcoin',
     symbol: 'BTC',
   },
-  explorerUrl: 'https://btc.main',
+  explorerUrl: 'https://btc.main/btc',
 } as unknown as Network;
 
 const btcTest: Network = {
@@ -21,7 +21,7 @@ const btcTest: Network = {
     name: 'Bitcoin',
     symbol: 'BTC',
   },
-  explorerUrl: 'https://btc.test',
+  explorerUrl: 'https://btc.test/btc-test',
 } as unknown as Network;
 
 const userAddress = 'b1-user-address';
@@ -57,7 +57,7 @@ describe('convert-btc-transaction', () => {
   it('should properly map outgoing txs', () => {
     expect(convertBtcTransaction(outgoingTx, { address: userAddress, network: btcMain })).toEqual({
       chainId: btcMain.chainId.toString(),
-      explorerLink: `${btcMain.explorerUrl}/btc/tx/${outgoingTx.hash}`,
+      explorerLink: `${btcMain.explorerUrl}/tx/${outgoingTx.hash}`,
       from: userAddress,
       gasUsed: outgoingTx.fee.toString(),
       hash: outgoingTx.hash,
@@ -83,7 +83,7 @@ describe('convert-btc-transaction', () => {
   it('should properly map incoming txs', () => {
     expect(convertBtcTransaction(incomingTx, { address: userAddress, network: btcTest })).toEqual({
       chainId: btcTest.chainId.toString(),
-      explorerLink: `${btcTest.explorerUrl}/btc-testnet/tx/${incomingTx.hash}`,
+      explorerLink: `${btcTest.explorerUrl}/tx/${incomingTx.hash}`,
       from: txAddress,
       gasUsed: incomingTx.fee.toString(),
       hash: incomingTx.hash,

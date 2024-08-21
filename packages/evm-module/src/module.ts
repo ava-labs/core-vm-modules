@@ -27,6 +27,8 @@ import { ethSign } from './handlers/eth-sign/eth-sign';
 import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
 import { getAddress } from './handlers/get-address/get-address';
 import { DeBankService } from './services/debank-service/debank-service';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -46,6 +48,16 @@ export class EvmModule implements Module {
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
+  }
+
+  getProvider(network: Network): JsonRpcBatchInternal {
+    return getProvider({
+      chainId: network.chainId,
+      chainName: network.chainName,
+      rpcUrl: network.rpcUrl,
+      multiContractAddress: network.utilityAddresses?.multicall,
+      pollingInterval: 1000,
+    });
   }
 
   getAddress({ accountIndex, xpub, walletType }: GetAddressParams): Promise<GetAddressResponse> {

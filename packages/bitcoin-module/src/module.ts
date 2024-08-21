@@ -9,23 +9,43 @@ import type {
   GetBalancesParams,
   GetAddressParams,
   GetAddressResponse,
+  ApprovalController,
 } from '@avalabs/vm-module-types';
-import { parseManifest } from '@avalabs/vm-module-types';
+import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getEnv } from './env';
 
 import ManifestJson from '../manifest.json';
-import { getNetworkFee } from './handlers/get-network-fee';
-import { getTransactionHistory } from './handlers/get-transaction-history';
-import { getBalances } from './handlers/get-balances';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getBalances } from './handlers/get-balances/get-balances';
 import { getAddress } from './handlers/get-address/get-address';
+import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction/bitcoin-send-transaction';
+import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
+  #approvalController: ApprovalController;
 
-  constructor({ environment }: { environment: Environment }) {
+  constructor({
+    environment,
+    approvalController,
+  }: {
+    environment: Environment;
+    approvalController: ApprovalController;
+  }) {
     const { proxyApiUrl } = getEnv(environment);
+
+    this.#approvalController = approvalController;
     this.#proxyApiUrl = proxyApiUrl;
+  }
+
+  getProvider(network: Network): BitcoinProvider {
+    return getProvider({
+      isTestnet: Boolean(network.isTestnet),
+      proxyApiUrl: this.#proxyApiUrl,
+    });
   }
 
   getAddress({ accountIndex, xpub, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -68,8 +88,15 @@ export class BitcoinModule implements Module {
     return Promise.resolve([]);
   }
 
-  async onRpcRequest(request: RpcRequest, _network: Network) {
+  async onRpcRequest(request: RpcRequest, network: Network) {
     switch (request.method) {
+      case RpcMethod.BITCOIN_SEND_TRANSACTION:
+        return bitcoinSendTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+        });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }

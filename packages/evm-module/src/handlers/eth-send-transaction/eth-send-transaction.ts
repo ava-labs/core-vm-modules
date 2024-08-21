@@ -37,7 +37,7 @@ export const ethSendTransaction = async ({
   if (!result.success) {
     console.error('invalid params', result.error);
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
@@ -45,7 +45,7 @@ export const ethSendTransaction = async ({
 
   if (!transaction) {
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
@@ -153,7 +153,15 @@ export const ethSendTransaction = async ({
     };
   }
 
-  const txHash = await getTxHash(provider, response);
+  let txHash;
+
+  try {
+    txHash = await getTxHash(provider, response);
+  } catch (error) {
+    return {
+      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+    };
+  }
 
   waitForTransactionReceipt({
     provider,
@@ -186,13 +194,18 @@ const waitForTransactionReceipt = async ({
   onTransactionConfirmed: (txHash: Hex) => void;
   onTransactionReverted: (txHash: Hex) => void;
 }) => {
-  const receipt = await provider.waitForTransaction(txHash);
+  try {
+    const receipt = await provider.waitForTransaction(txHash);
 
-  const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
+    const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
 
-  if (success) {
-    onTransactionConfirmed(txHash);
-  } else {
+    if (success) {
+      onTransactionConfirmed(txHash);
+    } else {
+      onTransactionReverted(txHash);
+    }
+  } catch (error) {
+    console.error(error);
     onTransactionReverted(txHash);
   }
 };

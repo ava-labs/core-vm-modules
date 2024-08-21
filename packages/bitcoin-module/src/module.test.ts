@@ -1,17 +1,17 @@
 import { Environment, type Network } from '@avalabs/vm-module-types';
 
 import { BitcoinModule } from './module';
-import { getNetworkFee } from './handlers/get-network-fee';
-import { getBalances } from './handlers/get-balances';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getBalances } from './handlers/get-balances/get-balances';
 import { devEnv, prodEnv } from './env';
 
-jest.mock('./handlers/get-network-fee');
-jest.mock('./handlers/get-balances');
+jest.mock('./handlers/get-network-fee/get-network-fee');
+jest.mock('./handlers/get-balances/get-balances');
 
 describe('bitcoin-module', () => {
   describe('getNetworkFee()', () => {
     it('uses the get-network-fee handler', async () => {
-      const devModule = new BitcoinModule({ environment: Environment.DEV });
+      const devModule = new BitcoinModule({ environment: Environment.DEV, approvalController: {} as any }); // eslint-disable-line
       await devModule.getNetworkFee({ isTestnet: true } as Network);
 
       expect(getNetworkFee).toHaveBeenCalledWith({
@@ -19,7 +19,7 @@ describe('bitcoin-module', () => {
         proxyApiUrl: devEnv.proxyApiUrl,
       });
 
-      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION });
+      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION, approvalController: {} as any }); // eslint-disable-line
       await prodModule.getNetworkFee({ isTestnet: false } as Network);
 
       expect(getNetworkFee).toHaveBeenCalledWith({
@@ -37,7 +37,7 @@ describe('bitcoin-module', () => {
         currency: 'USD',
       };
 
-      const devModule = new BitcoinModule({ environment: Environment.DEV });
+      const devModule = new BitcoinModule({ environment: Environment.DEV, approvalController: {} as any }); // eslint-disable-line
       await devModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({
@@ -45,7 +45,7 @@ describe('bitcoin-module', () => {
         proxyApiUrl: devEnv.proxyApiUrl,
       });
 
-      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION });
+      const prodModule = new BitcoinModule({ environment: Environment.PRODUCTION, approvalController: {} as any }); // eslint-disable-line
       await prodModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({

@@ -26,6 +26,8 @@ import { getAddress } from './handlers/get-address/get-address';
 import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
 import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
 import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -45,6 +47,10 @@ export class AvalancheModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
+  }
+
+  getProvider(network: Network): Avalanche.JsonRpcProvider {
+    return getProvider({ isTestnet: Boolean(network.isTestnet) });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {

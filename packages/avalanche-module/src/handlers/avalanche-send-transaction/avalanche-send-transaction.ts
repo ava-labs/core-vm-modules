@@ -40,7 +40,7 @@ export const avalancheSendTransaction = async ({
 
   if (!result.success) {
     return {
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 

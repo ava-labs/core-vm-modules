@@ -100,7 +100,7 @@ describe('ethSign', () => {
 
     expect(result).toEqual({
       success: false,
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: 'Invalid params' } }),
     });
   });
 
