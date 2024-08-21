@@ -133,6 +133,8 @@ export const avalancheSendTransaction = async ({
       unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
       data: txData,
       vm,
+      externalIndices,
+      internalIndices,
     };
 
     const details = getTransactionDetailSections(txDetails, network.networkToken);

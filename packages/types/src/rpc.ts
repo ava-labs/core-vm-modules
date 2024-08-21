@@ -213,6 +213,8 @@ export type SigningData =
       unsignedTxJson: string;
       data: Avalanche.Tx;
       vm: 'EVM' | 'AVM' | 'PVM';
+      externalIndices?: number[];
+      internalIndices?: number[];
     }
   | {
       type: RpcMethod.AVALANCHE_SIGN_TRANSACTION;
