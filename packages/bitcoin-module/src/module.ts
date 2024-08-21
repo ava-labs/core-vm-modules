@@ -16,11 +16,11 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { getEnv } from './env';
 
 import ManifestJson from '../manifest.json';
-import { getNetworkFee } from './handlers/get-network-fee';
-import { getTransactionHistory } from './handlers/get-transaction-history';
-import { getBalances } from './handlers/get-balances';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getBalances } from './handlers/get-balances/get-balances';
 import { getAddress } from './handlers/get-address/get-address';
-import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction';
+import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction/bitcoin-send-transaction';
 import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 

@@ -11,9 +11,10 @@ import {
 import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
-import { getBalances } from '../get-balances';
+import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
 import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
+import { calculateGasLimit } from '../../utils/calculate-gas-limit';
 
 type BitcoinSendTransactionParams = {
   request: RpcRequest;
@@ -93,6 +94,7 @@ export const bitcoinSendTransaction = async ({
       amount,
       fee,
       feeRate,
+      gasLimit: calculateGasLimit(fee, feeRate),
       inputs,
       outputs,
       balance: btcBalance,

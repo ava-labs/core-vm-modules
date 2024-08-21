@@ -132,6 +132,7 @@ export type BitcoinTransactionData = {
   amount: number;
   feeRate: number;
   fee: number;
+  gasLimit: number;
   balance: TokenWithBalanceBTC;
   inputs: BitcoinInputUTXO[];
   outputs: BitcoinOutputUTXO[];
