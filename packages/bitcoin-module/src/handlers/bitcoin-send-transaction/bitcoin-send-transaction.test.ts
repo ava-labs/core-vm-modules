@@ -16,7 +16,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 
 jest.mock('./schema');
 jest.mock('../../utils/get-provider');
-jest.mock('../get-balances');
+jest.mock('../get-balances/get-balances');
 jest.mock('../../utils/is-btc-balance');
 jest.mock('@avalabs/core-wallets-sdk', () => ({
   createTransferTx: jest.fn(),

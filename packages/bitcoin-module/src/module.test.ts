@@ -5,7 +5,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { devEnv, prodEnv } from './env';
 
-jest.mock('./handlers/get-network-fee');
+jest.mock('./handlers/get-network-fee/get-network-fee');
 jest.mock('./handlers/get-balances/get-balances');
 
 describe('bitcoin-module', () => {
