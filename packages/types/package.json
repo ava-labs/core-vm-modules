@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/vm-module-types",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",

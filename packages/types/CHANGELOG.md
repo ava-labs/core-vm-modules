@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.10
+
+### Patch Changes
+
+- 4d3c33c: Improve balance fetching and error handling
+
 ## 0.1.9
 
 ## 0.1.8
