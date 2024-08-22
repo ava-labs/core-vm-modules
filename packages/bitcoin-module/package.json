@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/bitcoin-module",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.1.11",
+    "@avalabs/vm-module-types": "0.1.12",
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.1",
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.1",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.1",
