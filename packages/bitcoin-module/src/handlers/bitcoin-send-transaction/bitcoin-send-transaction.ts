@@ -15,6 +15,7 @@ import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
 import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
+import { addressItem, textItem } from '@internal/utils';
 
 type BitcoinSendTransactionParams = {
   request: RpcRequest;
@@ -78,11 +79,12 @@ export const bitcoinSendTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    transactionDetails: {
-      website: new URL(dappInfo.url).hostname,
-      from,
-      to,
-    },
+    details: [
+      {
+        title: 'Transaction Details',
+        items: [textItem('Website', new URL(dappInfo.url).hostname), addressItem('From', from), addressItem('To', to)],
+      },
+    ],
     networkFeeSelector: true,
   };
 

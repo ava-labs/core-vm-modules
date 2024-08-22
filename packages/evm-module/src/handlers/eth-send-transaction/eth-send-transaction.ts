@@ -8,7 +8,6 @@ import {
   RpcMethod,
   type SigningResult,
   type DetailItem,
-  type DetailSection,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
@@ -126,13 +125,6 @@ export const ethSendTransaction = async ({
     transactionDetails.push(dataItem('Data', transaction.data));
   }
 
-  const details: DetailSection[] = [
-    {
-      title: 'Transaction Details',
-      items: transactionDetails,
-    },
-  ];
-
   const displayData: DisplayData = {
     title,
     network: {
@@ -140,7 +132,12 @@ export const ethSendTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    details,
+    details: [
+      {
+        title: 'Transaction Details',
+        items: transactionDetails,
+      },
+    ],
     networkFeeSelector: true,
     alert,
     balanceChange,
