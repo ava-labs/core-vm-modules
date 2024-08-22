@@ -8,7 +8,7 @@ import {
   type SigningResult,
   type Hex,
 } from '@avalabs/vm-module-types';
-import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
+import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
