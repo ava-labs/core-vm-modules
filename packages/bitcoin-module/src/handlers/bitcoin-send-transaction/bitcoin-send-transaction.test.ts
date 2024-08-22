@@ -235,11 +235,29 @@ describe('bitcoinSendTransaction', () => {
           name: testNetwork.chainName,
           logoUri: testNetwork.logoUri,
         },
-        transactionDetails: {
-          website: 'example.com',
-          from: 'from',
-          to: 'to',
-        },
+        details: [
+          {
+            title: 'Transaction Details',
+            items: [
+              {
+                label: 'Website',
+                value: 'example.com',
+                alignment: 'horizontal',
+                type: 'text',
+              },
+              {
+                label: 'From',
+                value: 'from',
+                type: 'address',
+              },
+              {
+                label: 'To',
+                value: 'to',
+                type: 'address',
+              },
+            ],
+          },
+        ],
         networkFeeSelector: true,
       },
       signingData: {
