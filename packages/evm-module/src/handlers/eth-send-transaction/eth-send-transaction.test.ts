@@ -99,12 +99,34 @@ const displayData = {
     name: testNetwork.chainName,
     logoUri: testNetwork.logoUri,
   },
-  transactionDetails: {
-    website: 'example.com',
-    from: '0xfrom',
-    to: '0xto',
-    data: '0xdata',
-  },
+  details: [
+    {
+      title: 'Transaction Details',
+      items: [
+        {
+          label: 'Website',
+          value: 'example.com',
+          alignment: 'horizontal',
+          type: 'text',
+        },
+        {
+          label: 'From',
+          value: '0xfrom',
+          type: 'address',
+        },
+        {
+          label: 'To',
+          value: '0xto',
+          type: 'address',
+        },
+        {
+          label: 'Data',
+          value: '0xdata',
+          type: 'data',
+        },
+      ],
+    },
+  ],
   networkFeeSelector: true,
   alert: undefined,
   tokenApprovals: undefined,

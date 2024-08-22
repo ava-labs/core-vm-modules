@@ -47,7 +47,12 @@ export const avalancheSignMessage = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    messageDetails: message,
+    details: [
+      {
+        title: 'Message',
+        items: [message],
+      },
+    ],
   };
 
   // prompt user for approval

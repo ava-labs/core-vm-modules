@@ -7,6 +7,7 @@ import {
   type SigningData,
   RpcMethod,
   type SigningResult,
+  type DetailItem,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
@@ -17,6 +18,7 @@ import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { processTransactionSimulation } from '../../utils/process-transaction-simulation';
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 import { ERC20TransactionType } from '../../types';
+import { addressItem, textItem, dataItem } from '@internal/utils';
 
 export const ethSendTransaction = async ({
   request,
@@ -109,6 +111,20 @@ export const ethSendTransaction = async ({
     title = 'Token Spend Approval';
   }
 
+  const transactionDetails: DetailItem[] = [
+    textItem('Website', new URL(dappInfo.url).hostname),
+    addressItem('From', transaction.from),
+    addressItem('To', transaction.to),
+  ];
+
+  if (transactionType) {
+    transactionDetails.push(textItem('Type', transactionType as string));
+  }
+
+  if (transaction.data) {
+    transactionDetails.push(dataItem('Data', transaction.data));
+  }
+
   const displayData: DisplayData = {
     title,
     network: {
@@ -116,13 +132,12 @@ export const ethSendTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    transactionDetails: {
-      website: new URL(dappInfo.url).hostname,
-      from: transaction.from,
-      to: transaction.to,
-      data: transaction.data,
-      type: transactionType,
-    },
+    details: [
+      {
+        title: 'Transaction Details',
+        items: transactionDetails,
+      },
+    ],
     networkFeeSelector: true,
     alert,
     balanceChange,

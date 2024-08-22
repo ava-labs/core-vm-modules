@@ -63,7 +63,12 @@ describe('avalanche_signMessage', () => {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       displayData: {
         title: 'Sign Message',
-        messageDetails: message,
+        details: [
+          {
+            title: 'Message',
+            items: [message],
+          },
+        ],
         dAppInfo: {
           action: 'Test DApp requests you to sign the following message',
           logoUri: 'test-icon-uri',
