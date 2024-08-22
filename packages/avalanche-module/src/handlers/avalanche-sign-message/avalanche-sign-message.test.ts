@@ -38,7 +38,7 @@ const mockApprovalController = {
 
 describe('avalanche_signMessage', () => {
   beforeEach(() => {
-    mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
   });
 
   it('should return error when params are invalid', async () => {
@@ -49,7 +49,7 @@ describe('avalanche_signMessage', () => {
     });
 
     expect(result).toEqual({
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
     });
   });
 

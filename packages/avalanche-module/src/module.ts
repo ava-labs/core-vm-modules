@@ -25,6 +25,9 @@ import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
 import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
 import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
+import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -44,6 +47,10 @@ export class AvalancheModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
+  }
+
+  getProvider(network: Network): Avalanche.JsonRpcProvider {
+    return getProvider({ isTestnet: Boolean(network.isTestnet) });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -76,6 +83,13 @@ export class AvalancheModule implements Module {
     switch (request.method) {
       case RpcMethod.AVALANCHE_SIGN_MESSAGE:
         return avalancheSignMessage({ request, network, approvalController: this.#approvalController });
+      case RpcMethod.AVALANCHE_SIGN_TRANSACTION:
+        return avalancheSignTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          glacierApiUrl: this.#glacierApiUrl,
+        });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
           request,

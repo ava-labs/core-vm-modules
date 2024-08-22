@@ -6,6 +6,7 @@ import {
   type DisplayData,
   type SigningData,
   RpcMethod,
+  type SigningResult,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
@@ -36,7 +37,7 @@ export const ethSendTransaction = async ({
   if (!result.success) {
     console.error('invalid params', result.error);
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
@@ -44,7 +45,7 @@ export const ethSendTransaction = async ({
 
   if (!transaction) {
     return {
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
@@ -152,8 +153,15 @@ export const ethSendTransaction = async ({
     };
   }
 
-  // broadcast the signed transaction
-  const txHash = await provider.send('eth_sendRawTransaction', [response.result]);
+  let txHash;
+
+  try {
+    txHash = await getTxHash(provider, response);
+  } catch (error) {
+    return {
+      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+    };
+  }
 
   waitForTransactionReceipt({
     provider,
@@ -163,6 +171,16 @@ export const ethSendTransaction = async ({
   });
 
   return { result: txHash };
+};
+
+const getTxHash = async (provider: JsonRpcBatchInternal, response: SigningResult) => {
+  if ('txHash' in response) {
+    return response.txHash;
+  }
+
+  // broadcast the signed transaction
+  const txHash = await provider.send('eth_sendRawTransaction', [response.signedData]);
+  return txHash;
 };
 
 const waitForTransactionReceipt = async ({
@@ -176,13 +194,18 @@ const waitForTransactionReceipt = async ({
   onTransactionConfirmed: (txHash: Hex) => void;
   onTransactionReverted: (txHash: Hex) => void;
 }) => {
-  const receipt = await provider.waitForTransaction(txHash);
+  try {
+    const receipt = await provider.waitForTransaction(txHash);
 
-  const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
+    const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
 
-  if (success) {
-    onTransactionConfirmed(txHash);
-  } else {
+    if (success) {
+      onTransactionConfirmed(txHash);
+    } else {
+      onTransactionReverted(txHash);
+    }
+  } catch (error) {
+    console.error(error);
     onTransactionReverted(txHash);
   }
 };

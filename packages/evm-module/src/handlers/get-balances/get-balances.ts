@@ -1,21 +1,22 @@
 import {
+  type ERC20Token,
   type GetBalancesParams,
+  type NetworkContractToken,
+  type NetworkTokenWithBalance,
   type Storage,
   TokenType,
-  type NetworkContractToken,
-  type ERC20Token,
+  type Error,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import { getErc20Balances } from './evm-balance-service/get-erc20-balances';
-import { TokenService } from '@internal/utils';
-import { getProvider } from '../../utils/get-provider';
-import { getTokens } from '../get-tokens/get-tokens';
-import { getNativeTokenBalances } from './evm-balance-service/get-native-token-balances';
-import { getNativeTokenBalances as getNativeTokenBalancesFromGlacier } from './glacier-balance-service/get-native-token-balances';
-import { getErc20Balances as getErc20BalancesFromGlacier } from './glacier-balance-service/get-erc20-balances';
-import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
+import { findAsync } from '../../utils/find-async';
+import type { BalanceServiceInterface } from './balance-service-interface';
+import type { CurrencyCode } from '@avalabs/glacier-sdk';
+import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
+import { RpcService } from '../../services/rpc-service/rpc-service';
 
-type GetEvmBalancesResponse = Record<string, Record<string, TokenWithBalanceEVM>>;
+type AccountAddress = string;
+type TokenSymbol = string;
+type GetEvmBalancesResponse = Record<AccountAddress, Record<TokenSymbol, TokenWithBalanceEVM | Error> | Error>;
 
 export const getBalances = async ({
   addresses,
@@ -24,98 +25,95 @@ export const getBalances = async ({
   proxyApiUrl,
   customTokens = [],
   storage,
-  glacierService,
+  balanceServices = [],
 }: GetBalancesParams & {
   proxyApiUrl: string;
-  glacierService: EvmGlacierService;
+  balanceServices: BalanceServiceInterface[];
   storage?: Storage;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
-  const isNetworkSupported = await glacierService.isNetworkSupported(network.chainId);
-  const isHealthy = glacierService.isHealthy();
+  const services: BalanceServiceInterface[] = [
+    ...balanceServices,
+    new RpcService({ network, storage, proxyApiUrl, customTokens }),
+  ];
 
-  let balances = [];
-  if (isHealthy && isNetworkSupported) {
-    balances = await Promise.allSettled(
-      addresses.map(async (address) => {
-        const nativeToken = await getNativeTokenBalancesFromGlacier({
-          address,
-          currency,
-          chainId,
-          glacierService,
-          coingeckoId: network.pricingProviders?.coingecko.nativeTokenId ?? '',
-        });
+  const supportingService: BalanceServiceInterface | undefined = await findAsync(
+    services,
+    (balanceService: BalanceServiceInterface) => balanceService.isNetworkSupported(network.chainId),
+  );
 
-        const erc20Tokens = await getErc20BalancesFromGlacier({
-          customTokens: customTokens.filter(isERC20Token),
-          glacierService,
-          currency,
-          chainId,
+  const balances: GetEvmBalancesResponse = {};
+  if (supportingService) {
+    const nativeTokenPromises: Promise<IdPromise<NetworkTokenWithBalance>>[] = [];
+    const erc20TokenPromises: Promise<IdPromise<Record<string, TokenWithBalanceEVM | Error>>>[] = [];
+    addresses.forEach((address) => {
+      nativeTokenPromises.push(
+        addIdToPromise(
+          supportingService.getNativeBalance({
+            address,
+            currency: currency.toUpperCase() as CurrencyCode,
+            chainId,
+          }),
           address,
-        });
+        ),
+      );
 
-        return {
+      erc20TokenPromises.push(
+        addIdToPromise(
+          supportingService.listErc20Balances({
+            customTokens: customTokens.filter(isERC20Token),
+            currency: currency.toUpperCase() as CurrencyCode,
+            chainId,
+            address,
+            pageSize: 100,
+          }),
           address,
-          balances: {
-            [nativeToken.symbol]: nativeToken,
-            ...erc20Tokens,
-          },
-        };
-      }),
-    );
-  } else {
-    const tokenService = new TokenService({ storage, proxyApiUrl });
-    const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl });
-    const allTokens = [...tokens, ...customTokens];
-    const provider = getProvider({
-      chainId,
-      chainName: network.chainName,
-      rpcUrl: network.rpcUrl,
-      multiContractAddress: network.utilityAddresses?.multicall,
+        ),
+      );
     });
-
-    balances = await Promise.allSettled(
-      addresses.map(async (address) => {
-        const nativeToken = await getNativeTokenBalances({
-          network,
-          tokenService,
-          address,
-          currency,
-          provider,
-        });
-
-        const erc20Tokens = await getErc20Balances({
-          provider,
-          network,
-          tokenService,
-          address,
-          currency,
-          tokens: allTokens.filter(isERC20Token),
-        });
-
-        return {
-          address,
-          balances: {
-            [nativeToken.symbol]: nativeToken,
-            ...erc20Tokens,
-          },
+    const nativeTokenBalances = await settleAllIdPromises(nativeTokenPromises);
+    const erc20TokenBalances = await settleAllIdPromises(erc20TokenPromises);
+    Object.keys(nativeTokenBalances).forEach((address) => {
+      const balanceOrError = nativeTokenBalances[address];
+      if (!balanceOrError || 'error' in balanceOrError) {
+        balances[address] = {
+          error: `getNativeBalance failed: ${balanceOrError?.error ?? 'unknown error'}`,
+        } as Error;
+        return;
+      }
+      const tokenSymbol = balanceOrError.symbol as string;
+      balances[address] = {
+        [tokenSymbol]: balanceOrError,
+      };
+    });
+    Object.keys(erc20TokenBalances).forEach((address) => {
+      const balancesOrError = erc20TokenBalances[address];
+      if (!balancesOrError || ('error' in balancesOrError && typeof balancesOrError.error !== 'string')) {
+        balances[address] = {
+          ...balances[address],
+          error: `listErc20Balances failed: unknown error`,
         };
-      }),
-    );
+      } else if ('error' in balancesOrError && typeof balancesOrError.error === 'string') {
+        balances[address] = {
+          ...balances[address],
+          error: `listErc20Balances failed: ${balancesOrError.error}`,
+        };
+      } else {
+        balances[address] = {
+          ...balances[address],
+          ...balancesOrError,
+        };
+      }
+    });
+  } else {
+    addresses.forEach((address) => {
+      balances[address] = {
+        error: 'unsupported network',
+      };
+    });
   }
 
-  const filterBalances = balances.reduce((acc, result) => {
-    if (result.status === 'rejected') {
-      return acc;
-    }
-
-    return {
-      ...acc,
-      [result.value.address]: result.value.balances,
-    };
-  }, {} as GetEvmBalancesResponse);
-
-  return filterBalances;
+  return balances;
 };
 
 function isERC20Token(token: NetworkContractToken): token is ERC20Token {

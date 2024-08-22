@@ -5,6 +5,7 @@ import {
   type DisplayData,
   type RpcRequest,
   RpcMethod,
+  type SigningResult,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -21,7 +22,6 @@ import {
   isSubnetDetails,
   isExportImportTxDetails,
 } from './typeguards';
-import { getNetworkByChainAlias } from './utils/avalanche-networks';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -40,16 +40,15 @@ export const avalancheSendTransaction = async ({
 
   if (!result.success) {
     return {
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
     };
   }
 
   try {
     const { transactionHex, chainAlias, externalIndices, internalIndices, utxos: providedUtxoHexes } = result.data;
-    const avalancheNetwork = getNetworkByChainAlias(chainAlias, network);
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
-    const isTestnet = avalancheNetwork.isTestnet ?? false;
+    const isTestnet = network.isTestnet ?? false;
     const provider = getProvider({ isTestnet });
     const currentAddress = request.context?.['currentAddress'];
 
@@ -141,9 +140,9 @@ export const avalancheSendTransaction = async ({
     const displayData: DisplayData = {
       title,
       network: {
-        chainId: avalancheNetwork.chainId,
-        name: avalancheNetwork.chainName,
-        logoUri: avalancheNetwork.logoUri,
+        chainId: network.chainId,
+        name: network.chainName,
+        logoUri: network.logoUri,
       },
       transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
       stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
@@ -162,13 +161,27 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    return { result: response.result };
+    const txHash = await getTxHash(provider, response, vm);
+
+    // TODO wait for transaction confirmation
+
+    return { result: txHash };
   } catch (error) {
     console.error(error);
     return {
       error: rpcErrors.internal('Unable to create transaction'),
     };
   }
+};
+
+const getTxHash = async (provider: Avalanche.JsonRpcProvider, response: SigningResult, vm: 'EVM' | 'AVM' | 'PVM') => {
+  if ('txHash' in response) {
+    return response.txHash;
+  }
+
+  // broadcast the signed transaction
+  const { txID } = await provider.issueTxHex(response.signedData, vm);
+  return txID;
 };
 
 const getAddressesByIndices = async ({

@@ -86,7 +86,7 @@ const mockApprovalController = {
 
 describe('ethSign', () => {
   beforeEach(() => {
-    mockApprovalController.requestApproval.mockResolvedValue({ result: '0x1234' });
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
     mockBeautifyComplexMessage.mockReturnValue('beautified complex message');
   });
@@ -103,7 +103,7 @@ describe('ethSign', () => {
 
     expect(result).toEqual({
       success: false,
-      error: rpcErrors.invalidParams('Params are invalid'),
+      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: 'Invalid params' } }),
     });
   });
 

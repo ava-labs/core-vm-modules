@@ -1,19 +1,20 @@
-import type {
-  Module,
-  Manifest,
-  NetworkFees,
-  GetTransactionHistory,
-  RpcRequest,
-  Environment,
-  Network,
-  ApprovalController,
-  GetBalancesParams,
-  GetBalancesResponse,
-  GetAddressParams,
-  GetAddressResponse,
+import {
+  type Module,
+  type Manifest,
+  type NetworkFees,
+  type GetTransactionHistory,
+  type RpcRequest,
+  type Environment,
+  type Network,
+  type ApprovalController,
+  type GetBalancesParams,
+  type GetBalancesResponse,
+  type GetAddressParams,
+  type GetAddressResponse,
+  RpcMethod,
+  parseManifest,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
@@ -25,9 +26,13 @@ import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { ethSign } from './handlers/eth-sign/eth-sign';
 import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
 import { getAddress } from './handlers/get-address/get-address';
+import { DeBankService } from './services/debank-service/debank-service';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { getProvider } from './utils/get-provider';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
+  #deBankService: DeBankService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
@@ -40,8 +45,19 @@ export class EvmModule implements Module {
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({ glacierApiUrl });
+    this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
+  }
+
+  getProvider(network: Network): JsonRpcBatchInternal {
+    return getProvider({
+      chainId: network.chainId,
+      chainName: network.chainName,
+      rpcUrl: network.rpcUrl,
+      multiContractAddress: network.utilityAddresses?.multicall,
+      pollingInterval: 1000,
+    });
   }
 
   getAddress({ accountIndex, xpub, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -61,7 +77,7 @@ export class EvmModule implements Module {
       network,
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
-      glacierService: this.#glacierService,
+      balanceServices: [this.#glacierService, this.#deBankService],
       storage,
     });
   }

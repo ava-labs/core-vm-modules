@@ -1,5 +1,33 @@
 # @avalabs/vm-module-types
 
+## 0.1.11
+
+### Patch Changes
+
+- d8dd608: feat: bitcoin_sendTransaction
+
+## 0.1.10
+
+### Patch Changes
+
+- 4d3c33c: Improve balance fetching and error handling
+
+## 0.1.9
+
+## 0.1.8
+
+### Patch Changes
+
+- b3dcd76: adjust signing result type
+
+## 0.1.7
+
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+
 ## 0.1.5
 
 ### Patch Changes

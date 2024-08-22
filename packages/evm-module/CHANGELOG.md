@@ -1,5 +1,49 @@
 # @avalabs/evm-module
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [d8dd608]
+  - @avalabs/vm-module-types@0.1.11
+
+## 0.1.10
+
+### Patch Changes
+
+- 4d3c33c: Improve balance fetching and error handling
+- Updated dependencies [4d3c33c]
+  - @avalabs/vm-module-types@0.1.10
+
+## 0.1.9
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.1.9
+
+## 0.1.8
+
+### Patch Changes
+
+- b3dcd76: adjust signing result type
+- Updated dependencies [b3dcd76]
+  - @avalabs/vm-module-types@0.1.8
+
+## 0.1.7
+
+### Patch Changes
+
+- 9adad1d: Implement DeBank service
+  - @avalabs/vm-module-types@0.1.7
+
+## 0.1.6
+
+### Patch Changes
+
+- 5c3ee5b: Update use of TokenUnit.toDisplay
+- Updated dependencies [5c3ee5b]
+  - @avalabs/vm-module-types@0.1.6
+
 ## 0.1.5
 
 ### Patch Changes
