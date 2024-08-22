@@ -10,3 +10,4 @@ export * from './transaction-history';
 export * from './transaction-simulation';
 export * from './account';
 export * from './staking';
+export * from './provider';

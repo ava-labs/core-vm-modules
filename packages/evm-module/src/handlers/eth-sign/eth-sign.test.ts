@@ -5,6 +5,9 @@ import Blockaid from '@blockaid/client';
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
 
+// doesn't print the ugly console errors out
+jest.spyOn(global.console, 'error').mockImplementation(() => {});
+
 jest.mock('@blockaid/client', () => {
   return jest.fn().mockImplementation(() => {
     return {

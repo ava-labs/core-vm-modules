@@ -14,10 +14,36 @@ export enum RpcMethod {
   SIGN_TYPED_DATA = 'eth_signTypedData',
   PERSONAL_SIGN = 'personal_sign',
   ETH_SIGN = 'eth_sign',
+  CONNECT_METHOD = 'eth_requestAccounts',
+  ETH_ACCOUNTS = 'eth_accounts',
 
   /* AVALANCHE */
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
+  AVALANCHE_GET_CONTACTS = 'avalanche_getContacts',
+  AVALANCHE_CREATE_CONTACT = 'avalanche_createContact',
+  AVALANCHE_UPDATE_CONTACT = 'avalanche_updateContact',
+  AVALANCHE_REMOVE_CONTACT = 'avalanche_removeContact',
+  AVALANCHE_GET_ACCOUNTS = 'avalanche_getAccounts',
+  AVALANCHE_GET_ADDRESSES_IN_RANGE = 'avalanche_getAddressesInRange',
+  AVALANCHE_BRIDGE_ASSET = 'avalanche_bridgeAsset',
+  AVALANCHE_GET_BRIDGE_STATE = 'avalanche_getBridgeState',
+  AVALANCHE_SELECT_WALLET = 'avalanche_selectWallet',
+  AVALANCHE_SET_DEVELOPER_MODE = 'avalanche_setDeveloperMode',
+  ACCOUNT_SELECT = 'avalanche_selectAccount',
+  AVALANCHE_GET_ACCOUNT_PUB_KEY = 'avalanche_getAccountPubKey',
+  AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
+  DOMAIN_METADATA_METHOD = 'avalanche_sendDomainMetadata',
+  INIT_DAPP_STATE = 'avalanche_getProviderState',
+
+  /* WALLET */
+  WALLET_PERMISSIONS = 'wallet_requestPermissions',
+  WALLET_GET_PERMISSIONS = 'wallet_getPermissions',
+  WALLET_ADD_CHAIN = 'wallet_addEthereumChain',
+  WALLET_GET_CHAIN = 'wallet_getEthereumChain',
+  WALLET_SWITCH_ETHEREUM_CHAIN = 'wallet_switchEthereumChain',
+  WALLET_WATCH_ASSET = 'wallet_watchAsset',
+  PERSONAL_EC_RECOVER = 'personal_ecRecover',
 }
 
 export type DappInfo = {
