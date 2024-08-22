@@ -255,6 +255,13 @@ describe('bitcoinSendTransaction', () => {
                 value: 'to',
                 type: 'address',
               },
+              {
+                label: 'Amount',
+                maxDecimals: 8,
+                symbol: 'BTC',
+                type: 'currency',
+                value: 1n,
+              },
             ],
           },
         ],

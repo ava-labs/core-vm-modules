@@ -26,7 +26,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Chain Details',
@@ -49,9 +49,10 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           },
           {
             label: 'Amount',
-            value: '0.0000000000000001 AVAX',
-            alignment: 'horizontal',
-            type: 'text',
+            value: 100n,
+            type: 'currency',
+            symbol: 'AVAX',
+            maxDecimals: 9,
           },
         ],
       },
@@ -80,7 +81,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Transaction Details',
@@ -137,7 +138,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Transaction Details',
@@ -193,7 +194,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Subnet Details',
@@ -239,7 +240,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Staking Details',
@@ -303,7 +304,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Staking Details',
@@ -380,7 +381,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Staking Details',
@@ -431,7 +432,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Staking Details',
@@ -474,7 +475,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Blockchain Details',
@@ -529,7 +530,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
         title: 'Subnet Details',

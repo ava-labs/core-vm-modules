@@ -137,7 +137,7 @@ export const avalancheSendTransaction = async ({
       internalIndices,
     };
 
-    const details = getTransactionDetailSections(txDetails, network.networkToken);
+    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
 
     const displayData: DisplayData = {
       title,
@@ -215,6 +215,7 @@ const waitForTransactionReceipt = async ({
 
       onTransactionConfirmed(txHash);
     } catch (error) {
+      console.error(error);
       onTransactionReverted(txHash);
     }
   } else if (vm === AVM) {

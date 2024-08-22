@@ -132,7 +132,7 @@ export const avalancheSignTransaction = async ({
     ownSignatureIndices,
   };
 
-  const details = getTransactionDetailSections(txDetails, network.networkToken);
+  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
 
   const displayData: DisplayData = {
     title: 'Sign Transaction',
