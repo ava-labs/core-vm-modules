@@ -3,7 +3,6 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { providerErrors } from '@metamask/rpc-errors';
-// import AutoPairingPostMessageConnection from '../utils/messaging/AutoPairingPostMessageConnection';
 import { EventNames, RpcMethod, type EIP6963ProviderInfo } from '@avalabs/vm-module-types';
 import { EVMProvider } from './provider';
 
