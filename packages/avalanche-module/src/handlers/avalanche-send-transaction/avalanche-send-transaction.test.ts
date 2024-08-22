@@ -435,6 +435,9 @@ describe('avalanche_sendTransaction handler', () => {
     });
 
     it('should notify when transaction is confirmed', async () => {
+      (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+      mockRetry.mockResolvedValue({ status: 'Accepted' });
+
       const params = testParams(testRequestParams);
       const response = await avalancheSendTransaction(params);
 

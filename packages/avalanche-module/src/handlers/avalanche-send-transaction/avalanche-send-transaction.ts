@@ -16,7 +16,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { retry } from '@internal/utils/src/utils/retry';
+import { retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
@@ -203,47 +203,52 @@ const waitForTransactionReceipt = async ({
 }) => {
   const maxTransactionStatusCheckRetries = 7;
 
-  if (vm === PVM) {
-    try {
-      const maxTransactionStatusCheckRetries = 7;
-
-      await retry({
+  try {
+    if (vm === PVM) {
+      // https://docs.avax.network/api-reference/p-chain/api#platformgettxstatus
+      const result = await retry({
         operation: () => provider.getApiP().getTxStatus({ txID: txHash }),
-        isSuccess: (result) => result.status === 'Committed',
+        isSuccess: (result) => ['Committed', 'Dropped'].includes(result.status),
         maxRetries: maxTransactionStatusCheckRetries,
       });
 
-      onTransactionConfirmed(txHash);
-    } catch (error) {
-      console.error(error);
-      onTransactionReverted(txHash);
-    }
-  } else if (vm === AVM) {
-    try {
-      await retry({
-        operation: () => provider.getApiX().getTxStatus({ txID: txHash }),
-        isSuccess: (result) => result.status === 'Accepted',
-        maxRetries: maxTransactionStatusCheckRetries,
-      });
-
-      onTransactionConfirmed(txHash);
-    } catch (error) {
-      console.error(error);
-      onTransactionReverted(txHash);
-    }
-  } else {
-    try {
-      const receipt = await provider.evmRpc.waitForTransaction(txHash);
-
-      const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
-
-      if (success) {
+      if (result.status === 'Committed') {
         onTransactionConfirmed(txHash);
       } else {
         onTransactionReverted(txHash);
       }
-    } catch (error) {
-      console.error(error);
+    } else if (vm === AVM) {
+      // https://docs.avax.network/api-reference/x-chain/api#avmgettxstatus
+      const result = await retry({
+        operation: () => provider.getApiX().getTxStatus({ txID: txHash }),
+        isSuccess: (result) => ['Accepted', 'Rejected'].includes(result.status),
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      if (result.status === 'Accepted') {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    } else {
+      // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictxstatus
+      const result = await retry({
+        operation: () => provider.getApiC().getAtomicTxStatus(txHash),
+        isSuccess: (result) => ['Accepted', 'Dropped'].includes(result.status),
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      if (result.status === 'Accepted') {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error && error.message.startsWith('Max retry exceeded.')) {
+      // in the future, we may want to handle this timeout situation differently
+    } else {
       onTransactionReverted(txHash);
     }
   }
