@@ -186,7 +186,12 @@ describe('ethSign', () => {
       expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
         displayData: {
           title: 'Sign Message',
-          messageDetails: expectedMessageDetails,
+          details: [
+            {
+              title: 'Message',
+              items: [expectedMessageDetails],
+            },
+          ],
           account: '0xabc',
           banner: undefined,
           dAppInfo: {

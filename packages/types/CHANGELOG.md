@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.1.12
+
+### Patch Changes
+
+- 132e988: avalanche_sendTransaction
+
 ## 0.1.11
 
 ### Patch Changes

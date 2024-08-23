@@ -3,7 +3,6 @@ import type { Avalanche, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/co
 import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
-import type { StakingDetails, ExportImportTxDetails, ChainDetails, BlockchainDetails, SubnetDetails } from './staking';
 import type { TokenWithBalanceBTC } from './balance';
 
 export enum RpcMethod {
@@ -72,13 +71,58 @@ export interface TypedData<T extends MessageTypes> {
 
 export type TypedDataV1 = { name: string; type: string; value: unknown }[];
 
-export type TransactionDetails = {
-  website: string;
-  from: string;
-  to: string;
-  data?: string;
-  type?: string;
+export type DetailSection = {
+  title?: string;
+  items: DetailItem[];
 };
+
+export type BaseDetailItem = {
+  label: string;
+};
+
+export enum DetailItemType {
+  TEXT = 'text',
+  ADDRESS = 'address',
+  NODE_ID = 'nodeID',
+  CURRENCY = 'currency',
+  DATA = 'data',
+  DATE = 'date',
+}
+
+export type TextItem = BaseDetailItem & {
+  type: DetailItemType.TEXT;
+  value: string;
+  alignment: 'vertical' | 'horizontal';
+};
+
+export type AddressItem = BaseDetailItem & {
+  type: DetailItemType.ADDRESS;
+  value: string;
+};
+
+export type NodeIDItem = BaseDetailItem & {
+  type: DetailItemType.NODE_ID;
+  value: string;
+};
+
+export type CurrencyItem = BaseDetailItem & {
+  type: DetailItemType.CURRENCY;
+  value: bigint;
+  maxDecimals: number;
+  symbol: string;
+};
+
+export type DataItem = BaseDetailItem & {
+  type: DetailItemType.DATA;
+  value: string;
+};
+
+export type DateItem = BaseDetailItem & {
+  type: DetailItemType.DATE;
+  value: string;
+};
+
+export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem | DateItem;
 
 export type DisplayData = {
   title: string;
@@ -93,12 +137,7 @@ export type DisplayData = {
     logoUri?: string;
   };
   account?: string;
-  messageDetails?: string;
-  transactionDetails?: TransactionDetails | ExportImportTxDetails;
-  stakingDetails?: StakingDetails;
-  chainDetails?: ChainDetails;
-  blockchainDetails?: BlockchainDetails;
-  subnetDetails?: SubnetDetails;
+  details: DetailSection[];
   networkFeeSelector?: boolean;
   disclaimer?: string;
   alert?: Alert;
@@ -174,6 +213,8 @@ export type SigningData =
       unsignedTxJson: string;
       data: Avalanche.Tx;
       vm: 'EVM' | 'AVM' | 'PVM';
+      externalIndices?: number[];
+      internalIndices?: number[];
     }
   | {
       type: RpcMethod.AVALANCHE_SIGN_TRANSACTION;

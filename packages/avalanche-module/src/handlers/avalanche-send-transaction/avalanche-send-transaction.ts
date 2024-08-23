@@ -6,22 +6,19 @@ import {
   type RpcRequest,
   RpcMethod,
   type SigningResult,
+  type Hex,
 } from '@avalabs/vm-module-types';
-import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
+import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { avaxSerial, EVMUnsignedTx, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import {
-  isBlockchainDetails,
-  isChainDetails,
-  isStakingDetails,
-  isSubnetDetails,
-  isExportImportTxDetails,
-} from './typeguards';
+import { retry } from '@internal/utils';
+import { getAddressesByIndices } from './utils/get-addresses-by-indices';
+import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -120,6 +117,7 @@ export const avalancheSendTransaction = async ({
     }
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+
     const txDetails = parseTxDetails(txData);
     const title = parseTxDisplayTitle(txData);
 
@@ -135,7 +133,11 @@ export const avalancheSendTransaction = async ({
       unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
       data: txData,
       vm,
+      externalIndices,
+      internalIndices,
     };
+
+    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
 
     const displayData: DisplayData = {
       title,
@@ -144,11 +146,7 @@ export const avalancheSendTransaction = async ({
         name: network.chainName,
         logoUri: network.logoUri,
       },
-      transactionDetails: isExportImportTxDetails(txDetails) ? txDetails : undefined,
-      stakingDetails: isStakingDetails(txDetails) ? txDetails : undefined,
-      chainDetails: isChainDetails(txDetails) ? txDetails : undefined,
-      blockchainDetails: isBlockchainDetails(txDetails) ? txDetails : undefined,
-      subnetDetails: isSubnetDetails(txDetails) ? txDetails : undefined,
+      details,
       networkFeeSelector: false,
     };
 
@@ -161,15 +159,21 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    const txHash = await getTxHash(provider, response, vm);
+    const txHash = (await getTxHash(provider, response, vm)) as Hex;
 
-    // TODO wait for transaction confirmation
+    waitForTransactionReceipt({
+      provider,
+      txHash,
+      vm,
+      onTransactionConfirmed: approvalController.onTransactionConfirmed,
+      onTransactionReverted: approvalController.onTransactionReverted,
+    });
 
     return { result: txHash };
   } catch (error) {
     console.error(error);
     return {
-      error: rpcErrors.internal('Unable to create transaction'),
+      error: rpcErrors.internal({ message: 'Unable to create transaction', data: { cause: error } }),
     };
   }
 };
@@ -184,24 +188,68 @@ const getTxHash = async (provider: Avalanche.JsonRpcProvider, response: SigningR
   return txID;
 };
 
-const getAddressesByIndices = async ({
-  indices,
-  chainAlias,
-  isChange,
-  isTestnet,
-  xpubXP,
+const waitForTransactionReceipt = async ({
+  provider,
+  txHash,
+  vm,
+  onTransactionConfirmed,
+  onTransactionReverted,
 }: {
-  indices: number[];
-  chainAlias: 'X' | 'P';
-  isChange: boolean;
-  isTestnet: boolean;
-  xpubXP: string;
-}): Promise<string[]> => {
-  if (isChange && chainAlias !== 'X') {
-    return [];
+  provider: Avalanche.JsonRpcProvider;
+  txHash: Hex;
+  vm: 'EVM' | 'AVM' | 'PVM';
+  onTransactionConfirmed: (txHash: Hex) => void;
+  onTransactionReverted: (txHash: Hex) => void;
+}) => {
+  const maxTransactionStatusCheckRetries = 7;
+
+  try {
+    if (vm === PVM) {
+      // https://docs.avax.network/api-reference/p-chain/api#platformgettxstatus
+      const result = await retry({
+        operation: () => provider.getApiP().getTxStatus({ txID: txHash }),
+        isSuccess: (result) => ['Committed', 'Dropped'].includes(result.status),
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      if (result.status === 'Committed') {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    } else if (vm === AVM) {
+      // https://docs.avax.network/api-reference/x-chain/api#avmgettxstatus
+      const result = await retry({
+        operation: () => provider.getApiX().getTxStatus({ txID: txHash }),
+        isSuccess: (result) => ['Accepted', 'Rejected'].includes(result.status),
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      if (result.status === 'Accepted') {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    } else {
+      // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictxstatus
+      const result = await retry({
+        operation: () => provider.getApiC().getAtomicTxStatus(txHash),
+        isSuccess: (result) => ['Accepted', 'Dropped'].includes(result.status),
+        maxRetries: maxTransactionStatusCheckRetries,
+      });
+
+      if (result.status === 'Accepted') {
+        onTransactionConfirmed(txHash);
+      } else {
+        onTransactionReverted(txHash);
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error && error.message.startsWith('Max retry exceeded.')) {
+      // in the future, we may want to handle this timeout situation differently
+    } else {
+      onTransactionReverted(txHash);
+    }
   }
-
-  const provider = getProvider({ isTestnet });
-
-  return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
 };

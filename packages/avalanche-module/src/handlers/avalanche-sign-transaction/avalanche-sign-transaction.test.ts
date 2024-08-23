@@ -70,7 +70,11 @@ describe('avalanche-sign-transaction', () => {
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(PVM);
     (Avalanche.createAvalancheUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
-    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({ type: TxType.AddPermissionlessDelegator });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      type: TxType.AddPermissionlessDelegator,
+      start: '0',
+      end: '1000',
+    });
     (utils.hexToBuffer as jest.Mock).mockReturnValue(txBytes);
     (utils.unpackWithManager as jest.Mock).mockReturnValue(txMock);
     (utils.addressesFromBytes as jest.Mock).mockReturnValue([signerAddressMock]);

@@ -101,7 +101,7 @@ export const ethSign = async ({
     messageDetails = beautifyComplexMessage(messageToDisplay);
   }
 
-  if (!signingData) {
+  if (!signingData || !messageDetails) {
     return {
       success: false,
       error: rpcErrors.internal('Unable to generate signing data'),
@@ -130,7 +130,12 @@ export const ethSign = async ({
       logoUri: network.logoUri,
     },
     account: address,
-    messageDetails,
+    details: [
+      {
+        title: 'Message',
+        items: [messageDetails],
+      },
+    ],
     disclaimer,
     alert: simulationResult?.alert ?? alert,
     balanceChange: simulationResult?.balanceChange,

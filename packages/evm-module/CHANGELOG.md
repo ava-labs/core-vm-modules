@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.1.12
+
+### Patch Changes
+
+- 132e988: avalanche_sendTransaction
+- Updated dependencies [132e988]
+  - @avalabs/vm-module-types@0.1.12
+
 ## 0.1.11
 
 ### Patch Changes
