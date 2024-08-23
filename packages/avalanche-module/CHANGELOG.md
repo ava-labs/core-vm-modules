@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [1047507]
+  - @avalabs/vm-module-types@0.3.0
+
 ## 0.2.0
 
 ### Patch Changes
