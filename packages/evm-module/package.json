@@ -11,7 +11,7 @@
   ],
   "exports": {
     ".": "./dist/index.js",
-    "./provider": "./dist/provider.js"
+    "./dist/provider": "./dist/provider/index.js"
   },
   "license": "Limited Ecosystem License",
   "scripts": {

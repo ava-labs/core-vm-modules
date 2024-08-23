@@ -5,7 +5,7 @@
  */
 export const baseConfig = {
   format: ['cjs', 'esm'],
-  entry: ['./src/index.ts', './src/provider.ts'],
+  entry: ['./src/index.ts'],
   sourcemap: true,
   clean: true,
   dts: true,
