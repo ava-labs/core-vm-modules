@@ -15,6 +15,9 @@ import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
 
+// doesn't print the ugly console errors out
+jest.spyOn(global.console, 'error').mockImplementation(() => {});
+
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
