@@ -18,6 +18,7 @@ export interface EIP6963ProviderInfo {
   name: string;
   icon: string;
   rdns: string;
+  description: string;
 }
 
 export interface EIP6963ProviderDetail {

@@ -9,6 +9,10 @@
     "dist",
     "manifest.json"
   ],
+  "exports": {
+    ".": "./dist/index.js",
+    "./provider": "./dist/provider.js"
+  },
   "license": "Limited Ecosystem License",
   "scripts": {
     "build": "tsup",
@@ -51,5 +55,9 @@
   },
   "peerDependencies": {
     "ethers": "^6.8.1"
+  },
+  "volta": {
+    "node": "20.11.0",
+    "yarn": "1.22.19"
   }
 }
