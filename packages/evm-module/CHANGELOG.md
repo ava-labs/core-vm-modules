@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 0.2.0
+
+### Minor Changes
+
+- 1047507: adding evm provider with corresponding stuff
+
+### Patch Changes
+
+- Updated dependencies [1047507]
+  - @avalabs/vm-module-types@0.2.0
+
 ## 0.1.12
 
 ### Patch Changes
