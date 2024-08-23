@@ -3,7 +3,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { providerErrors } from '@metamask/rpc-errors';
-import { EventNames, RpcMethod, type EIP6963ProviderInfo } from '@avalabs/vm-module-types';
+import { EventNames, type EIP6963ProviderInfo } from '@avalabs/vm-module-types';
 import { EVMProvider } from './provider';
 
 Object.defineProperties(global.crypto, {
@@ -11,6 +11,8 @@ Object.defineProperties(global.crypto, {
     value: jest.fn().mockReturnValue('00000000-0000-0000-0000-000000000000'),
   },
 });
+
+const INIT_DAPP_STATE = 'avalanche_getProviderState';
 
 export const matchingPayload = (payload: any) =>
   expect.objectContaining({
@@ -93,7 +95,7 @@ describe('@evm-module/provider', () => {
         expect(channelMock.request).toHaveBeenCalledTimes(1);
         expect(channelMock.request).toHaveBeenCalledWith(
           matchingPayload({
-            method: RpcMethod.INIT_DAPP_STATE,
+            method: INIT_DAPP_STATE,
           }),
         );
 
@@ -143,7 +145,7 @@ describe('@evm-module/provider', () => {
         expect(channelMock.request).toHaveBeenCalledTimes(1);
         expect(channelMock.request).toHaveBeenCalledWith(
           matchingPayload({
-            method: RpcMethod.INIT_DAPP_STATE,
+            method: INIT_DAPP_STATE,
           }),
         );
 
@@ -189,7 +191,7 @@ describe('@evm-module/provider', () => {
         expect(channelMock.request).toHaveBeenCalledTimes(1);
         expect(channelMock.request).toHaveBeenCalledWith(
           matchingPayload({
-            method: RpcMethod.INIT_DAPP_STATE,
+            method: INIT_DAPP_STATE,
           }),
         );
 
@@ -248,7 +250,7 @@ describe('@evm-module/provider', () => {
           expect(channelMock.request).toHaveBeenCalledTimes(1);
           expect(channelMock.request).toHaveBeenCalledWith(
             matchingPayload({
-              method: RpcMethod.INIT_DAPP_STATE,
+              method: INIT_DAPP_STATE,
             }),
           );
 
@@ -286,7 +288,7 @@ describe('@evm-module/provider', () => {
           expect(channelMock.request).toHaveBeenCalledTimes(1);
           expect(channelMock.request).toHaveBeenCalledWith(
             matchingPayload({
-              method: RpcMethod.INIT_DAPP_STATE,
+              method: INIT_DAPP_STATE,
             }),
           );
 
@@ -1339,7 +1341,7 @@ describe('@evm-module/provider', () => {
       expect(mockedChannel.request).toHaveBeenCalledTimes(1);
       expect(mockedChannel.request).toHaveBeenCalledWith(
         matchingPayload({
-          method: RpcMethod.INIT_DAPP_STATE,
+          method: INIT_DAPP_STATE,
         }),
       );
 

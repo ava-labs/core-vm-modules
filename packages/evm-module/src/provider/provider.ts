@@ -2,7 +2,6 @@ import { providerErrors } from '@metamask/rpc-errors';
 import EventEmitter from 'events';
 import {
   EventNames,
-  RpcMethod,
   type AccountsChangedEventData,
   type ChainAgnosticProvider,
   type ChainChangedEventData,
@@ -18,6 +17,10 @@ interface ProviderState {
   isConnected: boolean;
   isUnlocked: boolean;
   initialized: boolean;
+}
+
+enum DAppProviderRequest {
+  INIT_DAPP_STATE = 'avalanche_getProviderState',
 }
 
 export class EVMProvider extends EventEmitter {
@@ -81,7 +84,7 @@ export class EVMProvider extends EventEmitter {
   #init = async () => {
     try {
       const response = await this.#request({
-        method: RpcMethod.INIT_DAPP_STATE,
+        method: DAppProviderRequest.INIT_DAPP_STATE,
       });
 
       const { chainId, accounts, networkVersion, isUnlocked } =
