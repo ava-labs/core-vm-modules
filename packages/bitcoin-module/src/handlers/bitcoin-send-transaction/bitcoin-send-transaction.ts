@@ -132,6 +132,9 @@ export const bitcoinSendTransaction = async ({
     txHash: txHash as Hex,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
+    // Pass the requestId so that client apps can pair the transaction
+    // status changes back to their respective requests for better tracking.
+    requestId: request.requestId,
   });
 
   return {
@@ -152,17 +155,19 @@ const waitForTransactionReceipt = async ({
   txHash,
   onTransactionConfirmed,
   onTransactionReverted,
+  requestId,
 }: {
   provider: BitcoinProvider;
   txHash: Hex;
-  onTransactionConfirmed: (txHash: Hex) => void;
-  onTransactionReverted: (txHash: Hex) => void;
+  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  requestId: string;
 }) => {
   try {
     await provider.waitForTx(txHash);
-    onTransactionConfirmed(txHash);
+    onTransactionConfirmed(txHash, requestId);
   } catch (err) {
     console.error(err);
-    onTransactionReverted(txHash);
+    onTransactionReverted(txHash, requestId);
   }
 };

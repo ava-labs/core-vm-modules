@@ -303,7 +303,7 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith('0x123');
+    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith('0x123', '1');
   });
 
   it('should wait for transaction receipt and handle reversion', async () => {
@@ -318,6 +318,6 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith('0x123');
+    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith('0x123', '1');
   });
 });

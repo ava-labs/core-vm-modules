@@ -492,7 +492,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
     });
 
     it('should notify when transaction is reverted', async () => {
@@ -513,7 +513,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
     });
   });
 

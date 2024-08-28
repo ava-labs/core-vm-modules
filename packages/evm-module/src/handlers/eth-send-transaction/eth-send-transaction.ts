@@ -184,6 +184,7 @@ export const ethSendTransaction = async ({
     txHash,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
+    requestId: request.requestId,
   });
 
   return { result: txHash };
@@ -204,11 +205,13 @@ const waitForTransactionReceipt = async ({
   txHash,
   onTransactionConfirmed,
   onTransactionReverted,
+  requestId,
 }: {
   provider: JsonRpcBatchInternal;
   txHash: Hex;
-  onTransactionConfirmed: (txHash: Hex) => void;
-  onTransactionReverted: (txHash: Hex) => void;
+  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  requestId: string;
 }) => {
   try {
     const receipt = await provider.waitForTransaction(txHash);
@@ -216,12 +219,12 @@ const waitForTransactionReceipt = async ({
     const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
 
     if (success) {
-      onTransactionConfirmed(txHash);
+      onTransactionConfirmed(txHash, requestId);
     } else {
-      onTransactionReverted(txHash);
+      onTransactionReverted(txHash, requestId);
     }
   } catch (error) {
     console.error(error);
-    onTransactionReverted(txHash);
+    onTransactionReverted(txHash, requestId);
   }
 };

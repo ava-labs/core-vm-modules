@@ -261,6 +261,6 @@ export type ApprovalResponse =
 
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
-  onTransactionConfirmed: (txHash: Hex) => void;
-  onTransactionReverted: (txHash: Hex) => void;
+  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionReverted: (txHash: Hex, requestId: string) => void;
 }
