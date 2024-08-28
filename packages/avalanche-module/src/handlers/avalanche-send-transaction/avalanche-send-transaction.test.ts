@@ -445,7 +445,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
     });
 
     it('should notify when transaction is reverted', async () => {
@@ -462,7 +462,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
     });
   });
 

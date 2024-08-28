@@ -5,7 +5,9 @@ import {
   type TextItem,
   type DataItem,
   type DateItem,
+  type LinkItemValue,
   DetailItemType,
+  type LinkItem,
 } from '@avalabs/vm-module-types';
 
 export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({
@@ -25,6 +27,12 @@ export const textItem = (
   alignment,
   type: DetailItemType.TEXT,
   value,
+});
+
+export const linkItem = (label: string, value: LinkItemValue): LinkItem => ({
+  label,
+  value,
+  type: DetailItemType.LINK,
 });
 
 export const addressItem = (label: string, value: string): AddressItem => ({

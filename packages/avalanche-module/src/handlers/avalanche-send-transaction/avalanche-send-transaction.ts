@@ -167,6 +167,7 @@ export const avalancheSendTransaction = async ({
       vm,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,
       onTransactionReverted: approvalController.onTransactionReverted,
+      requestId: request.requestId,
     });
 
     return { result: txHash };
@@ -194,12 +195,14 @@ const waitForTransactionReceipt = async ({
   vm,
   onTransactionConfirmed,
   onTransactionReverted,
+  requestId,
 }: {
   provider: Avalanche.JsonRpcProvider;
   txHash: Hex;
   vm: 'EVM' | 'AVM' | 'PVM';
-  onTransactionConfirmed: (txHash: Hex) => void;
-  onTransactionReverted: (txHash: Hex) => void;
+  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  requestId: string;
 }) => {
   const maxTransactionStatusCheckRetries = 7;
 
@@ -213,9 +216,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Committed') {
-        onTransactionConfirmed(txHash);
+        onTransactionConfirmed(txHash, requestId);
       } else {
-        onTransactionReverted(txHash);
+        onTransactionReverted(txHash, requestId);
       }
     } else if (vm === AVM) {
       // https://docs.avax.network/api-reference/x-chain/api#avmgettxstatus
@@ -226,9 +229,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed(txHash);
+        onTransactionConfirmed(txHash, requestId);
       } else {
-        onTransactionReverted(txHash);
+        onTransactionReverted(txHash, requestId);
       }
     } else {
       // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictxstatus
@@ -239,9 +242,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed(txHash);
+        onTransactionConfirmed(txHash, requestId);
       } else {
-        onTransactionReverted(txHash);
+        onTransactionReverted(txHash, requestId);
       }
     }
   } catch (error) {
@@ -249,7 +252,7 @@ const waitForTransactionReceipt = async ({
     if (error instanceof Error && error.message.startsWith('Max retry exceeded.')) {
       // in the future, we may want to handle this timeout situation differently
     } else {
-      onTransactionReverted(txHash);
+      onTransactionReverted(txHash, requestId);
     }
   }
 };
