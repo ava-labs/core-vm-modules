@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.4.0
+
+### Minor Changes
+
+- 04cc519: feat: add LINK tx detail type
+
 ## 0.3.1
 
 ## 0.3.0

@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 0.4.0
+
+### Minor Changes
+
+- 04cc519: feat: add LINK tx detail type
+
+### Patch Changes
+
+- Updated dependencies [04cc519]
+  - @avalabs/vm-module-types@0.4.0
+
 ## 0.3.1
 
 ### Patch Changes
