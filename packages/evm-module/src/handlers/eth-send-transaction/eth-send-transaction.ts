@@ -19,6 +19,7 @@ import { processTransactionSimulation } from '../../utils/process-transaction-si
 import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-type';
 import { ERC20TransactionType } from '../../types';
 import { addressItem, textItem, dataItem } from '@internal/utils';
+import { linkItem } from '@internal/utils/src/utils/detail-item';
 
 export const ethSendTransaction = async ({
   request,
@@ -112,7 +113,7 @@ export const ethSendTransaction = async ({
   }
 
   const transactionDetails: DetailItem[] = [
-    textItem('Website', new URL(dappInfo.url).hostname),
+    linkItem('Website', dappInfo),
     addressItem('From', transaction.from),
     addressItem('To', transaction.to),
   ];

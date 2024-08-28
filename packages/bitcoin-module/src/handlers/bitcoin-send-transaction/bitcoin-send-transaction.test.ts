@@ -241,9 +241,8 @@ describe('bitcoinSendTransaction', () => {
             items: [
               {
                 label: 'Website',
-                value: 'example.com',
-                alignment: 'horizontal',
-                type: 'text',
+                value: testDappInfo,
+                type: 'link',
               },
               {
                 label: 'From',

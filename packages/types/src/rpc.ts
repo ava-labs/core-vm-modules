@@ -87,6 +87,7 @@ export enum DetailItemType {
   CURRENCY = 'currency',
   DATA = 'data',
   DATE = 'date',
+  LINK = 'link',
 }
 
 export type TextItem = BaseDetailItem & {
@@ -122,7 +123,14 @@ export type DateItem = BaseDetailItem & {
   value: string;
 };
 
-export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem | DateItem;
+export type LinkItemValue = { url: string; name?: string; icon?: string };
+
+export type LinkItem = BaseDetailItem & {
+  type: DetailItemType.LINK;
+  value: LinkItemValue;
+};
+
+export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem | DateItem | LinkItem;
 
 export type DisplayData = {
   title: string;
