@@ -1,5 +1,14 @@
 # @avalabs/avalanche-module
 
+## 0.4.1
+
+### Patch Changes
+
+- 9754446: bump internal sdks to 3.1.0-alpha.5
+- Updated dependencies [8b7988e]
+- Updated dependencies [9754446]
+  - @avalabs/vm-module-types@0.4.1
+
 ## 0.4.0
 
 ### Patch Changes
