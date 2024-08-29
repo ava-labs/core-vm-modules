@@ -358,28 +358,19 @@ importers:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.5
         version: 3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk':
+        specifier: 3.1.0-alpha.5
+        version: 3.1.0-alpha.5
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
       bitcoinjs-lib:
         specifier: 5.2.0
         version: 5.2.0
-      ethers:
-        specifier: 6.8.1
-        version: 6.8.1
       zod:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
-      '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-alpha.5
-        version: 3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
-      '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-alpha.5
-        version: 3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0)
-      '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.5
-        version: 3.1.0-alpha.5
       '@internal/tsup-config':
         specifier: workspace:*
         version: link:../../packages-internal/tsup-config
@@ -392,6 +383,9 @@ importers:
       eslint-config-custom:
         specifier: workspace:*
         version: link:../../packages-internal/eslint-config-custom
+      ethers:
+        specifier: 6.8.1
+        version: 6.8.1
       tsup:
         specifier: 7.2.0
         version: 7.2.0(typescript@5.2.2)
@@ -490,6 +484,7 @@ packages:
       - ethers
       - node-fetch
       - supports-color
+    dev: false
 
   /@avalabs/core-etherscan-sdk@3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-frJH1WNsEsCB3D1jL88t0ImY6ueWCPpFu8XGKwGjKlzOv1uTLAIYSHKDar1tv/cSDxaKpdjTal3VNW79IPjZCQ==}
@@ -537,6 +532,7 @@ packages:
     transitivePeerDependencies:
       - node-fetch
       - supports-color
+    dev: false
 
   /@avalabs/core-wallets-sdk@3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@2.7.0):
     resolution: {integrity: sha512-MIBwJhAf0n9/8gaXZ1ivUtSIV5epbN53/IiATFNZ3PB/TSc062t4NSrExgYX+SWPhZ2BUO0t0J/+lswpv8jAsQ==}
@@ -578,6 +574,7 @@ packages:
 
   /@avalabs/glacier-sdk@3.1.0-alpha.5:
     resolution: {integrity: sha512-RbSqfDhdp5iiMv8ERuU3vGSBNjtR1cfwKMpopVVjURQuuV3+BIFmGsy1nwqlbeax22Lr8445kD0SQbNQn7vjuA==}
+    dev: false
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
