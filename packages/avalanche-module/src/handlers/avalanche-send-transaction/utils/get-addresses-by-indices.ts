@@ -12,9 +12,9 @@ export const getAddressesByIndices = async ({
   chainAlias: 'X' | 'P';
   isChange: boolean;
   isTestnet: boolean;
-  xpubXP: string;
+  xpubXP?: string;
 }): Promise<string[]> => {
-  if (isChange && chainAlias !== 'X') {
+  if (!xpubXP || (isChange && chainAlias !== 'X')) {
     return [];
   }
 

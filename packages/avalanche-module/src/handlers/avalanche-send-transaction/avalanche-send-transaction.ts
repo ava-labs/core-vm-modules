@@ -82,9 +82,9 @@ export const avalancheSendTransaction = async ({
       const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
       const xpubXP = request.context?.['xpubXP'];
 
-      if (!xpubXP || typeof xpubXP !== 'string') {
+      if (xpubXP !== undefined && typeof xpubXP !== 'string') {
         return {
-          error: rpcErrors.invalidParams('Request should have xpubXP in context'),
+          error: rpcErrors.invalidParams('xpubXP must be a string'),
         };
       }
 
