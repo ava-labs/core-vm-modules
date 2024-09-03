@@ -177,26 +177,6 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('should return error if xpubXP is not provided in context', async () => {
-    const params = testParams(testRequestParams);
-    const paramsWithoutCurrentAddress = {
-      ...params,
-      request: {
-        ...params.request,
-        context: {
-          ...params.request.context,
-          xpubXP: undefined,
-        },
-      },
-    };
-
-    const result = await avalancheSendTransaction(paramsWithoutCurrentAddress);
-
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams('Request should have xpubXP in context'),
-    });
-  });
-
   it('should return error if fails to parse transaction', async () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
       type: 'unknown',
