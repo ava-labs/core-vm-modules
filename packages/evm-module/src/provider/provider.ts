@@ -38,6 +38,7 @@ export class EVMProvider extends EventEmitter {
   networkVersion: string | null = null;
   isAvalanche = true;
   isMetaMask = true;
+  coreVersion: string | null = null;
 
   _isReady = false;
   _isConnected = false;
@@ -57,9 +58,18 @@ export class EVMProvider extends EventEmitter {
     isUnlocked: () => Promise.resolve(this._isUnlocked),
   };
 
-  constructor({ maxListeners = 100, info }: { maxListeners?: number; info: EIP6963ProviderInfo }) {
+  constructor({
+    maxListeners = 100,
+    info,
+    coreVersion,
+  }: {
+    maxListeners?: number;
+    info: EIP6963ProviderInfo;
+    coreVersion?: string;
+  }) {
     super();
     this.info = info;
+    this.coreVersion = coreVersion ?? null;
     this.setMaxListeners(maxListeners);
     this.#subscribe();
   }
