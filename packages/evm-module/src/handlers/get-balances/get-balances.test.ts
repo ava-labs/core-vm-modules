@@ -100,6 +100,7 @@ describe('getBalances', () => {
     mockedRpcService.listErc20Balances.mockResolvedValue({
       '0xTokenId1': { symbol: 'TOKEN1' } as TokenWithBalanceEVM,
     });
+    mockedRpcService.listNftBalances.mockResolvedValue({});
     const tokenService = new TokenService({ proxyApiUrl }) as jest.Mocked<TokenService>;
     tokenService.getPricesByAddresses.mockResolvedValue(undefined);
 
@@ -124,6 +125,7 @@ describe('getBalances', () => {
     glacierService.isNetworkSupported.mockResolvedValue(true);
     glacierService.getNativeBalance.mockRejectedValue(new Error('Failed to get native balance'));
     glacierService.listErc20Balances.mockRejectedValue(new Error('Failed to list ERC20 balances'));
+    glacierService.listNftBalances.mockResolvedValue({});
 
     const result = await getBalances({
       addresses,

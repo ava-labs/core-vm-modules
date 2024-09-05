@@ -19,7 +19,7 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "0.4.2",
+    "@avalabs/vm-module-types": "workspace:*",
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.5",
     "@avalabs/core-etherscan-sdk": "3.1.0-alpha.5",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.5",
