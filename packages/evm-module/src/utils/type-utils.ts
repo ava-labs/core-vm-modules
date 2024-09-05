@@ -1,0 +1,15 @@
+import {
+  TokenType,
+  type ERC1155Token,
+  type ERC20Token,
+  type ERC721Token,
+  type NetworkContractToken,
+} from '@avalabs/vm-module-types';
+
+export function isERC20Token(token: NetworkContractToken): token is ERC20Token {
+  return token.type === TokenType.ERC20;
+}
+
+export function isNftToken(token: NetworkContractToken): token is ERC1155Token | ERC721Token {
+  return token.type === TokenType.ERC1155 || token.type === TokenType.ERC721;
+}

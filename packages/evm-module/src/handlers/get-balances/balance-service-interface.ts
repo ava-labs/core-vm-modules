@@ -1,29 +1,26 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { ERC20Token, Error, Hex, NetworkTokenWithBalance, TokenWithBalanceEVM } from '@avalabs/vm-module-types';
+import type {
+  ERC20Token,
+  Error,
+  Hex,
+  NetworkTokenWithBalance,
+  NftTokenWithBalance,
+  TokenWithBalanceEVM,
+} from '@avalabs/vm-module-types';
 
 export type TokenId = Hex | string;
 
 export interface BalanceServiceInterface {
   isNetworkSupported(chainId: number): Promise<boolean>;
 
-  getNativeBalance({
-    chainId,
-    address,
-    currency,
-    coingeckoId,
-  }: {
+  getNativeBalance(params: {
     chainId: number;
     address: string;
     currency: CurrencyCode;
     coingeckoId?: string;
   }): Promise<NetworkTokenWithBalance>;
 
-  listErc20Balances({
-    chainId,
-    address,
-    currency,
-    customTokens,
-  }: {
+  listErc20Balances(params: {
     chainId: number;
     address: string;
     currency: CurrencyCode;
@@ -31,4 +28,6 @@ export interface BalanceServiceInterface {
     pageToken?: string;
     customTokens: ERC20Token[];
   }): Promise<Record<string, TokenWithBalanceEVM | Error>>;
+
+  listNftBalances(params: { chainId: number; address: string }): Promise<Record<string, NftTokenWithBalance | Error>>;
 }

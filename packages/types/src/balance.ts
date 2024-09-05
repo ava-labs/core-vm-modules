@@ -117,7 +117,7 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
   };
 }
 
-export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type'> {
+export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type' | 'decimals' | 'coingeckoId'> {
   type: TokenType.ERC721 | TokenType.ERC1155;
   address: string;
   description: string;
@@ -126,7 +126,9 @@ export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type
   name: string;
   symbol: string;
   tokenId: string;
-  attributes: TokenAttribute[];
+  // URL holding the metadata of the NFT, modules are not expected to fetch all metadata
+  // to avoid increased loading times when dealing with ipfs and 3rd party services
+  tokenUri: string;
   collectionName: string;
   updatedAt?: number;
 }

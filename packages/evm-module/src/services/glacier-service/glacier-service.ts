@@ -1,11 +1,11 @@
 import {
   CurrencyCode,
   Erc1155Token,
+  Erc1155TokenBalance,
   Erc20TokenBalance,
   Erc721Token,
+  Erc721TokenBalance,
   Glacier,
-  type ListErc1155BalancesResponse,
-  type ListErc721BalancesResponse,
 } from '@avalabs/glacier-sdk';
 import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
@@ -16,8 +16,10 @@ import {
   TokenType,
   type TokenWithBalanceERC20,
   type TokenWithBalanceEVM,
+  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
 import { DEFAULT_DECIMALS } from '../../constants';
+import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
@@ -160,56 +162,113 @@ export class EvmGlacierService implements BalanceServiceInterface {
     }
   }
 
-  async listErc721Balances({
-    chainId,
-    address,
-    pageSize,
-    pageToken,
-  }: {
-    chainId: string;
-    address: string;
-    pageSize: number;
-    pageToken?: string;
-  }): Promise<ListErc721BalancesResponse> {
-    try {
-      return this.glacierSdk.evmBalances.listErc721Balances({
-        chainId,
-        address,
-        pageSize,
-        pageToken,
-      });
-    } catch (error) {
-      if (error instanceof GlacierUnhealthyError) {
-        this.setGlacierToUnhealthy();
+  async listErc721Balances({ chainId, address }: { chainId: string; address: string }): Promise<Erc721TokenBalance[]> {
+    /**
+     *  Load all pages to make sure we have all the tokens with balances
+     */
+    let nextPageToken: string | undefined = undefined;
+    const tokens: Erc721TokenBalance[] = [];
+    do {
+      try {
+        const response = await this.glacierSdk.evmBalances.listErc721Balances({
+          chainId,
+          address,
+          pageSize: 100,
+          pageToken: nextPageToken,
+        });
+
+        tokens.push(...response.erc721TokenBalances);
+
+        nextPageToken = response.nextPageToken;
+      } catch (error) {
+        if (error instanceof GlacierUnhealthyError) {
+          this.setGlacierToUnhealthy();
+        }
+        throw error;
       }
-      throw error;
-    }
+    } while (nextPageToken);
+
+    return tokens;
   }
 
   async listErc1155Balances({
     chainId,
     address,
-    pageSize,
-    pageToken,
   }: {
     chainId: string;
     address: string;
-    pageSize: number;
-    pageToken?: string;
-  }): Promise<ListErc1155BalancesResponse> {
-    try {
-      return this.glacierSdk.evmBalances.listErc1155Balances({
-        chainId,
-        address,
-        pageSize,
-        pageToken,
-      });
-    } catch (error) {
-      if (error instanceof GlacierUnhealthyError) {
-        this.setGlacierToUnhealthy();
+  }): Promise<Erc1155TokenBalance[]> {
+    /**
+     *  Load all pages to make sure we have all the tokens with balances
+     */
+    let nextPageToken: string | undefined = undefined;
+    const tokens: Erc1155TokenBalance[] = [];
+    do {
+      try {
+        const response = await this.glacierSdk.evmBalances.listErc1155Balances({
+          chainId,
+          address,
+          pageSize: 100,
+          pageToken: nextPageToken,
+        });
+
+        tokens.push(...response.erc1155TokenBalances);
+
+        nextPageToken = response.nextPageToken;
+      } catch (error) {
+        if (error instanceof GlacierUnhealthyError) {
+          this.setGlacierToUnhealthy();
+        }
+        throw error;
       }
-      throw error;
-    }
+    } while (nextPageToken);
+
+    return tokens;
+  }
+
+  async listNftBalances({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }): Promise<Record<string, NftTokenWithBalance | Error>> {
+    const balances = await Promise.allSettled([
+      this.listErc721Balances({ chainId: chainId.toString(), address }),
+      this.listErc1155Balances({ chainId: chainId.toString(), address }),
+    ]);
+
+    const entries = balances
+      .filter(
+        (
+          tokenlist,
+        ): tokenlist is PromiseFulfilledResult<Erc721TokenBalance[]> | PromiseFulfilledResult<Erc1155TokenBalance[]> =>
+          tokenlist.status === 'fulfilled',
+      )
+      .flatMap((tokenlist) => {
+        return tokenlist.value.map((token) => {
+          return [
+            token.address,
+            {
+              address: token.address,
+              description: token.metadata.description ?? '',
+              logoUri: token.metadata.imageUri ?? '',
+              logoSmall: getSmallImageForNFT(token.metadata.imageUri ?? ''),
+              name: token.metadata.name ?? '',
+              symbol: token.metadata.symbol ?? '',
+              tokenId: token.tokenId,
+              tokenUri: token.tokenUri,
+              // glacier does not provide the collection name information
+              collectionName: 'Unkown',
+              balance: 1n,
+              balanceDisplayValue: '1',
+              type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
+            },
+          ];
+        });
+      });
+
+    return Object.fromEntries(entries);
   }
 
   async listErc20Balances({

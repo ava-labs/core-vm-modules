@@ -1,18 +1,17 @@
 import {
-  type ERC20Token,
   type GetBalancesParams,
-  type NetworkContractToken,
   type NetworkTokenWithBalance,
   type Storage,
-  TokenType,
   type Error,
   type TokenWithBalanceEVM,
+  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
 import { findAsync } from '../../utils/find-async';
 import type { BalanceServiceInterface } from './balance-service-interface';
 import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { RpcService } from '../../services/rpc-service/rpc-service';
+import { isERC20Token } from '../../utils/type-utils';
 
 type AccountAddress = string;
 type TokenSymbol = string;
@@ -46,6 +45,7 @@ export const getBalances = async ({
   if (supportingService) {
     const nativeTokenPromises: Promise<IdPromise<NetworkTokenWithBalance>>[] = [];
     const erc20TokenPromises: Promise<IdPromise<Record<string, TokenWithBalanceEVM | Error>>>[] = [];
+    const nftTokenPromises: Promise<IdPromise<Record<string, NftTokenWithBalance | Error>>>[] = [];
     addresses.forEach((address) => {
       nativeTokenPromises.push(
         addIdToPromise(
@@ -66,6 +66,16 @@ export const getBalances = async ({
             chainId,
             address,
             pageSize: 100,
+          }),
+          address,
+        ),
+      );
+
+      nftTokenPromises.push(
+        addIdToPromise(
+          supportingService.listNftBalances({
+            chainId,
+            address,
           }),
           address,
         ),
@@ -115,7 +125,3 @@ export const getBalances = async ({
 
   return balances;
 };
-
-function isERC20Token(token: NetworkContractToken): token is ERC20Token {
-  return token.type === TokenType.ERC20;
-}
