@@ -1,5 +1,11 @@
 # @avalabs/bitcoin-module
 
+## 0.5.0
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.5.0
+
 ## 0.4.2
 
 ### Patch Changes
