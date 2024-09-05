@@ -83,6 +83,7 @@ export const getBalances = async ({
     });
     const nativeTokenBalances = await settleAllIdPromises(nativeTokenPromises);
     const erc20TokenBalances = await settleAllIdPromises(erc20TokenPromises);
+    const nftTokenBalances = await settleAllIdPromises(nftTokenPromises);
     Object.keys(nativeTokenBalances).forEach((address) => {
       const balanceOrError = nativeTokenBalances[address];
       if (!balanceOrError || 'error' in balanceOrError) {
@@ -107,6 +108,25 @@ export const getBalances = async ({
         balances[address] = {
           ...balances[address],
           error: `listErc20Balances failed: ${balancesOrError.error}`,
+        };
+      } else {
+        balances[address] = {
+          ...balances[address],
+          ...balancesOrError,
+        };
+      }
+    });
+    Object.keys(nftTokenBalances).forEach((address) => {
+      const balancesOrError = nftTokenBalances[address];
+      if (!balancesOrError || ('error' in balancesOrError && typeof balancesOrError.error !== 'string')) {
+        balances[address] = {
+          ...balances[address],
+          error: `listNftBalances failed: unknown error`,
+        };
+      } else if ('error' in balancesOrError && typeof balancesOrError.error === 'string') {
+        balances[address] = {
+          ...balances[address],
+          error: `listNftBalances failed: ${balancesOrError.error}`,
         };
       } else {
         balances[address] = {

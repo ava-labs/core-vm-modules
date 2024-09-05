@@ -177,7 +177,7 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('should return error if xpubXP is not provided in context', async () => {
+  it('should return error if provided xpubXP is not a string', async () => {
     const params = testParams(testRequestParams);
     const paramsWithoutCurrentAddress = {
       ...params,
@@ -185,7 +185,7 @@ describe('avalanche_sendTransaction handler', () => {
         ...params.request,
         context: {
           ...params.request.context,
-          xpubXP: undefined,
+          xpubXP: {},
         },
       },
     };
@@ -193,7 +193,7 @@ describe('avalanche_sendTransaction handler', () => {
     const result = await avalancheSendTransaction(paramsWithoutCurrentAddress);
 
     expect(result).toEqual({
-      error: rpcErrors.invalidParams('Request should have xpubXP in context'),
+      error: rpcErrors.invalidParams('xpubXP must be a string'),
     });
   });
 
@@ -445,7 +445,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
     });
 
     it('should notify when transaction is reverted', async () => {
@@ -462,7 +462,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
     });
   });
 

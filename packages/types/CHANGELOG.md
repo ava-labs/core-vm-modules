@@ -1,5 +1,34 @@
 # @avalabs/vm-module-types
 
+## 0.4.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 8b7988e: clean up dependencies of types package
+- 9754446: bump internal sdks to 3.1.0-alpha.5
+
+## 0.4.0
+
+### Minor Changes
+
+- 04cc519: feat: add LINK tx detail type
+
+## 0.3.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 1047507: adding evm provider with corresponding stuff
+
+## 0.2.0
+
+### Minor Changes
+
+- 1047507: adding evm provider with corresponding stuff
+
 ## 0.1.12
 
 ### Patch Changes

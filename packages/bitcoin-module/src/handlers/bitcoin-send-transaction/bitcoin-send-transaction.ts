@@ -15,7 +15,8 @@ import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
 import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
-import { addressItem, currencyItem, textItem } from '@internal/utils';
+import { addressItem, currencyItem } from '@internal/utils';
+import { linkItem } from '@internal/utils/src/utils/detail-item';
 
 type BitcoinSendTransactionParams = {
   request: RpcRequest;
@@ -83,7 +84,7 @@ export const bitcoinSendTransaction = async ({
       {
         title: 'Transaction Details',
         items: [
-          textItem('Website', new URL(dappInfo.url).hostname),
+          linkItem('Website', dappInfo),
           addressItem('From', from),
           addressItem('To', to),
           currencyItem('Amount', BigInt(amount), network.networkToken.decimals, network.networkToken.symbol),
@@ -131,6 +132,9 @@ export const bitcoinSendTransaction = async ({
     txHash: txHash as Hex,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
+    // Pass the requestId so that client apps can pair the transaction
+    // status changes back to their respective requests for better tracking.
+    requestId: request.requestId,
   });
 
   return {
@@ -151,17 +155,19 @@ const waitForTransactionReceipt = async ({
   txHash,
   onTransactionConfirmed,
   onTransactionReverted,
+  requestId,
 }: {
   provider: BitcoinProvider;
   txHash: Hex;
-  onTransactionConfirmed: (txHash: Hex) => void;
-  onTransactionReverted: (txHash: Hex) => void;
+  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  requestId: string;
 }) => {
   try {
     await provider.waitForTx(txHash);
-    onTransactionConfirmed(txHash);
+    onTransactionConfirmed(txHash, requestId);
   } catch (err) {
     console.error(err);
-    onTransactionReverted(txHash);
+    onTransactionReverted(txHash, requestId);
   }
 };

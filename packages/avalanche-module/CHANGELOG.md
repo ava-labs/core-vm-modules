@@ -1,5 +1,48 @@
 # @avalabs/avalanche-module
 
+## 0.4.2
+
+### Patch Changes
+
+- c852e8b: support avalanche_sendTransaction for seedless wallet
+  - @avalabs/vm-module-types@0.4.2
+
+## 0.4.1
+
+### Patch Changes
+
+- 9754446: bump internal sdks to 3.1.0-alpha.5
+- Updated dependencies [8b7988e]
+- Updated dependencies [9754446]
+  - @avalabs/vm-module-types@0.4.1
+
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies [04cc519]
+  - @avalabs/vm-module-types@0.4.0
+
+## 0.3.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.3.1
+
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [1047507]
+  - @avalabs/vm-module-types@0.3.0
+
+## 0.2.0
+
+### Patch Changes
+
+- Updated dependencies [1047507]
+  - @avalabs/vm-module-types@0.2.0
+
 ## 0.1.12
 
 ### Patch Changes

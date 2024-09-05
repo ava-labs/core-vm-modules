@@ -15,6 +15,9 @@ import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
 
+// doesn't print the ugly console errors out
+jest.spyOn(global.console, 'error').mockImplementation(() => {});
+
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
@@ -77,14 +80,14 @@ const testNetwork: Network = {
 };
 
 const testParams = { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' };
-
+const testDapp = { url: 'https://example.com', name: 'dapp', icon: 'icon' };
 const testRequestParams = () => ({
   request: {
     requestId: '1',
     sessionId: '2',
     method: RpcMethod.ETH_SEND_TRANSACTION,
     chainId: 'eip155:1',
-    dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
+    dappInfo: testDapp,
     params: [testParams],
   },
   network: testNetwork,
@@ -105,9 +108,8 @@ const displayData = {
       items: [
         {
           label: 'Website',
-          value: 'example.com',
-          alignment: 'horizontal',
-          type: 'text',
+          value: testDapp,
+          type: 'link',
         },
         {
           label: 'From',
@@ -490,7 +492,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
     });
 
     it('should notify when transaction is reverted', async () => {
@@ -511,7 +513,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash);
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
     });
   });
 
