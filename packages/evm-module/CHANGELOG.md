@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 0.5.0
+
+### Minor Changes
+
+- 5ae9d18: feat: add optional coreVersion param
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.5.0
+
 ## 0.4.2
 
 ### Patch Changes
