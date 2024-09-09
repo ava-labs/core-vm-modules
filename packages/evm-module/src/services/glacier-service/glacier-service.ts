@@ -263,6 +263,12 @@ export class EvmGlacierService implements BalanceServiceInterface {
               balance: 1n,
               balanceDisplayValue: '1',
               type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
+              metadata: {
+                description: token.metadata.description,
+                lastUpdatedTimestamp: token.metadata.metadataLastUpdatedTimestamp,
+                properties:
+                  token.ercType === Erc721Token.ercType.ERC_721 ? token.metadata.attributes : token.metadata.properties,
+              },
             },
           ];
         });

@@ -131,6 +131,11 @@ export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type
   tokenUri: string;
   collectionName: string;
   updatedAt?: number;
+  metadata?: {
+    description?: string;
+    lastUpdatedTimestamp?: number;
+    properties?: string;
+  };
 }
 
 export interface TokenAttribute {
