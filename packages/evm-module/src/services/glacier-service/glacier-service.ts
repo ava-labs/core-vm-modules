@@ -248,7 +248,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
       .flatMap((tokenlist) => {
         return tokenlist.value.map((token) => {
           return [
-            token.address,
+            `${token.address}-${token.tokenId}`,
             {
               address: token.address,
               description: token.metadata.description ?? '',
