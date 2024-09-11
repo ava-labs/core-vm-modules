@@ -118,9 +118,6 @@ importers:
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7
-      '@zodios/core':
-        specifier: 10.9.6
-        version: 10.9.6(axios@1.7.2)(zod@3.23.8)
       eslint-config-custom:
         specifier: workspace:*
         version: link:../eslint-config-custom
@@ -166,9 +163,6 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
-      '@zodios/core':
-        specifier: 10.9.6
-        version: 10.9.6(axios@1.7.2)(zod@3.23.8)
       big.js:
         specifier: 6.2.1
         version: 6.2.1
@@ -224,9 +218,6 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
-      '@zodios/core':
-        specifier: 10.9.6
-        version: 10.9.6(axios@1.7.2)(zod@3.23.8)
       big.js:
         specifier: 6.2.1
         version: 6.2.1
@@ -297,9 +288,6 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
-      '@zodios/core':
-        specifier: 10.9.6
-        version: 10.9.6(axios@1.7.2)(zod@3.23.8)
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
@@ -1413,12 +1401,6 @@ packages:
   '@typescript-eslint/visitor-keys@6.9.1':
     resolution: {integrity: sha512-MUaPUe/QRLEffARsmNfmpghuQkW436DvESW+h+M52w0coICHRfD6Np9/K6PdACwnrq1HmuLl+cSPZaJmeVPkSw==}
     engines: {node: ^16.0.0 || >=18.0.0}
-
-  '@zodios/core@10.9.6':
-    resolution: {integrity: sha512-aH4rOdb3AcezN7ws8vDgBfGboZMk2JGGzEq/DtW65MhnRxyTGRuLJRWVQ/2KxDgWvV2F5oTkAS+5pnjKbl0n+A==}
-    peerDependencies:
-      axios: ^0.x || ^1.0.0
-      zod: ^3.x
 
   abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
@@ -6159,11 +6141,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 6.9.1
       eslint-visitor-keys: 3.4.3
-
-  '@zodios/core@10.9.6(axios@1.7.2)(zod@3.23.8)':
-    dependencies:
-      axios: 1.7.2
-      zod: 3.23.8
 
   abab@2.0.6: {}
 

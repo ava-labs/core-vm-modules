@@ -1,73 +1,62 @@
-import { Zodios } from '@zodios/core';
 import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from '@avalabs/vm-module-types';
-import { boolean, string } from 'zod';
+import { fetchAndVerify } from '../../utils/fetch-and-verify';
+import { URLSearchParams } from 'url';
 
-export const coingeckoProxyClient = (proxyApiUrl: string) =>
-  new Zodios(
-    `${proxyApiUrl}/proxy/coingecko`,
-    [
-      {
-        method: 'post',
-        path: '/simple/price',
-        parameters: [
-          { name: 'ids', type: 'Query', schema: string() },
-          { name: 'vs_currencies', type: 'Query', schema: string() },
-          {
-            name: 'include_market_cap',
-            type: 'Query',
-            schema: string().optional(),
+export class CoingeckoProxyClient {
+  constructor(private proxyApiUrl: string) {}
+
+  simplePrice(params: {
+    ids: string[];
+    vs_currencies: string[];
+    include_market_cap?: boolean;
+    include_24hr_vol?: boolean;
+    include_24hr_change?: boolean;
+    include_last_updated_at?: boolean;
+  }) {
+    // casting params as any since typing does not allow boolean and other non-string values
+    // even though NodeJS does not have this restriction itself: https://nodejs.org/api/url.html#new-urlsearchparamsobj
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const queryParams = new URLSearchParams(params as any);
+    return fetchAndVerify(
+      [
+        `${this.proxyApiUrl}/proxy/coingecko/simple/price?${queryParams}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          {
-            name: 'include_24hr_vol',
-            type: 'Query',
-            schema: string().optional(),
-          },
-          {
-            name: 'include_24hr_change',
-            type: 'Query',
-            schema: string().optional(),
-          },
-          {
-            name: 'include_last_updated_at',
-            type: 'Query',
-            schema: string().optional(),
-          },
-        ],
-        alias: 'simplePrice',
-        response: RawSimplePriceResponseSchema,
-      },
-      {
-        method: 'post',
-        path: '/simple/token_price/:id',
-        parameters: [
-          { name: 'id', type: 'Path', schema: string() },
-          { name: 'contract_addresses', type: 'Query', schema: string().array() },
-          { name: 'vs_currencies', type: 'Query', schema: string().array() },
-          {
-            name: 'include_market_cap',
-            type: 'Query',
-            schema: boolean().optional(),
-          },
-          {
-            name: 'include_24hr_vol',
-            type: 'Query',
-            schema: boolean().optional(),
-          },
-          {
-            name: 'include_24hr_change',
-            type: 'Query',
-            schema: boolean().optional(),
-          },
-        ],
-        alias: 'simplePriceByContractAddresses',
-        response: SimplePriceResponseSchema,
-      },
-    ],
-    {
-      axiosConfig: {
-        headers: {
-          'Content-Type': 'application/json',
         },
-      },
-    },
-  );
+      ],
+      RawSimplePriceResponseSchema,
+    );
+  }
+
+  simplePriceByContractAddresses(params: {
+    id: string;
+    contract_addresses: string[];
+    vs_currencies?: string[];
+    include_market_cap?: boolean;
+    include_24hr_vol?: boolean;
+    include_24hr_change?: boolean;
+  }) {
+    const { id, ...rawQueryParams } = params;
+
+    // casting params as any since typing does not allow boolean and other non-string values
+    // even though NodeJS does not have this restriction itself: https://nodejs.org/api/url.html#new-urlsearchparamsobj
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const queryParams = new URLSearchParams(rawQueryParams as any);
+
+    return fetchAndVerify(
+      [
+        `${this.proxyApiUrl}/proxy/coingecko/simple/token_price/${id}?${queryParams}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      ],
+      SimplePriceResponseSchema,
+    );
+  }
+}

@@ -28,7 +28,6 @@
     "@avalabs/types": "3.1.0-alpha.5",
     "@blockaid/client": "0.11.0",
     "@metamask/rpc-errors": "6.3.0",
-    "@zodios/core": "10.9.6",
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
     "zod": "3.23.8"

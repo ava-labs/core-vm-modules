@@ -8,7 +8,7 @@ import {
 import type { Storage, RawSimplePriceResponse, SimplePriceResponse } from '@avalabs/vm-module-types';
 import { coingeckoRetry } from '../../utils/coingecko-retry';
 import { arrayHash } from '../../utils/array-hash';
-import { coingeckoProxyClient } from './coingecko-proxy-client';
+import { CoingeckoProxyClient } from './coingecko-proxy-client';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
@@ -107,17 +107,13 @@ export class TokenService {
     useCoingeckoProxy?: boolean;
   }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
-      return coingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses(undefined, {
-        params: {
-          id: assetPlatformId,
-        },
-        queries: {
-          contract_addresses: tokenAddresses,
-          vs_currencies: [currency],
-          include_market_cap: true,
-          include_24hr_vol: true,
-          include_24hr_change: true,
-        },
+      return new CoingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses({
+        id: assetPlatformId,
+        contract_addresses: tokenAddresses,
+        vs_currencies: [currency],
+        include_market_cap: true,
+        include_24hr_vol: true,
+        include_24hr_change: true,
       });
     }
 
@@ -142,15 +138,13 @@ export class TokenService {
     shouldThrow = true,
   }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
-      const rawData = await coingeckoProxyClient(this.#proxyApiUrl).simplePrice(undefined, {
-        queries: {
-          ids: coinIds?.join(','),
-          vs_currencies: currencies.join(','),
-          include_market_cap: String(marketCap),
-          include_24hr_vol: String(vol24),
-          include_24hr_change: String(change24),
-          include_last_updated_at: String(lastUpdated),
-        },
+      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl).simplePrice({
+        ids: coinIds,
+        vs_currencies: currencies,
+        include_market_cap: marketCap,
+        include_24hr_vol: vol24,
+        include_24hr_change: change24,
+        include_last_updated_at: lastUpdated,
       });
       return this.transformSimplePriceResponse(rawData, currencies);
     }

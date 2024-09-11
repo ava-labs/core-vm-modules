@@ -1,5 +1,5 @@
-import { Zodios } from '@zodios/core';
 import z, { number, object, record, string } from 'zod';
+import { fetchAndVerify } from '../../utils/fetch-and-verify';
 
 const CURRENCY_EXCHANGE_RATES_URL =
   'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json';
@@ -13,28 +13,10 @@ const ExchangeRateSchema = object({
 
 type ExchangeRate = z.infer<typeof ExchangeRateSchema>;
 
-const exchangeRateApiClient = new Zodios(CURRENCY_EXCHANGE_RATES_URL, [
-  {
-    method: 'get',
-    path: '',
-    alias: 'getExchangeRates',
-    response: ExchangeRateSchema,
-  },
-]);
-
-const exchangeRateFallbackApiClient = new Zodios(CURRENCY_EXCHANGE_RATES_FALLBACK_URL, [
-  {
-    method: 'get',
-    path: '',
-    alias: 'getExchangeRates',
-    response: ExchangeRateSchema,
-  },
-]);
-
 export const getExchangeRates = async (): Promise<ExchangeRate> => {
   try {
-    return await exchangeRateApiClient.getExchangeRates();
+    return await fetchAndVerify([CURRENCY_EXCHANGE_RATES_URL], ExchangeRateSchema);
   } catch {
-    return await exchangeRateFallbackApiClient.getExchangeRates();
+    return await fetchAndVerify([CURRENCY_EXCHANGE_RATES_FALLBACK_URL], ExchangeRateSchema);
   }
 };

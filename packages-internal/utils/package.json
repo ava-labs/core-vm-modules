@@ -12,7 +12,6 @@
   "private": true,
   "devDependencies": {
     "zod": "3.23.8",
-    "@zodios/core": "10.9.6",
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.5",
     "@avalabs/glacier-sdk": "3.1.0-alpha.5",
     "@avalabs/core-chains-sdk": "3.1.0-alpha.5",
