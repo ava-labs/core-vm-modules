@@ -1,5 +1,12 @@
 # @avalabs/bitcoin-module
 
+## 0.5.1
+
+### Patch Changes
+
+- f7752b9: don't fetch btc balance with scripts by default
+  - @avalabs/vm-module-types@0.5.1
+
 ## 0.5.0
 
 ### Patch Changes
