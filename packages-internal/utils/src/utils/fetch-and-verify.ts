@@ -7,6 +7,6 @@ export async function fetchAndVerify(fetchOptions: Parameters<typeof fetch>, sch
     throw new Error(`Request failed with status ${response.status}`);
   }
 
-  const responseJson = response.json();
+  const responseJson = await response.json();
   return schema.parse(responseJson);
 }
