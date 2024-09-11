@@ -19,7 +19,7 @@ export const getBalances = async ({
   addresses,
   currency,
   network,
-  withScripts,
+  withScripts = false,
   proxyApiUrl,
   storage,
 }: GetBTCBalancesParams): Promise<GetBtcBalancesResponse> => {

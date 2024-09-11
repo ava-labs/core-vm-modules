@@ -79,14 +79,14 @@ describe('get-balances', () => {
     expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl: 'https://proxy-dev.api/' });
   });
 
-  it('should call getUtxoBalance() method', async () => {
+  it('should call getUtxoBalance() method without scripts', async () => {
     await getBalances({
       addresses: ['first-address'],
       network,
       proxyApiUrl,
     });
 
-    expect(provider.getUtxoBalance).toHaveBeenCalledWith('first-address', undefined);
+    expect(provider.getUtxoBalance).toHaveBeenCalledWith('first-address', false);
   });
 
   it('uses withScripts option when requested', async () => {
