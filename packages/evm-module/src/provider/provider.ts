@@ -134,6 +134,11 @@ export class EVMProvider extends EventEmitter {
   };
 
   #request = async (data: PartialBy<JsonRpcRequestPayload<string>, 'id' | 'params'>) => {
+    // Intercept eth_chainId requests, we know where we are.
+    if (data.method === 'eth_chainId') {
+      return this.chainId;
+    }
+
     return this.#chainagnosticProvider?.request({
       data,
       chainId: this.chainId,
@@ -215,6 +220,10 @@ export class EVMProvider extends EventEmitter {
 
     let result;
     switch (payload.method) {
+      case 'eth_chainId':
+        result = this.chainId;
+        break;
+
       case 'eth_accounts':
         result = this.selectedAddress ? [this.selectedAddress] : [];
         break;
