@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 0.7.0
+
+### Minor Changes
+
+- 544b726: fix(evm-module): intercept eth_chainId requests
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes
