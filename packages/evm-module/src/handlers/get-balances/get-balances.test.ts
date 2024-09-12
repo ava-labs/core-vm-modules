@@ -7,6 +7,8 @@ import {
   type NetworkContractToken,
   type NetworkTokenWithBalance,
   NetworkVMType,
+  type NftTokenWithBalance,
+  TokenType,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
 import { getTokens } from '../get-tokens/get-tokens';
@@ -48,9 +50,12 @@ describe('getBalances', () => {
     const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
     mockFindAsync.mockResolvedValue(glacierService);
     glacierService.isNetworkSupported.mockResolvedValue(true);
-    glacierService.getNativeBalance.mockResolvedValue({ symbol: 'ETH', balance: 10000n } as NetworkTokenWithBalance);
+    glacierService.getNativeBalance.mockResolvedValue({ symbol: 'ETH' } as NetworkTokenWithBalance);
     glacierService.listErc20Balances.mockResolvedValue({
-      '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } as TokenWithBalanceEVM,
+      '0xTokenId1': { symbol: 'TOKEN1' } as TokenWithBalanceEVM,
+    });
+    glacierService.listNftBalances.mockResolvedValue({
+      '0xnft': { type: TokenType.ERC721, address: '0xnft' } as NftTokenWithBalance,
     });
 
     const result = await getBalances({
@@ -63,8 +68,16 @@ describe('getBalances', () => {
     });
 
     expect(result).toEqual({
-      '0xAddress1': { ETH: { symbol: 'ETH', balance: 10000n }, '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } },
-      '0xAddress2': { ETH: { symbol: 'ETH', balance: 10000n }, '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } },
+      '0xAddress1': {
+        ETH: { symbol: 'ETH' },
+        '0xTokenId1': { symbol: 'TOKEN1' },
+        '0xnft': { type: TokenType.ERC721, address: '0xnft' },
+      },
+      '0xAddress2': {
+        ETH: { symbol: 'ETH' },
+        '0xTokenId1': { symbol: 'TOKEN1' },
+        '0xnft': { type: TokenType.ERC721, address: '0xnft' },
+      },
     });
   });
 
@@ -83,11 +96,11 @@ describe('getBalances', () => {
     (getTokens as jest.MockedFunction<typeof getTokens>).mockResolvedValue([]);
     mockedRpcService.getNativeBalance.mockResolvedValue({
       symbol: 'ETH',
-      balance: 10000n,
     } as NetworkTokenWithBalance);
     mockedRpcService.listErc20Balances.mockResolvedValue({
-      '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } as TokenWithBalanceEVM,
+      '0xTokenId1': { symbol: 'TOKEN1' } as TokenWithBalanceEVM,
     });
+    mockedRpcService.listNftBalances.mockResolvedValue({});
     const tokenService = new TokenService({ proxyApiUrl }) as jest.Mocked<TokenService>;
     tokenService.getPricesByAddresses.mockResolvedValue(undefined);
 
@@ -101,8 +114,8 @@ describe('getBalances', () => {
     });
 
     expect(result).toEqual({
-      '0xAddress1': { ETH: { symbol: 'ETH', balance: 10000n }, '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } },
-      '0xAddress2': { ETH: { symbol: 'ETH', balance: 10000n }, '0xTokenId1': { symbol: 'TOKEN1', balance: 100000n } },
+      '0xAddress1': { ETH: { symbol: 'ETH' }, '0xTokenId1': { symbol: 'TOKEN1' } },
+      '0xAddress2': { ETH: { symbol: 'ETH' }, '0xTokenId1': { symbol: 'TOKEN1' } },
     });
   });
 
@@ -112,6 +125,7 @@ describe('getBalances', () => {
     glacierService.isNetworkSupported.mockResolvedValue(true);
     glacierService.getNativeBalance.mockRejectedValue(new Error('Failed to get native balance'));
     glacierService.listErc20Balances.mockRejectedValue(new Error('Failed to list ERC20 balances'));
+    glacierService.listNftBalances.mockResolvedValue({});
 
     const result = await getBalances({
       addresses,

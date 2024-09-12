@@ -9,6 +9,7 @@ import {
   type Error,
   TokenType,
   type TokenWithBalanceEVM,
+  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
 import { addIdToPromise, settleAllIdPromises } from '../../utils/id-promise';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
@@ -18,6 +19,7 @@ import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import { getProvider } from '../../utils/get-provider';
 import { TokenService } from '@internal/utils';
 import { getTokens } from '../../handlers/get-tokens/get-tokens';
+import { isERC20Token } from '../../utils/type-utils';
 
 export class RpcService implements BalanceServiceInterface {
   #network: Network;
@@ -181,8 +183,9 @@ export class RpcService implements BalanceServiceInterface {
     }
     return erc20TokenBalances;
   }
-}
 
-function isERC20Token(token: NetworkContractToken): token is ERC20Token {
-  return token.type === TokenType.ERC20;
+  async listNftBalances(): Promise<Record<string, NftTokenWithBalance | Error>> {
+    // the token list does not maintain a list of NFTs
+    return {};
+  }
 }

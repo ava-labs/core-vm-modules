@@ -52,7 +52,7 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
     type: TokenType.ERC20;
   };
 
-export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20;
+export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;
 
 /**
  * Bitcoin TokenWithBalance interface.
@@ -117,7 +117,7 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
   };
 }
 
-export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type'> {
+export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type' | 'decimals' | 'coingeckoId'> {
   type: TokenType.ERC721 | TokenType.ERC1155;
   address: string;
   description: string;
@@ -126,9 +126,16 @@ export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type
   name: string;
   symbol: string;
   tokenId: string;
-  attributes: TokenAttribute[];
+  // URL holding the metadata of the NFT, modules are not expected to fetch all metadata
+  // to avoid increased loading times when dealing with ipfs and 3rd party services
+  tokenUri: string;
   collectionName: string;
   updatedAt?: number;
+  metadata?: {
+    description?: string;
+    lastUpdatedTimestamp?: number;
+    properties?: string;
+  };
 }
 
 export interface TokenAttribute {
@@ -136,11 +143,6 @@ export interface TokenAttribute {
   value: string;
 }
 
-export type TokenWithBalance =
-  | TokenWithBalanceEVM
-  | TokenWithBalanceBTC
-  | TokenWithBalancePVM
-  | TokenWithBalanceAVM
-  | NftTokenWithBalance;
+export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;

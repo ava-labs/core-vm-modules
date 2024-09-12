@@ -7,6 +7,7 @@ import {
   TokenType,
   type TokenWithBalanceEVM,
   type Error,
+  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
 import { DeBank } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -126,5 +127,10 @@ export class DeBankService implements BalanceServiceInterface {
     }
 
     return erc20TokenBalances;
+  }
+
+  async listNftBalances(): Promise<Record<string, NftTokenWithBalance | Error>> {
+    // we are not supporting NFTs on debank powered chains
+    return {};
   }
 }
