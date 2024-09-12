@@ -1,5 +1,16 @@
 # @avalabs/avalanche-module
 
+## 0.6.0
+
+### Minor Changes
+
+- 045271a: Load NFTs on EVM
+
+### Patch Changes
+
+- Updated dependencies [045271a]
+  - @avalabs/vm-module-types@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes

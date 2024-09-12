@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.6.0
+
+### Minor Changes
+
+- 045271a: Load NFTs on EVM
+
 ## 0.5.1
 
 ## 0.5.0
