@@ -1,6 +1,5 @@
 import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from '@avalabs/vm-module-types';
 import { fetchAndVerify } from '../../utils/fetch-and-verify';
-import { URLSearchParams } from 'url';
 
 export class CoingeckoProxyClient {
   constructor(private proxyApiUrl: string) {}
