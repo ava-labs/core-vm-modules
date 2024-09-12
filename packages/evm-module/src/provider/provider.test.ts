@@ -75,6 +75,29 @@ describe('@evm-module/provider', () => {
 
   describe('EIP-1193', () => {
     describe('request', () => {
+      it('intercepts eth_chainId requests', async () => {
+        (channelMock.request as jest.Mock).mockResolvedValue(channelMockResolvedValue);
+        const provider = new EVMProvider({ info: providerInfo });
+
+        const chainAgnosticProvider = {
+          subscribeToMessage: jest.fn((callback) => {
+            return channelMock.on('message', callback);
+          }),
+          request: jest.fn((params) => {
+            return channelMock.request(params as any);
+          }),
+        };
+        (addEventListenerSpy.mock.calls[0]?.[1] as any)({
+          detail: {
+            provider: chainAgnosticProvider,
+          },
+        });
+
+        const payload = { method: 'eth_chainId', params: [] };
+
+        expect(await provider.request(payload)).toEqual(channelMockResolvedValue.chainId);
+        expect(chainAgnosticProvider.request).not.toHaveBeenCalledWith(matchingPayload(payload));
+      });
       it('collects pending requests till the dom is ready', async () => {
         const provider = new EVMProvider({ info: providerInfo });
         (addEventListenerSpy.mock.calls[0]?.[1] as any)({
