@@ -236,6 +236,7 @@ export type ApprovalParams = {
   request: RpcRequest;
   displayData: DisplayData;
   signingData: SigningData;
+  updateFee?: (maxFee: bigint, maxTip?: bigint) => SigningData; // Make it required as soon as all modules get their implementation
 };
 
 /**

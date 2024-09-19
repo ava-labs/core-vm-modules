@@ -20,6 +20,7 @@ import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-t
 import { ERC20TransactionType } from '../../types';
 import { addressItem, textItem, dataItem } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
+import { getFeeUpdater } from '../../utils/evm-fee-updater';
 
 export const ethSendTransaction = async ({
   request,
@@ -160,8 +161,11 @@ export const ethSendTransaction = async ({
     },
   };
 
+  const { updateFee, cleanup } = getFeeUpdater(request.requestId, signingData);
   // prompt user for approval
-  const response = await approvalController.requestApproval({ request, displayData, signingData });
+  const response = await approvalController.requestApproval({ request, displayData, signingData, updateFee });
+
+  cleanup();
 
   if ('error' in response) {
     return {
