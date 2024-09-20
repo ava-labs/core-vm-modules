@@ -20,7 +20,7 @@ import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-t
 import { ERC20TransactionType } from '../../types';
 import { addressItem, textItem, dataItem } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
-import { getFeeUpdater } from '../../utils/evm-fee-updater';
+import { getTxUpdater } from '../../utils/evm-tx-updater';
 
 export const ethSendTransaction = async ({
   request,
@@ -157,13 +157,13 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       data: transaction.data,
       value: transaction.value,
-      chainId: transaction.chainId,
+      chainId: transaction.chainId ?? network.chainId, // Default to the network from request scope if not provided
     },
   };
 
-  const { updateFee, cleanup } = getFeeUpdater(request.requestId, signingData);
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData);
   // prompt user for approval
-  const response = await approvalController.requestApproval({ request, displayData, signingData, updateFee });
+  const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
 
   cleanup();
 

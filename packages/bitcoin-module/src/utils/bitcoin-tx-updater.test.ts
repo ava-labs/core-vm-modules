@@ -1,10 +1,10 @@
 import { RpcMethod, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { getFeeUpdater } from './bitcoin-fee-updater';
+import { getTxUpdater } from './bitcoin-tx-updater';
 import { createTransferTx, type BitcoinOutputUTXO, type BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
 jest.mock('@avalabs/core-wallets-sdk');
 
-describe('bitcoin-fee-updater', () => {
+describe('bitcoin-tx-updater', () => {
   const testInputs = [
     {
       txHash: 'f1a6c8e9213d5b8a7d3ab9084b6d2e9487f2e7681c5ab84f56c3e0c4f20d1a5b',
@@ -43,7 +43,7 @@ describe('bitcoin-fee-updater', () => {
   const network = {};
   const provider = { getNetwork: jest.fn().mockReturnValue(network) } as unknown as BitcoinProvider;
 
-  it('returns the updateFee callback', () => {
+  it('returns the updateTx callback', () => {
     const updatedTx = {
       inputs: [],
       outputs: [],
@@ -52,7 +52,7 @@ describe('bitcoin-fee-updater', () => {
 
     jest.mocked(createTransferTx).mockReturnValue(updatedTx);
 
-    const { updateFee } = getFeeUpdater(
+    const { updateTx } = getTxUpdater(
       'abcd-1234',
       {
         type: RpcMethod.BITCOIN_SEND_TRANSACTION,
@@ -71,7 +71,7 @@ describe('bitcoin-fee-updater', () => {
       provider,
     );
 
-    expect(updateFee(2n)).toEqual({
+    expect(updateTx({ maxFeeRate: 2n })).toEqual({
       type: RpcMethod.BITCOIN_SEND_TRANSACTION,
       account: 'from',
       data: {

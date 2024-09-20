@@ -13,15 +13,15 @@ import {
   type TokenWithBalanceBTC,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getFeeUpdater } from '../../utils/bitcoin-fee-updater';
+import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
 
 jest.mock('./schema');
 jest.mock('../../utils/get-provider');
 jest.mock('../get-balances/get-balances');
 jest.mock('../../utils/is-btc-balance');
-jest.mock('../../utils/bitcoin-fee-updater', () => ({
-  getFeeUpdater: jest.fn().mockReturnValue({
-    updateFee: jest.fn(),
+jest.mock('../../utils/bitcoin-tx-updater', () => ({
+  getTxUpdater: jest.fn().mockReturnValue({
+    updateTx: jest.fn(),
     cleanup: jest.fn(),
   }),
 }));
@@ -225,8 +225,8 @@ describe('bitcoinSendTransaction', () => {
   });
 
   it('should broadcast transaction, provide fee updater and  return transaction hash', async () => {
-    const updateFee = jest.fn();
-    jest.mocked(getFeeUpdater).mockReturnValueOnce({ cleanup: jest.fn(), updateFee });
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({ cleanup: jest.fn(), updateTx });
     (mockApprovalController.requestApproval as jest.Mock).mockResolvedValue({ signedData: 'somesigneddata' });
     const mockProvider = new BitcoinProvider();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
@@ -289,7 +289,7 @@ describe('bitcoinSendTransaction', () => {
           balance: testBtcBalance,
         },
       },
-      updateFee,
+      updateTx,
     });
 
     expect(result).toEqual({ result: '0x123' });

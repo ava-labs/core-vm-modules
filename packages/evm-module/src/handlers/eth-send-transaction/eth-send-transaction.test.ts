@@ -14,7 +14,7 @@ import {
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
-import { getFeeUpdater } from '../../utils/evm-fee-updater';
+import { getTxUpdater } from '../../utils/evm-tx-updater';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -24,9 +24,9 @@ const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 jest.mock('./schema');
-jest.mock('../../utils/evm-fee-updater', () => ({
-  getFeeUpdater: jest.fn().mockReturnValue({
-    updateFee: jest.fn(),
+jest.mock('../../utils/evm-tx-updater', () => ({
+  getTxUpdater: jest.fn().mockReturnValue({
+    updateTx: jest.fn(),
     cleanup: jest.fn(),
   }),
 }));
@@ -186,9 +186,9 @@ describe('eth_sendTransaction handler', () => {
   });
 
   it('should calculate gas limit if not provided', async () => {
-    const updateFee = jest.fn();
-    jest.mocked(getFeeUpdater).mockReturnValueOnce({
-      updateFee,
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
       cleanup: jest.fn(),
     });
     mockParseRequestParams.mockReturnValue({
@@ -218,14 +218,14 @@ describe('eth_sendTransaction handler', () => {
       request: requestParams.request,
       displayData,
       signingData,
-      updateFee,
+      updateTx,
     });
   });
 
   it('should calculate nonce if not provided', async () => {
-    const updateFee = jest.fn();
-    jest.mocked(getFeeUpdater).mockReturnValueOnce({
-      updateFee,
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
       cleanup: jest.fn(),
     });
     mockParseRequestParams.mockReturnValue({
@@ -254,14 +254,14 @@ describe('eth_sendTransaction handler', () => {
       request: requestParams.request,
       displayData,
       signingData,
-      updateFee,
+      updateTx,
     });
   });
 
   it('should calculate both gas and nonce if not provided', async () => {
-    const updateFee = jest.fn();
-    jest.mocked(getFeeUpdater).mockReturnValueOnce({
-      updateFee,
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
       cleanup: jest.fn(),
     });
     mockParseRequestParams.mockReturnValue({
@@ -296,7 +296,7 @@ describe('eth_sendTransaction handler', () => {
       request: requestParams.request,
       displayData,
       signingData,
-      updateFee,
+      updateTx,
     });
   });
 
@@ -365,9 +365,9 @@ describe('eth_sendTransaction handler', () => {
       data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
     });
 
-    const updateFee = jest.fn();
-    jest.mocked(getFeeUpdater).mockReturnValueOnce({
-      updateFee,
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
       cleanup: jest.fn(),
     });
 
@@ -446,7 +446,7 @@ describe('eth_sendTransaction handler', () => {
         },
       },
       signingData,
-      updateFee,
+      updateTx,
     });
   });
 
@@ -562,9 +562,9 @@ describe('eth_sendTransaction handler', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
-  const updateFee = jest.fn();
-  jest.mocked(getFeeUpdater).mockReturnValueOnce({
-    updateFee,
+  const updateTx = jest.fn();
+  jest.mocked(getTxUpdater).mockReturnValueOnce({
+    updateTx,
     cleanup: jest.fn(),
   });
 
@@ -615,7 +615,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         },
       },
       signingData,
-      updateFee,
+      updateTx,
     });
   } else {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -631,7 +631,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         },
       },
       signingData,
-      updateFee,
+      updateTx,
     });
   }
 };

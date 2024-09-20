@@ -151,6 +151,7 @@ export type DisplayData = {
   alert?: Alert;
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
+  isSimulationSuccessful?: boolean;
 };
 
 export enum AlertType {
@@ -232,11 +233,20 @@ export type SigningData =
       ownSignatureIndices: [number, number][];
     };
 
+export type EvmTxUpdateFn = (data: {
+  maxFeeRate?: bigint;
+  maxTipRate?: bigint;
+  data?: string;
+}) => Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }>;
+export type BtcTxUpdateFn = (data: {
+  maxFeeRate?: bigint;
+}) => Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
+
 export type ApprovalParams = {
   request: RpcRequest;
   displayData: DisplayData;
   signingData: SigningData;
-  updateFee?: (maxFee: bigint, maxTip?: bigint) => SigningData; // Make it required as soon as all modules get their implementation
+  updateTx?: EvmTxUpdateFn | BtcTxUpdateFn;
 };
 
 /**

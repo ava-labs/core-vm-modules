@@ -1,5 +1,5 @@
 import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
-import type { RpcMethod, SigningData } from '@avalabs/vm-module-types';
+import type { BtcTxUpdateFn, RpcMethod, SigningData } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { calculateGasLimit } from './calculate-gas-limit';
 
@@ -7,15 +7,23 @@ type SigningData_BtcSendTx = Extract<SigningData, { type: RpcMethod.BITCOIN_SEND
 
 const requests = new Map<string, SigningData_BtcSendTx>();
 
-export const getFeeUpdater = (requestId: string, signingData: SigningData_BtcSendTx, provider: BitcoinProvider) => {
+export const getTxUpdater = (
+  requestId: string,
+  signingData: SigningData_BtcSendTx,
+  provider: BitcoinProvider,
+): { updateTx: BtcTxUpdateFn; cleanup: () => void } => {
   requests.set(requestId, signingData);
 
   return {
-    updateFee: (maxFeeRate: bigint) => {
+    updateTx: ({ maxFeeRate }) => {
       const oldData = requests.get(requestId);
 
       if (!oldData) {
         throw rpcErrors.resourceNotFound();
+      }
+
+      if (typeof maxFeeRate === 'undefined' || Number(maxFeeRate) === oldData.data.feeRate) {
+        return oldData;
       }
 
       const {
