@@ -28,14 +28,15 @@
     "@avalabs/types": "3.1.0-alpha.5",
     "@blockaid/client": "0.11.0",
     "@metamask/rpc-errors": "6.3.0",
+    "@openzeppelin/contracts": "4.9.6",
     "bn.js": "5.2.1",
     "lodash.startcase": "4.4.0",
+    "xss": "1.0.13",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
     "@internal/utils": "workspace:*",
-    "@openzeppelin/contracts": "4.9.3",
     "@typechain/ethers-v6": "0.5.0",
     "@types/bn.js": "5.1.5",
     "@types/jest": "29.5.7",

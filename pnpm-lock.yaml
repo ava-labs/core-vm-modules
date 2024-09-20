@@ -288,12 +288,18 @@ importers:
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
+      '@openzeppelin/contracts':
+        specifier: 4.9.6
+        version: 4.9.6
       bn.js:
         specifier: 5.2.1
         version: 5.2.1
       lodash.startcase:
         specifier: 4.4.0
         version: 4.4.0
+      xss:
+        specifier: 1.0.13
+        version: 1.0.13
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -304,9 +310,6 @@ importers:
       '@internal/utils':
         specifier: workspace:*
         version: link:../../packages-internal/utils
-      '@openzeppelin/contracts':
-        specifier: 4.9.3
-        version: 4.9.3
       '@typechain/ethers-v6':
         specifier: 0.5.0
         version: 0.5.0(ethers@6.8.1)(typechain@8.3.1)(typescript@5.2.2)
@@ -2398,10 +2401,6 @@ packages:
     resolution: {integrity: sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==}
     dependencies:
       '@octokit/openapi-types': 12.11.0
-    dev: true
-
-  /@openzeppelin/contracts@4.9.3:
-    resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
     dev: true
 
   /@openzeppelin/contracts@4.9.6:
@@ -8422,6 +8421,15 @@ packages:
   /xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
     dev: true
+
+  /xss@1.0.13:
+    resolution: {integrity: sha512-clu7dxTm1e8Mo5fz3n/oW3UCXBfV89xZ72jM8yzo1vR/pIS0w3sgB3XV2H8Vm6zfGnHL0FzvLJPJEBhd86/z4Q==}
+    engines: {node: '>= 0.10.0'}
+    hasBin: true
+    dependencies:
+      commander: 2.20.3
+      cssfilter: 0.0.10
+    dev: false
 
   /xss@1.0.14:
     resolution: {integrity: sha512-og7TEJhXvn1a7kzZGQ7ETjdQVS2UfZyTlsEdDOqvQF7GoxNfY+0YLCzBy1kPdsDDx4QuNAonQPddpsn6Xl/7sw==}

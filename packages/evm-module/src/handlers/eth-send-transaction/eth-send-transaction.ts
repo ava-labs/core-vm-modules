@@ -99,12 +99,13 @@ export const ethSendTransaction = async ({
 
   const transactionType = parseERC20TransactionType(transaction);
 
-  const { alert, balanceChange, tokenApprovals } = await processTransactionSimulation({
+  const { alert, balanceChange, tokenApprovals, isSimulationSuccessful } = await processTransactionSimulation({
     request,
     proxyApiUrl,
     chainId: network.chainId,
     params: transaction,
     dAppUrl: request.dappInfo.url,
+    provider,
   });
 
   // generate display and signing data
@@ -144,6 +145,7 @@ export const ethSendTransaction = async ({
     alert,
     balanceChange,
     tokenApprovals,
+    isSimulationSuccessful,
   };
 
   const signingData: SigningData = {
