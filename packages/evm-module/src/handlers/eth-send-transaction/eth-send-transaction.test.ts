@@ -140,6 +140,7 @@ const displayData = {
   alert: undefined,
   tokenApprovals: undefined,
   balanceChange: undefined,
+  isSimulationSuccessful: true,
 };
 
 const signingData = {
@@ -148,6 +149,7 @@ const signingData = {
   data: {
     type: 2,
     nonce: 12,
+    chainId: 1,
     gasLimit: 21000,
     to: '0xto',
     from: '0xfrom',
@@ -216,7 +218,10 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
       updateTx,
     });
@@ -252,7 +257,10 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
       updateTx,
     });
@@ -294,7 +302,10 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
       updateTx,
     });
