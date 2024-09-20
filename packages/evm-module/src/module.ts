@@ -39,12 +39,14 @@ export class EvmModule implements Module {
   constructor({
     approvalController,
     environment,
+    headers,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
+    headers?: Record<string, string>;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new EvmGlacierService({ glacierApiUrl });
+    this.#glacierService = new EvmGlacierService({ glacierApiUrl, headers });
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;

@@ -38,12 +38,14 @@ export class AvalancheModule implements Module {
   constructor({
     approvalController,
     environment,
+    headers,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
+    headers?: Record<string, string>;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
+    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl, headers });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;

@@ -2041,7 +2041,7 @@ packages:
   /@ledgerhq/hw-app-btc@10.2.4:
     resolution: {integrity: sha512-Uy4v4St6GKI2nyKpplTpIFyp8bHRFEIuhm5YtaUr8JbgkuqlnV7p/d2/uzP7jY6cMArGRrdmJEtuIuvLUdRYrw==}
     dependencies:
-      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/hw-transport': 6.31.2
       '@ledgerhq/logs': 6.12.0
       bip32-path: 0.4.2
       bitcoinjs-lib: 5.2.0
@@ -2064,7 +2064,7 @@ packages:
       '@ledgerhq/domain-service': 1.2.3
       '@ledgerhq/errors': 6.18.0
       '@ledgerhq/evm-tools': 1.2.0
-      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/hw-transport': 6.31.2
       '@ledgerhq/hw-transport-mocker': 6.29.2
       '@ledgerhq/logs': 6.12.0
       '@ledgerhq/types-live': 6.50.0
@@ -2085,7 +2085,7 @@ packages:
       '@ledgerhq/domain-service': 1.2.3
       '@ledgerhq/errors': 6.18.0
       '@ledgerhq/evm-tools': 1.2.0
-      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/hw-transport': 6.31.2
       '@ledgerhq/hw-transport-mocker': 6.29.2
       '@ledgerhq/logs': 6.12.0
       '@ledgerhq/types-live': 6.50.0
@@ -2428,7 +2428,6 @@ packages:
 
   /@scure/base@1.1.8:
     resolution: {integrity: sha512-6CyAclxj3Nb0XT7GHK6K4zK6k2xJm6E4Ft0Ohjt4WgegiFUHEtFb2CGzmPmGBwoIhrLsqNLYfLr04Y1GePrzZg==}
-    dev: false
 
   /@scure/bip32@1.4.0:
     resolution: {integrity: sha512-sVUpc0Vq3tXCkDGYVWGIZTRfnvu8LoTDaev7vbwh0omSvVORONr960MQWdKqJDCReIEmTj3PAr73O3aoxz7OPg==}
@@ -6175,7 +6174,7 @@ packages:
     dependencies:
       '@bitcoinerlab/descriptors': 1.1.1(ledger-bitcoin@0.2.3)
       '@bitcoinerlab/secp256k1': 1.1.1
-      '@ledgerhq/hw-transport': 6.30.6
+      '@ledgerhq/hw-transport': 6.31.2
       bip32-path: 0.4.2
       bitcoinjs-lib: 6.1.6
     dev: false
@@ -6403,7 +6402,7 @@ packages:
       '@ethereumjs/rlp': 5.0.0
       '@noble/curves': 1.3.0
       '@noble/hashes': 1.3.3
-      '@scure/base': 1.1.5
+      '@scure/base': 1.1.8
       micro-packed: 0.5.3
 
   /micro-ftch@0.3.1:
@@ -6413,7 +6412,7 @@ packages:
   /micro-packed@0.5.3:
     resolution: {integrity: sha512-zWRoH+qUb/ZMp9gVZhexvRGCENDM5HEQF4sflqpdilUHWK2/zKR7/MT8GBctnTwbhNJwy1iuk5q6+TYP7/twYA==}
     dependencies:
-      '@scure/base': 1.1.5
+      '@scure/base': 1.1.8
 
   /micromatch@4.0.5:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
