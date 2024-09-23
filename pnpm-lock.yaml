@@ -158,7 +158,7 @@ importers:
         specifier: 3.1.0-alpha.5
         version: 3.1.0-alpha.5
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.7.0
         version: link:../types
       '@metamask/rpc-errors':
         specifier: 6.3.0
@@ -213,7 +213,7 @@ importers:
         specifier: 3.1.0-alpha.5
         version: 3.1.0-alpha.5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.7.0
         version: link:../types
       '@metamask/rpc-errors':
         specifier: 6.3.0
@@ -280,7 +280,7 @@ importers:
         specifier: 3.1.0-alpha.5
         version: 3.1.0-alpha.5
       '@avalabs/vm-module-types':
-        specifier: workspace:*
+        specifier: 0.7.0
         version: link:../types
       '@blockaid/client':
         specifier: 0.11.0
