@@ -30,7 +30,7 @@ import { getAddress } from './handlers/get-address/get-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
-import { getDefaultHeaders } from '@internal/utils';
+import { getCoreHeaders } from '@internal/utils';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -52,7 +52,7 @@ export class EvmModule implements Module {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
-      headers: getDefaultHeaders({ appName, appVersion }),
+      headers: getCoreHeaders({ appName, appVersion }),
     });
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
