@@ -15,7 +15,10 @@ import { isERC20Token } from '../../utils/type-utils';
 
 type AccountAddress = string;
 type TokenSymbol = string;
-type GetEvmBalancesResponse = Record<AccountAddress, Record<TokenSymbol, TokenWithBalanceEVM | Error> | Error>;
+type GetEvmBalancesResponse = Record<
+  AccountAddress,
+  Record<TokenSymbol, TokenWithBalanceEVM | NftTokenWithBalance | Error> | Error
+>;
 
 export const getBalances = async ({
   addresses,
