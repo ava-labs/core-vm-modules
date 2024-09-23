@@ -10,6 +10,7 @@ import type {
   GetAddressParams,
   GetAddressResponse,
   ApprovalController,
+  AppName,
 } from '@avalabs/vm-module-types';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -34,6 +35,8 @@ export class BitcoinModule implements Module {
   }: {
     environment: Environment;
     approvalController: ApprovalController;
+    appName: AppName;
+    appVersion: string;
   }) {
     const { proxyApiUrl } = getEnv(environment);
 
