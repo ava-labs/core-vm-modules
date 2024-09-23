@@ -52,7 +52,7 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
     type: TokenType.ERC20;
   };
 
-export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20;
+export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;
 
 /**
  * Bitcoin TokenWithBalance interface.
@@ -145,7 +145,4 @@ export interface TokenAttribute {
 
 export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
 
-export type GetBalancesResponse = Record<
-  string,
-  Record<string, TokenWithBalance | NftTokenWithBalance | Error> | Error
->;
+export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;
