@@ -4,7 +4,6 @@ import {
   type NetworkFees,
   type GetTransactionHistory,
   type RpcRequest,
-  type Environment,
   type Network,
   type ApprovalController,
   type GetBalancesParams,
@@ -13,7 +12,7 @@ import {
   type GetAddressResponse,
   RpcMethod,
   parseManifest,
-  type AppName,
+  type ConstructorParams,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -38,17 +37,7 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({
-    approvalController,
-    environment,
-    appName,
-    appVersion,
-  }: {
-    approvalController: ApprovalController;
-    environment: Environment;
-    appName: AppName;
-    appVersion: string;
-  }) {
+  constructor({ approvalController, environment, appName, appVersion }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,

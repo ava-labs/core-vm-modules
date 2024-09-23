@@ -1,12 +1,20 @@
 import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import type { GetAddressParams, GetAddressResponse } from './account';
 import type { GetBalancesParams, GetBalancesResponse } from './balance';
-import type { Network } from './common';
+import { AppName, Environment, type Network } from './common';
 import type { Manifest } from './manifest';
 import type { NetworkFees } from './network-fee';
 import type { RpcRequest, RpcResponse } from './rpc';
 import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
+import type { ApprovalController } from './rpc';
+
+export type ConstructorParams = {
+  approvalController: ApprovalController;
+  environment: Environment;
+  appName: AppName;
+  appVersion: string;
+};
 
 export interface Module {
   getProvider: (network: Network) => JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider;

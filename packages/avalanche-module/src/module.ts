@@ -7,11 +7,10 @@ import type {
   Network,
   GetBalancesParams,
   GetBalancesResponse,
-  Environment,
   GetAddressParams,
   GetAddressResponse,
   ApprovalController,
-  AppName,
+  ConstructorParams,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -36,17 +35,7 @@ export class AvalancheModule implements Module {
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({
-    approvalController,
-    environment,
-    appName,
-    appVersion,
-  }: {
-    approvalController: ApprovalController;
-    environment: Environment;
-    appName: AppName;
-    appVersion: string;
-  }) {
+  constructor({ approvalController, environment, appName, appVersion }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
