@@ -13,6 +13,7 @@ import {
   type GetAddressResponse,
   RpcMethod,
   parseManifest,
+  type AppName,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -29,6 +30,7 @@ import { getAddress } from './handlers/get-address/get-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
+import { getDefaultHeaders } from '@internal/utils';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -39,14 +41,19 @@ export class EvmModule implements Module {
   constructor({
     approvalController,
     environment,
-    headers,
+    appName,
+    appVersion,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
-    headers?: Record<string, string>;
+    appName: AppName;
+    appVersion: string;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new EvmGlacierService({ glacierApiUrl, headers });
+    this.#glacierService = new EvmGlacierService({
+      glacierApiUrl,
+      headers: getDefaultHeaders({ appName, appVersion }),
+    });
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;

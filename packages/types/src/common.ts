@@ -41,3 +41,12 @@ export enum Environment {
   PRODUCTION = 'production',
   DEV = 'dev',
 }
+
+export enum AppName {
+  CORE_MOBILE_IOS = 'core-mobile-ios',
+  CORE_MOBILE_ANDROID = 'core-mobile-android',
+  CORE_WEB = 'core-web',
+  CORE_EXTENSION = 'core-extension',
+  EXPLORER = 'explorer',
+  OTHER = 'other',
+}

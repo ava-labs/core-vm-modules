@@ -11,6 +11,7 @@ import type {
   GetAddressParams,
   GetAddressResponse,
   ApprovalController,
+  AppName,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -19,7 +20,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { TokenService } from '@internal/utils';
+import { getDefaultHeaders, TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
@@ -38,14 +39,19 @@ export class AvalancheModule implements Module {
   constructor({
     approvalController,
     environment,
-    headers,
+    appName,
+    appVersion,
   }: {
     approvalController: ApprovalController;
     environment: Environment;
-    headers?: Record<string, string>;
+    appName: AppName;
+    appVersion: string;
   }) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl, headers });
+    this.#glacierService = new AvalancheGlacierService({
+      glacierApiUrl,
+      headers: getDefaultHeaders({ appName, appVersion }),
+    });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
