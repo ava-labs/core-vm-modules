@@ -145,4 +145,7 @@ export interface TokenAttribute {
 
 export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
 
-export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;
+export type GetBalancesResponse = Record<
+  string,
+  Record<string, TokenWithBalance | NftTokenWithBalance | Error> | Error
+>;
