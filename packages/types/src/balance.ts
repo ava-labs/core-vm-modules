@@ -52,7 +52,7 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
     type: TokenType.ERC20;
   };
 
-export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;
+export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20;
 
 /**
  * Bitcoin TokenWithBalance interface.
