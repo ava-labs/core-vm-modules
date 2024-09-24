@@ -1,5 +1,5 @@
 import { PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
-import { NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
+import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -43,6 +43,13 @@ const createRequest = (params: { transactionHex?: string; chainAlias?: string; f
       icon: 'icon',
     },
   };
+};
+
+const avalancheSignTransactionParams = {
+  network: mockNetwork,
+  approvalController: mockApprovalController,
+  glacierApiUrl: 'glacierApiUrl',
+  appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
 };
 
 describe('avalanche-sign-transaction', () => {
@@ -95,6 +102,7 @@ describe('avalanche-sign-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       glacierApiUrl: 'glacierApiUrl',
+      appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
     });
 
     expect(result).toEqual({
@@ -107,10 +115,8 @@ describe('avalanche-sign-transaction', () => {
     (utils.addressesFromBytes as jest.Mock).mockReturnValue([]);
 
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -123,10 +129,8 @@ describe('avalanche-sign-transaction', () => {
     unsignedTxMock.getSigIndicesForAddress.mockReturnValue([]);
 
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -139,10 +143,8 @@ describe('avalanche-sign-transaction', () => {
     unsignedTxMock.getSigIndices.mockReturnValue([]);
 
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -155,10 +157,8 @@ describe('avalanche-sign-transaction', () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({ type: TxType.Unknown });
 
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -170,10 +170,8 @@ describe('avalanche-sign-transaction', () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     mockRequestApproval.mockResolvedValue({ error: 'error' });
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -185,10 +183,8 @@ describe('avalanche-sign-transaction', () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     mockRequestApproval.mockResolvedValue({});
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({
@@ -200,10 +196,8 @@ describe('avalanche-sign-transaction', () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
     const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
       request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
     });
 
     expect(result).toEqual({

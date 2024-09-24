@@ -14,8 +14,7 @@ describe('bitcoin-module', () => {
       const devModule = new BitcoinModule({
         environment: Environment.DEV,
         approvalController: {} as any, // eslint-disable-line
-        appName: AppName.OTHER,
-        appVersion: '1.0',
+        appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
       });
       await devModule.getNetworkFee({ isTestnet: true } as Network);
 
@@ -27,8 +26,7 @@ describe('bitcoin-module', () => {
       const prodModule = new BitcoinModule({
         environment: Environment.PRODUCTION,
         approvalController: {} as any, // eslint-disable-line
-        appName: AppName.OTHER,
-        appVersion: '1.0',
+        appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
       });
       await prodModule.getNetworkFee({ isTestnet: false } as Network);
 
@@ -50,8 +48,7 @@ describe('bitcoin-module', () => {
       const devModule = new BitcoinModule({
         environment: Environment.DEV,
         approvalController: {} as any, // eslint-disable-line
-        appName: AppName.OTHER,
-        appVersion: '1.0',
+        appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
       });
       await devModule.getBalances(params);
 
@@ -63,8 +60,7 @@ describe('bitcoin-module', () => {
       const prodModule = new BitcoinModule({
         environment: Environment.PRODUCTION,
         approvalController: {} as any, // eslint-disable-line
-        appName: AppName.OTHER,
-        appVersion: '1.0',
+        appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
       });
       await prodModule.getBalances(params);
 

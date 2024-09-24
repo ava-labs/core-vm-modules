@@ -11,6 +11,7 @@ import type {
   GetAddressResponse,
   ApprovalController,
   ConstructorParams,
+  AppInfo,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -34,9 +35,11 @@ export class AvalancheModule implements Module {
   #proxyApiUrl: string;
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
+  #appInfo: AppInfo;
 
   constructor({ approvalController, environment, appInfo }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    this.#appInfo = appInfo;
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
@@ -86,6 +89,7 @@ export class AvalancheModule implements Module {
           network,
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
+          appInfo: this.#appInfo,
         });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
@@ -93,6 +97,7 @@ export class AvalancheModule implements Module {
           network,
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
+          appInfo: this.#appInfo,
         });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };

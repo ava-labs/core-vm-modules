@@ -7,6 +7,7 @@ import {
   RpcMethod,
   type SigningResult,
   type Hex,
+  type AppInfo,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -16,7 +17,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { retry } from '@internal/utils';
+import { getCoreHeaders, retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
@@ -27,11 +28,13 @@ export const avalancheSendTransaction = async ({
   network,
   approvalController,
   glacierApiUrl,
+  appInfo,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   glacierApiUrl: string;
+  appInfo: AppInfo;
 }) => {
   const result = parseRequestParams(request.params);
 
@@ -68,6 +71,7 @@ export const avalancheSendTransaction = async ({
           isTestnet,
           url: glacierApiUrl,
           token: GLACIER_API_KEY,
+          headers: getCoreHeaders(appInfo),
         });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;

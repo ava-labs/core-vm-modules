@@ -10,8 +10,8 @@ import type { GetTransactionHistory, TransactionHistoryResponse } from './transa
 import type { ApprovalController } from './rpc';
 
 export type AppInfo = {
-  appName: AppName;
-  appVersion: string;
+  name: AppName;
+  version: string;
 };
 
 export type ConstructorParams = {
