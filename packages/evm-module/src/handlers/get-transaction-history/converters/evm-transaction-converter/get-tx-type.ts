@@ -3,11 +3,11 @@ import { TokenType, TransactionType, type TxToken } from '@avalabs/vm-module-typ
 import startCase from 'lodash.startcase';
 
 export const getTxType = (
-  { nativeTransaction, erc20Transfers, erc721Transfers }: TransactionDetails,
+  { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
   userAddress: string,
   tokens: TxToken[],
 ): TransactionType => {
-  const nativeOnly = !erc20Transfers && !erc721Transfers;
+  const nativeOnly = !erc20Transfers && !erc721Transfers && !erc1155Transfers;
   const method = parseRawMethod(nativeTransaction.method?.methodName);
 
   const address = userAddress.toLowerCase();
@@ -21,10 +21,8 @@ export const getTxType = (
   const isAirdrop = method.toLowerCase().includes('airdrop');
   const isUnwrap = method.toLowerCase().includes('unwrap');
   const isFillOrder = method === 'Fill Order';
-  const isNFTSend =
-    isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address.toLowerCase() === address;
-  const isNFTReceive =
-    isTransfer && !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address.toLowerCase() === address;
+  const isNFTSend = !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address.toLowerCase() === address;
+  const isNFTReceive = !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address.toLowerCase() === address;
 
   if (isSwap) return TransactionType.SWAP;
   if (isNativeSend) return TransactionType.SEND;
