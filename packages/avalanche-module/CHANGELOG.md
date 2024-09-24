@@ -1,5 +1,13 @@
 # @avalabs/avalanche-module
 
+## 0.7.2
+
+### Patch Changes
+
+- 8611fe5: handle erc1155 transfers
+- 429c445: add headers to avalanche module and evm module
+  - @avalabs/vm-module-types@0.7.2
+
 ## 0.7.1
 
 ### Patch Changes
