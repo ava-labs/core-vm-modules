@@ -9,11 +9,15 @@ import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
 
+export type AppInfo = {
+  appName: AppName;
+  appVersion: string;
+};
+
 export type ConstructorParams = {
   approvalController: ApprovalController;
   environment: Environment;
-  appName: AppName;
-  appVersion: string;
+  appInfo: AppInfo;
 };
 
 export interface Module {

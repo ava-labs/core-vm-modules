@@ -1,12 +1,6 @@
-import { AppName } from '@avalabs/vm-module-types';
+import { AppName, type AppInfo } from '@avalabs/vm-module-types';
 
-export const getCoreHeaders = ({
-  appName,
-  appVersion,
-}: {
-  appName: AppName;
-  appVersion: string;
-}): Record<string, string> | undefined => {
+export const getCoreHeaders = ({ appName, appVersion }: AppInfo): Record<string, string> | undefined => {
   switch (appName) {
     case AppName.CORE_MOBILE_IOS:
     case AppName.CORE_MOBILE_ANDROID:

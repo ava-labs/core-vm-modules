@@ -35,11 +35,11 @@ export class AvalancheModule implements Module {
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({ approvalController, environment, appName, appVersion }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
-      headers: getCoreHeaders({ appName, appVersion }),
+      headers: getCoreHeaders(appInfo),
     });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;

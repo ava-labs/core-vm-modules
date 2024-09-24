@@ -37,11 +37,11 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({ approvalController, environment, appName, appVersion }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
-      headers: getCoreHeaders({ appName, appVersion }),
+      headers: getCoreHeaders(appInfo),
     });
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
