@@ -4,7 +4,6 @@ import {
   type NetworkFees,
   type GetTransactionHistory,
   type RpcRequest,
-  type Environment,
   type Network,
   type ApprovalController,
   type GetBalancesParams,
@@ -13,6 +12,7 @@ import {
   type GetAddressResponse,
   RpcMethod,
   parseManifest,
+  type ConstructorParams,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -29,6 +29,7 @@ import { getAddress } from './handlers/get-address/get-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
+import { getCoreHeaders } from '@internal/utils';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -36,15 +37,12 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({
-    approvalController,
-    environment,
-  }: {
-    approvalController: ApprovalController;
-    environment: Environment;
-  }) {
+  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new EvmGlacierService({ glacierApiUrl });
+    this.#glacierService = new EvmGlacierService({
+      glacierApiUrl,
+      headers: getCoreHeaders(appInfo),
+    });
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;

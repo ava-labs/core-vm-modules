@@ -5,6 +5,7 @@ import {
   type DisplayData,
   type RpcRequest,
   RpcMethod,
+  type AppInfo,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -13,6 +14,7 @@ import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
+import { getCoreHeaders } from '@internal/utils';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -21,11 +23,13 @@ export const avalancheSignTransaction = async ({
   network,
   approvalController,
   glacierApiUrl,
+  appInfo,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   glacierApiUrl: string;
+  appInfo: AppInfo;
 }) => {
   const result = parseRequestParams(request.params);
 
@@ -50,6 +54,7 @@ export const avalancheSignTransaction = async ({
     isTestnet,
     url: glacierApiUrl,
     token: GLACIER_API_KEY,
+    headers: getCoreHeaders(appInfo),
   });
 
   let credentials: Credential[] | undefined;

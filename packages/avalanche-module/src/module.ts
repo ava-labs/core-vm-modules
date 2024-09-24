@@ -7,10 +7,11 @@ import type {
   Network,
   GetBalancesParams,
   GetBalancesResponse,
-  Environment,
   GetAddressParams,
   GetAddressResponse,
   ApprovalController,
+  ConstructorParams,
+  AppInfo,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -19,7 +20,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { TokenService } from '@internal/utils';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
@@ -34,16 +35,15 @@ export class AvalancheModule implements Module {
   #proxyApiUrl: string;
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
+  #appInfo: AppInfo;
 
-  constructor({
-    approvalController,
-    environment,
-  }: {
-    approvalController: ApprovalController;
-    environment: Environment;
-  }) {
+  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
-    this.#glacierService = new AvalancheGlacierService({ glacierApiUrl });
+    this.#appInfo = appInfo;
+    this.#glacierService = new AvalancheGlacierService({
+      glacierApiUrl,
+      headers: getCoreHeaders(appInfo),
+    });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
@@ -89,6 +89,7 @@ export class AvalancheModule implements Module {
           network,
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
+          appInfo: this.#appInfo,
         });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
@@ -96,6 +97,7 @@ export class AvalancheModule implements Module {
           network,
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
+          appInfo: this.#appInfo,
         });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };

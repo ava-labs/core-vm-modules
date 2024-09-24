@@ -1,6 +1,6 @@
 import { rpcErrors } from '@metamask/rpc-errors';
 import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
-import { NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
+import { AppName, NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { avalancheSendTransaction } from './avalanche-send-transaction';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
@@ -112,6 +112,7 @@ const testParams = (requestParams: {
   network: testNetwork,
   approvalController: mockApprovalController,
   glacierApiUrl: GLACIER_API_URL,
+  appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
 });
 
 const testSignedTxHash = '0xsignedtxhash';
@@ -230,6 +231,10 @@ describe('avalanche_sendTransaction handler', () => {
       isTestnet: true,
       url: GLACIER_API_URL,
       token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+      },
     });
 
     expect(Avalanche.createAvalancheUnsignedTx).toHaveBeenCalledWith({
@@ -371,6 +376,10 @@ describe('avalanche_sendTransaction handler', () => {
       isTestnet: true,
       url: GLACIER_API_URL,
       token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+      },
     });
 
     expect(Avalanche.createAvalancheEvmUnsignedTx).toHaveBeenCalledWith({

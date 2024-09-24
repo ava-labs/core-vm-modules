@@ -5,11 +5,11 @@ import type {
   GetTransactionHistory,
   RpcRequest,
   Network,
-  Environment,
   GetBalancesParams,
   GetAddressParams,
   GetAddressResponse,
   ApprovalController,
+  ConstructorParams,
 } from '@avalabs/vm-module-types';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -28,13 +28,7 @@ export class BitcoinModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({
-    environment,
-    approvalController,
-  }: {
-    environment: Environment;
-    approvalController: ApprovalController;
-  }) {
+  constructor({ environment, approvalController }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#approvalController = approvalController;
