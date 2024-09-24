@@ -1,5 +1,12 @@
 # @avalabs/bitcoin-module
 
+## 0.7.1
+
+### Patch Changes
+
+- 8611fe5: handle erc1155 transfers
+  - @avalabs/vm-module-types@0.7.1
+
 ## 0.7.0
 
 ### Patch Changes
