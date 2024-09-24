@@ -5,7 +5,7 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
-import type { TransactionParams } from '../types';
+import { ERC20TransactionType, type TransactionParams } from '../types';
 
 export const parseWithErc20Abi = async (params: TransactionParams, chainId: number, provider: JsonRpcBatchInternal) => {
   if (!params.data) {
@@ -36,7 +36,7 @@ export const parseWithErc20Abi = async (params: TransactionParams, chainId: numb
     const calledFunction = iface.getFunction(params.data.slice(0, 10));
 
     const decodeFunctionData = iface.decodeFunctionData(params.data.slice(0, 10), params.data);
-    if (calledFunction?.name === 'transfer') {
+    if (calledFunction?.name === ERC20TransactionType.TRANSFER) {
       return {
         balanceChange: {
           outs: [
@@ -53,7 +53,7 @@ export const parseWithErc20Abi = async (params: TransactionParams, chainId: numb
           ins: [],
         },
       };
-    } else if (calledFunction?.name === 'approve') {
+    } else if (calledFunction?.name === ERC20TransactionType.APPROVE) {
       return {
         tokenApprovals: {
           isEditable: true,
@@ -68,7 +68,7 @@ export const parseWithErc20Abi = async (params: TransactionParams, chainId: numb
       };
     }
   } catch (error) {
-    console.error('processTransactionSimulation error while parsing ERC20', error);
+    console.error('parseErc20Tx error', error);
   }
 
   return {
