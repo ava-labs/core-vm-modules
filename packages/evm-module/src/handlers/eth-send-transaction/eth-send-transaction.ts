@@ -159,7 +159,7 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       data: transaction.data,
       value: transaction.value,
-      chainId: transaction.chainId ?? network.chainId, // Default to the network from request scope if not provided
+      chainId: transaction.chainId,
     },
   };
 
