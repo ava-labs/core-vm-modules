@@ -1,6 +1,6 @@
 import type { AggregatedAssetAmount, XChainBalances } from '@avalabs/glacier-sdk';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import { calculateTotalBalance, getTokenValue } from './utils';
+import { calculateTotalBalance } from './utils';
 import { TokenType, type NetworkToken, type TokenWithBalanceAVM } from '@avalabs/vm-module-types';
 
 export const convertXChainBalance = ({
@@ -20,8 +20,7 @@ export const convertXChainBalance = ({
   change24?: number;
   coingeckoId: string;
 }): TokenWithBalanceAVM => {
-  const decimals = networkToken.decimals;
-  const balancePerType: Record<string, number> = {};
+  const balancePerType: Record<string, bigint> = {};
 
   const balanceTypes: Record<string, AggregatedAssetAmount[]> = {
     unlocked: balance.unlocked,
@@ -33,13 +32,13 @@ export const convertXChainBalance = ({
   for (const balanceType in balanceTypes) {
     const balancesToAdd = balanceTypes[balanceType];
     if (!balancesToAdd || !balancesToAdd.length) {
-      balancePerType[balanceType] = 0;
+      balancePerType[balanceType] = 0n;
       continue;
     }
 
     balancesToAdd.forEach((uxto: AggregatedAssetAmount) => {
-      const previousBalance = balancePerType[balanceType] ?? 0;
-      const newBalance = previousBalance + Number(uxto.amount);
+      const previousBalance = balancePerType[balanceType] ?? 0n;
+      const newBalance = previousBalance + BigInt(uxto.amount);
       balancePerType[balanceType] = newBalance;
     });
   }
@@ -70,10 +69,10 @@ export const convertXChainBalance = ({
     availableCurrencyDisplayValue: availableInCurrency?.toFixed(2),
     utxos: balance,
     balancePerType: {
-      unlocked: getTokenValue(decimals, balancePerType['unlocked']),
-      locked: getTokenValue(decimals, balancePerType['locked']),
-      atomicMemoryUnlocked: getTokenValue(decimals, balancePerType['atomicMemoryUnlocked']),
-      atomicMemoryLocked: getTokenValue(decimals, balancePerType['atomicMemoryLocked']),
+      unlocked: balancePerType['unlocked'],
+      locked: balancePerType['locked'],
+      atomicMemoryUnlocked: balancePerType['atomicMemoryUnlocked'],
+      atomicMemoryLocked: balancePerType['atomicMemoryLocked'],
     },
     marketCap,
     vol24,

@@ -1,6 +1,6 @@
 import type { AggregatedAssetAmount, PChainBalance } from '@avalabs/glacier-sdk';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import { calculateTotalBalance, getTokenValue } from './utils';
+import { calculateTotalBalance } from './utils';
 import { type NetworkToken, TokenType, type TokenWithBalancePVM } from '@avalabs/vm-module-types';
 
 export const convertPChainBalance = ({
@@ -20,8 +20,7 @@ export const convertPChainBalance = ({
   change24?: number;
   coingeckoId: string;
 }): TokenWithBalancePVM => {
-  const decimals = networkToken.decimals;
-  const balancePerType: Record<string, number> = {};
+  const balancePerType: Record<string, bigint> = {};
 
   const balanceTypes: Record<string, AggregatedAssetAmount[]> = {
     unlockedUnstaked: balance.unlockedUnstaked,
@@ -37,13 +36,13 @@ export const convertPChainBalance = ({
   for (const balanceType in balanceTypes) {
     const balancesToAdd = balanceTypes[balanceType];
     if (!balancesToAdd || !balancesToAdd.length) {
-      balancePerType[balanceType] = 0;
+      balancePerType[balanceType] = 0n;
       continue;
     }
 
     balancesToAdd.forEach((uxto: AggregatedAssetAmount) => {
-      const previousBalance = balancePerType[balanceType] ?? 0;
-      const newBalance = previousBalance + Number(uxto.amount);
+      const previousBalance = balancePerType[balanceType] ?? 0n;
+      const newBalance = previousBalance + BigInt(uxto.amount);
       balancePerType[balanceType] = newBalance;
     });
   }
@@ -75,14 +74,14 @@ export const convertPChainBalance = ({
     availableCurrencyDisplayValue: availableInCurrency?.toFixed(2),
     utxos: balance,
     balancePerType: {
-      lockedStaked: getTokenValue(decimals, balancePerType['lockedStaked']),
-      lockedStakeable: getTokenValue(decimals, balancePerType['lockedStakeable']),
-      lockedPlatform: getTokenValue(decimals, balancePerType['lockedPlatform']),
-      atomicMemoryLocked: getTokenValue(decimals, balancePerType['atomicMemoryLocked']),
-      atomicMemoryUnlocked: getTokenValue(decimals, balancePerType['atomicMemoryUnlocked']),
-      unlockedUnstaked: getTokenValue(decimals, balancePerType['unlockedUnstaked']),
-      unlockedStaked: getTokenValue(decimals, balancePerType['unlockedStaked']),
-      pendingStaked: getTokenValue(decimals, balancePerType['pendingStaked']),
+      lockedStaked: balancePerType['lockedStaked'],
+      lockedStakeable: balancePerType['lockedStakeable'],
+      lockedPlatform: balancePerType['lockedPlatform'],
+      atomicMemoryLocked: balancePerType['atomicMemoryLocked'],
+      atomicMemoryUnlocked: balancePerType['atomicMemoryUnlocked'],
+      unlockedUnstaked: balancePerType['unlockedUnstaked'],
+      unlockedStaked: balancePerType['unlockedStaked'],
+      pendingStaked: balancePerType['pendingStaked'],
     },
     marketCap,
     vol24,

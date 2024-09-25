@@ -64,14 +64,14 @@ describe('convertPChainBalance', () => {
       coingeckoId: 'test-token',
     });
 
-    expect(result.balancePerType.lockedStaked).toBe(4);
-    expect(result.balancePerType.lockedStakeable).toBe(5);
-    expect(result.balancePerType.lockedPlatform).toBe(6);
-    expect(result.balancePerType.atomicMemoryLocked).toBe(7);
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(8);
-    expect(result.balancePerType.unlockedUnstaked).toBe(1);
-    expect(result.balancePerType.unlockedStaked).toBe(2);
-    expect(result.balancePerType.pendingStaked).toBe(3);
+    expect(result.balancePerType.lockedStaked).toBe(BigInt(4*10**9));
+    expect(result.balancePerType.lockedStakeable).toBe(BigInt(5*10**9));
+    expect(result.balancePerType.lockedPlatform).toBe(BigInt(6*10**9));
+    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(7*10**9));
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(8*10**9));
+    expect(result.balancePerType.unlockedUnstaked).toBe(BigInt(1*10**9));
+    expect(result.balancePerType.unlockedStaked).toBe(BigInt(2*10**9));
+    expect(result.balancePerType.pendingStaked).toBe(BigInt(3*10**9));
   });
 
   it('should return zero for empty balance types', () => {
@@ -92,13 +92,13 @@ describe('convertPChainBalance', () => {
       coingeckoId: 'test-token',
     });
 
-    expect(result.balancePerType.lockedStaked).toBe(0);
-    expect(result.balancePerType.lockedStakeable).toBe(0);
-    expect(result.balancePerType.lockedPlatform).toBe(0);
-    expect(result.balancePerType.atomicMemoryLocked).toBe(0);
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(0);
-    expect(result.balancePerType.unlockedUnstaked).toBe(0);
-    expect(result.balancePerType.unlockedStaked).toBe(0);
-    expect(result.balancePerType.pendingStaked).toBe(0);
+    expect(result.balancePerType.lockedStaked).toBe(0n);
+    expect(result.balancePerType.lockedStakeable).toBe(0n);
+    expect(result.balancePerType.lockedPlatform).toBe(0n);
+    expect(result.balancePerType.atomicMemoryLocked).toBe(0n);
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(0n);
+    expect(result.balancePerType.unlockedUnstaked).toBe(0n);
+    expect(result.balancePerType.unlockedStaked).toBe(0n);
+    expect(result.balancePerType.pendingStaked).toBe(0n);
   });
 });
