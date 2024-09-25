@@ -39,7 +39,7 @@ export class AvalancheGlacierService {
   async listLatestPrimaryNetworkTransactions(params: {
     blockchainId: BlockchainId;
     network: Network;
-    addresses?: string;
+    addresses: string;
     txTypes?: Array<PrimaryNetworkTxType>;
     startTimestamp?: number;
     endTimestamp?: number;

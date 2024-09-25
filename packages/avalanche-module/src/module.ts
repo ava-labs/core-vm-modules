@@ -48,9 +48,8 @@ export class AvalancheModule implements Module {
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
   }
-
   getProvider(network: Network): Avalanche.JsonRpcProvider {
-    return getProvider({ isTestnet: Boolean(network.isTestnet) });
+    return getProvider({ isDevnet: network.isDevnet, isTestnet: Boolean(network.isTestnet) });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
