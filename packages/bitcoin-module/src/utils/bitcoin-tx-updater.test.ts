@@ -1,4 +1,4 @@
-import { RpcMethod, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
+import { RpcMethod, type DisplayData, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
 import { getTxUpdater } from './bitcoin-tx-updater';
 import { createTransferTx, type BitcoinOutputUTXO, type BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
@@ -68,22 +68,26 @@ describe('bitcoin-tx-updater', () => {
           balance: testBtcBalance,
         },
       },
+      {} as DisplayData,
       provider,
     );
 
     expect(updateTx({ feeRate: 2 })).toEqual({
-      type: RpcMethod.BITCOIN_SEND_TRANSACTION,
-      account: 'from',
-      data: {
-        to: 'to',
-        amount: 1,
-        fee: updatedTx.fee,
-        feeRate: 2,
-        gasLimit: 50,
-        inputs: updatedTx.inputs,
-        outputs: updatedTx.outputs,
-        balance: testBtcBalance,
+      signingData: {
+        type: RpcMethod.BITCOIN_SEND_TRANSACTION,
+        account: 'from',
+        data: {
+          to: 'to',
+          amount: 1,
+          fee: updatedTx.fee,
+          feeRate: 2,
+          gasLimit: 50,
+          inputs: updatedTx.inputs,
+          outputs: updatedTx.outputs,
+          balance: testBtcBalance,
+        },
       },
+      displayData: {},
     });
 
     expect(createTransferTx).toHaveBeenCalledWith('to', 'from', 1, 2, testBtcBalance.utxos, network);

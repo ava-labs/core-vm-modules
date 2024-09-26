@@ -86,7 +86,15 @@ const testNetwork: Network = {
   vmName: NetworkVMType.EVM,
 };
 
-const testParams = { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' };
+const testParams = {
+  from: '0xfrom',
+  to: '0xto',
+  data: '0xdata',
+  value: '0xvalue',
+  nonce: '12',
+  gas: '0x5208',
+  chainId: '0x1',
+};
 const testDapp = { url: 'https://example.com', name: 'dapp', icon: 'icon' };
 const testRequestParams = () => ({
   request: {
@@ -154,6 +162,7 @@ const signingData = {
     from: '0xfrom',
     data: '0xdata',
     value: '0xvalue',
+    chainId: 1,
   },
 };
 

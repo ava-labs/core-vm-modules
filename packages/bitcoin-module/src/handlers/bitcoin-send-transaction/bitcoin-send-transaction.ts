@@ -110,7 +110,7 @@ export const bitcoinSendTransaction = async ({
     },
   };
 
-  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, provider);
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData, provider);
   const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
 
   cleanup();

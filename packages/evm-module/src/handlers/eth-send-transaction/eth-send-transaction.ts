@@ -159,11 +159,11 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       data: transaction.data,
       value: transaction.value,
-      chainId: transaction.chainId,
+      chainId: transaction.chainId ?? network.chainId,
     },
   };
 
-  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData);
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData);
   // prompt user for approval
   const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
 

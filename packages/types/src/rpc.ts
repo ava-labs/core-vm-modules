@@ -236,12 +236,13 @@ export type SigningData =
 export type EvmTxUpdateFn = (data: {
   maxFeeRate?: bigint;
   maxTipRate?: bigint;
-  data?: string;
-}) => Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }>;
+  approvalLimit?: string; // as hexadecimal, 0x-prefixed
+}) => { displayData: DisplayData; signingData: Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }> };
 
-export type BtcTxUpdateFn = (data: {
-  feeRate?: number;
-}) => Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
+export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
+  displayData: DisplayData;
+  signingData: Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
+};
 
 export type ApprovalParams = {
   request: RpcRequest;
