@@ -238,8 +238,9 @@ export type EvmTxUpdateFn = (data: {
   maxTipRate?: bigint;
   data?: string;
 }) => Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }>;
+
 export type BtcTxUpdateFn = (data: {
-  maxFeeRate?: bigint;
+  feeRate?: number;
 }) => Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
 
 export type ApprovalParams = {

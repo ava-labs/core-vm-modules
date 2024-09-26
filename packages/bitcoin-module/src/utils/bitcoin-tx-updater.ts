@@ -15,14 +15,14 @@ export const getTxUpdater = (
   requests.set(requestId, signingData);
 
   return {
-    updateTx: ({ maxFeeRate }) => {
+    updateTx: ({ feeRate }) => {
       const oldData = requests.get(requestId);
 
       if (!oldData) {
         throw rpcErrors.resourceNotFound();
       }
 
-      if (typeof maxFeeRate === 'undefined' || Number(maxFeeRate) === oldData.data.feeRate) {
+      if (typeof feeRate === 'undefined' || feeRate === oldData.data.feeRate) {
         return oldData;
       }
 
@@ -34,7 +34,7 @@ export const getTxUpdater = (
         to,
         account,
         amount,
-        Number(maxFeeRate),
+        feeRate,
         balance.utxos as BitcoinInputUTXO[],
         provider.getNetwork(),
       );
@@ -48,8 +48,8 @@ export const getTxUpdater = (
         data: {
           ...oldData.data,
           fee,
-          feeRate: Number(maxFeeRate),
-          gasLimit: calculateGasLimit(fee, Number(maxFeeRate)),
+          feeRate,
+          gasLimit: calculateGasLimit(fee, feeRate),
           inputs,
           outputs,
         },

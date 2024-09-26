@@ -71,7 +71,7 @@ describe('bitcoin-tx-updater', () => {
       provider,
     );
 
-    expect(updateTx({ maxFeeRate: 2n })).toEqual({
+    expect(updateTx({ feeRate: 2 })).toEqual({
       type: RpcMethod.BITCOIN_SEND_TRANSACTION,
       account: 'from',
       data: {
