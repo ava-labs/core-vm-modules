@@ -95,14 +95,14 @@ export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
    * All values are represented in `nAvax`
    */
   balancePerType: {
-    lockedStaked: bigint | undefined;
-    lockedStakeable: bigint | undefined;
-    lockedPlatform: bigint | undefined;
-    atomicMemoryLocked: bigint | undefined;
-    atomicMemoryUnlocked: bigint | undefined;
-    unlockedUnstaked: bigint | undefined;
-    unlockedStaked: bigint | undefined;
-    pendingStaked: bigint | undefined;
+    lockedStaked?: bigint;
+    lockedStakeable?: bigint;
+    lockedPlatform?: bigint;
+    atomicMemoryLocked?: bigint;
+    atomicMemoryUnlocked?: bigint;
+    unlockedUnstaked?: bigint;
+    unlockedStaked?: bigint;
+    pendingStaked?: bigint;
   };
 }
 
@@ -116,10 +116,10 @@ export interface TokenWithBalanceAVM extends NetworkTokenWithBalance {
    * All values are represented in `nAvax`
    */
   balancePerType: {
-    locked: bigint | undefined;
-    unlocked: bigint | undefined;
-    atomicMemoryUnlocked: bigint | undefined;
-    atomicMemoryLocked: bigint | undefined;
+    locked?: bigint;
+    unlocked?: bigint;
+    atomicMemoryUnlocked?: bigint;
+    atomicMemoryLocked?: bigint;
   };
 }
 
