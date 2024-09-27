@@ -60,10 +60,10 @@ describe('convertXChainBalance', () => {
       coingeckoId: 'test-token-x',
     });
 
-    expect(result.balancePerType.unlocked).toBe(150);
-    expect(result.balancePerType.locked).toBe(250);
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(350);
-    expect(result.balancePerType.atomicMemoryLocked).toBe(450);
+    expect(result.balancePerType.unlocked).toBe(BigInt(150*10**9));
+    expect(result.balancePerType.locked).toBe(BigInt(250*10**9));
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(350*10**9));
+    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(450*10**9));
   });
 
   it('should return zero for empty balance types', () => {
@@ -80,9 +80,9 @@ describe('convertXChainBalance', () => {
       coingeckoId: 'test-token-x',
     });
 
-    expect(result.balancePerType.unlocked).toBe(0);
-    expect(result.balancePerType.locked).toBe(0);
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(0);
-    expect(result.balancePerType.atomicMemoryLocked).toBe(0);
+    expect(result.balancePerType.unlocked).toBe(0n);
+    expect(result.balancePerType.locked).toBe(0n);
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(0n);
+    expect(result.balancePerType.atomicMemoryLocked).toBe(0n);
   });
 });
