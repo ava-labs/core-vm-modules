@@ -9,8 +9,8 @@ export const baseConfig = {
   sourcemap: true,
   clean: true,
   dts: true,
-  splitting: true,
-  minify: true,
+  splitting: false,
+  minify: false,
   treeshake: true,
   tsconfig: './tsconfig.json',
 };
