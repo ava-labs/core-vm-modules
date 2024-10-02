@@ -13,11 +13,18 @@ import {
   type TokenWithBalanceBTC,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
 
 jest.mock('./schema');
 jest.mock('../../utils/get-provider');
 jest.mock('../get-balances/get-balances');
 jest.mock('../../utils/is-btc-balance');
+jest.mock('../../utils/bitcoin-tx-updater', () => ({
+  getTxUpdater: jest.fn().mockReturnValue({
+    updateTx: jest.fn(),
+    cleanup: jest.fn(),
+  }),
+}));
 jest.mock('@avalabs/core-wallets-sdk', () => ({
   createTransferTx: jest.fn(),
   BitcoinProvider: jest.fn().mockImplementation(() => ({
@@ -217,7 +224,9 @@ describe('bitcoinSendTransaction', () => {
     });
   });
 
-  it('should broadcast transaction and return transaction hash', async () => {
+  it('should broadcast transaction, provide fee updater and  return transaction hash', async () => {
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({ cleanup: jest.fn(), updateTx });
     (mockApprovalController.requestApproval as jest.Mock).mockResolvedValue({ signedData: 'somesigneddata' });
     const mockProvider = new BitcoinProvider();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
@@ -280,6 +289,7 @@ describe('bitcoinSendTransaction', () => {
           balance: testBtcBalance,
         },
       },
+      updateTx,
     });
 
     expect(result).toEqual({ result: '0x123' });

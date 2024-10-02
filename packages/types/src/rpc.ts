@@ -151,6 +151,7 @@ export type DisplayData = {
   alert?: Alert;
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
+  isSimulationSuccessful?: boolean;
 };
 
 export enum AlertType {
@@ -232,10 +233,22 @@ export type SigningData =
       ownSignatureIndices: [number, number][];
     };
 
+export type EvmTxUpdateFn = (data: {
+  maxFeeRate?: bigint;
+  maxTipRate?: bigint;
+  approvalLimit?: Hex; // as hexadecimal, 0x-prefixed
+}) => { displayData: DisplayData; signingData: Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }> };
+
+export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
+  displayData: DisplayData;
+  signingData: Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
+};
+
 export type ApprovalParams = {
   request: RpcRequest;
   displayData: DisplayData;
   signingData: SigningData;
+  updateTx?: EvmTxUpdateFn | BtcTxUpdateFn;
 };
 
 /**

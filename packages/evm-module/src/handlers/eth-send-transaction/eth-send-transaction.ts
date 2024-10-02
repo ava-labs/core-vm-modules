@@ -20,6 +20,7 @@ import { parseERC20TransactionType } from '../../utils/parse-erc20-transaction-t
 import { ERC20TransactionType } from '../../types';
 import { addressItem, textItem, dataItem } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
+import { getTxUpdater } from '../../utils/evm-tx-updater';
 
 export const ethSendTransaction = async ({
   request,
@@ -98,12 +99,13 @@ export const ethSendTransaction = async ({
 
   const transactionType = parseERC20TransactionType(transaction);
 
-  const { alert, balanceChange, tokenApprovals } = await processTransactionSimulation({
+  const { alert, balanceChange, tokenApprovals, isSimulationSuccessful } = await processTransactionSimulation({
     request,
     proxyApiUrl,
     chainId: network.chainId,
     params: transaction,
     dAppUrl: request.dappInfo.url,
+    provider,
   });
 
   // generate display and signing data
@@ -143,6 +145,7 @@ export const ethSendTransaction = async ({
     alert,
     balanceChange,
     tokenApprovals,
+    isSimulationSuccessful,
   };
 
   const signingData: SigningData = {
@@ -156,12 +159,15 @@ export const ethSendTransaction = async ({
       from: transaction.from,
       data: transaction.data,
       value: transaction.value,
-      chainId: transaction.chainId,
+      chainId: transaction.chainId ?? network.chainId,
     },
   };
 
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData);
   // prompt user for approval
-  const response = await approvalController.requestApproval({ request, displayData, signingData });
+  const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
+
+  cleanup();
 
   if ('error' in response) {
     return {

@@ -17,6 +17,7 @@ import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avala
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
 import { addressItem, currencyItem } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
+import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
 
 type BitcoinSendTransactionParams = {
   request: RpcRequest;
@@ -109,7 +110,10 @@ export const bitcoinSendTransaction = async ({
     },
   };
 
-  const response = await approvalController.requestApproval({ request, displayData, signingData });
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData, provider);
+  const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
+
+  cleanup();
 
   if ('error' in response) {
     return {

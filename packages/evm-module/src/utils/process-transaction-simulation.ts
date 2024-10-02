@@ -17,6 +17,8 @@ import {
 import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { parseWithErc20Abi } from './parse-erc20-tx';
 
 export const processTransactionSimulation = async ({
   request,
@@ -24,16 +26,19 @@ export const processTransactionSimulation = async ({
   params,
   chainId,
   proxyApiUrl,
+  provider,
 }: {
   request: RpcRequest;
   dAppUrl?: string;
   params: TransactionParams;
   chainId: number;
   proxyApiUrl: string;
+  provider: JsonRpcBatchInternal;
 }) => {
   let alert: Alert | undefined;
   let balanceChange: BalanceChange | undefined;
   let tokenApprovals: TokenApprovals | undefined;
+  let isSimulationSuccessful = false;
 
   try {
     const { validation, simulation } = await scanTransaction({
@@ -50,15 +55,22 @@ export const processTransactionSimulation = async ({
     }
 
     if (simulation?.status === 'Success') {
+      isSimulationSuccessful = true;
       tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
   } catch (error) {
     console.error('processTransactionSimulation error', error);
-    alert = transactionAlerts[AlertType.WARNING];
   }
 
-  return { alert, balanceChange, tokenApprovals };
+  // If debank parsing failed, check if toAddress is a known ERC20
+  if (!isSimulationSuccessful && params.to) {
+    const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
+    balanceChange = erc20ParseResult.balanceChange;
+    tokenApprovals = erc20ParseResult.tokenApprovals;
+  }
+
+  return { alert, balanceChange, tokenApprovals, isSimulationSuccessful };
 };
 
 const processTokenApprovals = (

@@ -14,6 +14,7 @@ import {
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
+import { getTxUpdater } from '../../utils/evm-tx-updater';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -23,6 +24,12 @@ const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 jest.mock('./schema');
+jest.mock('../../utils/evm-tx-updater', () => ({
+  getTxUpdater: jest.fn().mockReturnValue({
+    updateTx: jest.fn(),
+    cleanup: jest.fn(),
+  }),
+}));
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
@@ -79,7 +86,15 @@ const testNetwork: Network = {
   vmName: NetworkVMType.EVM,
 };
 
-const testParams = { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' };
+const testParams = {
+  from: '0xfrom',
+  to: '0xto',
+  data: '0xdata',
+  value: '0xvalue',
+  nonce: '12',
+  gas: '0x5208',
+  chainId: '0x1',
+};
 const testDapp = { url: 'https://example.com', name: 'dapp', icon: 'icon' };
 const testRequestParams = () => ({
   request: {
@@ -133,6 +148,7 @@ const displayData = {
   alert: undefined,
   tokenApprovals: undefined,
   balanceChange: undefined,
+  isSimulationSuccessful: true,
 };
 
 const signingData = {
@@ -146,6 +162,7 @@ const signingData = {
     from: '0xfrom',
     data: '0xdata',
     value: '0xvalue',
+    chainId: 1,
   },
 };
 
@@ -179,6 +196,11 @@ describe('eth_sendTransaction handler', () => {
   });
 
   it('should calculate gas limit if not provided', async () => {
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
+      cleanup: jest.fn(),
+    });
     mockParseRequestParams.mockReturnValue({
       success: true,
       data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12' }],
@@ -204,12 +226,21 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
+      updateTx,
     });
   });
 
   it('should calculate nonce if not provided', async () => {
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
+      cleanup: jest.fn(),
+    });
     mockParseRequestParams.mockReturnValue({
       success: true,
       data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', gas: '0x5208' }],
@@ -234,12 +265,21 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
+      updateTx,
     });
   });
 
   it('should calculate both gas and nonce if not provided', async () => {
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
+      cleanup: jest.fn(),
+    });
     mockParseRequestParams.mockReturnValue({
       success: true,
       data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' }],
@@ -270,8 +310,12 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData,
+      displayData: {
+        ...displayData,
+        isSimulationSuccessful: false,
+      },
       signingData,
+      updateTx,
     });
   });
 
@@ -338,6 +382,12 @@ describe('eth_sendTransaction handler', () => {
     mockParseRequestParams.mockReturnValue({
       success: true,
       data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
+    });
+
+    const updateTx = jest.fn();
+    jest.mocked(getTxUpdater).mockReturnValueOnce({
+      updateTx,
+      cleanup: jest.fn(),
     });
 
     const requestParams = testRequestParams();
@@ -415,6 +465,7 @@ describe('eth_sendTransaction handler', () => {
         },
       },
       signingData,
+      updateTx,
     });
   });
 
@@ -530,6 +581,12 @@ describe('eth_sendTransaction handler', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
+  const updateTx = jest.fn();
+  jest.mocked(getTxUpdater).mockReturnValueOnce({
+    updateTx,
+    cleanup: jest.fn(),
+  });
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (Blockaid as any).mockImplementation(() => ({
     evm: {
@@ -577,6 +634,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         },
       },
       signingData,
+      updateTx,
     });
   } else {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -592,6 +650,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         },
       },
       signingData,
+      updateTx,
     });
   }
 };
