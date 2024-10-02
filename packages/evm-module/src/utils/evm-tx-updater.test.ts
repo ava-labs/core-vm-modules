@@ -1,4 +1,4 @@
-import { RpcMethod, type DisplayData, type SigningData } from '@avalabs/vm-module-types';
+import { RpcMethod, type DisplayData, type Hex, type SigningData } from '@avalabs/vm-module-types';
 import { getTxUpdater } from './evm-tx-updater';
 import { encodeApprovalLimit } from './encode-erc20-approval';
 
@@ -88,7 +88,9 @@ describe('evm-tx-updater', () => {
       {} as DisplayData,
     );
 
-    expect(() => updateTx({ approvalLimit: '255' })).toThrow(/Expected approvalLimit to be a hexadecimal number/);
+    expect(() => updateTx({ approvalLimit: '255' as Hex })).toThrow(
+      /Expected approvalLimit to be a hexadecimal number/,
+    );
   });
 
   it('updates the spend limit', () => {

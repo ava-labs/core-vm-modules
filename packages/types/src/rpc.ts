@@ -236,7 +236,7 @@ export type SigningData =
 export type EvmTxUpdateFn = (data: {
   maxFeeRate?: bigint;
   maxTipRate?: bigint;
-  approvalLimit?: string; // as hexadecimal, 0x-prefixed
+  approvalLimit?: Hex; // as hexadecimal, 0x-prefixed
 }) => { displayData: DisplayData; signingData: Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }> };
 
 export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
