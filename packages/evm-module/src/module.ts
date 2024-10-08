@@ -86,12 +86,13 @@ export class EvmModule implements Module {
   }
 
   getNetworkFee(network: Network): Promise<NetworkFees> {
-    const { chainId, chainName, rpcUrl, utilityAddresses } = network;
+    const { chainId, chainName, rpcUrl, utilityAddresses, proxyApiUrl } = network;
     return getNetworkFee({
       chainId,
       chainName,
       rpcUrl,
       multiContractAddress: utilityAddresses?.multicall,
+      proxyApiUrl,
     });
   }
 
