@@ -19,11 +19,15 @@ export async function getNetworkFee({
   chainName,
   rpcUrl,
   multiContractAddress,
+  caipId,
+  proxyApiUrl,
 }: {
   chainId: number;
   chainName: string;
   rpcUrl: string;
+  proxyApiUrl: string;
   multiContractAddress?: string;
+  caipId?: string;
 }): Promise<NetworkFees> {
   const provider = getProvider({
     chainId,
@@ -37,23 +41,47 @@ export async function getNetworkFee({
     throw rpcErrors.internal('Pre-EIP-1559 networks are not supported');
   }
 
+  const gasMultiplier = await getGasMultiplier(proxyApiUrl, caipId);
+
+  const countInt = gasMultiplier.toString().split('.')[0]?.length || 0;
+
+  const countDecimal = gasMultiplier.toString().split('.')[1]?.length || 0;
+
+  const denomination = parseInt('1'.padEnd(countInt + countDecimal, '0'));
+
+  const defaultGasMultiplier = BigInt(gasMultiplier * denomination);
+
+  const maxFee = ((maxFeePerGasInWei / 2n) * defaultGasMultiplier) / BigInt(denomination);
+
   const lowMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.LOW;
   const mediumMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.MEDIUM;
   const highMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.HIGH;
   return {
-    baseFee: maxFeePerGasInWei,
+    baseFee: maxFee,
     low: {
-      maxFeePerGas: maxFeePerGasInWei + lowMaxTip,
+      maxFeePerGas: maxFee + lowMaxTip,
       maxPriorityFeePerGas: lowMaxTip,
     },
     medium: {
-      maxFeePerGas: maxFeePerGasInWei + mediumMaxTip,
+      maxFeePerGas: maxFee + mediumMaxTip,
       maxPriorityFeePerGas: mediumMaxTip,
     },
     high: {
-      maxFeePerGas: maxFeePerGasInWei + highMaxTip,
+      maxFeePerGas: maxFee + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
     },
     isFixedFee: false,
   };
+}
+
+async function getGasMultiplier(proxyApiUrl: string, caipId?: string) {
+  const defaultMultiplier = 1.5;
+  if (!caipId) {
+    return defaultMultiplier;
+  }
+  const respond = await fetch(proxyApiUrl);
+
+  const multipliers = await respond.json();
+
+  return multipliers[caipId] ?? multipliers.default ?? defaultMultiplier;
 }
