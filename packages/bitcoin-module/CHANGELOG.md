@@ -1,5 +1,16 @@
 # @avalabs/bitcoin-module
 
+## 0.8.0
+
+### Minor Changes
+
+- 2512485: feat: provide fee updater when requesting approval
+
+### Patch Changes
+
+- Updated dependencies [2512485]
+  - @avalabs/vm-module-types@0.8.0
+
 ## 0.7.3
 
 ### Patch Changes
