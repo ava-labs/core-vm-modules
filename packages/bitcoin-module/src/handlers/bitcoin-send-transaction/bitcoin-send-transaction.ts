@@ -6,18 +6,19 @@ import {
   type Network,
   type RpcRequest,
   type SigningData,
-  type SigningResult,
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
-import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
+import { createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
 import { addressItem, currencyItem } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
 import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
+import { waitForTransactionReceipt } from '../../utils/wait-for-tx-receipt';
+import { getTxHash } from '../../utils/get-tx-hash';
 
 type BitcoinSendTransactionParams = {
   request: RpcRequest;
@@ -144,34 +145,4 @@ export const bitcoinSendTransaction = async ({
   return {
     result: txHash,
   };
-};
-
-const getTxHash = async (provider: BitcoinProvider, response: SigningResult) => {
-  if ('txHash' in response) {
-    return response.txHash;
-  }
-
-  return provider.issueRawTx(response.signedData);
-};
-
-const waitForTransactionReceipt = async ({
-  provider,
-  txHash,
-  onTransactionConfirmed,
-  onTransactionReverted,
-  requestId,
-}: {
-  provider: BitcoinProvider;
-  txHash: Hex;
-  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
-  onTransactionReverted: (txHash: Hex, requestId: string) => void;
-  requestId: string;
-}) => {
-  try {
-    await provider.waitForTx(txHash);
-    onTransactionConfirmed(txHash, requestId);
-  } catch (err) {
-    console.error(err);
-    onTransactionReverted(txHash, requestId);
-  }
 };
