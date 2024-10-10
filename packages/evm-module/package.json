@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/evm-module",
-  "version": "0.10.0",
+  "version": "0.8.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -20,12 +20,12 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.8",
-    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.8",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.8",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.8",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.8",
-    "@avalabs/types": "3.1.0-alpha.8",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/core-etherscan-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/glacier-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/types": "3.1.0-canary.fade9d5.0",
     "@blockaid/client": "0.11.0",
     "@metamask/rpc-errors": "6.3.0",
     "@openzeppelin/contracts": "4.9.6",
@@ -50,7 +50,7 @@
     "typechain": "8.3.1"
   },
   "peerDependencies": {
-    "ethers": "6.8.1"
+    "ethers": "^6.8.1"
   },
   "volta": {
     "node": "20.11.0",
