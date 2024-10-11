@@ -60,10 +60,10 @@ describe('convertXChainBalance', () => {
       coingeckoId: 'test-token-x',
     });
 
-    expect(result.balancePerType.unlocked).toBe(BigInt(150*10**9));
-    expect(result.balancePerType.locked).toBe(BigInt(250*10**9));
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(350*10**9));
-    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(450*10**9));
+    expect(result.balancePerType.unlocked).toBe(BigInt(150 * 10 ** 9));
+    expect(result.balancePerType.locked).toBe(BigInt(250 * 10 ** 9));
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(350 * 10 ** 9));
+    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(450 * 10 ** 9));
   });
 
   it('should return zero for empty balance types', () => {

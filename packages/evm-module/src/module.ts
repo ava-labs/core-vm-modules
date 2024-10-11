@@ -13,6 +13,7 @@ import {
   RpcMethod,
   parseManifest,
   type ConstructorParams,
+  type NetworkFeeParam,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -85,13 +86,15 @@ export class EvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee(network: Network): Promise<NetworkFees> {
-    const { chainId, chainName, rpcUrl, utilityAddresses } = network;
+  getNetworkFee(network: NetworkFeeParam): Promise<NetworkFees> {
+    const { chainId, chainName, rpcUrl, utilityAddresses, caipId } = network;
     return getNetworkFee({
       chainId,
       chainName,
       rpcUrl,
       multiContractAddress: utilityAddresses?.multicall,
+      caipId,
+      proxyApiUrl: this.#proxyApiUrl,
     });
   }
 

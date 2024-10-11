@@ -64,14 +64,14 @@ describe('convertPChainBalance', () => {
       coingeckoId: 'test-token',
     });
 
-    expect(result.balancePerType.lockedStaked).toBe(BigInt(4*10**9));
-    expect(result.balancePerType.lockedStakeable).toBe(BigInt(5*10**9));
-    expect(result.balancePerType.lockedPlatform).toBe(BigInt(6*10**9));
-    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(7*10**9));
-    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(8*10**9));
-    expect(result.balancePerType.unlockedUnstaked).toBe(BigInt(1*10**9));
-    expect(result.balancePerType.unlockedStaked).toBe(BigInt(2*10**9));
-    expect(result.balancePerType.pendingStaked).toBe(BigInt(3*10**9));
+    expect(result.balancePerType.lockedStaked).toBe(BigInt(4 * 10 ** 9));
+    expect(result.balancePerType.lockedStakeable).toBe(BigInt(5 * 10 ** 9));
+    expect(result.balancePerType.lockedPlatform).toBe(BigInt(6 * 10 ** 9));
+    expect(result.balancePerType.atomicMemoryLocked).toBe(BigInt(7 * 10 ** 9));
+    expect(result.balancePerType.atomicMemoryUnlocked).toBe(BigInt(8 * 10 ** 9));
+    expect(result.balancePerType.unlockedUnstaked).toBe(BigInt(1 * 10 ** 9));
+    expect(result.balancePerType.unlockedStaked).toBe(BigInt(2 * 10 ** 9));
+    expect(result.balancePerType.pendingStaked).toBe(BigInt(3 * 10 ** 9));
   });
 
   it('should return zero for empty balance types', () => {
