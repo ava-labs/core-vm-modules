@@ -2,7 +2,6 @@ import type { NetworkFees } from '@avalabs/vm-module-types';
 import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import { isSwimmerNetworkByChainAndCaipId } from '../../utils/is-swimmer-network';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,
@@ -78,7 +77,7 @@ export async function getNetworkFee({
       maxFeePerGas: maxFee + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
     },
-    isFixedFee: isSwimmerNetworkByChainAndCaipId(chainId, caipId || '') ? true : false,
+    isFixedFee: false,
     displayDecimals: 9,
   };
 }
