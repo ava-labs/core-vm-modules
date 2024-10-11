@@ -92,10 +92,14 @@ export enum DetailItemType {
   LINK = 'link',
 }
 
-// It's the same as CurrencyItem, but we want it treated differently
-// (truncate & hide label, which is an address)
-export type FundsRecipientItem = Omit<CurrencyItem, 'type'> & {
+// It's very similar as CurrencyItem, but we want the client apps
+// to treat the label as an address (recognize it if possible,
+// truncate otherwise).
+export type FundsRecipientItem = BaseDetailItem & {
   type: DetailItemType.FUNDS_RECIPIENT;
+  amount: bigint;
+  maxDecimals: number;
+  symbol: string;
 };
 
 export type TextItem = BaseDetailItem & {

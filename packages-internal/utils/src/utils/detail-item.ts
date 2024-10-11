@@ -13,12 +13,15 @@ import {
 
 export const fundsRecipientItem = (
   address: string,
-  value: bigint,
+  amount: bigint,
   maxDecimals: number,
   symbol: string,
 ): FundsRecipientItem => ({
-  ...currencyItem(address, value, maxDecimals, symbol),
   type: DetailItemType.FUNDS_RECIPIENT,
+  label: address,
+  amount,
+  maxDecimals,
+  symbol,
 });
 
 export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({

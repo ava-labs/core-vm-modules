@@ -46,7 +46,7 @@ export const bitcoinSignTransaction = async ({
     proxyApiUrl,
   });
 
-  const { fee, fromAddress, outputs } = await parseTxDetails(params, provider);
+  const { fee, fromAddress, outputs, outputsTotal } = await parseTxDetails(params, provider);
   const { decimals, symbol } = network.networkToken;
 
   const displayData: DisplayData = {
@@ -62,13 +62,14 @@ export const bitcoinSignTransaction = async ({
         items: [
           linkItem('Website', dappInfo),
           addressItem('From', fromAddress),
-          currencyItem('Fee', BigInt(fee), decimals, symbol),
+          currencyItem('Total Transferred Amount', BigInt(outputsTotal), decimals, symbol),
         ],
       },
       {
         title: 'Recipients',
         items: outputs.map(({ address, value }) => fundsRecipientItem(address, BigInt(value), decimals, symbol)),
       },
+      { title: 'Network Fee', items: [currencyItem('Total Fee', BigInt(fee), decimals, symbol)] },
     ],
     networkFeeSelector: false,
   };
@@ -134,6 +135,7 @@ const parseTxDetails = async (
   fromAddress: string;
   outputs: [BitcoinOutputUTXO, ...BitcoinOutputUTXO[]];
   fee: number;
+  outputsTotal: number;
 }> => {
   const script = getScript(params.inputs);
   const fromAddress = await provider.getAddressFromScript(script);
@@ -148,6 +150,7 @@ const parseTxDetails = async (
     fromAddress,
     outputs,
     fee,
+    outputsTotal,
   };
 };
 
