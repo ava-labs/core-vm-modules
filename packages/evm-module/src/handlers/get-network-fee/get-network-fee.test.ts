@@ -48,17 +48,14 @@ describe('get-network-fee', () => {
       low: {
         maxFeePerGas: 3500000000n,
         maxPriorityFeePerGas: 500000000n,
-        maxTip: 500000000n,
       },
       medium: {
         maxFeePerGas: 5000000000n,
         maxPriorityFeePerGas: 2000000000n,
-        maxTip: 2000000000n,
       },
       high: {
         maxFeePerGas: 6000000000n,
         maxPriorityFeePerGas: 3000000000n,
-        maxTip: 3000000000n,
       },
       isFixedFee: false,
       displayDecimals: 9,
@@ -76,17 +73,14 @@ describe('get-network-fee', () => {
       low: {
         maxFeePerGas: 4500000000n,
         maxPriorityFeePerGas: 500000000n,
-        maxTip: 500000000n,
       },
       medium: {
         maxFeePerGas: 6000000000n,
         maxPriorityFeePerGas: 2000000000n,
-        maxTip: 2000000000n,
       },
       high: {
         maxFeePerGas: 7000000000n,
         maxPriorityFeePerGas: 3000000000n,
-        maxTip: 3000000000n,
       },
       isFixedFee: true,
       displayDecimals: 9,

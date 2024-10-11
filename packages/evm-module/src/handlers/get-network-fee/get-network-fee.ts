@@ -69,17 +69,14 @@ export async function getNetworkFee({
     low: {
       maxFeePerGas: maxFee + lowMaxTip,
       maxPriorityFeePerGas: lowMaxTip,
-      maxTip: lowMaxTip,
     },
     medium: {
       maxFeePerGas: maxFee + mediumMaxTip,
       maxPriorityFeePerGas: mediumMaxTip,
-      maxTip: mediumMaxTip,
     },
     high: {
       maxFeePerGas: maxFee + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
-      maxTip: highMaxTip,
     },
     isFixedFee: isSwimmerNetworkByChainAndCaipId(chainId, caipId || '') ? true : false,
     displayDecimals: 9,
