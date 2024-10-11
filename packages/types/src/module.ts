@@ -20,7 +20,7 @@ export type ConstructorParams = {
   appInfo: AppInfo;
 };
 
-export type NetworkFeeParam = Network & { caipId?: string; proxyApiUrl?: string };
+export type NetworkFeeParam = Network & { caipId?: string };
 
 export interface Module {
   getProvider: (network: Network) => JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider;
