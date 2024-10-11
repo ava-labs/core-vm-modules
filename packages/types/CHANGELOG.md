@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.9.0
+
+### Minor Changes
+
+- beb8f78: Network fee getter and calculation
+
 ## 0.8.0
 
 ### Minor Changes
