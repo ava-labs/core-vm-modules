@@ -1,5 +1,16 @@
 # @avalabs/avalanche-module
 
+## 0.9.0
+
+### Minor Changes
+
+- beb8f78: Network fee getter and calculation
+
+### Patch Changes
+
+- Updated dependencies [beb8f78]
+  - @avalabs/vm-module-types@0.9.0
+
 ## 0.8.0
 
 ### Patch Changes
