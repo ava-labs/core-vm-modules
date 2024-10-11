@@ -4,5 +4,5 @@ export type NetworkFees = {
   high: { maxFeePerGas: bigint; maxPriorityFeePerGas?: bigint; maxTip?: bigint };
   baseFee?: bigint;
   isFixedFee: boolean;
-  displayDecimals: number;
+  displayDecimals?: number;
 };
