@@ -1,6 +1,5 @@
 import { getNetworkFee } from './get-network-fee';
 import { Block, JsonRpcProvider } from 'ethers';
-import { ChainId } from '@avalabs/core-chains-sdk';
 
 const params = {
   chainId: 1,
@@ -19,8 +18,7 @@ global.fetch = jest.fn(() =>
         'bip122:000000000019d6689c085ae165831e93': 1.5,
         'avax:11111111111111111111111111111111LpoYY': 1.5,
         'avax:2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM': 1.5,
-        'eip155:43114': 1.2,
-        'eip155:73772': 3,
+        'eip155:43114': 3,
         default: 2,
       }),
   }),
@@ -67,7 +65,7 @@ describe('get-network-fee', () => {
         baseFeePerGas: 1000000000n,
       } as Block;
     });
-    const fee = await getNetworkFee({ ...params, chainId: ChainId.SWIMMER, caipId: 'eip155:73772' });
+    const fee = await getNetworkFee({ ...params, caipId: 'eip155:43114' });
     expect(fee).toEqual({
       baseFee: 4000000000n,
       low: {
@@ -82,7 +80,7 @@ describe('get-network-fee', () => {
         maxFeePerGas: 7000000000n,
         maxPriorityFeePerGas: 3000000000n,
       },
-      isFixedFee: true,
+      isFixedFee: false,
       displayDecimals: 9,
     });
   });
