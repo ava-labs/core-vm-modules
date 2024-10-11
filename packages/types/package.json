@@ -30,6 +30,6 @@
     "ethers": "6.8.1"
   },
   "peerDependencies": {
-    "ethers": "^6.8.1"
+    "ethers": "6.8.1"
   }
 }

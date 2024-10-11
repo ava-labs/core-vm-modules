@@ -20,12 +20,14 @@ export type ConstructorParams = {
   appInfo: AppInfo;
 };
 
+export type NetworkFeeParam = Network & { caipId?: string; proxyApiUrl?: string };
+
 export interface Module {
   getProvider: (network: Network) => JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
-  getNetworkFee: (network: Network) => Promise<NetworkFees>;
+  getNetworkFee: (network: NetworkFeeParam) => Promise<NetworkFees>;
   getAddress: (params: GetAddressParams) => Promise<GetAddressResponse>;
   getTokens: (network: Network) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
