@@ -12,9 +12,9 @@
   "private": true,
   "devDependencies": {
     "zod": "3.23.8",
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.fade9d5.0",
-    "@avalabs/glacier-sdk": "3.1.0-canary.fade9d5.0",
-    "@avalabs/core-chains-sdk": "3.1.0-canary.fade9d5.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.fb39b20.0+fb39b20",
+    "@avalabs/glacier-sdk": "3.1.0-canary.fb39b20.0+fb39b20",
+    "@avalabs/core-chains-sdk": "3.1.0-canary.fb39b20.0+fb39b20",
     "@avalabs/vm-module-types": "workspace:*",
     "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
