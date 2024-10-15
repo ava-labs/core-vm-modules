@@ -17,8 +17,8 @@ const outputUtxo = z.object({
 });
 
 const paramsSchema = z.object({
-  inputs: z.array(inputUtxo),
-  outputs: z.array(outputUtxo),
+  inputs: z.array(inputUtxo).min(1),
+  outputs: z.array(outputUtxo).min(1),
 });
 
 export const parseRequestParams = (params: unknown) => {

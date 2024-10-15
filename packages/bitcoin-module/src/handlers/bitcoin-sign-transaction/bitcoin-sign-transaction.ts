@@ -46,7 +46,14 @@ export const bitcoinSignTransaction = async ({
     proxyApiUrl,
   });
 
-  const { fee, fromAddress, outputs, outputsTotal } = await parseTxDetails(params, provider);
+  const { details, error: detailsError } = await parseTxDetails(params, provider);
+  if (detailsError) {
+    return {
+      error: rpcErrors.internal({ message: 'Transaction invalid or cannot be parsed', data: { cause: detailsError } }),
+    };
+  }
+
+  const { fee, fromAddress, outputs, transferTotal } = details;
   const { decimals, symbol } = network.networkToken;
 
   const displayData: DisplayData = {
@@ -62,7 +69,7 @@ export const bitcoinSignTransaction = async ({
         items: [
           linkItem('Website', dappInfo),
           addressItem('From', fromAddress),
-          currencyItem('Total Transferred Amount', BigInt(outputsTotal), decimals, symbol),
+          currencyItem('Total Transferred Amount', BigInt(transferTotal), decimals, symbol),
         ],
       },
       {
@@ -131,33 +138,49 @@ const getScript = (inputs: BitcoinInputUTXO[]): string => {
 const parseTxDetails = async (
   params: BitcoinSignTransactionParams,
   provider: BitcoinProvider,
-): Promise<{
-  fromAddress: string;
-  outputs: [BitcoinOutputUTXO, ...BitcoinOutputUTXO[]];
-  fee: number;
-  outputsTotal: number;
-}> => {
-  const script = getScript(params.inputs);
-  const fromAddress = await provider.getAddressFromScript(script);
-  const outputs = params.outputs.filter(({ address }) => address !== fromAddress);
-  const inputsTotal = params.inputs.reduce((sum, { value }) => sum + value, 0);
-  const outputsTotal = params.outputs.reduce((sum, { value }) => sum + value, 0);
-  const fee = inputsTotal - outputsTotal;
+): Promise<
+  | {
+      details: {
+        fromAddress: string;
+        outputs: [BitcoinOutputUTXO, ...BitcoinOutputUTXO[]];
+        fee: number;
+        transferTotal: number;
+      };
+      error: null;
+    }
+  | { details: null; error: Error }
+> => {
+  try {
+    const script = getScript(params.inputs);
+    const fromAddress = await provider.getAddressFromScript(script);
+    const outputs = params.outputs.filter(({ address }) => address !== fromAddress);
+    const inputsTotal = params.inputs.reduce((sum, { value }) => sum + value, 0);
+    const outputsTotal = params.outputs.reduce((sum, { value }) => sum + value, 0); // with the change address
+    const transferTotal = outputs.reduce((sum, { value }) => sum + value, 0); // without the change address
+    const fee = inputsTotal - outputsTotal;
 
-  assertNonEmpty(outputs);
+    assertNonEmpty(outputs);
 
-  return {
-    fromAddress,
-    outputs,
-    fee,
-    outputsTotal,
-  };
+    return {
+      error: null,
+      details: {
+        fromAddress,
+        outputs,
+        fee,
+        transferTotal,
+      },
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      details: null,
+      error: error instanceof Error ? error : new Error(error?.toString() ?? 'Unknown error'),
+    };
+  }
 };
 
 function assertNonEmpty<T>(array: T[]): asserts array is [T, ...T[]] {
   if (array.length < 1) {
-    throw rpcErrors.invalidParams({
-      message: 'No actual output is provided, this transaction would only burn funds',
-    });
+    throw new Error('No actual output is provided, this transaction would only burn funds');
   }
 }
