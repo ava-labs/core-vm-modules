@@ -6,6 +6,7 @@ import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 export type GetBalancesParams = {
   addresses: string[];
   network: Network;
+  tokenTypes?: TokenType[];
   customTokens?: NetworkContractToken[];
   currency: string;
   storage?: Storage;

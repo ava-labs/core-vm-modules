@@ -145,4 +145,95 @@ describe('getBalances', () => {
       },
     });
   });
+
+  describe('when tokenTypes array is not provided', () => {
+    it('fetches all token types', async () => {
+      const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+      mockFindAsync.mockResolvedValue(glacierService);
+      glacierService.isNetworkSupported.mockResolvedValue(true);
+      glacierService.getNativeBalance.mockResolvedValue({ symbol: 'ETH' } as NetworkTokenWithBalance);
+      glacierService.listErc20Balances.mockResolvedValue({
+        '0xTokenId1': { symbol: 'TOKEN1' } as TokenWithBalanceEVM,
+      });
+      glacierService.listNftBalances.mockResolvedValue({
+        '0xnft': { type: TokenType.ERC721, address: '0xnft' } as NftTokenWithBalance,
+      });
+
+      await getBalances({
+        addresses,
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        balanceServices: [glacierService, deBankService],
+      });
+
+      expect(glacierService.getNativeBalance).toHaveBeenCalled();
+      expect(glacierService.listErc20Balances).toHaveBeenCalled();
+      expect(glacierService.listNftBalances).toHaveBeenCalled();
+    });
+  });
+
+  describe('when tokenTypes array is provided', () => {
+    beforeEach(() => {
+      const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+      mockFindAsync.mockResolvedValue(glacierService);
+      glacierService.isNetworkSupported.mockResolvedValue(true);
+      glacierService.getNativeBalance.mockResolvedValue({ symbol: 'ETH' } as NetworkTokenWithBalance);
+      glacierService.listErc20Balances.mockResolvedValue({
+        '0xTokenId1': { symbol: 'TOKEN1' } as TokenWithBalanceEVM,
+      });
+      glacierService.listNftBalances.mockResolvedValue({
+        '0xnft': { type: TokenType.ERC721, address: '0xnft' } as NftTokenWithBalance,
+      });
+    });
+
+    it('does not fetch NFTs if not explicitly asked', async () => {
+      await getBalances({
+        addresses,
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        balanceServices: [glacierService, deBankService],
+        tokenTypes: [TokenType.NATIVE, TokenType.ERC20],
+      });
+
+      expect(glacierService.getNativeBalance).toHaveBeenCalled();
+      expect(glacierService.listErc20Balances).toHaveBeenCalled();
+      expect(glacierService.listNftBalances).not.toHaveBeenCalled();
+    });
+
+    it('does not fetch ERC-20 if not explicitly asked', async () => {
+      await getBalances({
+        addresses,
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        balanceServices: [glacierService, deBankService],
+        tokenTypes: [TokenType.NATIVE],
+      });
+
+      expect(glacierService.getNativeBalance).toHaveBeenCalled();
+      expect(glacierService.listErc20Balances).not.toHaveBeenCalled();
+      expect(glacierService.listNftBalances).not.toHaveBeenCalled();
+    });
+
+    it('does not fetch native balances if not explicitly asked', async () => {
+      await getBalances({
+        addresses,
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        balanceServices: [glacierService, deBankService],
+        tokenTypes: [TokenType.ERC20],
+      });
+
+      expect(glacierService.getNativeBalance).not.toHaveBeenCalled();
+      expect(glacierService.listErc20Balances).toHaveBeenCalled();
+      expect(glacierService.listNftBalances).not.toHaveBeenCalled();
+    });
+  });
 });

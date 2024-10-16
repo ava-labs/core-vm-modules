@@ -69,6 +69,7 @@ export class EvmModule implements Module {
     currency,
     customTokens,
     storage,
+    tokenTypes,
   }: GetBalancesParams): Promise<GetBalancesResponse> {
     return getBalances({
       addresses,
@@ -78,6 +79,7 @@ export class EvmModule implements Module {
       customTokens,
       balanceServices: [this.#glacierService, this.#deBankService],
       storage,
+      tokenTypes,
     });
   }
 
