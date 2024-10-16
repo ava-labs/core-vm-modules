@@ -5,6 +5,7 @@ import {
   type Error,
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
+  TokenType,
 } from '@avalabs/vm-module-types';
 import { findAsync } from '../../utils/find-async';
 import type { BalanceServiceInterface } from './balance-service-interface';
@@ -22,6 +23,7 @@ export const getBalances = async ({
   currency,
   network,
   proxyApiUrl,
+  tokenTypes = [TokenType.NATIVE, TokenType.ERC20, TokenType.ERC721, TokenType.ERC1155],
   customTokens = [],
   storage,
   balanceServices = [],
@@ -47,39 +49,45 @@ export const getBalances = async ({
     const erc20TokenPromises: Promise<IdPromise<Record<string, TokenWithBalanceEVM | Error>>>[] = [];
     const nftTokenPromises: Promise<IdPromise<Record<string, NftTokenWithBalance | Error>>>[] = [];
     addresses.forEach((address) => {
-      nativeTokenPromises.push(
-        addIdToPromise(
-          supportingService.getNativeBalance({
+      if (tokenTypes.includes(TokenType.NATIVE)) {
+        nativeTokenPromises.push(
+          addIdToPromise(
+            supportingService.getNativeBalance({
+              address,
+              currency: currency.toUpperCase() as CurrencyCode,
+              chainId,
+            }),
             address,
-            currency: currency.toUpperCase() as CurrencyCode,
-            chainId,
-          }),
-          address,
-        ),
-      );
+          ),
+        );
+      }
 
-      erc20TokenPromises.push(
-        addIdToPromise(
-          supportingService.listErc20Balances({
-            customTokens: customTokens.filter(isERC20Token),
-            currency: currency.toUpperCase() as CurrencyCode,
-            chainId,
+      if (tokenTypes.includes(TokenType.ERC20)) {
+        erc20TokenPromises.push(
+          addIdToPromise(
+            supportingService.listErc20Balances({
+              customTokens: customTokens.filter(isERC20Token),
+              currency: currency.toUpperCase() as CurrencyCode,
+              chainId,
+              address,
+              pageSize: 100,
+            }),
             address,
-            pageSize: 100,
-          }),
-          address,
-        ),
-      );
+          ),
+        );
+      }
 
-      nftTokenPromises.push(
-        addIdToPromise(
-          supportingService.listNftBalances({
-            chainId,
+      if (tokenTypes.includes(TokenType.ERC721) || tokenTypes.includes(TokenType.ERC1155)) {
+        nftTokenPromises.push(
+          addIdToPromise(
+            supportingService.listNftBalances({
+              chainId,
+              address,
+            }),
             address,
-          }),
-          address,
-        ),
-      );
+          ),
+        );
+      }
     });
     const nativeTokenBalances = await settleAllIdPromises(nativeTokenPromises);
     const erc20TokenBalances = await settleAllIdPromises(erc20TokenPromises);
