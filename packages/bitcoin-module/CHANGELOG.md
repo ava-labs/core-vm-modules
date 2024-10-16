@@ -1,5 +1,16 @@
 # @avalabs/bitcoin-module
 
+## 0.11.0
+
+### Minor Changes
+
+- 293b07b: feat: add bitcoin_signTransaction
+
+### Patch Changes
+
+- Updated dependencies [293b07b]
+  - @avalabs/vm-module-types@0.11.0
+
 ## 0.10.0
 
 ### Patch Changes

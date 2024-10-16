@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.11.0
+
+### Minor Changes
+
+- 293b07b: feat: add bitcoin_signTransaction
+
 ## 0.10.0
 
 ### Minor Changes

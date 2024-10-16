@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.3.0
+
+### Minor Changes
+
+- 293b07b: feat: add bitcoin_signTransaction
+
 ## 0.2.0
 
 ### Minor Changes
