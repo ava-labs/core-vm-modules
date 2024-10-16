@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.10.0
+
+### Minor Changes
+
+- 3114489: feat: allow choosing token types to load balances for
+
 ## 0.9.0
 
 ### Minor Changes

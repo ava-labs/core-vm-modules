@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 0.10.0
+
+### Minor Changes
+
+- 3114489: feat: allow choosing token types to load balances for
+
+### Patch Changes
+
+- Updated dependencies [3114489]
+  - @avalabs/vm-module-types@0.10.0
+
 ## 0.9.0
 
 ### Minor Changes
