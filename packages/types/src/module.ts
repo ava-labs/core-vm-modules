@@ -23,7 +23,7 @@ export type ConstructorParams = {
 export type NetworkFeeParam = Network & { caipId?: string };
 
 export interface Module {
-  getProvider: (network: Network) => JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider;
+  getProvider: (network: Network) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider>;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;

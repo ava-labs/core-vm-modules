@@ -49,7 +49,7 @@ export class EvmModule implements Module {
     this.#approvalController = approvalController;
   }
 
-  getProvider(network: Network): JsonRpcBatchInternal {
+  getProvider(network: Network): Promise<JsonRpcBatchInternal> {
     return getProvider({
       chainId: network.chainId,
       chainName: network.chainName,

@@ -36,7 +36,7 @@ export class BitcoinModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
   }
 
-  getProvider(network: Network): BitcoinProvider {
+  getProvider(network: Network): Promise<BitcoinProvider> {
     return getProvider({
       isTestnet: Boolean(network.isTestnet),
       proxyApiUrl: this.#proxyApiUrl,

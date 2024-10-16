@@ -49,7 +49,7 @@ export class AvalancheModule implements Module {
     this.#approvalController = approvalController;
   }
 
-  getProvider(network: Network): Avalanche.JsonRpcProvider {
+  getProvider(network: Network): Promise<Avalanche.JsonRpcProvider> {
     return getProvider({ isTestnet: Boolean(network.isTestnet) });
   }
 

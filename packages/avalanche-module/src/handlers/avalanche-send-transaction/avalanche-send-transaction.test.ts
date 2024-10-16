@@ -49,7 +49,7 @@ const mockProvider = {
   },
 } as unknown as Avalanche.JsonRpcProvider;
 
-mockGetProvider.mockReturnValue(mockProvider);
+mockGetProvider.mockResolvedValue(mockProvider);
 const getAddressesMock = jest.fn();
 const hasAllSignaturesMock = jest.fn();
 const unsignedTxJson = { foo: 'bar' };

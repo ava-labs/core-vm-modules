@@ -44,7 +44,7 @@ export const avalancheSignTransaction = async ({
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
   const isTestnet = network.isTestnet ?? false;
-  const provider = getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet });
 
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
 

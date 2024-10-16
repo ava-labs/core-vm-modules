@@ -12,8 +12,8 @@ describe('get-provider', () => {
     { isTestnet: true, proxyApiUrl: PROXY_API_DEV },
     { isTestnet: false, proxyApiUrl: PROXY_API_DEV },
     { isTestnet: false, proxyApiUrl: PROXY_API_PROD },
-  ])('builds BitcoinProvider instance with proper params', (params) => {
-    const result = getProvider(params);
+  ])('builds BitcoinProvider instance with proper params', async (params) => {
+    const result = await getProvider(params);
 
     expect(BitcoinProvider).toHaveBeenCalledWith(
       !params.isTestnet,
@@ -40,8 +40,8 @@ describe('get-provider', () => {
       process.env = env;
     });
 
-    it('passes it to the constructor', () => {
-      getProvider({ isTestnet: true, proxyApiUrl: PROXY_API_DEV });
+    it('passes it to the constructor', async () => {
+      await getProvider({ isTestnet: true, proxyApiUrl: PROXY_API_DEV });
 
       expect(BitcoinProvider).toHaveBeenCalledWith(
         false,

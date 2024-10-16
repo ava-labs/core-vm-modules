@@ -92,7 +92,7 @@ describe('getBalances', () => {
     glacierService.isNetworkSupported.mockResolvedValue(false);
     deBankService.isNetworkSupported.mockResolvedValue(false);
     const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
-    mockGetProvider.mockReturnValue({} as JsonRpcBatchInternal);
+    mockGetProvider.mockResolvedValue({} as JsonRpcBatchInternal);
     (getTokens as jest.MockedFunction<typeof getTokens>).mockResolvedValue([]);
     mockedRpcService.getNativeBalance.mockResolvedValue({
       symbol: 'ETH',

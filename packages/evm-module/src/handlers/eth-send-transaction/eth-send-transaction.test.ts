@@ -68,7 +68,7 @@ const mockProvider = {
 };
 
 // @ts-expect-error missing properties
-mockGetProvider.mockReturnValue(mockProvider);
+mockGetProvider.mockResolvedValue(mockProvider);
 const testNetwork: Network = {
   isTestnet: false,
   chainId: 1,

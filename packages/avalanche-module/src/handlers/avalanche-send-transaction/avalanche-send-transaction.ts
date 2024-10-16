@@ -49,7 +49,7 @@ export const avalancheSendTransaction = async ({
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
     const isTestnet = network.isTestnet ?? false;
-    const provider = getProvider({ isTestnet });
+    const provider = await getProvider({ isTestnet });
     const currentAddress = request.context?.['currentAddress'];
 
     if (!currentAddress || typeof currentAddress !== 'string') {
