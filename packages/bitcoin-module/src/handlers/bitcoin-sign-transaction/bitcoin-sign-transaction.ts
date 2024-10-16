@@ -41,7 +41,7 @@ export const bitcoinSignTransaction = async ({
     };
   }
 
-  const provider = getProvider({
+  const provider = await getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });

@@ -5,7 +5,7 @@ type ProviderParams = {
   proxyApiUrl: string;
 };
 
-export const getProvider = ({ isTestnet, proxyApiUrl }: ProviderParams): BitcoinProvider =>
+export const getProvider = async ({ isTestnet, proxyApiUrl }: ProviderParams): Promise<BitcoinProvider> =>
   new BitcoinProvider(
     !isTestnet,
     undefined,

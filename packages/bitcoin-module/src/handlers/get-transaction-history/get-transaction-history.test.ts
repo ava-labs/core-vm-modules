@@ -55,7 +55,7 @@ describe('get-transaction-history', () => {
 
   beforeEach(() => {
     jest.mocked(provider.getTxHistory).mockResolvedValue(rawHistory);
-    jest.mocked(getProvider).mockReturnValue(provider);
+    jest.mocked(getProvider).mockResolvedValue(provider);
   });
 
   it('should build the provider', async () => {

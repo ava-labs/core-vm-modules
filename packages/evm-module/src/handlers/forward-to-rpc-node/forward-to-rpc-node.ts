@@ -4,7 +4,7 @@ import { getProvider } from '../../utils/get-provider';
 
 export const forwardToRpcNode = async (request: RpcRequest, network: Network) => {
   try {
-    const provider = getProvider({
+    const provider = await getProvider({
       chainId: network.chainId,
       chainName: network.chainName,
       rpcUrl: network.rpcUrl,

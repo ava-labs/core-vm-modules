@@ -53,7 +53,7 @@ export const ethSendTransaction = async ({
     };
   }
 
-  const provider = getProvider({
+  const provider = await getProvider({
     chainId: network.chainId,
     chainName: network.chainName,
     rpcUrl: network.rpcUrl,

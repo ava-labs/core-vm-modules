@@ -18,7 +18,7 @@ export const getAddressesByIndices = async ({
     return [];
   }
 
-  const provider = getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet });
 
   return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
 };

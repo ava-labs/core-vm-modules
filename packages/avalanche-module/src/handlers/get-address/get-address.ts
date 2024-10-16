@@ -2,6 +2,7 @@ import type { GetAddressParams, GetAddressResponse } from '@avalabs/vm-module-ty
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getProvider } from '../../utils/get-provider';
 
 type GetAddress = Omit<GetAddressParams, 'xpub'>;
 
@@ -15,9 +16,7 @@ export const getAddress = async ({
     throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
-  const provXP = isTestnet
-    ? Avalanche.JsonRpcProvider.getDefaultFujiProvider()
-    : Avalanche.JsonRpcProvider.getDefaultMainnetProvider();
+  const provXP = await getProvider({ isTestnet: Boolean(isTestnet) });
   let xpPub: Buffer;
 
   switch (walletType) {

@@ -53,7 +53,7 @@ export const bitcoinSendTransaction = async ({
     };
   }
 
-  const provider = getProvider({
+  const provider = await getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });

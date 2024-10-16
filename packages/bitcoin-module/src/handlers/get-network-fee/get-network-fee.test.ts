@@ -17,7 +17,7 @@ describe('get-network-fee', () => {
       high: 4,
     });
 
-    jest.mocked(getProvider).mockReturnValue(provider);
+    jest.mocked(getProvider).mockResolvedValue(provider);
   });
 
   it('should build the provider and use it', async () => {
