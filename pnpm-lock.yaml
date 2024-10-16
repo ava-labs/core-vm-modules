@@ -98,13 +98,13 @@ importers:
   packages-internal/utils:
     devDependencies:
       '@avalabs/core-chains-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@avalabs/vm-module-types':
         specifier: workspace:*
@@ -137,25 +137,25 @@ importers:
         specifier: 4.1.0-alpha.7
         version: 4.1.0-alpha.7
       '@avalabs/core-chains-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@avalabs/types':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@avalabs/vm-module-types':
         specifier: workspace:*
@@ -204,13 +204,13 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
         specifier: workspace:*
@@ -262,22 +262,22 @@ importers:
   packages/evm-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@avalabs/types':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@avalabs/vm-module-types':
         specifier: workspace:*
@@ -347,10 +347,10 @@ importers:
   packages/types:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: v3.1.0-alpha.9
+        specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
       '@metamask/rpc-errors':
         specifier: 6.3.0
