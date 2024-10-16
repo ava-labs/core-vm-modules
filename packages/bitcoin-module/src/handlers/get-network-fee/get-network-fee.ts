@@ -12,7 +12,7 @@ export async function getNetworkFee({
   isTestnet: boolean;
   proxyApiUrl: string;
 }): Promise<NetworkFees> {
-  const provider = getProvider({
+  const provider = await getProvider({
     isTestnet,
     proxyApiUrl,
   });

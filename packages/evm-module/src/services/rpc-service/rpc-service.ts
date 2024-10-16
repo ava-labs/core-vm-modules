@@ -57,7 +57,7 @@ export class RpcService implements BalanceServiceInterface {
     address: string;
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
-    const provider = getProvider({
+    const provider = await getProvider({
       chainId,
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,
@@ -109,7 +109,7 @@ export class RpcService implements BalanceServiceInterface {
     pageSize: number;
     pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
-    const provider = getProvider({
+    const provider = await getProvider({
       chainId,
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,

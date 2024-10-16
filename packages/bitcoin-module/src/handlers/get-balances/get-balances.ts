@@ -23,7 +23,7 @@ export const getBalances = async ({
   proxyApiUrl,
   storage,
 }: GetBTCBalancesParams): Promise<GetBtcBalancesResponse> => {
-  const provider = getProvider({
+  const provider = await getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });

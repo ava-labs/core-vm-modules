@@ -11,7 +11,7 @@ type GetBtcTransactionHistoryOptions = {
 };
 
 export const getTransactionHistory = async ({ address, network, proxyApiUrl }: GetBtcTransactionHistoryOptions) => {
-  const provider = getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl });
+  const provider = await getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl });
   const rawHistory = await provider.getTxHistory(address);
 
   return rawHistory.map((tx) =>

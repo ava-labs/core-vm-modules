@@ -30,7 +30,7 @@ export async function getNetworkFee({
   multiContractAddress?: string;
   caipId?: string;
 }): Promise<NetworkFees> {
-  const provider = getProvider({
+  const provider = await getProvider({
     chainId,
     chainName,
     rpcUrl,

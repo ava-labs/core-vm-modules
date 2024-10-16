@@ -50,7 +50,7 @@ describe('get-balances', () => {
 
   beforeEach(() => {
     jest.mocked(provider.getUtxoBalance).mockResolvedValue(mockedBalance);
-    jest.mocked(getProvider).mockReturnValue(provider);
+    jest.mocked(getProvider).mockResolvedValue(provider);
 
     jest.spyOn(TokenService.prototype, 'getSimplePrice').mockResolvedValue(marketData);
   });
