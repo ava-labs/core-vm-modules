@@ -13,7 +13,7 @@ type ProviderParams = {
   pollingInterval?: number;
 };
 
-export const getProvider = (params: ProviderParams): JsonRpcBatchInternal => {
+export const getProvider = async (params: ProviderParams): Promise<JsonRpcBatchInternal> => {
   const { chainId, chainName, rpcUrl, multiContractAddress, pollingInterval = 2000 } = params;
 
   const provider = new JsonRpcBatchInternal(
