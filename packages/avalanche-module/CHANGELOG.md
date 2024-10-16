@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.11.1
+
+### Patch Changes
+
+- 404ff25: Update avalanche-sdks and avalanchejs
+  - @avalabs/vm-module-types@0.11.1
+
 ## 0.11.0
 
 ### Minor Changes
