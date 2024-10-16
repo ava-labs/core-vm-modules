@@ -23,6 +23,7 @@ import { getAddress } from './handlers/get-address/get-address';
 import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction/bitcoin-send-transaction';
 import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
+import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitcoin-sign-transaction';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -86,6 +87,13 @@ export class BitcoinModule implements Module {
     switch (request.method) {
       case RpcMethod.BITCOIN_SEND_TRANSACTION:
         return bitcoinSendTransaction({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+        });
+      case RpcMethod.BITCOIN_SIGN_TRANSACTION:
+        return bitcoinSignTransaction({
           request,
           network,
           approvalController: this.#approvalController,

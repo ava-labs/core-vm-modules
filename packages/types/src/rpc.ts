@@ -8,6 +8,7 @@ import type { TokenWithBalanceBTC } from './balance';
 export enum RpcMethod {
   /* BTC */
   BITCOIN_SEND_TRANSACTION = 'bitcoin_sendTransaction',
+  BITCOIN_SIGN_TRANSACTION = 'bitcoin_signTransaction',
 
   /* EVM */
   ETH_SEND_TRANSACTION = 'eth_sendTransaction',
@@ -85,10 +86,21 @@ export enum DetailItemType {
   ADDRESS = 'address',
   NODE_ID = 'nodeID',
   CURRENCY = 'currency',
+  FUNDS_RECIPIENT = 'fundsRecipient',
   DATA = 'data',
   DATE = 'date',
   LINK = 'link',
 }
+
+// It's very similar as CurrencyItem, but we want the client apps
+// to treat the label as an address (recognize it if possible,
+// truncate otherwise).
+export type FundsRecipientItem = BaseDetailItem & {
+  type: DetailItemType.FUNDS_RECIPIENT;
+  amount: bigint;
+  maxDecimals: number;
+  symbol: string;
+};
 
 export type TextItem = BaseDetailItem & {
   type: DetailItemType.TEXT;
@@ -130,7 +142,16 @@ export type LinkItem = BaseDetailItem & {
   value: LinkItemValue;
 };
 
-export type DetailItem = string | TextItem | AddressItem | NodeIDItem | CurrencyItem | DataItem | DateItem | LinkItem;
+export type DetailItem =
+  | string
+  | TextItem
+  | AddressItem
+  | NodeIDItem
+  | CurrencyItem
+  | DataItem
+  | DateItem
+  | LinkItem
+  | FundsRecipientItem;
 
 export type DisplayData = {
   title: string;
@@ -175,7 +196,7 @@ export type Alert = {
   details: AlertDetails;
 };
 
-export type BitcoinTransactionData = {
+export type BitcoinExecuteTxData = {
   to: string;
   amount: number;
   feeRate: number;
@@ -186,11 +207,21 @@ export type BitcoinTransactionData = {
   outputs: BitcoinOutputUTXO[];
 };
 
+export type BitcoingSignTxData = {
+  inputs: BitcoinInputUTXO[];
+  outputs: BitcoinOutputUTXO[];
+};
+
 export type SigningData =
   | {
       type: RpcMethod.BITCOIN_SEND_TRANSACTION;
       account: string;
-      data: BitcoinTransactionData;
+      data: BitcoinExecuteTxData;
+    }
+  | {
+      type: RpcMethod.BITCOIN_SIGN_TRANSACTION;
+      account: string;
+      data: BitcoingSignTxData;
     }
   | {
       type: RpcMethod.ETH_SEND_TRANSACTION;

@@ -8,7 +8,21 @@ import {
   type LinkItemValue,
   DetailItemType,
   type LinkItem,
+  type FundsRecipientItem,
 } from '@avalabs/vm-module-types';
+
+export const fundsRecipientItem = (
+  address: string,
+  amount: bigint,
+  maxDecimals: number,
+  symbol: string,
+): FundsRecipientItem => ({
+  type: DetailItemType.FUNDS_RECIPIENT,
+  label: address,
+  amount,
+  maxDecimals,
+  symbol,
+});
 
 export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({
   label,
