@@ -1,5 +1,5 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
+import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM, PVM } from '@avalabs/avalanchejs';
 import { AppName, NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { avalancheSendTransaction } from './avalanche-send-transaction';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
@@ -41,7 +41,9 @@ const mockRetry = retry as jest.MockedFunction<typeof retry>;
 
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 
+const mockIsEtnaEnabled = jest.fn();
 const mockProvider = {
+  isEtnaEnabled: mockIsEtnaEnabled,
   issueTxHex: issueTxHexMock,
   getApiP: mockGetApiP,
   evmRpc: {
@@ -107,13 +109,21 @@ const testParams = (requestParams: {
   chainAlias: 'C' | 'X' | 'P';
   externalIndices?: number[];
   internalIndices?: number[];
-}) => ({
-  request: testRequest(requestParams),
-  network: testNetwork,
-  approvalController: mockApprovalController,
-  glacierApiUrl: GLACIER_API_URL,
-  appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
-});
+}) => {
+  const vmName =
+    requestParams.chainAlias === 'C'
+      ? NetworkVMType.EVM
+      : requestParams.chainAlias === 'P'
+      ? NetworkVMType.PVM
+      : NetworkVMType.AVM;
+  return {
+    request: testRequest(requestParams),
+    network: { ...testNetwork, vmName },
+    approvalController: mockApprovalController,
+    glacierApiUrl: GLACIER_API_URL,
+    appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
+  };
+};
 
 const testSignedTxHash = '0xsignedtxhash';
 const testTxHash = '0xtxhash';
@@ -121,6 +131,7 @@ const testTxHash = '0xtxhash';
 describe('avalanche_sendTransaction handler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockIsEtnaEnabled.mockReturnValue(true);
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (EVMUnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     mockGetAddressesByIndices.mockResolvedValue([]);
@@ -213,7 +224,96 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('X/P: should process transaction with proper displayData', async () => {
+  it('P: should process transaction with proper displayData', async () => {
+    const params = testParams({ ...testRequestParams, chainAlias: 'P' });
+    const tx = { vm: PVM };
+    (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(PVM);
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      type: 'import',
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'P',
+      isTestnet: true,
+      url: GLACIER_API_URL,
+      token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+      },
+    });
+
+    expect(Avalanche.createAvalancheUnsignedTx).toHaveBeenCalledWith({
+      tx,
+      utxos: utxosMock,
+      provider: mockProvider,
+      fromAddressBytes: [new Uint8Array([0, 1, 2])],
+    });
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      request: {
+        requestId: '1',
+        sessionId: '2',
+        method: 'avalanche_sendTransaction',
+        chainId: 'avax:testnet',
+        dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
+        params: { transactionHex: '0x00001', chainAlias: 'P' },
+        context: { currentAddress: '0x0', xpubXP: 'xpubXP' },
+      },
+      displayData: {
+        title: 'Approve Import',
+        network: { chainId: 1, name: 'chainName', logoUri: 'logoUri' },
+        details: [
+          {
+            title: 'Transaction Details',
+            items: [
+              {
+                label: 'Source Chain',
+                alignment: 'horizontal',
+                type: 'text',
+                value: 'Avalanche undefined',
+              },
+              {
+                label: 'Destination Chain',
+                alignment: 'horizontal',
+                type: 'text',
+                value: 'Avalanche undefined',
+              },
+              {
+                label: 'Transaction Type',
+                alignment: 'horizontal',
+                type: 'text',
+                value: 'Import',
+              },
+              {
+                label: 'Amount',
+                type: 'currency',
+                value: undefined,
+                maxDecimals: 9,
+                symbol: 'AVAX',
+              },
+            ],
+          },
+        ],
+        networkFeeSelector: true,
+      },
+      signingData: {
+        type: 'avalanche_sendTransaction',
+        unsignedTxJson: '{"foo":"bar"}',
+        data: { type: 'import' },
+        vm: 'PVM',
+        externalIndices: undefined,
+        internalIndices: undefined,
+      },
+    });
+  });
+
+  it('X: should process transaction with proper displayData', async () => {
     const params = testParams(testRequestParams);
     const tx = { vm: AVM };
 
@@ -289,7 +389,7 @@ describe('avalanche_sendTransaction handler', () => {
             ],
           },
         ],
-        networkFeeSelector: true,
+        networkFeeSelector: false,
       },
       signingData: {
         type: 'avalanche_sendTransaction',
@@ -366,6 +466,8 @@ describe('avalanche_sendTransaction handler', () => {
         type: 'avalanche_sendTransaction',
         unsignedTxJson: '{"foo":"bar"}',
         data: { type: 'import' },
+        externalIndices: undefined,
+        internalIndices: undefined,
         vm: 'EVM',
       },
     });

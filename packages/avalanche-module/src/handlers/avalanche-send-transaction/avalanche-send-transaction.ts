@@ -152,7 +152,7 @@ export const avalancheSendTransaction = async ({
         logoUri: network.logoUri,
       },
       details,
-      networkFeeSelector: vm === 'PVM' && isEtnaEnabled ? true : false,
+      networkFeeSelector: vm !== 'AVM' && isEtnaEnabled ? true : false,
     };
 
     // prompt user for approval
