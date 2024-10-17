@@ -149,8 +149,8 @@ importers:
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.9
-        version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.1b3648d.0
+        version: 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
@@ -210,8 +210,8 @@ importers:
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.9
-        version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.1b3648d.0
+        version: 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -271,8 +271,8 @@ importers:
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.9
-        version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.1b3648d.0
+        version: 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
@@ -347,8 +347,8 @@ importers:
   packages/types:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.9
-        version: 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.1b3648d.0
+        version: 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.9
         version: 3.1.0-alpha.9
@@ -440,6 +440,18 @@ packages:
       - node-fetch
       - supports-color
 
+  /@avalabs/core-chains-sdk@3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-xPZhf8MU+qEYXEd345iMX+F4bijrSbNB/L0nAkKnG1HoNMjUX88rMj6SXVLWm/o/SzqyWmFNh7IXRIL90XnfYA==}
+    dependencies:
+      '@avalabs/core-utils-sdk': 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+    transitivePeerDependencies:
+      - big.js
+      - bn.js
+      - ethers
+      - node-fetch
+      - supports-color
+    dev: false
+
   /@avalabs/core-coingecko-sdk@3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
     resolution: {integrity: sha512-HI+veKhKHFEEw8Vg/XU7KdXnLnexrw+GJRleq/eBptiaegR3vb8vLZOQrNnDC2m7353VNL6hhVlU288C00SIIw==}
     dependencies:
@@ -480,14 +492,32 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-wallets-sdk@3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-DEAdavYyObMX678SJ6lTYEVxY0dOTP9quEZuWspDpMtcErEPq0LMi++1ZaP+bZPIWBh2Kqdt2GzbC2OdMX5qNg==}
+  /@avalabs/core-utils-sdk@3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-S/bFax06PFHpRWb1GiyhUy3yicOJXhWuBEIoje0naozcaYFOhxQoUo2wvhXeSvbKU6qJVP6vsmuMRTLFGi8tPQ==}
+    peerDependencies:
+      big.js: ^6.2.1
+      bn.js: ^5.2.1
+      ethers: ^6.7.1
+    dependencies:
+      '@avalabs/avalanchejs': 4.1.0-alpha.7
+      '@hpke/core': 1.2.5
+      big.js: 6.2.1
+      bn.js: 5.2.1
+      ethers: 6.8.1
+      is-ipfs: 6.0.2(node-fetch@3.3.2)
+    transitivePeerDependencies:
+      - node-fetch
+      - supports-color
+    dev: false
+
+  /@avalabs/core-wallets-sdk@3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-Fsagt3MyNVgoPRdyfErhqJYTLoCxhkltaJGezOuPwZ4PGU0p4PyXEsxrqzhGi/R2WZ2cyYSuwaLt1ZmL8ceWRw==}
     peerDependencies:
       ethers: ^6.7.1
     dependencies:
       '@avalabs/avalanchejs': 4.1.0-alpha.7
-      '@avalabs/core-chains-sdk': 3.1.0-alpha.9(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
-      '@avalabs/glacier-sdk': 3.1.0-alpha.9
+      '@avalabs/core-chains-sdk': 3.1.0-canary.1b3648d.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/glacier-sdk': 3.1.0-canary.1b3648d.0
       '@avalabs/hw-app-avalanche': 0.14.1
       '@ledgerhq/hw-app-btc': 10.2.4
       '@ledgerhq/hw-app-eth': 6.36.1
@@ -516,6 +546,10 @@ packages:
 
   /@avalabs/glacier-sdk@3.1.0-alpha.9:
     resolution: {integrity: sha512-WzZcC1omLI7vFo/1eBIKvyyn/1F+/pTWgMDylj0LwY+mAVRuEvLA3in1FDi+aYH0d4K3AuYLBdiZwtoaXLtu+A==}
+
+  /@avalabs/glacier-sdk@3.1.0-canary.1b3648d.0:
+    resolution: {integrity: sha512-2F29g89fC7laoqSszcWb164Qog4zhmv5AO7sAWvYvtwIh0wwBmON4rVCe7/myq/DBrBx/A+Yqg2eevYFnLRYqw==}
+    dev: false
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}

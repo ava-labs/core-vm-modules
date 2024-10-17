@@ -23,7 +23,7 @@
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.9",
     "@avalabs/core-etherscan-sdk": "3.1.0-alpha.9",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.9",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.9",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.1b3648d.0",
     "@avalabs/glacier-sdk": "3.1.0-alpha.9",
     "@avalabs/types": "3.1.0-alpha.9",
     "@blockaid/client": "0.11.0",
