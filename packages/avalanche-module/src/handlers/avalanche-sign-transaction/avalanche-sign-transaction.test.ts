@@ -6,6 +6,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
+jest.mock('../../utils/get-provider');
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
