@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.1b3648d.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.ddda6be.0",
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.9",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.9",
     "@metamask/rpc-errors": "6.3.0",
