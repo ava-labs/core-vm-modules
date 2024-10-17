@@ -51,6 +51,7 @@ export const avalancheSendTransaction = async ({
     const isTestnet = network.isTestnet ?? false;
     const provider = await getProvider({ isTestnet });
     const currentAddress = request.context?.['currentAddress'];
+    const isEtnaEnabled = provider.isEtnaEnabled();
 
     if (!currentAddress || typeof currentAddress !== 'string') {
       return {
@@ -151,7 +152,7 @@ export const avalancheSendTransaction = async ({
         logoUri: network.logoUri,
       },
       details,
-      networkFeeSelector: true,
+      networkFeeSelector: vm === 'PVM' && isEtnaEnabled ? true : false,
     };
 
     // prompt user for approval
