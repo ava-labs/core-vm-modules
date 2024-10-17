@@ -289,7 +289,7 @@ describe('avalanche_sendTransaction handler', () => {
             ],
           },
         ],
-        networkFeeSelector: false,
+        networkFeeSelector: true,
       },
       signingData: {
         type: 'avalanche_sendTransaction',
@@ -360,7 +360,7 @@ describe('avalanche_sendTransaction handler', () => {
             ],
           },
         ],
-        networkFeeSelector: false,
+        networkFeeSelector: true,
       },
       signingData: {
         type: 'avalanche_sendTransaction',
