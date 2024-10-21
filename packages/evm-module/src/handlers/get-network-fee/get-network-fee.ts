@@ -45,36 +45,34 @@ export async function getNetworkFee({
   if (!lastBlock) {
     throw rpcErrors.internal('There is no block');
   }
-  const baseFeePerGas = lastBlock.baseFeePerGas;
+  const baseFeePerGasWei = lastBlock.baseFeePerGas;
 
-  if (!baseFeePerGas) {
+  if (!baseFeePerGasWei) {
     throw rpcErrors.internal('Pre-EIP-1559 networks are not supported');
   }
 
+  const ethMaxDecimals = 18;
+  const baseFeePerGasEth = new TokenUnit(baseFeePerGasWei, ethMaxDecimals, 'ETH');
   const gasMultiplier = await getGasMultiplier(proxyApiUrl, caipId);
+  const maxPriorityFeePerGasEth = new TokenUnit(1000000000n, ethMaxDecimals, 'ETH');
 
-  const multiplier = new TokenUnit(gasMultiplier, 0, '');
-
-  const baseFee = new TokenUnit(baseFeePerGas, 0, '');
-  const maxPriorityFeePerGas = BigInt('1000000000');
-
-  const maxFee = baseFee.mul(multiplier).add(maxPriorityFeePerGas).toSubUnit();
+  const maxFeeWei = baseFeePerGasEth.mul(gasMultiplier).add(maxPriorityFeePerGasEth).toSubUnit();
 
   const lowMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.LOW;
   const mediumMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.MEDIUM;
   const highMaxTip = BASE_PRIORITY_FEE_WEI * DEFAULT_PRESETS.HIGH;
   return {
-    baseFee: maxFee,
+    baseFee: maxFeeWei,
     low: {
-      maxFeePerGas: maxFee + lowMaxTip,
+      maxFeePerGas: maxFeeWei + lowMaxTip,
       maxPriorityFeePerGas: lowMaxTip,
     },
     medium: {
-      maxFeePerGas: maxFee + mediumMaxTip,
+      maxFeePerGas: maxFeeWei + mediumMaxTip,
       maxPriorityFeePerGas: mediumMaxTip,
     },
     high: {
-      maxFeePerGas: maxFee + highMaxTip,
+      maxFeePerGas: maxFeeWei + highMaxTip,
       maxPriorityFeePerGas: highMaxTip,
     },
     isFixedFee: false,
@@ -82,7 +80,7 @@ export async function getNetworkFee({
   };
 }
 
-async function getGasMultiplier(proxyApiUrl: string, caipId?: string) {
+async function getGasMultiplier(proxyApiUrl: string, caipId?: string): Promise<number> {
   const defaultMultiplier = 1.5;
   if (!caipId) {
     return defaultMultiplier;
