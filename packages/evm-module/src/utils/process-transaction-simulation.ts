@@ -19,6 +19,7 @@ import { isHexString } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
+import { hasToField } from './type-utils';
 
 export const processTransactionSimulation = async ({
   request,
@@ -64,7 +65,7 @@ export const processTransactionSimulation = async ({
   }
 
   // If debank parsing failed, check if toAddress is a known ERC20
-  if (!isSimulationSuccessful && params.to) {
+  if (!isSimulationSuccessful && hasToField(params)) {
     const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
     balanceChange = erc20ParseResult.balanceChange;
     tokenApprovals = erc20ParseResult.tokenApprovals;

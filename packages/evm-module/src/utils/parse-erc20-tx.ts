@@ -5,9 +5,13 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
-import { ERC20TransactionType, type TransactionParams } from '../types';
+import { ERC20TransactionType, type RequiredBy, type TransactionParams } from '../types';
 
-export const parseWithErc20Abi = async (params: TransactionParams, chainId: number, provider: JsonRpcBatchInternal) => {
+export const parseWithErc20Abi = async (
+  params: RequiredBy<TransactionParams, 'to'>,
+  chainId: number,
+  provider: JsonRpcBatchInternal,
+) => {
   if (!params.data) {
     return {
       tokenApprovals: undefined,
