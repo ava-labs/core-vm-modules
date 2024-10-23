@@ -4,7 +4,7 @@ export const NonContractCallTypes = [TransactionType.SEND, TransactionType.RECEI
 
 export type TransactionParams = {
   from: string;
-  to: string;
+  to?: string;
   data?: string;
   value?: string;
   gas?: string;
@@ -14,6 +14,8 @@ export type TransactionParams = {
   nonce?: string;
   chainId?: string;
 };
+
+export type RequiredBy<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 export enum ERC20TransactionType {
   TOTAL_SUPPLY = 'totalSupply',

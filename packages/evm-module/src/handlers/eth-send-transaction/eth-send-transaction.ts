@@ -114,11 +114,11 @@ export const ethSendTransaction = async ({
     title = 'Token Spend Approval';
   }
 
-  const transactionDetails: DetailItem[] = [
-    linkItem('Website', dappInfo),
-    addressItem('From', transaction.from),
-    addressItem('To', transaction.to),
-  ];
+  const transactionDetails: DetailItem[] = [linkItem('Website', dappInfo), addressItem('From', transaction.from)];
+
+  if (transaction.to) {
+    transactionDetails.push(addressItem('To', transaction.to));
+  }
 
   if (transactionType) {
     transactionDetails.push(textItem('Type', transactionType as string));

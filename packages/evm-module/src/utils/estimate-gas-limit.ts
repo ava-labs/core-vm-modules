@@ -7,7 +7,7 @@ export const estimateGasLimit = async ({
 }: {
   transactionParams: {
     from: string;
-    to: string;
+    to?: string;
     data?: string;
     value?: BigNumberish;
   };
