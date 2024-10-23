@@ -50,7 +50,7 @@ export class AvalancheModule implements Module {
   }
 
   getProvider(network: Network): Promise<Avalanche.JsonRpcProvider> {
-    return getProvider({ isTestnet: Boolean(network.isTestnet) });
+    return getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: Boolean(network.isDevnet) });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
