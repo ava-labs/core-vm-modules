@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.3.1
+
+### Patch Changes
+
+- 70cf899: fix: make _to_ field optional for eth_sendTransaction
+
 ## 0.3.0
 
 ### Minor Changes
