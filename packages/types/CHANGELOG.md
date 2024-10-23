@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.11.2
+
+### Patch Changes
+
+- 70cf899: fix: make _to_ field optional for eth_sendTransaction
+
 ## 0.11.1
 
 ## 0.11.0

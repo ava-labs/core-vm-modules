@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 0.11.2
+
+### Patch Changes
+
+- 70cf899: fix: make _to_ field optional for eth_sendTransaction
+- Updated dependencies [70cf899]
+  - @avalabs/vm-module-types@0.11.2
+
 ## 0.11.1
 
 ### Patch Changes
