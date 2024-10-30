@@ -67,8 +67,9 @@ export class AvalancheModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee(_: Network): Promise<NetworkFees> {
-    return getNetworkFee();
+  getNetworkFee(network: Network): Promise<NetworkFees> {
+    const { isTestnet, isDevnet, vmName } = network;
+    return getNetworkFee({ isTestnet: Boolean(isTestnet), isDevnet, vmName });
   }
 
   getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {
