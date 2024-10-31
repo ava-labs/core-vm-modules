@@ -13,7 +13,7 @@ import type {
   ConstructorParams,
   AppInfo,
 } from '@avalabs/vm-module-types';
-import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
+import { Environment, parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
@@ -29,6 +29,7 @@ import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/
 import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
+import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -50,7 +51,7 @@ export class AvalancheModule implements Module {
   }
 
   getProvider(network: Network): Promise<Avalanche.JsonRpcProvider> {
-    return getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: Boolean(network.isDevnet) });
+    return getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: isDevnet(network) });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -58,7 +59,9 @@ export class AvalancheModule implements Module {
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
-    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
+    // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
+    const proxyApiUrl = isDevnet(network) ? getEnv(Environment.DEV).proxyApiUrl : this.#proxyApiUrl;
+    const tokenService = new TokenService({ storage, proxyApiUrl });
     return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
   }
 
@@ -68,8 +71,8 @@ export class AvalancheModule implements Module {
   }
 
   getNetworkFee(network: Network): Promise<NetworkFees> {
-    const { isTestnet, isDevnet, vmName } = network;
-    return getNetworkFee({ isTestnet: Boolean(isTestnet), isDevnet, vmName });
+    const { isTestnet, vmName } = network;
+    return getNetworkFee({ isTestnet: Boolean(isTestnet), isDevnet: isDevnet(network), vmName });
   }
 
   getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {
