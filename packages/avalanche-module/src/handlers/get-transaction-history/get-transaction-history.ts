@@ -24,6 +24,7 @@ export const getTransactionHistory = async ({
   const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,
     blockchainId: getBlockchainIdByAddress(address),
+    // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
     network: (isDevnet ? 'devnet' : isTestnet ? Network.FUJI : Network.MAINNET) as Network,
     pageSize: offset,
     pageToken: nextPageToken,

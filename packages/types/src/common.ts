@@ -2,7 +2,6 @@ import type { NetworkToken } from './token';
 
 export type Network = {
   isTestnet?: boolean;
-  isDevnet?: boolean;
   chainId: number;
   chainName: string;
   rpcUrl: string;

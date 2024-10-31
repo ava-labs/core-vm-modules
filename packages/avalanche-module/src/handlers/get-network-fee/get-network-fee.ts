@@ -10,7 +10,7 @@ export async function getNetworkFee({
   vmName,
 }: {
   isTestnet: boolean;
-  isDevnet?: boolean;
+  isDevnet?: boolean; // TODO(@meeh0w): remove `isDevnet` after E-upgrade activation on Fuji
   vmName: NetworkVMType;
 }): Promise<NetworkFees> {
   const provider = await getProvider({ isTestnet, isDevnet });

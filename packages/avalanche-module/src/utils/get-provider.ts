@@ -9,13 +9,14 @@ type ProviderParams = {
 
 export const getProvider = async ({ isTestnet, isDevnet }: ProviderParams): Promise<Avalanche.JsonRpcProvider> => {
   const network = isDevnet ? AVALANCHE_P_DEV_NETWORK : isTestnet ? AVALANCHE_XP_TEST_NETWORK : AVALANCHE_XP_NETWORK;
+  const upgradesInfo = await new Info(network.rpcUrl).getUpgradesInfo().catch(() => undefined);
 
+  // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
   if (isDevnet) {
-    const upgradesInfo = await new Info(network.rpcUrl).getUpgradesInfo();
     return Avalanche.JsonRpcProvider.getDefaultDevnetProvider(upgradesInfo);
   }
 
   return isTestnet
-    ? Avalanche.JsonRpcProvider.getDefaultFujiProvider()
-    : Avalanche.JsonRpcProvider.getDefaultMainnetProvider();
+    ? Avalanche.JsonRpcProvider.getDefaultFujiProvider(upgradesInfo)
+    : Avalanche.JsonRpcProvider.getDefaultMainnetProvider(upgradesInfo);
 };
