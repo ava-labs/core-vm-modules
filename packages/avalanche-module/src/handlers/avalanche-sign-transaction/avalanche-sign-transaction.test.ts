@@ -1,8 +1,9 @@
-import { PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { Info, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
+import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
@@ -74,6 +75,8 @@ describe('avalanche-sign-transaction', () => {
   };
   beforeEach(() => {
     jest.resetAllMocks();
+
+    jest.spyOn(Info.prototype, 'getUpgradesInfo').mockResolvedValue({} as GetUpgradesInfoResponse);
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(PVM);
     (Avalanche.createAvalancheUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
