@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 0.11.5
+
+### Patch Changes
+
+- 4e3203a: catch getUpgradesInfo api error
+  - @avalabs/vm-module-types@0.11.5
+
 ## 0.11.4
 
 ### Patch Changes
