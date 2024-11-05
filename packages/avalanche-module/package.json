@@ -18,18 +18,18 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.10",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.11",
     "@metamask/rpc-errors": "6.3.0",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.10",
-    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.10",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.10",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.10",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.10",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.11",
+    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.11",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.11",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.11",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.11",
     "big.js": "6.2.1",
     "bn.js": "5.2.1",
     "zod": "3.23.8",
-    "@avalabs/types": "3.1.0-alpha.10",
-    "@avalabs/avalanchejs": "4.1.0-alpha.7"
+    "@avalabs/types": "3.1.0-alpha.11",
+    "@avalabs/avalanchejs": "4.1.0-alpha.15"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.5",
