@@ -1,4 +1,4 @@
-import { PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { info, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
@@ -92,6 +92,7 @@ describe('avalanche-sign-transaction', () => {
     unsignedTxMock.getSigIndicesForAddress.mockReturnValue([[0, 0]]);
     unsignedTxMock.getSigIndices.mockReturnValue([[0, 0]]);
     (Avalanche.getUtxosByTxFromGlacier as jest.Mock).mockReturnValue(utxosMock);
+    jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockRejectedValue(() => Promise.reject({}));
   });
 
   it('returns error if from address was not provided', async () => {
