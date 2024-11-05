@@ -50,7 +50,7 @@ export class AvalancheModule implements Module {
   }
 
   getProvider(network: Network): Promise<Avalanche.JsonRpcProvider> {
-    return getProvider({ isTestnet: Boolean(network.isTestnet) });
+    return getProvider({ isTestnet: Boolean(network.isTestnet), vmName: network.vmName });
   }
 
   getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
@@ -67,8 +67,8 @@ export class AvalancheModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  getNetworkFee(_: Network): Promise<NetworkFees> {
-    return getNetworkFee();
+  getNetworkFee(network: Network): Promise<NetworkFees> {
+    return getNetworkFee({ isTestnet: Boolean(network.isTestnet), vmName: network.vmName });
   }
 
   getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {

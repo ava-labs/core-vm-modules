@@ -1,5 +1,6 @@
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getProvider } from '../../../utils/get-provider';
+import { NetworkVMType } from '@avalabs/vm-module-types';
 
 export const getAddressesByIndices = async ({
   indices,
@@ -18,7 +19,7 @@ export const getAddressesByIndices = async ({
     return [];
   }
 
-  const provider = await getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet, vmName: NetworkVMType.PVM });
 
   return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
 };
