@@ -13,7 +13,7 @@ import type {
   ConstructorParams,
   AppInfo,
 } from '@avalabs/vm-module-types';
-import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
+import { Environment, parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
@@ -58,7 +58,8 @@ export class AvalancheModule implements Module {
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
-    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
+    const proxyApiUrl = network.chainId === 43117 ? getEnv(Environment.DEV).proxyApiUrl : this.#proxyApiUrl;
+    const tokenService = new TokenService({ storage, proxyApiUrl });
     return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
   }
 

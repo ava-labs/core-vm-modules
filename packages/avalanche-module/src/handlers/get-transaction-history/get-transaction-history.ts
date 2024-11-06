@@ -24,7 +24,7 @@ export const getTransactionHistory = async ({
   const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,
     blockchainId: getBlockchainIdByAddress(address),
-    network: isTestnet ? Network.FUJI : Network.MAINNET,
+    network: isTestnet ? Network.DEVNET : Network.MAINNET,
     pageSize: offset,
     pageToken: nextPageToken,
     sortOrder: SortOrder.DESC,
