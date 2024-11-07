@@ -15,8 +15,8 @@
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.d762cf9.0+d762cf9",
-    "@avalabs/glacier-sdk": "3.1.0-canary.d762cf9.0+d762cf9",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.78916bb.0+78916bb",
+    "@avalabs/glacier-sdk": "3.1.0-canary.78916bb.0+78916bb",
     "zod": "3.23.8",
     "@metamask/rpc-errors": "6.3.0",
     "bitcoinjs-lib": "5.2.0"
