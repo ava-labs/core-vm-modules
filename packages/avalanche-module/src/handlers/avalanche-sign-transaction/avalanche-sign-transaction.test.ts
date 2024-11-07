@@ -76,7 +76,7 @@ describe('avalanche-sign-transaction', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    jest.spyOn(Info.prototype, 'getUpgradesInfo').mockResolvedValue({} as GetUpgradesInfoResponse);
+    jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockResolvedValue({} as GetUpgradesInfoResponse);
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(PVM);
     (Avalanche.createAvalancheUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
