@@ -7,18 +7,20 @@ export const getAddressesByIndices = async ({
   isChange,
   isTestnet,
   xpubXP,
+  isDevnet,
 }: {
   indices: number[];
   chainAlias: 'X' | 'P';
   isChange: boolean;
   isTestnet: boolean;
   xpubXP?: string;
+  isDevnet?: boolean;
 }): Promise<string[]> => {
   if (!xpubXP || (isChange && chainAlias !== 'X')) {
     return [];
   }
 
-  const provider = await getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet, isDevnet });
 
   return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
 };

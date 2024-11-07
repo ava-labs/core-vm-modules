@@ -15,6 +15,7 @@ import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getCoreHeaders } from '@internal/utils';
+import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -44,7 +45,7 @@ export const avalancheSignTransaction = async ({
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
   const isTestnet = network.isTestnet ?? false;
-  const provider = await getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet, isDevnet: isDevnet(network) });
 
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
 

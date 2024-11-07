@@ -100,6 +100,7 @@ export const avalancheSendTransaction = async ({
         isChange: false,
         isTestnet,
         xpubXP,
+        isDevnet: isDevnet(network),
       });
 
       const internalAddresses = await getAddressesByIndices({
@@ -108,6 +109,7 @@ export const avalancheSendTransaction = async ({
         isChange: true,
         isTestnet,
         xpubXP,
+        isDevnet: isDevnet(network),
       });
 
       const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];

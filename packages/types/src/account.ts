@@ -13,6 +13,7 @@ export type GetAddressParams = {
   xpub: string;
   xpubXP?: string;
   isTestnet?: boolean;
+  isDevnet?: boolean;
 };
 
 export type GetAddressResponse = Record<string, string>;
