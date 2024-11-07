@@ -99,13 +99,13 @@ importers:
     devDependencies:
       '@avalabs/core-chains-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -134,29 +134,29 @@ importers:
   packages/avalanche-module:
     dependencies:
       '@avalabs/avalanchejs':
-        specifier: 4.1.0-alpha.7
-        version: 4.1.0-alpha.7
+        specifier: 4.1.0-alpha.15
+        version: 4.1.0-alpha.15
       '@avalabs/core-chains-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@avalabs/types':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -205,13 +205,13 @@ importers:
     dependencies:
       '@avalabs/core-coingecko-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -263,22 +263,22 @@ importers:
     dependencies:
       '@avalabs/core-coingecko-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@avalabs/types':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -348,10 +348,10 @@ importers:
     dependencies:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        version: 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-canary.78916bb.0+78916bb
-        version: 3.1.0-canary.bef569b.0
+        version: 3.1.0-canary.78916bb.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -419,9 +419,9 @@ packages:
       '@jridgewell/trace-mapping': 0.3.25
     dev: true
 
-  /@avalabs/avalanchejs@4.1.0-alpha.7:
-    resolution: {integrity: sha512-Oouj54ujsYzVNd24W01Bbj2XH35BU2FB3A2reHdX0uU2X3Nt3rCeHx2BcxA73x8oSan/d99DfbAsFvwcQ9tjhw==}
-    engines: {node: ^20}
+  /@avalabs/avalanchejs@4.1.0-alpha.15:
+    resolution: {integrity: sha512-85jq9MmG81MXzeCnvIwEvlXougzM27SZ2Ic4IIGLA7LpryH4I1oXh70aGmnNvpae+hOjsch6cQ24t+gvJuMFoA==}
+    engines: {node: '>=20'}
     dependencies:
       '@noble/curves': 1.3.0
       '@noble/hashes': 1.3.3
@@ -429,10 +429,10 @@ packages:
       '@scure/base': 1.1.5
       micro-eth-signer: 0.7.2
 
-  /@avalabs/core-chains-sdk@3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-xBQzhcKv8H7/DkWkP59fs25B2/duEn4u3G/fhByeLqlMFA32TmMZ3mLVI3Igixq8C9KTn7C9gmh2Pfuy2IkfOQ==}
+  /@avalabs/core-chains-sdk@3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-PbApSvgSc1jvCghm1oohd5dbYRSuRtz3hqnF52nklHv28LMJYYBGS9EZBY/2w8EBfzOtTSiiAbAA42PBYfg/cg==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -440,10 +440,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-coingecko-sdk@3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-kTaZSb5hjLbQ4ewwTJV6nR/hKnbGE0fLRfmB4jiL1HdKLDzFJEIaDaeg9EwOGi77QrhEJb3SCfDmQ1Aue3n7yg==}
+  /@avalabs/core-coingecko-sdk@3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-qT+4HAga6sP9cytYkt0z/m4s7gZTlaE9MBmMef/RzQ0Az1eu4ovjDErg4zfDg/Rwtn7PefhXIXYr4/3p++jK/A==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -451,10 +451,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-etherscan-sdk@3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-5KuwLzWOaQfee916NLkWo22bB0fiRi21jFAjX1KcxwsF6p/jdTivgYaUB7qgZvrwLJ7KlgcXZ78k+zaQe9HBhQ==}
+  /@avalabs/core-etherscan-sdk@3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-ReIs3LZldZgcqu9LU29BYXN6N1JqgebYc2G+8gb2jP+gFSrCZrMvfNXRfeSAhe1Rg2toer9CFZj4svaBxuAkQQ==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -463,14 +463,14 @@ packages:
       - supports-color
     dev: false
 
-  /@avalabs/core-utils-sdk@3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-YbxY6FikSo9LDHRhVyan7nEuqReSX1SktOVbXLYiQezpJBJAb0cgC9rZTl/0MKmyHX76ggSXuxsBeONxWQvIfA==}
+  /@avalabs/core-utils-sdk@3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-HAu1BaGVKIM/vQ70X0sQiArLDYkB8vCinBYFOivrACKETTmTsUsltApgKp2eAhcvMGYX/7wNjQ9JJwmrPoh1MQ==}
     peerDependencies:
       big.js: ^6.2.1
       bn.js: ^5.2.1
       ethers: ^6.7.1
     dependencies:
-      '@avalabs/avalanchejs': 4.1.0-alpha.7
+      '@avalabs/avalanchejs': 4.1.0-alpha.15
       '@hpke/core': 1.2.5
       big.js: 6.2.1
       bn.js: 5.2.1
@@ -480,14 +480,14 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-wallets-sdk@3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-5fm3m3JNSWoY4P/+yTL5ZSqcTwpeuwhZsYRkLWm1rZBf23Ty0j46sIQ4zcblM5bWou+q/r8A322s4BwCQ2gA5Q==}
+  /@avalabs/core-wallets-sdk@3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-5vyky83Oz/MhKHum6RUmYM0G2/2M0Mgep6mIfrbgI4QsQKUcUMFxDN7hXAwiIV0B1ULRIAnLndoyQUyKmwBRAA==}
     peerDependencies:
       ethers: ^6.7.1
     dependencies:
-      '@avalabs/avalanchejs': 4.1.0-alpha.7
-      '@avalabs/core-chains-sdk': 3.1.0-canary.bef569b.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
-      '@avalabs/glacier-sdk': 3.1.0-canary.bef569b.0
+      '@avalabs/avalanchejs': 4.1.0-alpha.15
+      '@avalabs/core-chains-sdk': 3.1.0-canary.78916bb.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/glacier-sdk': 3.1.0-canary.78916bb.0
       '@avalabs/hw-app-avalanche': 0.14.1
       '@ledgerhq/hw-app-btc': 10.2.4
       '@ledgerhq/hw-app-eth': 6.36.1
@@ -514,8 +514,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@avalabs/glacier-sdk@3.1.0-canary.bef569b.0:
-    resolution: {integrity: sha512-DID9me9knHcU10l642xZThiiH7P1N9ihnlf/ZgyJypjZpKr9LIpfqXh9MDy6B1r5iUNWWfXYgA0HE6+zrq4ULg==}
+  /@avalabs/glacier-sdk@3.1.0-canary.78916bb.0:
+    resolution: {integrity: sha512-wNuQFi73aIQm54PP3i1YnoKzmVn8aLWS/bOaz0qV0gUcnvrQq02KkBbC7nlm1f+1p1LbdhyOZ613jU6Y6nXO1A==}
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
@@ -531,8 +531,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@avalabs/types@3.1.0-canary.bef569b.0:
-    resolution: {integrity: sha512-9An7sRbl3tvTm3gdE847dw8wyU/hGnQ5AGLoUoaysh8woXH/9z4IX/1WunEp1slDIDLXGImeSmDpTGGuTbsZrQ==}
+  /@avalabs/types@3.1.0-canary.78916bb.0:
+    resolution: {integrity: sha512-Jjvn47sa0ZjRS/JC6jE9SYTvW4vU2yxAoSai29M/7UB8wij5+g1FpiX6KUci//e0GrQxukqMWMMXZ/5E24h/UQ==}
     dev: false
 
   /@babel/code-frame@7.25.7:

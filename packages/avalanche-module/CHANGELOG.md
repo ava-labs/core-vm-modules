@@ -1,5 +1,26 @@
 # @avalabs/avalanche-module
 
+## 0.11.5
+
+### Patch Changes
+
+- 4e3203a: catch getUpgradesInfo api error
+  - @avalabs/vm-module-types@0.11.5
+
+## 0.11.4
+
+### Patch Changes
+
+- a73d91f: bump avalanchejs and avalanche-sdks to latest version
+  - @avalabs/vm-module-types@0.11.4
+
+## 0.11.3
+
+### Patch Changes
+
+- a73d91f: bump avalanchejs and avalanche-sdks to latest version
+  - @avalabs/vm-module-types@0.11.3
+
 ## 0.11.2
 
 ### Patch Changes

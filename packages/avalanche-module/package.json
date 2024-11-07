@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/avalanche-module",
-  "version": "0.11.2",
+  "version": "0.11.5",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -29,7 +29,7 @@
     "bn.js": "5.2.1",
     "zod": "3.23.8",
     "@avalabs/types": "3.1.0-canary.78916bb.0+78916bb",
-    "@avalabs/avalanchejs": "4.1.0-alpha.7"
+    "@avalabs/avalanchejs": "4.1.0-alpha.15"
   },
   "devDependencies": {
     "@types/bn.js": "5.1.5",
