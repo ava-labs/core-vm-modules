@@ -14,8 +14,7 @@ import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-import { getCoreHeaders } from '@internal/utils';
-import { isDevnet } from '@internal/utils/src/utils/is-devnet';
+import { getCoreHeaders, isDevnet } from '@internal/utils';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -153,6 +152,7 @@ export const avalancheSignTransaction = async ({
       logoUri: network.logoUri,
     },
     details,
+    networkFeeSelector: isDevnet(network),
   };
 
   // prompt user for approval

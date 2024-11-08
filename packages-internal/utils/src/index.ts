@@ -3,3 +3,4 @@ export { getExchangeRates } from './services/pricing-service/exchange-rates';
 export { addressItem, textItem, currencyItem, nodeIDItem, dataItem, dateItem } from './utils/detail-item';
 export { retry } from './utils/retry';
 export { getCoreHeaders } from './utils/get-core-headers';
+export { isDevnet } from './utils/is-devnet';

@@ -17,10 +17,9 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { getCoreHeaders, retry } from '@internal/utils';
+import { getCoreHeaders, retry, isDevnet } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -38,7 +37,6 @@ export const avalancheSendTransaction = async ({
   appInfo: AppInfo;
 }) => {
   const result = parseRequestParams(request.params);
-
   if (!result.success) {
     return {
       error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
@@ -155,7 +153,7 @@ export const avalancheSendTransaction = async ({
         logoUri: network.logoUri,
       },
       details,
-      networkFeeSelector: false,
+      networkFeeSelector: isDevnet(network),
     };
 
     // prompt user for approval
