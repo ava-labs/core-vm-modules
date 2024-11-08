@@ -152,7 +152,6 @@ export const avalancheSignTransaction = async ({
       logoUri: network.logoUri,
     },
     details,
-    networkFeeSelector: isDevnet(network),
   };
 
   // prompt user for approval
