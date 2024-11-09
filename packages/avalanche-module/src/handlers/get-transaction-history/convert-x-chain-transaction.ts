@@ -22,12 +22,12 @@ export function convertXChainTransaction({
   const froms = new Set(tx.consumedUtxos.flatMap((utxo) => utxo.addresses) || []);
   const tos = new Set(tx.emittedUtxos.flatMap((utxo) => utxo.addresses) || []);
 
-  const amount = getAmount({
+  const { amount, nAvaxAmt } = getAmount({
     tx,
     isTestnet,
     networkToken,
   });
-  const avaxBurnedAmount = getBurnedAmount({ isTestnet, tx, totalAmountCreated: amount, networkToken });
+  const avaxBurnedAmount = getBurnedAmount({ isTestnet, tx, totalAmountCreated: nAvaxAmt, networkToken });
   const chainAddress = address.toLowerCase().startsWith('x-') ? address.slice(2) : address;
   const isSender = froms.has(chainAddress);
 
@@ -64,7 +64,7 @@ function getAmount({
   tx: XChainNonLinearTransaction | XChainLinearTransaction;
   isTestnet?: boolean;
   networkToken: NetworkToken;
-}): Big {
+}): { nAvaxAmt: Big; amount: Big } {
   const isImportExport = ['ImportTx', 'ExportTx'].includes(tx.txType);
   const xBlockchainId = isTestnet ? Avalanche.FujiContext.xBlockchainID : Avalanche.MainnetContext.xBlockchainID;
   const importExportAmount = tx.emittedUtxos
@@ -80,7 +80,10 @@ function getAmount({
     .filter((asset) => asset.assetId === getAvaxAssetId(!!isTestnet))
     .reduce((accumulator, asset) => accumulator.add(asset.amount), new Big(0));
   const nAvaxAmt = isImportExport ? importExportAmount : totalAmountCreated;
-  return getTokenValue({ amount: nAvaxAmt.toNumber(), decimals: networkToken.decimals });
+  return {
+    nAvaxAmt,
+    amount: getTokenValue({ amount: nAvaxAmt.toNumber(), decimals: networkToken.decimals }),
+  };
 }
 
 function getBurnedAmount({
