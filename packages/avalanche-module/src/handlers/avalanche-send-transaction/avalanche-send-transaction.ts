@@ -153,6 +153,7 @@ export const avalancheSendTransaction = async ({
         logoUri: network.logoUri,
       },
       details,
+      networkFeeSelector: false,
     };
 
     // prompt user for approval
