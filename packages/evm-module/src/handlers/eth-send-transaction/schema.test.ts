@@ -54,6 +54,18 @@ it('should return success for valid params', () => {
         to: '0x1234567890123456789012345678901234567890',
         gas: '0x5208',
         gasPrice: '0x5208',
+        maxFeePerGas: '0x5208',
+        maxPriorityFeePerGas: '0x5208',
+        nonce: '12',
+        chainId: 43114,
+      },
+    ],
+    [
+      {
+        from: '0x1234567890123456789012345678901234567890',
+        to: '0x1234567890123456789012345678901234567890',
+        gas: '0x5208',
+        gasPrice: '0x5208',
         nonce: '12',
         chainId: '1',
       },
