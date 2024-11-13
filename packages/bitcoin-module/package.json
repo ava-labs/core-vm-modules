@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.dab255e.0+dab255e",
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.dab255e.0+dab255e",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.dab255e.0+dab255e",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.5cda291.0+5cda291",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.5cda291.0+5cda291",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.5cda291.0+5cda291",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",
     "bn.js": "5.2.1",
