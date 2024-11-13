@@ -12,7 +12,7 @@ export type TransactionParams = {
   maxFeePerGas?: string;
   maxPriorityFeePerGas?: string;
   nonce?: string;
-  chainId?: string;
+  chainId?: string | number;
 };
 
 export type RequiredBy<T, K extends keyof T> = T & Required<Pick<T, K>>;
