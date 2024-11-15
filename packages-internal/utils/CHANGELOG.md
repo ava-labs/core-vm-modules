@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.3.2
+
+### Patch Changes
+
+- b156e27: chore: use devnet
+
 ## 0.3.1
 
 ### Patch Changes

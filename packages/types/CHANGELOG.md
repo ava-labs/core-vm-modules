@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.11.10
+
+### Patch Changes
+
+- b156e27: chore: use devnet
+
 ## 0.11.9
 
 ## 0.11.8
