@@ -7,6 +7,7 @@ import {
   RpcMethod,
   type AppInfo,
 } from '@avalabs/vm-module-types';
+import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
@@ -15,6 +16,7 @@ import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getCoreHeaders } from '@internal/utils';
+import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -44,14 +46,15 @@ export const avalancheSignTransaction = async ({
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const txBytes = utils.hexToBuffer(transactionHex);
   const isTestnet = network.isTestnet ?? false;
-  const provider = await getProvider({ isTestnet });
+  // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
+  const provider = await getProvider({ isTestnet, isDevnet: isDevnet(network) });
 
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
 
   const utxos = await Avalanche.getUtxosByTxFromGlacier({
     transactionHex,
     chainAlias,
-    isTestnet,
+    network: isDevnet(network) ? GlacierNetwork.DEVNET : isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
     url: glacierApiUrl,
     token: GLACIER_API_KEY,
     headers: getCoreHeaders(appInfo),

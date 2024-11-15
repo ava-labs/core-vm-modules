@@ -17,29 +17,29 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@avalabs/avalanchejs": "4.1.0-alpha.21",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.13",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.13",
+    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.13",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.13",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.13",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.13",
+    "@avalabs/types": "3.1.0-alpha.13",
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.11",
     "@metamask/rpc-errors": "6.3.0",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.11",
-    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.11",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.11",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.11",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.11",
     "big.js": "6.2.1",
     "bn.js": "5.2.1",
-    "zod": "3.23.8",
-    "@avalabs/types": "3.1.0-alpha.11",
-    "@avalabs/avalanchejs": "4.1.0-alpha.15"
+    "zod": "3.23.8"
   },
   "devDependencies": {
-    "@types/bn.js": "5.1.5",
-    "@internal/utils": "workspace:*",
     "@internal/tsup-config": "workspace:*",
+    "@internal/utils": "workspace:*",
+    "@types/big.js": "6.2.2",
+    "@types/bn.js": "5.1.5",
     "@types/jest": "29.5.7",
     "eslint-config-custom": "workspace:*",
     "jest": "29.7.0",
     "ts-jest": "29.1.1",
-    "tsup": "7.2.0",
-    "@types/big.js": "6.2.2"
+    "tsup": "7.2.0"
   }
 }

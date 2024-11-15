@@ -228,7 +228,7 @@ describe('avalanche_sendTransaction handler', () => {
     expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
       transactionHex: '0x00001',
       chainAlias: 'X',
-      isTestnet: true,
+      network: 'fuji',
       url: GLACIER_API_URL,
       token: undefined,
       headers: {
@@ -373,7 +373,7 @@ describe('avalanche_sendTransaction handler', () => {
     expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
       transactionHex: transactionHex,
       chainAlias: chainAlias,
-      isTestnet: true,
+      network: 'fuji',
       url: GLACIER_API_URL,
       token: undefined,
       headers: {
@@ -405,7 +405,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams(testRequestParams);
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'AVM');
 
@@ -422,7 +422,7 @@ describe('avalanche_sendTransaction handler', () => {
       });
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'AVM');
 
@@ -436,7 +436,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams({ transactionHex: '0x000142', chainAlias: 'C' });
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'EVM');
 
@@ -450,7 +450,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams(testRequestParams);
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
 
       expect(response).toStrictEqual({ result: testTxHash });
 
@@ -467,7 +467,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
 
       expect(response).toStrictEqual({ result: testTxHash });
 
