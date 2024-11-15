@@ -1,5 +1,30 @@
 # @avalabs/avalanche-module
 
+## 0.11.9
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.9
+
+## 0.11.8
+
+### Patch Changes
+
+- 5386e4f: fix: x chain burnt amount calculation
+  - @avalabs/vm-module-types@0.11.8
+
+## 0.11.7
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.7
+
+## 0.11.6
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.6
+
 ## 0.11.5
 
 ### Patch Changes

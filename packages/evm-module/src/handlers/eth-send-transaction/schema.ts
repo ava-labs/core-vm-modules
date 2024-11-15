@@ -10,7 +10,7 @@ const transactionSchema = z.object({
   maxFeePerGas: z.string().startsWith('0x').optional(),
   maxPriorityFeePerGas: z.string().startsWith('0x').optional(),
   nonce: z.string().optional(),
-  chainId: z.string().optional(),
+  chainId: z.string().optional().or(z.number().optional()),
 });
 
 const paramsSchema = z.array(transactionSchema).length(1);

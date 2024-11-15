@@ -21,15 +21,22 @@ export function convertXChainTransaction({
 }): Transaction {
   const froms = new Set(tx.consumedUtxos.flatMap((utxo) => utxo.addresses) || []);
   const tos = new Set(tx.emittedUtxos.flatMap((utxo) => utxo.addresses) || []);
+  const chainAddress = address.toLowerCase().startsWith('x-') ? address.slice(2) : address;
+  const isImportExport = ['ImportTx', 'ExportTx'].includes(tx.txType);
 
-  const amount = getAmount({
+  const { amount: amountSpent, isSender } = getAmount({
     tx,
     isTestnet,
     networkToken,
+    chainAddress,
+    isImportExport,
   });
-  const avaxBurnedAmount = getBurnedAmount({ isTestnet, tx, totalAmountCreated: amount, networkToken });
-  const chainAddress = address.toLowerCase().startsWith('x-') ? address.slice(2) : address;
-  const isSender = froms.has(chainAddress);
+  const avaxBurnedAmount = getBurnedAmount({ isTestnet, tx, networkToken });
+  const amountToDisplay = isImportExport
+    ? amountSpent.toString()
+    : isSender
+    ? amountSpent.minus(avaxBurnedAmount).toString()
+    : amountSpent.toString();
 
   return {
     hash: tx.txHash,
@@ -46,7 +53,7 @@ export function convertXChainTransaction({
         name: networkToken.name,
         symbol: networkToken.symbol,
         type: TokenType.NATIVE,
-        amount: amount.toString(),
+        amount: amountToDisplay,
       },
     ],
     gasUsed: avaxBurnedAmount.toString(),
@@ -60,41 +67,64 @@ function getAmount({
   tx,
   isTestnet,
   networkToken,
+  chainAddress,
+  isImportExport,
 }: {
   tx: XChainNonLinearTransaction | XChainLinearTransaction;
   isTestnet?: boolean;
   networkToken: NetworkToken;
-}): Big {
-  const isImportExport = ['ImportTx', 'ExportTx'].includes(tx.txType);
-  const xBlockchainId = isTestnet ? Avalanche.FujiContext.xBlockchainID : Avalanche.MainnetContext.xBlockchainID;
-  const importExportAmount = tx.emittedUtxos
-    .filter(
-      (utxo) =>
-        utxo.asset.assetId === getAvaxAssetId(!!isTestnet) &&
-        ((tx.txType === 'ImportTx' && utxo.consumedOnChainId === xBlockchainId) ||
-          (tx.txType === 'ExportTx' && utxo.consumedOnChainId !== xBlockchainId)),
-    )
-    .reduce((agg, utxo) => agg.add(utxo.asset.amount), new Big(0));
+  chainAddress: string;
+  isImportExport: boolean;
+}): { amount: Big; isSender: boolean } {
+  if (isImportExport) {
+    const xBlockchainId = isTestnet ? Avalanche.FujiContext.xBlockchainID : Avalanche.MainnetContext.xBlockchainID;
+    const amount = tx.emittedUtxos
+      .filter(
+        (utxo) =>
+          utxo.asset.assetId === getAvaxAssetId(!!isTestnet) &&
+          ((tx.txType === 'ImportTx' && utxo.consumedOnChainId === xBlockchainId) ||
+            (tx.txType === 'ExportTx' && utxo.consumedOnChainId !== xBlockchainId)),
+      )
+      .reduce((agg, utxo) => agg.add(utxo.asset.amount), new Big(0));
 
-  const totalAmountCreated = tx.amountCreated
-    .filter((asset) => asset.assetId === getAvaxAssetId(!!isTestnet))
-    .reduce((accumulator, asset) => accumulator.add(asset.amount), new Big(0));
-  const nAvaxAmt = isImportExport ? importExportAmount : totalAmountCreated;
-  return getTokenValue({ amount: nAvaxAmt.toNumber(), decimals: networkToken.decimals });
+    return { amount: getTokenValue({ amount: amount.toNumber(), decimals: networkToken.decimals }), isSender: true };
+  }
+
+  const consumedAmountOfAddress = tx.consumedUtxos
+    .filter((utxo) => utxo.asset.assetId === getAvaxAssetId(!!isTestnet) && utxo.addresses.includes(chainAddress))
+    .reduce((accumulator, utxo) => accumulator.add(utxo.asset.amount), new Big(0));
+
+  const changeAmountOfAddress = tx.emittedUtxos
+    .filter((utxo) => utxo.asset.assetId === getAvaxAssetId(!!isTestnet) && utxo.addresses.includes(chainAddress))
+    .reduce((accumulator, utxo) => accumulator.add(utxo.asset.amount), new Big(0));
+
+  const isSender = consumedAmountOfAddress.gte(changeAmountOfAddress);
+  const amount = isSender
+    ? consumedAmountOfAddress.minus(changeAmountOfAddress)
+    : changeAmountOfAddress.minus(consumedAmountOfAddress);
+
+  return {
+    amount: getTokenValue({
+      amount: amount.toNumber(),
+      decimals: networkToken.decimals,
+    }),
+    isSender,
+  };
 }
 
 function getBurnedAmount({
   isTestnet,
   tx,
-  totalAmountCreated,
   networkToken,
 }: {
   isTestnet?: boolean;
   tx: XChainNonLinearTransaction | XChainLinearTransaction;
-  totalAmountCreated: Big;
   networkToken: NetworkToken;
 }): Big {
   const totalAmountUnlocked = tx.amountUnlocked
+    .filter((asset) => asset.assetId === getAvaxAssetId(!!isTestnet))
+    .reduce((accumulator, asset) => accumulator.add(asset.amount), new Big(0));
+  const totalAmountCreated = tx.amountCreated
     .filter((asset) => asset.assetId === getAvaxAssetId(!!isTestnet))
     .reduce((accumulator, asset) => accumulator.add(asset.amount), new Big(0));
   const nAvaxFee = totalAmountUnlocked.minus(totalAmountCreated);

@@ -1,5 +1,30 @@
 # @avalabs/evm-module
 
+## 0.11.9
+
+### Patch Changes
+
+- a98e95e: accept chainId with number type
+  - @avalabs/vm-module-types@0.11.9
+
+## 0.11.8
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.8
+
+## 0.11.7
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.7
+
+## 0.11.6
+
+### Patch Changes
+
+- @avalabs/vm-module-types@0.11.6
+
 ## 0.11.5
 
 ### Patch Changes
