@@ -9,6 +9,7 @@ import {
   type Hex,
   type AppInfo,
 } from '@avalabs/vm-module-types';
+import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
@@ -70,7 +71,7 @@ export const avalancheSendTransaction = async ({
       : await Avalanche.getUtxosByTxFromGlacier({
           transactionHex,
           chainAlias,
-          isTestnet,
+          network: isDevnet(network) ? GlacierNetwork.DEVNET : isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
           token: GLACIER_API_KEY,
           headers: getCoreHeaders(appInfo),

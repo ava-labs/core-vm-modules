@@ -11,16 +11,16 @@
   },
   "private": true,
   "devDependencies": {
-    "zod": "3.23.8",
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.78916bb.0+78916bb",
-    "@avalabs/glacier-sdk": "3.1.0-canary.78916bb.0+78916bb",
-    "@avalabs/core-chains-sdk": "3.1.0-canary.78916bb.0+78916bb",
+    "@avalabs/core-chains-sdk": "3.1.0-canary.dca9ac0.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.dca9ac0.0",
+    "@avalabs/glacier-sdk": "3.1.0-canary.dca9ac0.0",
     "@avalabs/vm-module-types": "workspace:*",
-    "@internal/tsup-config": "workspace:*",
     "@internal/tsconfig": "workspace:*",
-    "eslint-config-custom": "workspace:*",
+    "@internal/tsup-config": "workspace:*",
     "@types/jest": "29.5.7",
+    "eslint-config-custom": "workspace:*",
     "jest": "29.7.0",
-    "ts-jest": "29.1.1"
+    "ts-jest": "29.1.1",
+    "zod": "3.23.8"
   }
 }

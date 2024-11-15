@@ -42,12 +42,12 @@ export const getBalances = async ({
 
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
   // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
-  const networkName = (isDevnet(network) ? 'devnet' : network.isTestnet ? Network.FUJI : Network.MAINNET) as Network;
+  const glacierNetwork = isDevnet(network) ? Network.DEVNET : network.isTestnet ? Network.FUJI : Network.MAINNET;
 
   const chainBalances = await glacierService
     .getChainBalance({
       blockchainId,
-      network: networkName,
+      network: glacierNetwork,
       addresses: addresses.join(','),
     })
     .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances);

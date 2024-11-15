@@ -18,15 +18,15 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.dca9ac0.0",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.dca9ac0.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.dca9ac0.0",
     "@avalabs/vm-module-types": "workspace:*",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.78916bb.0+78916bb",
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.78916bb.0+78916bb",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.78916bb.0+78916bb",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",
+    "bitcoinjs-lib": "5.2.0",
     "bn.js": "5.2.1",
-    "zod": "3.23.8",
-    "bitcoinjs-lib": "5.2.0"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

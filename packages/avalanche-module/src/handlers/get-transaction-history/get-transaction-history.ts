@@ -4,6 +4,7 @@ import { isPChainTransactions, isXChainTransactions } from './utils';
 import { convertPChainTransaction } from './convert-p-chain-transaction';
 import { convertXChainTransaction } from './convert-x-chain-transaction';
 import type { AvalancheGlacierService } from '../../services/glacier-service/glacier-service';
+import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 export const getTransactionHistory = async ({
   address,
@@ -12,7 +13,7 @@ export const getTransactionHistory = async ({
   network,
   glacierService,
 }: GetTransactionHistory & { glacierService: AvalancheGlacierService }): Promise<TransactionHistoryResponse> => {
-  const { isTestnet, isDevnet, networkToken, explorerUrl, chainId } = network;
+  const { isTestnet, networkToken, explorerUrl, chainId } = network;
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return {
@@ -21,11 +22,12 @@ export const getTransactionHistory = async ({
     };
   }
 
+  const glacierNetwork = isDevnet(network) ? Network.DEVNET : network.isTestnet ? Network.FUJI : Network.MAINNET;
   const response = await glacierService.listLatestPrimaryNetworkTransactions({
     addresses: address,
     blockchainId: getBlockchainIdByAddress(address),
     // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
-    network: (isDevnet ? 'devnet' : isTestnet ? Network.FUJI : Network.MAINNET) as Network,
+    network: glacierNetwork,
     pageSize: offset,
     pageToken: nextPageToken,
     sortOrder: SortOrder.DESC,

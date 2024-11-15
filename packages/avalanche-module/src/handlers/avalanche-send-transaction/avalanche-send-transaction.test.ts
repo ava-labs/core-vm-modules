@@ -228,7 +228,7 @@ describe('avalanche_sendTransaction handler', () => {
     expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
       transactionHex: '0x00001',
       chainAlias: 'X',
-      isTestnet: true,
+      network: 'fuji',
       url: GLACIER_API_URL,
       token: undefined,
       headers: {
@@ -373,7 +373,7 @@ describe('avalanche_sendTransaction handler', () => {
     expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
       transactionHex: transactionHex,
       chainAlias: chainAlias,
-      isTestnet: true,
+      network: 'fuji',
       url: GLACIER_API_URL,
       token: undefined,
       headers: {
