@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.11.10
+
+### Patch Changes
+
+- b156e27: chore: use devnet
+- Updated dependencies [b156e27]
+  - @avalabs/vm-module-types@0.11.10
+
 ## 0.11.9
 
 ### Patch Changes
