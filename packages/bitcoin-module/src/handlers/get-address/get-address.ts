@@ -9,9 +9,10 @@ type GetAddress = Omit<GetAddressParams, 'xpubXP'>;
 export const getAddress = async ({
   accountIndex,
   xpub,
-  isTestnet,
+  network,
   walletType,
 }: GetAddress): Promise<GetAddressResponse> => {
+  const isTestnet = Boolean(network?.isTestnet);
   switch (walletType) {
     case WalletType.Mnemonic:
     case WalletType.Ledger:

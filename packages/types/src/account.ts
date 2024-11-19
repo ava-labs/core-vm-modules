@@ -1,3 +1,5 @@
+import type { Network } from './common';
+
 export enum WalletType {
   // Primary wallet types
   Mnemonic = 'mnemonic',
@@ -11,8 +13,8 @@ export type GetAddressParams = {
   walletType: WalletType;
   accountIndex: number;
   xpub: string;
+  network?: Network;
   xpubXP?: string;
-  isTestnet?: boolean;
 };
 
 export type GetAddressResponse = Record<string, string>;
