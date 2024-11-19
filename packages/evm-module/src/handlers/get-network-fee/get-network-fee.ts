@@ -89,7 +89,7 @@ async function getGasMultiplier(proxyApiUrl: string, caipId?: string) {
   }
 
   try {
-    const respond = await fetch(proxyApiUrl);
+    const respond = await fetch(`${proxyApiUrl}/gas/multiplier`);
 
     if (!respond.ok) {
       throw new Error(respond.statusText);
