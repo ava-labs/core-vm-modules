@@ -11,12 +11,13 @@ export const getAddress = async ({
   isTestnet,
   xpubXP,
   walletType,
+  isDevnet,
 }: GetAddress): Promise<GetAddressResponse> => {
   if (xpubXP === undefined) {
     throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
-  const provXP = await getProvider({ isTestnet: Boolean(isTestnet) });
+  const provXP = await getProvider({ isTestnet: Boolean(isTestnet), isDevnet: Boolean(isDevnet) });
   let xpPub: Buffer;
 
   switch (walletType) {
