@@ -13,8 +13,8 @@ export const getAddress = async ({
   walletType,
   network,
 }: GetAddress): Promise<GetAddressResponse> => {
-  const isTestnet = Boolean(network.isTestnet);
-  const devnet = isDevnet(network);
+  const isTestnet = Boolean(network?.isTestnet);
+  const devnet = network && isDevnet(network);
 
   if (xpubXP === undefined) {
     throw rpcErrors.invalidParams('xpubXP is required to get address');
