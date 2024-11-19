@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 0.11.11
+
+### Patch Changes
+
+- 1286757: fix: request path for gas multiplier
+  - @avalabs/vm-module-types@0.11.11
+
 ## 0.11.10
 
 ### Patch Changes
