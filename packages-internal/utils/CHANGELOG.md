@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.3.3
+
+### Patch Changes
+
+- 6c5f7e5: chore: update SDKs and AJS
+
 ## 0.3.2
 
 ### Patch Changes
