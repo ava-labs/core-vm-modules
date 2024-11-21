@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.11.12
+
+### Patch Changes
+
+- 6c5f7e5: chore: update SDKs and AJS
+
 ## 0.11.11
 
 ## 0.11.10

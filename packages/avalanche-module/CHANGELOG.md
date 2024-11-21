@@ -1,5 +1,14 @@
 # @avalabs/avalanche-module
 
+## 0.11.12
+
+### Patch Changes
+
+- f4a3cd9: add pchain devenet chainId
+- 6c5f7e5: chore: update SDKs and AJS
+- Updated dependencies [6c5f7e5]
+  - @avalabs/vm-module-types@0.11.12
+
 ## 0.11.11
 
 ### Patch Changes
