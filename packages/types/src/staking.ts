@@ -1,6 +1,12 @@
 import type { NetworkVMType } from './common';
 
-export type TxDetails = StakingDetails | ExportImportTxDetails | ChainDetails | BlockchainDetails | SubnetDetails;
+export type TxDetails =
+  | StakingDetails
+  | ExportImportTxDetails
+  | ChainDetails
+  | BlockchainDetails
+  | SubnetDetails
+  | L1Details;
 
 export type StakingDetails =
   | AddPermissionlessDelegatorTx
@@ -11,6 +17,12 @@ export type ExportImportTxDetails = ExportTx | ImportTx;
 export type ChainDetails = BaseTx;
 export type BlockchainDetails = CreateChainTx;
 export type SubnetDetails = CreateSubnetTx;
+export type L1Details =
+  | ConvertSubnetToL1Tx
+  | RegisterL1ValidatorTx
+  | SetL1ValidatorWeightTx
+  | IncreaseL1ValidatorBalanceTx
+  | DisableL1ValidatorTx;
 
 export type VM = NetworkVMType.AVM | NetworkVMType.EVM | NetworkVMType.PVM;
 
@@ -107,6 +119,52 @@ export type RemoveSubnetValidatorTx = {
   txFee: bigint;
 };
 
+export type FeeData = {
+  totalAvaxBurned: bigint;
+  totalAvaxOutput: bigint;
+  totalAvaxInput: bigint;
+  isValidAvaxBurnedAmount: boolean;
+  txFee: bigint;
+};
+
+export type TxBase = FeeData & {
+  chain: VM;
+};
+
+export type ConvertSubnetToL1Tx = TxBase & {
+  type: TxType.ConvertSubnetToL1;
+  managerAddress: string;
+  validators: {
+    nodeId: string;
+    stake: bigint;
+    balance: bigint;
+    remainingBalanceOwners: string[];
+    deactivationOwners: string[];
+  }[];
+  subnetID: string;
+  chainID: string;
+};
+
+export type RegisterL1ValidatorTx = TxBase & {
+  type: TxType.RegisterL1Validator;
+  balance: bigint;
+};
+
+export type SetL1ValidatorWeightTx = TxBase & {
+  type: TxType.SetL1ValidatorWeight;
+};
+
+export type IncreaseL1ValidatorBalanceTx = TxBase & {
+  type: TxType.IncreaseL1ValidatorBalance;
+  balance: bigint;
+  validationId: string;
+};
+
+export type DisableL1ValidatorTx = TxBase & {
+  type: TxType.DisableL1Validator;
+  validationId: string;
+};
+
 export enum TxType {
   Base = 'base',
   AddValidator = 'add_validator',
@@ -121,5 +179,10 @@ export enum TxType {
   AddPermissionlessDelegator = 'add_permissionless_delegator',
   TransformSubnet = 'transform_subnet',
   TransferSubnetOwnership = 'transfer_subnet_ownership',
+  ConvertSubnetToL1 = 'convert_subnet_to_l1',
+  RegisterL1Validator = 'register_l1_validator',
+  SetL1ValidatorWeight = 'set_l1_validator_weight',
+  IncreaseL1ValidatorBalance = 'increase_l1_validator_balance',
+  DisableL1Validator = 'disable_l1_validator',
   Unknown = 'unknown',
 }
