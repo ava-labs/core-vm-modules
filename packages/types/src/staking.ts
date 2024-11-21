@@ -119,7 +119,19 @@ export type RemoveSubnetValidatorTx = {
   txFee: bigint;
 };
 
-export type ConvertSubnetToL1Tx = {
+export type FeeData = {
+  totalAvaxBurned: bigint;
+  totalAvaxOutput: bigint;
+  totalAvaxInput: bigint;
+  isValidAvaxBurnedAmount: boolean;
+  txFee: bigint;
+};
+
+export type TxBase = FeeData & {
+  chain: VM;
+};
+
+export type ConvertSubnetToL1Tx = TxBase & {
   type: TxType.ConvertSubnetToL1;
   managerAddress: string;
   validators: {
@@ -133,22 +145,22 @@ export type ConvertSubnetToL1Tx = {
   chainID: string;
 };
 
-export type RegisterL1ValidatorTx = {
+export type RegisterL1ValidatorTx = TxBase & {
   type: TxType.RegisterL1Validator;
   balance: bigint;
 };
 
-export type SetL1ValidatorWeightTx = {
+export type SetL1ValidatorWeightTx = TxBase & {
   type: TxType.SetL1ValidatorWeight;
 };
 
-export type IncreaseL1ValidatorBalanceTx = {
+export type IncreaseL1ValidatorBalanceTx = TxBase & {
   type: TxType.IncreaseL1ValidatorBalance;
   balance: bigint;
   validationId: string;
 };
 
-export type DisableL1ValidatorTx = {
+export type DisableL1ValidatorTx = TxBase & {
   type: TxType.DisableL1Validator;
   validationId: string;
 };
