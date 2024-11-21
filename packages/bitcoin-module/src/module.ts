@@ -43,8 +43,8 @@ export class BitcoinModule implements Module {
     });
   }
 
-  getAddress({ accountIndex, xpub, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
-    return getAddress({ accountIndex, xpub, isTestnet, walletType });
+  getAddress({ accountIndex, xpub, walletType, network }: GetAddressParams): Promise<GetAddressResponse> {
+    return getAddress({ accountIndex, xpub, network, walletType });
   }
 
   getBalances({ addresses, currency, network, storage }: GetBalancesParams) {

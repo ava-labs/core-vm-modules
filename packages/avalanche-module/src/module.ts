@@ -54,8 +54,13 @@ export class AvalancheModule implements Module {
     return getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: isDevnet(network) });
   }
 
-  getAddress({ accountIndex, xpubXP, isTestnet, walletType }: GetAddressParams): Promise<GetAddressResponse> {
-    return getAddress({ accountIndex, xpubXP, isTestnet, walletType });
+  getAddress({ accountIndex, xpubXP, walletType, network }: GetAddressParams): Promise<GetAddressResponse> {
+    return getAddress({
+      accountIndex,
+      xpubXP,
+      walletType,
+      network,
+    });
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {

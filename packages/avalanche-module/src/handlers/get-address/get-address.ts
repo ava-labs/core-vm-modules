@@ -3,20 +3,24 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { NetworkVMType, WalletType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
+import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 type GetAddress = Omit<GetAddressParams, 'xpub'>;
 
 export const getAddress = async ({
   accountIndex,
-  isTestnet,
   xpubXP,
   walletType,
+  network,
 }: GetAddress): Promise<GetAddressResponse> => {
+  const isTestnet = Boolean(network?.isTestnet);
+  const devnet = network && isDevnet(network);
+
   if (xpubXP === undefined) {
     throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
-  const provXP = await getProvider({ isTestnet: Boolean(isTestnet) });
+  const provXP = await getProvider({ isTestnet, isDevnet: devnet });
   let xpPub: Buffer;
 
   switch (walletType) {
