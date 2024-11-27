@@ -1,39 +1,38 @@
 {
-    "name": "HVM",
-    "description": "",
-    "version": "0.0.1",
-    "sources": {
-      "module": {
-        "checksum": "",
-        "location": {
-          "npm": {
-            "filePath": "dist/bundle.js",
-            "packageName": "@avalabs/hvm-module",
-            "registry": "https://registry.npmjs.org"
-          }
-        }
-      },
-      "provider": {
-        "checksum": "",
-        "location": {
-          "npm": {
-            "filePath": "dist/provider.js",
-            "packageName": "@avalabs/hvm-module",
-            "registry": "https://registry.npmjs.org"
-          }
+  "name": "HVM",
+  "description": "",
+  "version": "0.0.1",
+  "sources": {
+    "module": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/bundle.js",
+          "packageName": "@avalabs/hvm-module",
+          "registry": "https://registry.npmjs.org"
         }
       }
     },
-    "network": {
-      "namespaces": ["hvm"]
-    },
-    "cointype": "0",
-    "permissions": {
-      "rpc": {
-        "dapps": true,
-        "methods": ["hvm_addNetwork", "hvm_signTransaction"]
+    "provider": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/provider.js",
+          "packageName": "@avalabs/hvm-module",
+          "registry": "https://registry.npmjs.org"
+        }
       }
-    },
-    "manifestVersion": "0.0"
-  }
-  
+    }
+  },
+  "network": {
+    "namespaces": ["hvm"]
+  },
+  "cointype": "0",
+  "permissions": {
+    "rpc": {
+      "dapps": true,
+      "methods": ["hvm_addNetwork", "hvm_signTransaction"]
+    }
+  },
+  "manifestVersion": "0.0"
+}
