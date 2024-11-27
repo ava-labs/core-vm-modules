@@ -5,7 +5,7 @@
     "declaration": false,
     "incremental": false // Need to turn off because of tsup dts
   },
-  "include": ["src"],
+  "include": ["src", "tsconfig.test.json"],
   "references": [
     {
       "path": "../../packages-internal/utils/tsconfig.json"
