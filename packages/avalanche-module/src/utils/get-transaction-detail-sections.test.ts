@@ -522,30 +522,243 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
-  it('should handle network fees', () => {
+  it('should handle convert subnet l1 validator details', () => {
     const txDetails: TxDetails = {
-      type: TxType.CreateSubnet,
-      threshold: 2,
-      controlKeys: ['0xKey1', '0xKey2'],
+      chain: NetworkVMType.PVM,
+      totalAvaxBurned: 1n,
+      totalAvaxOutput: 1n,
+      totalAvaxInput: 1n,
+      isValidAvaxBurnedAmount: true,
+      type: TxType.ConvertSubnetToL1,
+      chainID: 'chainID',
+      managerAddress: 'managerAddress',
+      subnetID: 'subnetID',
+      validators: [
+        {
+          balance: 100n,
+          stake: 5n,
+          nodeId: 'nodeId',
+          remainingBalanceOwners: ['0xOwner1'],
+          deactivationOwners: ['0xOwner2'],
+        },
+      ],
       txFee: 1n,
     };
 
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Subnet Details',
+        title: 'L1 Details',
         items: [
           {
-            label: 'Owners',
-            value: '0xKey1\n0xKey2',
+            label: 'Subnet ID',
+            value: 'subnetID',
+            type: 'nodeID',
+          },
+          {
+            label: 'Chain ID',
+            value: 'chainID',
+            type: 'nodeID',
+          },
+          {
+            label: 'Manager Address',
+            value: 'managerAddress',
+            type: 'address',
+          },
+        ],
+      },
+      {
+        title: 'Validators',
+        items: [
+          {
+            label: 'Node ID',
+            value: 'nodeId',
+            type: 'nodeID',
+          },
+          {
+            label: 'Balance',
+            value: 100n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+          {
+            label: 'Stake',
+            value: 5n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+          {
+            label: 'Owner Able to Deactivate',
+            value: '0xOwner2',
             alignment: 'vertical',
             type: 'text',
           },
           {
-            label: 'Signature Threshold',
-            value: '2/2',
+            label: 'Owner of the Remaining Balance',
+            value: '0xOwner1',
             alignment: 'vertical',
             type: 'text',
+          },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [
+          {
+            label: 'Fee Amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it('should handle disable l1 validator details', () => {
+    const txDetails: TxDetails = {
+      chain: NetworkVMType.PVM,
+      totalAvaxBurned: 1n,
+      totalAvaxOutput: 1n,
+      totalAvaxInput: 1n,
+      isValidAvaxBurnedAmount: true,
+      type: TxType.DisableL1Validator,
+      validationId: 'validationId',
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'L1 Details',
+        items: [
+          {
+            label: 'Validation ID',
+            value: 'validationId',
+            type: 'nodeID',
+          },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [
+          {
+            label: 'Fee Amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it('should handle register l1 validator details', () => {
+    const txDetails: TxDetails = {
+      chain: NetworkVMType.PVM,
+      totalAvaxBurned: 1n,
+      totalAvaxOutput: 1n,
+      totalAvaxInput: 1n,
+      isValidAvaxBurnedAmount: true,
+      type: TxType.RegisterL1Validator,
+      balance: 1n,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'L1 Details',
+        items: [
+          {
+            label: 'Initial balance',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [
+          {
+            label: 'Fee Amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it('should handle set l1 validator weight details', () => {
+    const txDetails: TxDetails = {
+      chain: NetworkVMType.PVM,
+      totalAvaxBurned: 1n,
+      totalAvaxOutput: 1n,
+      totalAvaxInput: 1n,
+      isValidAvaxBurnedAmount: true,
+      type: TxType.SetL1ValidatorWeight,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'Network Fee',
+        items: [
+          {
+            label: 'Fee Amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it('should handle increase l1 validator balance details', () => {
+    const txDetails: TxDetails = {
+      chain: NetworkVMType.PVM,
+      totalAvaxBurned: 1n,
+      totalAvaxOutput: 1n,
+      totalAvaxInput: 1n,
+      isValidAvaxBurnedAmount: true,
+      type: TxType.IncreaseL1ValidatorBalance,
+      txFee: 1n,
+      balance: 1n,
+      validationId: 'validationId',
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'L1 Details',
+        items: [
+          {
+            label: 'Validation ID',
+            value: 'validationId',
+            type: 'nodeID',
+          },
+          {
+            label: 'Increase by amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
           },
         ],
       },

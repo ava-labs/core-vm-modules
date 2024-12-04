@@ -6,12 +6,17 @@ import {
   type BaseTx,
   type BlockchainDetails,
   type ChainDetails,
+  type ConvertSubnetToL1Tx,
   type CreateChainTx,
   type CreateSubnetTx,
+  type DisableL1ValidatorTx,
   type ExportImportTxDetails,
   type ExportTx,
   type ImportTx,
+  type IncreaseL1ValidatorBalanceTx,
+  type RegisterL1ValidatorTx,
   type RemoveSubnetValidatorTx,
+  type SetL1ValidatorWeightTx,
   type StakingDetails,
   type SubnetDetails,
   type TxDetails,
@@ -30,6 +35,15 @@ export const isCreateChainTx = (tx: TxDetails): tx is CreateChainTx => tx.type =
 export const isCreateSubnetTx = (tx: TxDetails): tx is CreateSubnetTx => tx.type === TxType.CreateSubnet;
 export const isRemoveSubnetValidatorTx = (tx: TxDetails): tx is RemoveSubnetValidatorTx =>
   tx.type === TxType.RemoveSubnetValidator;
+export const isConvertSubnetToL1Tx = (tx: TxDetails): tx is ConvertSubnetToL1Tx => tx.type === TxType.ConvertSubnetToL1;
+export const isDisableL1ValidatorTx = (tx: TxDetails): tx is DisableL1ValidatorTx =>
+  tx.type === TxType.DisableL1Validator;
+export const isIncreaseL1ValidatorBalanceTx = (tx: TxDetails): tx is IncreaseL1ValidatorBalanceTx =>
+  tx.type === TxType.IncreaseL1ValidatorBalance;
+export const isRegisterL1ValidatorTx = (tx: TxDetails): tx is RegisterL1ValidatorTx =>
+  tx.type === TxType.RegisterL1Validator;
+export const isSetL1ValidatorWeightTx = (tx: TxDetails): tx is SetL1ValidatorWeightTx =>
+  tx.type === TxType.SetL1ValidatorWeight;
 
 export const isStakingDetails = (tx: TxDetails): tx is StakingDetails =>
   isAddPermissionlessDelegatorTx(tx) ||
