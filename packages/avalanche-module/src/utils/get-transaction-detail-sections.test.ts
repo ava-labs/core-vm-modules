@@ -33,7 +33,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         items: [
           {
             label: 'Active chain',
-            value: 'Avalanche X Chain',
+            value: 'Avalanche X-Chain',
             alignment: 'horizontal',
             type: 'text',
           },
@@ -88,13 +88,13 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         items: [
           {
             label: 'Source Chain',
-            value: 'Avalanche X Chain',
+            value: 'Avalanche X-Chain',
             alignment: 'horizontal',
             type: 'text',
           },
           {
             label: 'Target Chain',
-            value: 'Avalanche P Chain',
+            value: 'Avalanche P-Chain',
             alignment: 'horizontal',
             type: 'text',
           },
@@ -145,13 +145,13 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         items: [
           {
             label: 'Source Chain',
-            value: 'Avalanche P Chain',
+            value: 'Avalanche P-Chain',
             alignment: 'horizontal',
             type: 'text',
           },
           {
             label: 'Destination Chain',
-            value: 'Avalanche X Chain',
+            value: 'Avalanche X-Chain',
             alignment: 'horizontal',
             type: 'text',
           },
