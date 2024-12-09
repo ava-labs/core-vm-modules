@@ -146,6 +146,13 @@ export const avalancheSendTransaction = async ({
 
     const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
 
+    // Throw an error if we can't parse the transaction details
+    if (details === undefined) {
+      return {
+        error: rpcErrors.internal('Unable to parse transaction display data. Unsupported tx type'),
+      };
+    }
+
     const displayData: DisplayData = {
       title,
       network: {
