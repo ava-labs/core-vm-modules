@@ -1,178 +1,65 @@
-import type { DetailItem, DetailSection, TxDetails } from '@avalabs/vm-module-types';
+import { type TxDetails } from '@avalabs/vm-module-types';
 import {
   isAddPermissionlessDelegatorTx,
   isAddPermissionlessValidatorTx,
   isAddSubnetValidatorTx,
   isBlockchainDetails,
-  isChainDetails,
   isExportTx,
   isImportTx,
   isRemoveSubnetValidatorTx,
   isSubnetDetails,
+  isConvertSubnetToL1Tx,
+  isDisableL1ValidatorTx,
+  isIncreaseL1ValidatorBalanceTx,
+  isRegisterL1ValidatorTx,
+  isSetL1ValidatorWeightTx,
+  isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
-import { addressItem, currencyItem, nodeIDItem, textItem, dateItem } from '@internal/utils';
-import { PVM } from '@avalabs/avalanchejs';
-import { isPrimarySubnet } from '../handlers/avalanche-send-transaction/utils/is-primary-subnet';
-import { AVAX_NONEVM_DENOMINATION } from '../constants';
+import {
+  convertSubnetToL1DetailSection,
+  addSubnetValidatorDetailSection,
+  removeSubnetValidatorDetailSection,
+  addPermissionlessValidatorDetailSection,
+  blockChainDetailSection,
+  subnetDetailSection,
+  chainDetailSection,
+  exportDetailSection,
+  importDetailSection,
+  addPermissionlessDelegatorDetailSection,
+  disableL1ValidatorDetailSection,
+  increaseL1ValidatorBalanceDetailSection,
+  registerL1ValidatorDetailSection,
+  setL1ValidatorWeightDetailSection,
+} from './transaction-detail-sections';
 
 export const getTransactionDetailSections = (txDetails: TxDetails, symbol: string) => {
-  const details: DetailSection[] = [];
-
   if (isChainDetails(txDetails)) {
-    const { chain, outputs, memo } = txDetails;
-
-    details.push({
-      title: 'Chain Details',
-      items: [textItem('Active chain', `Avalanche ${AvalancheChainStrings[chain]}`)],
-    });
-
-    outputs.forEach((output, index) => {
-      const balanceChangeItems: DetailItem[] = output.owners.flatMap((ownerAddress) => [
-        addressItem('To', ownerAddress),
-        currencyItem('Amount', output.amount, AVAX_NONEVM_DENOMINATION, symbol),
-      ]);
-
-      if (output.owners.length > 1) {
-        balanceChangeItems.push(textItem('Threshold', output.threshold.toString()));
-      }
-
-      details.push({
-        title: index === 0 ? 'Balance Change' : undefined,
-        items: balanceChangeItems,
-      });
-    });
-
-    if (chain !== PVM && !!memo) {
-      details.push({
-        title: 'Memo',
-        items: [memo],
-      });
-    }
+    return chainDetailSection(txDetails, symbol);
   } else if (isExportTx(txDetails)) {
-    const { amount, chain, destination, type } = txDetails;
-
-    details.push({
-      title: 'Transaction Details',
-      items: [
-        textItem('Source Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
-        textItem('Target Chain', `Avalanche ${AvalancheChainStrings[destination]}`),
-        textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
-        currencyItem('Amount', amount, AVAX_NONEVM_DENOMINATION, symbol),
-      ],
-    });
+    return exportDetailSection(txDetails, symbol);
   } else if (isImportTx(txDetails)) {
-    const { amount, chain, source, type } = txDetails;
-
-    details.push({
-      title: 'Transaction Details',
-      items: [
-        textItem('Source Chain', `Avalanche ${AvalancheChainStrings[source]}`),
-        textItem('Destination Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
-        textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
-        currencyItem('Amount', amount, AVAX_NONEVM_DENOMINATION, symbol),
-      ],
-    });
+    return importDetailSection(txDetails, symbol);
   } else if (isSubnetDetails(txDetails)) {
-    const { threshold, controlKeys } = txDetails;
-
-    details.push({
-      title: 'Subnet Details',
-      items: [
-        textItem(controlKeys.length > 1 ? 'Owners' : 'Owner', controlKeys.join('\n'), 'vertical'),
-        textItem('Signature Threshold', `${threshold}/${controlKeys.length}`, 'vertical'),
-      ],
-    });
+    return subnetDetailSection(txDetails, symbol);
   } else if (isAddPermissionlessDelegatorTx(txDetails)) {
-    const { nodeID, start, end, stake, subnetID } = txDetails;
-
-    const items: DetailItem[] = [
-      nodeIDItem('Node ID', nodeID),
-      isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
-      currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
-      dateItem('Start Date', start),
-      dateItem('End Date', end),
-    ];
-
-    details.push({
-      title: 'Staking Details',
-      items,
-    });
+    return addPermissionlessDelegatorDetailSection(txDetails, symbol);
   } else if (isAddPermissionlessValidatorTx(txDetails)) {
-    const { nodeID, delegationFee, start, end, stake, subnetID, signature, publicKey } = txDetails;
-
-    const items: DetailItem[] = [
-      nodeIDItem('Node ID', nodeID),
-      isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
-    ];
-
-    if (publicKey && signature) {
-      items.push(nodeIDItem('Public Key', publicKey), nodeIDItem('Proof', signature));
-    }
-
-    items.push(
-      currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
-      textItem('Delegation Fee', `${delegationFee / 10000} %`),
-      dateItem('Start Date', start),
-      dateItem('End Date', end),
-    );
-
-    details.push({
-      title: 'Staking Details',
-      items,
-    });
+    return addPermissionlessValidatorDetailSection(txDetails, symbol);
   } else if (isBlockchainDetails(txDetails)) {
-    // handle genesis data similarly to how we handle data in transaction details
-    const { chainID, chainName, vmID, genesisData } = txDetails;
-
-    const items: DetailItem[] = [
-      textItem('Blockchain name', chainName, 'vertical'),
-      textItem('Blockchain ID', chainID, 'vertical'),
-      textItem('Virtual Machine ID', vmID, 'vertical'),
-      textItem('Genesis Data', genesisData, 'vertical'),
-    ];
-
-    details.push({
-      title: 'Blockchain Details',
-      items,
-    });
+    return blockChainDetailSection(txDetails, symbol);
   } else if (isAddSubnetValidatorTx(txDetails)) {
-    const { nodeID, start, end, subnetID } = txDetails;
-
-    const items: DetailItem[] = [
-      nodeIDItem('Subnet ID', subnetID),
-      nodeIDItem('Node ID', nodeID),
-      dateItem('Start Date', start),
-      dateItem('End Date', end),
-    ];
-
-    details.push({
-      title: 'Staking Details',
-      items,
-    });
+    return addSubnetValidatorDetailSection(txDetails, symbol);
   } else if (isRemoveSubnetValidatorTx(txDetails)) {
-    const { nodeID, subnetID } = txDetails;
-
-    const items: DetailItem[] = [nodeIDItem('Node ID', nodeID), nodeIDItem('Subnet ID', subnetID)];
-
-    details.push({
-      title: 'Staking Details',
-      items,
-    });
+    return removeSubnetValidatorDetailSection(txDetails, symbol);
+  } else if (isConvertSubnetToL1Tx(txDetails)) {
+    return convertSubnetToL1DetailSection(txDetails, symbol);
+  } else if (isDisableL1ValidatorTx(txDetails)) {
+    return disableL1ValidatorDetailSection(txDetails, symbol);
+  } else if (isIncreaseL1ValidatorBalanceTx(txDetails)) {
+    return increaseL1ValidatorBalanceDetailSection(txDetails, symbol);
+  } else if (isRegisterL1ValidatorTx(txDetails)) {
+    return registerL1ValidatorDetailSection(txDetails, symbol);
+  } else if (isSetL1ValidatorWeightTx(txDetails)) {
+    return setL1ValidatorWeightDetailSection(txDetails, symbol);
   }
-
-  const { txFee } = txDetails;
-  if (txFee) {
-    details.push({
-      title: 'Network Fee',
-      items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
-    });
-  }
-
-  return details;
 };
-
-enum AvalancheChainStrings {
-  AVM = 'X Chain',
-  PVM = 'P Chain',
-  EVM = 'C Chain',
-}
