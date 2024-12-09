@@ -98,14 +98,14 @@ importers:
   packages-internal/utils:
     devDependencies:
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -134,29 +134,29 @@ importers:
   packages/avalanche-module:
     dependencies:
       '@avalabs/avalanchejs':
-        specifier: 4.1.0-alpha.25
-        version: 4.1.0-alpha.25
+        specifier: 4.1.2-alpha.1
+        version: 4.1.2-alpha.1
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@avalabs/types':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -204,14 +204,14 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -262,23 +262,23 @@ importers:
   packages/evm-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@avalabs/types':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -347,11 +347,11 @@ importers:
   packages/types:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.19
-        version: 3.1.0-alpha.19
+        specifier: 3.1.0-alpha.26
+        version: 3.1.0-alpha.26
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -419,8 +419,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.25
     dev: true
 
-  /@avalabs/avalanchejs@4.1.0-alpha.25:
-    resolution: {integrity: sha512-ZQb5X3KN2RyzSYcPMxMgczxyiOwBAXv73Rps7LeDrJpFZTZf2TDRyWVNeeYvL7GFT1atkvZmGbNd9l4RDLSqJA==}
+  /@avalabs/avalanchejs@4.1.2-alpha.1:
+    resolution: {integrity: sha512-SY5HrDghvcCNvz9PZMNHraQYgtFcnjX21P0Kg3iVCH2UBvUdNNpW2Njogxyyl3Bk3JoUCNJAN5N5+pIyj4TaCw==}
     engines: {node: '>=20'}
     dependencies:
       '@noble/curves': 1.3.0
@@ -429,10 +429,10 @@ packages:
       '@scure/base': 1.1.5
       micro-eth-signer: 0.7.2
 
-  /@avalabs/core-chains-sdk@3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-Nbno+lCv8KbMGFhqBJSfFrPHCfwKZqch632NfwbbNTz3UOsueWlsqa7QOnf+gIZva4lLeMtq1gyUK2NaE+zgCA==}
+  /@avalabs/core-chains-sdk@3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-BNDnUnpqyw+IpwBd5x1dqi8JDEM2InjZzXdgdwqPBuBxert1fRlHWu4+qizhpf9fFB7+VXhEd062wmG/xT7lsQ==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -440,10 +440,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-coingecko-sdk@3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-1BmLxIJ4dbvIf4hMLfZ7iGcR7CivJbkS09yS01uv87Pg7RmIVoAvXnFhNSkUvyBMz3SANq39u7DJj3R/edp0Jg==}
+  /@avalabs/core-coingecko-sdk@3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-+L8w2+xWp3coqmREZ8o9fnBeMXIos0p7nOuILCaB0I1AkX3VTMAIgOZ+zJ81Trc7ZmiwHhSSGP6LjuLR+4uI4Q==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -451,10 +451,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-etherscan-sdk@3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-g5qZzCXkIA/qgtYGbjWPFY+CTFeq1i3UR+1VmWvfwfiiJfxIPxutj32YNAaDcCvp3gp/aPb1hvXWfYMxHPmY7g==}
+  /@avalabs/core-etherscan-sdk@3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-sNkotrYDbWYVEtwYZHw1q1b8n1E3RUowP68yr+OXc2964KCPRsELgD6fyG6HDtXZKvRRVZm/04RK8IMZdMgalA==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -463,14 +463,14 @@ packages:
       - supports-color
     dev: false
 
-  /@avalabs/core-utils-sdk@3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-D8A0vkabx5xt55HkZgdyAoWwb+pCp6ef6i8X37ckvIoAZT96pRr1Y8BhhwSkFY2G/Y5OZzEQqBbLndq+GwUMzQ==}
+  /@avalabs/core-utils-sdk@3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-O9Qm4mnAzjP3nYyp4bLq9+ZtPYKqypb+QayPyAFLNK4qTYhkUAZ3ZRkQwQbtaNq1omXpnQ+2oR+R3hj4sJvzMg==}
     peerDependencies:
       big.js: ^6.2.1
       bn.js: ^5.2.1
       ethers: ^6.7.1
     dependencies:
-      '@avalabs/avalanchejs': 4.1.0-alpha.25
+      '@avalabs/avalanchejs': 4.1.2-alpha.1
       '@hpke/core': 1.2.5
       big.js: 6.2.1
       bn.js: 5.2.1
@@ -480,14 +480,14 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-wallets-sdk@3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-lnCJvmH/EVvJDr4j3NW3a4liD7ZUTftecPGovu/Mx1AhHHMJJlmT9OPbCvyVzbkpGV+xtGEeMMnM2vtUwc259A==}
+  /@avalabs/core-wallets-sdk@3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-HdhjBrVGPaS87ujM6m+85DrEbkWI9eTsefb8QuN6xjWpCrVcTnYCIT6avUXGnZU18OH00apQ1zn9TXQe03Le9A==}
     peerDependencies:
       ethers: ^6.7.1
     dependencies:
-      '@avalabs/avalanchejs': 4.1.0-alpha.25
-      '@avalabs/core-chains-sdk': 3.1.0-alpha.19(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
-      '@avalabs/glacier-sdk': 3.1.0-alpha.19
+      '@avalabs/avalanchejs': 4.1.2-alpha.1
+      '@avalabs/core-chains-sdk': 3.1.0-alpha.26(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/glacier-sdk': 3.1.0-alpha.26
       '@avalabs/hw-app-avalanche': 0.14.1
       '@ledgerhq/hw-app-btc': 10.2.4
       '@ledgerhq/hw-app-eth': 6.36.1
@@ -514,8 +514,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@avalabs/glacier-sdk@3.1.0-alpha.19:
-    resolution: {integrity: sha512-7wF67yJJgXrFTA/XD0xPDqLDkaAj5T1M7P5tXaR7WlTQ4QTq5vZltnNSxI9Jd8cpXnO9+LDu1vwcGHsZCbi9XQ==}
+  /@avalabs/glacier-sdk@3.1.0-alpha.26:
+    resolution: {integrity: sha512-AzSUjJ3u1jFrZKrRrKyMZ81pwNC3Wv0qQNKer1DDY5bzQirP78+U2MedK9Vag2aeC8PSKQTac4m4SccL6QzSTw==}
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
@@ -531,8 +531,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@avalabs/types@3.1.0-alpha.19:
-    resolution: {integrity: sha512-zieVqgpihllEuyi0NDiPkKT0b69FV/sC0rUQ1oPNe6F1L9fw9bRv6o7L6hVD+w5hVcth1A8P1PtMJOwCfbvXBQ==}
+  /@avalabs/types@3.1.0-alpha.26:
+    resolution: {integrity: sha512-S9EkkO/Pkwe0Y+K90ep/WmncQNNFCNjETJZ0oVENHq9xyOYmlMdTPqwLwMyYqDf8mn9erRyvBK4wvEjIGJkGbQ==}
     dev: false
 
   /@babel/code-frame@7.25.7:
