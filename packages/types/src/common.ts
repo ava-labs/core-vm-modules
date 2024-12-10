@@ -26,6 +26,7 @@ export enum NetworkVMType {
   AVM = 'AVM',
   PVM = 'PVM',
   CoreEth = 'CoreEth',
+  HVM = 'HVM',
 }
 
 export type Storage = {
