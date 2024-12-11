@@ -69,8 +69,8 @@ export interface ChainAgnosticProvider extends EventEmitter {
     chainId,
   }: {
     data: PartialBy<JsonRpcRequestPayload<string>, 'id' | 'params'>;
-    sessionId: string;
-    chainId: string | null;
+    sessionId?: string;
+    chainId?: string | null;
   }): Promise<unknown>;
 
   subscribeToMessage(callback: ({ method, params }: { method: string; params: unknown }) => void): void;
