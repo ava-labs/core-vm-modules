@@ -141,7 +141,7 @@ export class EVMProvider extends EventEmitter {
 
     return this.#chainagnosticProvider?.request({
       data,
-      scope: this.chainId,
+      scope: `eip155:${this.chainId}`,
       sessionId: this._sessionId,
     });
   };
