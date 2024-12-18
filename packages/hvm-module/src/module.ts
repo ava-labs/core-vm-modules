@@ -12,6 +12,10 @@ import {
   type Transaction,
   type Network,
   type NetworkFees,
+  type GetBalancesParams,
+  type GetBalancesResponse,
+  type GetAddressResponse,
+  type RpcResponse,
 } from '@avalabs/vm-module-types';
 
 import ManifestJson from '../manifest.json';
@@ -42,21 +46,20 @@ export class HvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  //@ts-ignore
-  getAddress(params: GetAddressParams) {
-    console.log('params: ', params);
-    console.log('getAddress called');
+  getAddress(_: GetAddressParams): Promise<GetAddressResponse> {
+    return new Promise((res) => res({} as GetAddressResponse));
   }
 
-  //@ts-ignore
-  getBalances() {
-    console.log('getBalances called');
+  getBalances(_: GetBalancesParams): Promise<GetBalancesResponse> {
+    return new Promise((res) => res({} as GetBalancesResponse));
   }
 
-  //@ts-ignore
-  async onRpcRequest(request: RpcRequest) {
+  async onRpcRequest(request: RpcRequest, chain: Network): Promise<RpcResponse> {
     console.log('onRpcRequest called: ', request);
+    console.log('chain: ', chain);
+    return new Promise((res) => res({} as RpcResponse));
   }
+
   getTransactionHistory(_: GetTransactionHistory): Promise<TransactionHistoryResponse> {
     return new Promise((res) => res({ transactions: [] as Transaction[] }));
   }

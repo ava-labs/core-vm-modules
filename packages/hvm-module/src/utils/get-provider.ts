@@ -1,4 +1,4 @@
-import { HyperSDKClient } from 'hypersdk-client/src/index';
+import { HyperSDKClient } from 'hypersdk-client/src/index.ts';
 
 type ProviderParams = {
   rpcUrl: string;
