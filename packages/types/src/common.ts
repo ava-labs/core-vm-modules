@@ -18,6 +18,7 @@ export type Network = {
   explorerUrl?: string;
   logoUri?: string;
   vmName: NetworkVMType;
+  vmRpcPrefix?: string;
 };
 
 export enum NetworkVMType {

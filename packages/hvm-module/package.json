@@ -18,7 +18,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/vm-module-types": "workspace:*"
+    "@avalabs/vm-module-types": "workspace:*",
+    "hypersdk-client": "^0.4.14"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

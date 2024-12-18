@@ -7,9 +7,15 @@ import {
   type ApprovalController,
   type GetAddressParams,
   type RpcRequest,
+  type TransactionHistoryResponse,
+  type GetTransactionHistory,
+  type Transaction,
+  type Network,
+  type NetworkFees,
 } from '@avalabs/vm-module-types';
 
 import ManifestJson from '../manifest.json';
+import { getProvider } from './utils/get-provider';
 
 export class HvmModule implements Module {
   #approvalController: ApprovalController;
@@ -19,9 +25,20 @@ export class HvmModule implements Module {
     console.log('this.#approvalController: ', this.#approvalController);
   }
 
+  getProvider(network: Network) {
+    if (!network.vmRpcPrefix) {
+      throw new Error('There is no vm rpc prefix');
+    }
+    return getProvider({
+      rpcUrl: network.rpcUrl,
+      chainName: network.chainName,
+      vmRpcPrefix: network.vmRpcPrefix,
+    });
+  }
+
   getManifest(): Manifest | undefined {
     const result = parseManifest(ManifestJson);
-    console.log('getManifest result: ', result);
+    console.log('HvmModule getManifest result: ', result);
     return result.success ? result.data : undefined;
   }
 
@@ -39,5 +56,16 @@ export class HvmModule implements Module {
   //@ts-ignore
   async onRpcRequest(request: RpcRequest) {
     console.log('onRpcRequest called: ', request);
+  }
+  getTransactionHistory(_: GetTransactionHistory): Promise<TransactionHistoryResponse> {
+    return new Promise((res) => res({ transactions: [] as Transaction[] }));
+  }
+
+  getTokens(_: Network) {
+    return Promise.resolve([]);
+  }
+
+  getNetworkFee(_: Network) {
+    return Promise.resolve({} as NetworkFees);
   }
 }
