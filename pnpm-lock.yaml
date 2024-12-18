@@ -350,7 +350,7 @@ importers:
         specifier: workspace:*
         version: link:../types
       hypersdk-client:
-        specifier: ^0.4.14
+        specifier: 0.4.14
         version: 0.4.14(react-native@0.76.5)(react@18.3.1)
     devDependencies:
       '@internal/tsup-config':
@@ -396,7 +396,7 @@ importers:
         specifier: 5.2.0
         version: 5.2.0
       hypersdk-client:
-        specifier: ^0.4.14
+        specifier: 0.4.14
         version: 0.4.14(react-native@0.76.5)(react@18.3.1)
       zod:
         specifier: 3.23.8
@@ -7185,7 +7185,7 @@ packages:
     dependencies:
       '@metamask/sdk': 0.29.3(react-native@0.76.5)(react@18.3.1)
       '@noble/curves': 1.7.0
-      '@noble/hashes': 1.5.0
+      '@noble/hashes': 1.6.0
       '@scure/base': 1.1.9
       lossless-json: 4.0.2
       tweetnacl: 1.0.3

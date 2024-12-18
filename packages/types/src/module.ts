@@ -8,7 +8,7 @@ import type { RpcRequest, RpcResponse } from './rpc';
 import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
-import type { HyperSDKClient } from 'hypersdk-client/src/index.ts';
+import type { HyperSDKClient } from 'hypersdk-client';
 
 export type AppInfo = {
   name: AppName;
