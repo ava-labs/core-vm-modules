@@ -116,4 +116,9 @@ export class AvalancheModule implements Module {
   static getHashedBlockchainId({ blockchainId, isTestnet }: { blockchainId: string; isTestnet?: boolean }): string {
     return hashBlockchainId({ blockchainId, isTestnet });
   }
+
+  getPublicKey() {
+    // eslint-disable-next-line no-console
+    console.log('getPublicKey');
+  }
 }
