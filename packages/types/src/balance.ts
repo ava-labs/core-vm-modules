@@ -1,3 +1,4 @@
+import type { HyperSDKClient } from 'hypersdk-client';
 import type { Storage, Network } from './common';
 import type { Error } from './error';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
@@ -10,6 +11,10 @@ export type GetBalancesParams = {
   customTokens?: NetworkContractToken[];
   currency: string;
   storage?: Storage;
+};
+
+export type HvmGetBalanceParams = GetBalancesParams & {
+  sdkClient: HyperSDKClient;
 };
 
 export type TokenBalanceData = {

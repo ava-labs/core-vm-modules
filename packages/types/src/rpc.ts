@@ -23,6 +23,11 @@ export enum RpcMethod {
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
   AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
+
+  /* HVM */
+  HVM_SIGN_TRANSACTION = 'hvm_signTransaction',
+  HVM_GET_PUBLICKEY = 'hvm_getPublicKey',
+  HVM_GET_BALANCE = 'hvm_getBalance',
 }
 
 export type DappInfo = {

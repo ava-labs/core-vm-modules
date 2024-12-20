@@ -5,7 +5,6 @@ import {
   parseManifest,
   type ConstructorParams,
   type ApprovalController,
-  type GetAddressParams,
   type RpcRequest,
   type TransactionHistoryResponse,
   type GetTransactionHistory,
@@ -16,17 +15,23 @@ import {
   type GetBalancesResponse,
   type GetAddressResponse,
   type RpcResponse,
+  RpcMethod,
+  NetworkVMType,
 } from '@avalabs/vm-module-types';
+import { sha256 } from '@noble/hashes/sha256';
+import { bytesToHex } from '@noble/hashes/utils';
 
 import ManifestJson from '../manifest.json';
 import { getProvider } from './utils/get-provider';
+import { hvmSign } from './handlers/hvm-sign';
+import { hvmGetBalances } from './handlers/hvm-get-balances';
 
 export class HvmModule implements Module {
   #approvalController: ApprovalController;
+  #ED25519_AUTH_ID = 0x00;
 
   constructor({ approvalController }: ConstructorParams) {
     this.#approvalController = approvalController;
-    console.log('this.#approvalController: ', this.#approvalController);
   }
 
   getProvider(network: Network) {
@@ -42,21 +47,33 @@ export class HvmModule implements Module {
 
   getManifest(): Manifest | undefined {
     const result = parseManifest(ManifestJson);
-    console.log('HvmModule getManifest result: ', result);
     return result.success ? result.data : undefined;
   }
 
-  getAddress(_: GetAddressParams): Promise<GetAddressResponse> {
-    return new Promise((res) => res({} as GetAddressResponse));
+  #addressBytesFromPubKey(pubKey: Uint8Array): Uint8Array {
+    return new Uint8Array([this.#ED25519_AUTH_ID, ...sha256(pubKey)]);
   }
 
-  getBalances(_: GetBalancesParams): Promise<GetBalancesResponse> {
-    return new Promise((res) => res({} as GetBalancesResponse));
+  getAddress(pubKey: any): Promise<GetAddressResponse> {
+    const addressBytes = this.#addressBytesFromPubKey(pubKey);
+    const hash = sha256(addressBytes);
+    const checksum = hash.slice(-4); // Take last 4 bytes
+    return new Promise((res) => res({ [NetworkVMType.HVM]: '0x' + bytesToHex(addressBytes) + bytesToHex(checksum) }));
   }
 
-  async onRpcRequest(request: RpcRequest, chain: Network): Promise<RpcResponse> {
+  async getBalances(params: GetBalancesParams) {
+    const sdkClient = await this.getProvider(params.network);
+    const balances = await hvmGetBalances({ ...params, sdkClient });
+    return balances as unknown as GetBalancesResponse;
+  }
+
+  async onRpcRequest(request: RpcRequest, network: Network): Promise<RpcResponse> {
     console.log('onRpcRequest called: ', request);
-    console.log('chain: ', chain);
+    console.log('network: ', network);
+    switch (request.method) {
+      case RpcMethod.HVM_SIGN_TRANSACTION:
+        return hvmSign({ request, network, approvalController: this.#approvalController });
+    }
     return new Promise((res) => res({} as RpcResponse));
   }
 

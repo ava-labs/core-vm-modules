@@ -25,13 +25,14 @@
     }
   },
   "network": {
+    "chainIds": ["hvm:*"],
     "namespaces": ["hvm"]
   },
   "cointype": "0",
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["hvm_addNetwork", "hvm_signTransaction"]
+      "methods": ["hvm_signTransaction", "hvm_getPublicKey"]
     }
   },
   "manifestVersion": "0.0"
