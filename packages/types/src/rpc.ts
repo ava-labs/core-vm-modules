@@ -267,6 +267,11 @@ export type SigningData =
       data: Avalanche.Tx;
       vm: 'EVM' | 'AVM' | 'PVM';
       ownSignatureIndices: [number, number][];
+    }
+  | {
+      type: RpcMethod.HVM_SIGN_TRANSACTION;
+      account: string;
+      data: string;
     };
 
 export type EvmTxUpdateFn = (data: {
