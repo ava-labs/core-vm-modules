@@ -21,7 +21,7 @@ export const hvmGetBalances = async (params: HvmGetBalanceParams) => {
     ...networkToken,
     type: TokenType.NATIVE,
     balance: balanceResult,
-    balanceInCurrency,
+    balanceInCurrency: balanceInCurrency.toDisplay({ fixedDp: 2, asNumber: true }),
     balanceDisplayValue: totalBalance.toDisplay(),
     balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
   };
