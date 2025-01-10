@@ -223,11 +223,7 @@ export type SigningData =
       account: string;
       data: BitcoingSignTxData;
     }
-  | {
-      type: RpcMethod.ETH_SEND_TRANSACTION;
-      account: string;
-      data: TransactionRequest;
-    }
+  | SigningData_EthSendTx
   | {
       type: RpcMethod.ETH_SIGN | RpcMethod.PERSONAL_SIGN;
       account: string;
@@ -264,22 +260,46 @@ export type SigningData =
       ownSignatureIndices: [number, number][];
     };
 
+export type SigningData_EthSendTx = {
+  type: RpcMethod.ETH_SEND_TRANSACTION;
+  account: string;
+  data: TransactionRequest;
+};
+
+export type EvmMultiTxUpdateFn = (data: { maxFeeRate?: bigint; maxTipRate?: bigint }) => {
+  displayData: DisplayData;
+  signingRequests: {
+    displayData: DisplayData;
+    signingData: SigningData_EthSendTx;
+  }[];
+};
+
 export type EvmTxUpdateFn = (data: {
   maxFeeRate?: bigint;
   maxTipRate?: bigint;
   approvalLimit?: Hex; // as hexadecimal, 0x-prefixed
-}) => { displayData: DisplayData; signingData: Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }> };
+}) => { displayData: DisplayData; signingData: SigningData_EthSendTx };
 
 export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
   displayData: DisplayData;
   signingData: Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
 };
 
-export type ApprovalParams = {
-  request: RpcRequest;
+export type SigningRequest = {
   displayData: DisplayData;
   signingData: SigningData;
   updateTx?: EvmTxUpdateFn | BtcTxUpdateFn;
+};
+
+export type ApprovalParams = {
+  request: RpcRequest;
+} & SigningRequest;
+
+export type MultiApprovalParams = {
+  request: RpcRequest;
+  signingRequests: SigningRequest[];
+  displayData: DisplayData;
+  updateTxs: EvmMultiTxUpdateFn;
 };
 
 /**
@@ -303,8 +323,15 @@ export type ApprovalResponse =
     }
   | SigningResult;
 
+export type MultiApprovalResponse =
+  | { error: RpcError }
+  | {
+      error?: RpcError;
+      result: SigningResult[];
+    };
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
+  requestMultiApproval: (params: MultiApprovalParams) => Promise<MultiApprovalResponse>;
   onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
   onTransactionReverted: (txHash: Hex, requestId: string) => void;
 }

@@ -1,11 +1,9 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import type { DisplayData, EvmTxUpdateFn, RpcMethod, SigningData, TokenApprovals } from '@avalabs/vm-module-types';
+import type { DisplayData, EvmTxUpdateFn, SigningData_EthSendTx, TokenApprovals } from '@avalabs/vm-module-types';
 
 import { ERC20TransactionType } from '../types';
 import { parseERC20TransactionType } from './parse-erc20-transaction-type';
 import { encodeApprovalLimit } from './encode-erc20-approval';
-
-type SigningData_EthSendTx = Extract<SigningData, { type: RpcMethod.ETH_SEND_TRANSACTION }>;
 
 const requests = new Map<string, { displayData: DisplayData; signingData: SigningData_EthSendTx }>();
 
