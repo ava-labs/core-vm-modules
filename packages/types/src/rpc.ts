@@ -4,6 +4,7 @@ import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { TokenWithBalanceBTC } from './balance';
+import type { TransactionPayload, VMABI } from 'hypersdk-client';
 
 export enum RpcMethod {
   /* BTC */
@@ -26,8 +27,6 @@ export enum RpcMethod {
 
   /* HVM */
   HVM_SIGN_TRANSACTION = 'hvm_signTransaction',
-  HVM_GET_PUBLICKEY = 'hvm_getPublicKey',
-  HVM_GET_BALANCE = 'hvm_getBalance',
 }
 
 export type DappInfo = {
@@ -270,8 +269,10 @@ export type SigningData =
     }
   | {
       type: RpcMethod.HVM_SIGN_TRANSACTION;
-      account: string;
-      data: string;
+      data: {
+        abi: VMABI;
+        txPayload: TransactionPayload;
+      };
     };
 
 export type EvmTxUpdateFn = (data: {

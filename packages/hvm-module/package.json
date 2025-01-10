@@ -22,7 +22,8 @@
     "hypersdk-client": "0.4.14",
     "@noble/hashes": "^1.5.0",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.19",
-    "@metamask/rpc-errors": "6.3.0"
+    "@metamask/rpc-errors": "6.3.0",
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

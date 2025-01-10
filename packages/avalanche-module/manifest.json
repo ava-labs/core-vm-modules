@@ -7,17 +7,7 @@
       "checksum": "",
       "location": {
         "npm": {
-          "filePath": "dist/bundle.js",
-          "packageName": "@avalabs/avalanche-module",
-          "registry": "https://registry.npmjs.org"
-        }
-      }
-    },
-    "provider": {
-      "checksum": "",
-      "location": {
-        "npm": {
-          "filePath": "dist/provider.js",
+          "filePath": "dist/index.js",
           "packageName": "@avalabs/avalanche-module",
           "registry": "https://registry.npmjs.org"
         }

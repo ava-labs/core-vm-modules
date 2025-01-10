@@ -7,7 +7,7 @@
       "checksum": "",
       "location": {
         "npm": {
-          "filePath": "dist/bundle.js",
+          "filePath": "dist/index.js",
           "packageName": "@avalabs/evm-module",
           "registry": "https://registry.npmjs.org"
         }
@@ -17,7 +17,7 @@
       "checksum": "",
       "location": {
         "npm": {
-          "filePath": "dist/provider.js",
+          "filePath": "dist/provider/index.js",
           "packageName": "@avalabs/evm-module",
           "registry": "https://registry.npmjs.org"
         }
@@ -25,7 +25,7 @@
     }
   },
   "network": {
-    "chainIds": ["eip155:*"],
+    "chainIds": [],
     "namespaces": ["eip155"]
   },
   "cointype": "60",

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import {
   type Module,
   type Manifest,
@@ -16,33 +15,24 @@ import {
   type GetAddressResponse,
   type RpcResponse,
   RpcMethod,
-  NetworkVMType,
+  type GetAddressParams,
 } from '@avalabs/vm-module-types';
-import { sha256 } from '@noble/hashes/sha256';
-import { bytesToHex } from '@noble/hashes/utils';
 
 import ManifestJson from '../manifest.json';
 import { getProvider } from './utils/get-provider';
-import { hvmSign } from './handlers/hvm-sign';
-import { hvmGetBalances } from './handlers/hvm-get-balances';
+import { hvmGetBalances } from './handlers/get-balances';
+import { rpcErrors } from '@metamask/rpc-errors';
+import { hvmSign } from './handlers/sign-transaction/sign-transaction';
 
 export class HvmModule implements Module {
   #approvalController: ApprovalController;
-  #ED25519_AUTH_ID = 0x00;
 
   constructor({ approvalController }: ConstructorParams) {
     this.#approvalController = approvalController;
   }
 
   getProvider(network: Network) {
-    if (!network.vmRpcPrefix) {
-      throw new Error('There is no vm rpc prefix');
-    }
-    return getProvider({
-      rpcUrl: network.rpcUrl,
-      chainName: network.chainName,
-      vmRpcPrefix: network.vmRpcPrefix,
-    });
+    return Promise.resolve(getProvider(network));
   }
 
   getManifest(): Manifest | undefined {
@@ -50,31 +40,22 @@ export class HvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  #addressBytesFromPubKey(pubKey: Uint8Array): Uint8Array {
-    return new Uint8Array([this.#ED25519_AUTH_ID, ...sha256(pubKey)]);
+  getAddress(_params: GetAddressParams): Promise<GetAddressResponse> {
+    // The current parameter set does not support ed25519 public keys and this method is not used yet in the clients
+    throw new Error('not implemented');
   }
 
-  getAddress(pubKey: any): Promise<GetAddressResponse> {
-    const addressBytes = this.#addressBytesFromPubKey(pubKey);
-    const hash = sha256(addressBytes);
-    const checksum = hash.slice(-4); // Take last 4 bytes
-    return new Promise((res) => res({ [NetworkVMType.HVM]: '0x' + bytesToHex(addressBytes) + bytesToHex(checksum) }));
-  }
-
-  async getBalances(params: GetBalancesParams) {
-    const sdkClient = await this.getProvider(params.network);
-    const balances = await hvmGetBalances({ ...params, sdkClient });
-    return balances as unknown as GetBalancesResponse;
+  async getBalances(params: GetBalancesParams): Promise<GetBalancesResponse> {
+    return hvmGetBalances(params);
   }
 
   async onRpcRequest(request: RpcRequest, network: Network): Promise<RpcResponse> {
-    console.log('onRpcRequest called: ', request);
-    console.log('network: ', network);
     switch (request.method) {
       case RpcMethod.HVM_SIGN_TRANSACTION:
         return hvmSign({ request, network, approvalController: this.#approvalController });
+      default:
+        return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
     }
-    return new Promise((res) => res({} as RpcResponse));
   }
 
   getTransactionHistory(_: GetTransactionHistory): Promise<TransactionHistoryResponse> {

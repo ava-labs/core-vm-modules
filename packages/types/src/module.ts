@@ -1,6 +1,6 @@
 import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import type { GetAddressParams, GetAddressResponse } from './account';
-import type { GetBalancesParams, GetBalancesResponse, HvmGetBalanceParams } from './balance';
+import type { GetBalancesParams, GetBalancesResponse } from './balance';
 import { AppName, Environment, type Network } from './common';
 import type { Manifest } from './manifest';
 import type { NetworkFees } from './network-fee';
@@ -28,7 +28,7 @@ export interface Module {
     network: Network,
   ) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider | HyperSDKClient>;
   getManifest: () => Manifest | undefined;
-  getBalances: (params: GetBalancesParams | HvmGetBalanceParams) => Promise<GetBalancesResponse>;
+  getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;
   getNetworkFee: (network: NetworkFeeParam) => Promise<NetworkFees>;
   getAddress: (params: GetAddressParams) => Promise<GetAddressResponse>;
