@@ -34,4 +34,5 @@ export type TransactionSimulationResult = {
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
   isSimulationSuccessful: boolean;
+  estimatedGasLimit?: number;
 };

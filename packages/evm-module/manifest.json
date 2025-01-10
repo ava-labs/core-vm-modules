@@ -35,6 +35,7 @@
       "methods": [
         "personal_sign",
         "eth_sendTransaction",
+        "eth_sendTransactionBatch",
         "eth_*",
         "web3_clientVersion",
         "web3_sha3",

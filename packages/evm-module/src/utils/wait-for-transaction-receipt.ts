@@ -21,11 +21,13 @@ export const waitForTransactionReceipt = async ({
 
     if (success) {
       onTransactionConfirmed(txHash, requestId);
-    } else {
-      onTransactionReverted(txHash, requestId);
+      return true;
     }
   } catch (error) {
     console.error(error);
-    onTransactionReverted(txHash, requestId);
   }
+
+  onTransactionReverted(txHash, requestId);
+
+  return false;
 };

@@ -12,6 +12,7 @@ export enum RpcMethod {
 
   /* EVM */
   ETH_SEND_TRANSACTION = 'eth_sendTransaction',
+  ETH_SEND_TRANSACTION_BATCH = 'eth_sendTransactionBatch',
   SIGN_TYPED_DATA_V3 = 'eth_signTypedData_v3',
   SIGN_TYPED_DATA_V4 = 'eth_signTypedData_v4',
   SIGN_TYPED_DATA_V1 = 'eth_signTypedData_v1',
@@ -266,7 +267,7 @@ export type SigningData_EthSendTx = {
   data: TransactionRequest;
 };
 
-export type EvmMultiTxUpdateFn = (data: { maxFeeRate?: bigint; maxTipRate?: bigint }) => {
+export type EvmTxBatchUpdateFn = (data: { maxFeeRate?: bigint; maxTipRate?: bigint }) => {
   displayData: DisplayData;
   signingRequests: {
     displayData: DisplayData;
@@ -285,9 +286,9 @@ export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
   signingData: Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
 };
 
-export type SigningRequest = {
+export type SigningRequest<Data = SigningData> = {
   displayData: DisplayData;
-  signingData: SigningData;
+  signingData: Data;
   updateTx?: EvmTxUpdateFn | BtcTxUpdateFn;
 };
 
@@ -295,11 +296,11 @@ export type ApprovalParams = {
   request: RpcRequest;
 } & SigningRequest;
 
-export type MultiApprovalParams = {
+export type BatchApprovalParams = {
   request: RpcRequest;
-  signingRequests: SigningRequest[];
+  signingRequests: SigningRequest<SigningData_EthSendTx>[];
   displayData: DisplayData;
-  updateTxs: EvmMultiTxUpdateFn;
+  updateTxs: EvmTxBatchUpdateFn;
 };
 
 /**
@@ -315,7 +316,10 @@ export type MultiApprovalParams = {
  * "eth_sendTransaction" calls, which means that all we'll get in response
  * from them is the transaction hash (not a signed tx).
  */
-export type SigningResult = { signedData: string } | { txHash: string };
+type SignedData = { signedData: string };
+type BroadcastedTx = { txHash: string };
+
+export type SigningResult = SignedData | BroadcastedTx;
 
 export type ApprovalResponse =
   | {
@@ -323,15 +327,17 @@ export type ApprovalResponse =
     }
   | SigningResult;
 
-export type MultiApprovalResponse =
+export type BatchApprovalResponse =
   | { error: RpcError }
   | {
-      error?: RpcError;
-      result: SigningResult[];
+      result: SignedData[];
     };
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
-  requestMultiApproval: (params: MultiApprovalParams) => Promise<MultiApprovalResponse>;
   onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
   onTransactionReverted: (txHash: Hex, requestId: string) => void;
+}
+
+export interface BatchApprovalController extends ApprovalController {
+  requestBatchApproval: (params: BatchApprovalParams) => Promise<BatchApprovalResponse>;
 }

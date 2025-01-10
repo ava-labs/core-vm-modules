@@ -65,14 +65,15 @@ export const processTransactionSimulation = async ({
   params: TransactionParams;
   chainId: number;
   provider: JsonRpcBatchInternal;
-  simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation'>;
+  simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation' | 'gas_estimation'>;
 }): Promise<TransactionSimulationResult> => {
   let alert: Alert | undefined;
   let balanceChange: BalanceChange | undefined;
   let tokenApprovals: TokenApprovals | undefined;
   let isSimulationSuccessful = false;
+  let estimatedGasLimit: number | undefined;
 
-  const { validation, simulation } = simulationResult;
+  const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
 
   if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
     alert = transactionAlerts[AlertType.WARNING];
@@ -86,6 +87,10 @@ export const processTransactionSimulation = async ({
     balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
   }
 
+  if (gasEstimation?.status === 'Success') {
+    estimatedGasLimit = Number(gasEstimation.estimate);
+  }
+
   // If debank parsing failed, check if toAddress is a known ERC20
   if (!isSimulationSuccessful && hasToField(params)) {
     const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
@@ -93,7 +98,7 @@ export const processTransactionSimulation = async ({
     tokenApprovals = erc20ParseResult.tokenApprovals;
   }
 
-  return { alert, balanceChange, tokenApprovals, isSimulationSuccessful };
+  return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
 const processTokenApprovals = (
