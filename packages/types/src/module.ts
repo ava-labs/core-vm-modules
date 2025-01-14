@@ -8,6 +8,7 @@ import type { RpcRequest, RpcResponse } from './rpc';
 import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
+import type { HyperSDKClient } from 'hypersdk-client';
 
 export type AppInfo = {
   name: AppName;
@@ -23,7 +24,9 @@ export type ConstructorParams = {
 export type NetworkFeeParam = Network & { caipId?: string };
 
 export interface Module {
-  getProvider: (network: Network) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider>;
+  getProvider: (
+    network: Network,
+  ) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider | HyperSDKClient>;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;

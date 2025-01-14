@@ -4,6 +4,7 @@ import type { Caip2ChainId, Hex } from './common';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { TokenWithBalanceBTC } from './balance';
+import type { TransactionPayload, VMABI } from 'hypersdk-client';
 
 export enum RpcMethod {
   /* BTC */
@@ -23,6 +24,9 @@ export enum RpcMethod {
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
   AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
+
+  /* HVM */
+  HVM_SIGN_TRANSACTION = 'hvm_signTransaction',
 }
 
 export type DappInfo = {
@@ -262,6 +266,13 @@ export type SigningData =
       data: Avalanche.Tx;
       vm: 'EVM' | 'AVM' | 'PVM';
       ownSignatureIndices: [number, number][];
+    }
+  | {
+      type: RpcMethod.HVM_SIGN_TRANSACTION;
+      data: {
+        abi: VMABI;
+        txPayload: TransactionPayload;
+      };
     };
 
 export type EvmTxUpdateFn = (data: {

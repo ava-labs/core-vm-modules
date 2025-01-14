@@ -18,6 +18,7 @@ export type Network = {
   explorerUrl?: string;
   logoUri?: string;
   vmName: NetworkVMType;
+  vmRpcPrefix?: string;
 };
 
 export enum NetworkVMType {
@@ -26,6 +27,7 @@ export enum NetworkVMType {
   AVM = 'AVM',
   PVM = 'PVM',
   CoreEth = 'CoreEth',
+  HVM = 'HVM',
 }
 
 export type Storage = {

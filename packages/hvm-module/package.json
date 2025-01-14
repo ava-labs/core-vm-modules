@@ -1,0 +1,43 @@
+{
+  "name": "@avalabs/hvm-module",
+  "version": "0.11.12",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "manifest.json"
+  ],
+  "license": "Limited Ecosystem License",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "@avalabs/vm-module-types": "workspace:*",
+    "hypersdk-client": "0.4.16",
+    "@noble/hashes": "^1.5.0",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.19",
+    "@metamask/rpc-errors": "6.3.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@internal/tsup-config": "workspace:*",
+    "@internal/utils": "workspace:*",
+    "@types/big.js": "6.2.2",
+    "@types/bn.js": "5.1.5",
+    "@types/jest": "29.5.7",
+    "eslint-config-custom": "workspace:*",
+    "jest": "29.7.0",
+    "ts-jest": "29.1.1",
+    "tsup": "7.2.0"
+  },
+  "volta": {
+    "node": "20.11.0",
+    "yarn": "1.22.19"
+  }
+}

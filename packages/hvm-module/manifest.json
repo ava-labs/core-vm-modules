@@ -1,5 +1,5 @@
 {
-  "name": "Bitcoin",
+  "name": "HyperVM",
   "description": "",
   "version": "0.0.1",
   "sources": {
@@ -8,21 +8,21 @@
       "location": {
         "npm": {
           "filePath": "dist/index.js",
-          "packageName": "@avalabs/bitcoin-module",
+          "packageName": "@avalabs/hvm-module",
           "registry": "https://registry.npmjs.org"
         }
       }
     }
   },
   "network": {
-    "chainIds": ["bip122:000000000019d6689c085ae165831e93", "bip122:000000000933ea01ad0ee984209779ba"],
-    "namespaces": ["bip122"]
+    "chainIds": [],
+    "namespaces": ["hvm"]
   },
-  "cointype": "0",
+  "cointype": "60",
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["bitcoin_sendTransaction", "bitcoin_signTransaction"]
+      "methods": ["hvm_signTransaction"]
     }
   },
   "manifestVersion": "0.0"
