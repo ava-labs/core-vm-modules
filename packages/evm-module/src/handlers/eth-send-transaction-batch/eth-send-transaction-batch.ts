@@ -87,7 +87,7 @@ export const ethSendTransactionBatch = async ({
     title: 'Approve Transaction Batch',
     details: [
       {
-        title: 'Common Properties',
+        title: 'Transaction Details',
         items: [linkItem('Website', request.dappInfo), addressItem('From', transactionRequests[0].from)],
       },
     ],
