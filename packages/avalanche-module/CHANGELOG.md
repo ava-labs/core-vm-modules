@@ -1,5 +1,19 @@
 # @avalabs/avalanche-module
 
+## 0.11.14
+
+### Patch Changes
+
+- 265f772: add 5 new etna transactions type in avalanche module
+  - @avalabs/vm-module-types@0.11.14
+
+## 0.11.13
+
+### Patch Changes
+
+- 265f772: add 5 new etna transactions type in avalanche module
+  - @avalabs/vm-module-types@0.11.13
+
 ## 0.11.12
 
 ### Patch Changes
