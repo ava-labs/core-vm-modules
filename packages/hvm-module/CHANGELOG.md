@@ -1,0 +1,16 @@
+# @avalabs/hvm-module
+
+## 1.0.0
+
+### Major Changes
+
+- b504f6f: Creating the hvm module
+
+### Minor Changes
+
+- b504f6f: new networktype
+
+### Patch Changes
+
+- Updated dependencies [b504f6f]
+  - @avalabs/vm-module-types@0.12.0

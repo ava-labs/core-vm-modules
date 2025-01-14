@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 0.12.0
+
+### Minor Changes
+
+- b504f6f: new networktype
+
 ## 0.11.14
 
 ## 0.11.13
