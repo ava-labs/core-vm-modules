@@ -16,9 +16,9 @@
     "version-packages": "changeset version"
   },
   "devDependencies": {
-    "@types/node": "20.12.13",
     "@changesets/cli": "2.26.2",
     "@internal/tsconfig": "workspace:*",
+    "@types/node": "20.12.13",
     "eslint": "8.47.0",
     "eslint-config-custom": "workspace:*",
     "husky": "8.0.0",
@@ -30,7 +30,7 @@
   },
   "packageManager": "pnpm@8.6.10",
   "volta": {
-    "node": "18.14.1",
+    "node": "20.11.0",
     "pnpm": "8.6.10"
   },
   "lint-staged": {
@@ -38,5 +38,10 @@
       "pnpm prettier --write",
       "pnpm eslint --fix"
     ]
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "jest-runner@29.7.0": "patches/jest-runner@29.7.0.patch"
+    }
   }
 }

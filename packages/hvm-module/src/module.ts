@@ -7,7 +7,6 @@ import {
   type RpcRequest,
   type TransactionHistoryResponse,
   type GetTransactionHistory,
-  type Transaction,
   type Network,
   type NetworkFees,
   type GetBalancesParams,
@@ -32,7 +31,11 @@ export class HvmModule implements Module {
   }
 
   getProvider(network: Network) {
-    return Promise.resolve(getProvider(network));
+    try {
+      return Promise.resolve(getProvider(network));
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 
   getManifest(): Manifest | undefined {
@@ -59,14 +62,14 @@ export class HvmModule implements Module {
   }
 
   getTransactionHistory(_: GetTransactionHistory): Promise<TransactionHistoryResponse> {
-    return new Promise((res) => res({ transactions: [] as Transaction[] }));
+    return Promise.resolve({ transactions: [] });
   }
 
   getTokens(_: Network) {
     return Promise.resolve([]);
   }
 
-  getNetworkFee(_: Network) {
-    return Promise.resolve({} as NetworkFees);
+  getNetworkFee(_: Network): Promise<NetworkFees> {
+    return Promise.reject(new Error('not implemented'));
   }
 }

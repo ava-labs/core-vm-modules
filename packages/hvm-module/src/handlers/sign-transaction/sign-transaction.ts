@@ -60,14 +60,20 @@ export const hvmSign = async ({
   const result = parseRequestParams(params);
   if (!result.success) {
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
+      error: rpcErrors.invalidParams({
+        message: 'Transaction params are invalid',
+        data: { cause: result.error.format() },
+      }),
     };
   }
 
   const transaction = result.data[0];
   if (!transaction) {
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
+      error: rpcErrors.invalidParams({
+        message: 'Transaction params are invalid',
+        data: { cause: 'No transaction found' },
+      }),
     };
   }
 
