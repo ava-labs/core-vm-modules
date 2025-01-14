@@ -132,7 +132,7 @@ const displayData = {
   },
   details: [
     {
-      title: 'Common Properties',
+      title: 'Transaction Details',
       items: [linkItem('Website', testDapp), addressItem('From', tx1.from)],
     },
   ],
