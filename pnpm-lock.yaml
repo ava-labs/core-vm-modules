@@ -139,8 +139,8 @@ importers:
   packages/avalanche-module:
     dependencies:
       '@avalabs/avalanchejs':
-        specifier: 4.1.2-alpha.1
-        version: 4.1.2-alpha.1
+        specifier: 4.1.2-alpha.3
+        version: 4.1.2-alpha.3
       '@avalabs/core-chains-sdk':
         specifier: 3.1.0-alpha.30
         version: 3.1.0-alpha.30(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
@@ -477,17 +477,6 @@ packages:
 
   /@avalabs/avalanchejs@4.1.0-alpha.25:
     resolution: {integrity: sha512-ZQb5X3KN2RyzSYcPMxMgczxyiOwBAXv73Rps7LeDrJpFZTZf2TDRyWVNeeYvL7GFT1atkvZmGbNd9l4RDLSqJA==}
-    engines: {node: '>=20'}
-    dependencies:
-      '@noble/curves': 1.3.0
-      '@noble/hashes': 1.3.3
-      '@noble/secp256k1': 2.0.0
-      '@scure/base': 1.1.5
-      micro-eth-signer: 0.7.2
-    dev: false
-
-  /@avalabs/avalanchejs@4.1.2-alpha.1:
-    resolution: {integrity: sha512-SY5HrDghvcCNvz9PZMNHraQYgtFcnjX21P0Kg3iVCH2UBvUdNNpW2Njogxyyl3Bk3JoUCNJAN5N5+pIyj4TaCw==}
     engines: {node: '>=20'}
     dependencies:
       '@noble/curves': 1.3.0

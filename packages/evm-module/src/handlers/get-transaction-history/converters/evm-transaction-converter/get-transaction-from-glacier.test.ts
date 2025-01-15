@@ -7,6 +7,7 @@ const mockListTransactionDetailsResponse: ListTransactionDetailsResponse = {
   transactions: [
     {
       nativeTransaction: {
+        chainId: '1',
         from: {
           address: 'address',
         },
