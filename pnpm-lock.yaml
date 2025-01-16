@@ -426,7 +426,7 @@ importers:
         specifier: 29.7.0
         version: 29.7.0(@types/node@20.12.13)
       jest-environment-jsdom:
-        specifier: ^29.7.0
+        specifier: 29.7.0
         version: 29.7.0
       ts-jest:
         specifier: 29.1.1
