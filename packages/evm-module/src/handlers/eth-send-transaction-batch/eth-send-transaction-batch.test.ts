@@ -300,9 +300,9 @@ describe('eth_sendTransactionBatch handler', () => {
   });
 
   it('should calculate gas limit if some transactions do not have it set', async () => {
-    const updateTxs = jest.fn();
+    const updateTx = jest.fn();
     jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
-      updateTxs,
+      updateTx,
       cleanup: jest.fn(),
     });
     mockParseRequestParams.mockReturnValue({
@@ -359,14 +359,14 @@ describe('eth_sendTransactionBatch handler', () => {
           data: { ...(req.signingData.data as unknown as SigningData_EthSendTx), gasLimit: 21000 },
         },
       })),
-      updateTxs,
+      updateTx,
     });
   });
 
   it('should calculate nonce if not provided', async () => {
-    const updateTxs = jest.fn();
+    const updateTx = jest.fn();
     jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
-      updateTxs,
+      updateTx,
       cleanup: jest.fn(),
     });
     mockParseRequestParams.mockReturnValue({
@@ -398,7 +398,7 @@ describe('eth_sendTransactionBatch handler', () => {
         isSimulationSuccessful: false,
       },
       signingRequests,
-      updateTxs,
+      updateTx,
     });
   });
 
@@ -516,9 +516,9 @@ describe('eth_sendTransactionBatch handler', () => {
       ],
     });
 
-    const updateTxs = jest.fn();
+    const updateTx = jest.fn();
     jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
-      updateTxs,
+      updateTx,
       cleanup: jest.fn(),
     });
 
@@ -617,7 +617,7 @@ describe('eth_sendTransactionBatch handler', () => {
           },
         },
       ],
-      updateTxs,
+      updateTx,
     });
   });
 
@@ -776,9 +776,9 @@ describe('eth_sendTransactionBatch handler', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
-  const updateTxs = jest.fn();
+  const updateTx = jest.fn();
   jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
-    updateTxs,
+    updateTx,
     cleanup: jest.fn(),
   });
 
@@ -847,7 +847,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           alert,
         },
       })),
-      updateTxs,
+      updateTx,
     });
   } else {
     const alert = {
@@ -872,7 +872,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           alert,
         },
       })),
-      updateTxs,
+      updateTx,
     });
   }
 };

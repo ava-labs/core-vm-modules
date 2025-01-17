@@ -267,7 +267,10 @@ export type SigningData_EthSendTx = {
   data: TransactionRequest;
 };
 
-export type EvmTxBatchUpdateFn = (data: { maxFeeRate?: bigint; maxTipRate?: bigint }) => {
+export type EvmTxBatchUpdateFn = (
+  data: { maxFeeRate?: bigint; maxTipRate?: bigint },
+  txIndex: number,
+) => {
   displayData: DisplayData;
   signingRequests: {
     displayData: DisplayData;
@@ -300,7 +303,7 @@ export type BatchApprovalParams = {
   request: RpcRequest;
   signingRequests: SigningRequest<SigningData_EthSendTx>[];
   displayData: DisplayData;
-  updateTxs: EvmTxBatchUpdateFn;
+  updateTx: EvmTxBatchUpdateFn;
 };
 
 /**

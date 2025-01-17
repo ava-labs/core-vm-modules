@@ -18,11 +18,11 @@ export const getTxBatchUpdater = (
   requestId: string,
   signingRequests: SigningRequests,
   displayData: DisplayData,
-): { updateTxs: EvmTxBatchUpdateFn; cleanup: () => void } => {
+): { updateTx: EvmTxBatchUpdateFn; cleanup: () => void } => {
   requests.set(requestId, { signingRequests, displayData });
 
   return {
-    updateTxs: ({ maxFeeRate, maxTipRate }) => {
+    updateTx: ({ maxFeeRate, maxTipRate }, txIndex) => {
       const request = requests.get(requestId);
 
       if (!request) {
@@ -31,25 +31,27 @@ export const getTxBatchUpdater = (
 
       const { signingRequests } = request;
 
-      const newSigningRequests = signingRequests.map((signingRequest) => {
-        const { signingData } = signingRequest;
+      const newSigningRequests = signingRequests.map((signingRequest, index) => {
+        if (txIndex === undefined || txIndex === index) {
+          const { signingData } = signingRequest;
+          const newSigningData = {
+            ...signingData,
+            data: {
+              ...signingData.data,
+              maxFeePerGas: maxFeeRate ?? signingData.data.maxFeePerGas,
+              maxPriorityFeePerGas: maxTipRate ?? signingData.data.maxPriorityFeePerGas,
+            },
+          };
 
-        const newSigningData = {
-          ...signingData,
-          data: {
-            ...signingData.data,
-            maxFeePerGas: maxFeeRate ?? signingData.data.maxFeePerGas,
-            maxPriorityFeePerGas: maxTipRate ?? signingData.data.maxPriorityFeePerGas,
-          },
-        };
+          return { signingData: newSigningData, displayData: signingRequest.displayData };
+        }
 
-        return { signingData: newSigningData, displayData: signingRequest.displayData };
+        return signingRequest;
       });
 
       const updatedRequest = { signingRequests: newSigningRequests, displayData };
 
       requests.set(requestId, updatedRequest);
-
       return updatedRequest;
     },
     cleanup: () => requests.delete(requestId),

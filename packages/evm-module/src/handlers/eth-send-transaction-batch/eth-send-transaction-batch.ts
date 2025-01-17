@@ -104,9 +104,9 @@ export const ethSendTransactionBatch = async ({
   };
 
   const signingRequests = scans.map((scan) => buildTxApprovalRequest(request, network, scan.transaction, scan));
-  const { cleanup, updateTxs } = getTxBatchUpdater(request.requestId, signingRequests, displayData);
+  const { cleanup, updateTx } = getTxBatchUpdater(request.requestId, signingRequests, displayData);
 
-  const response = await approvalController.requestBatchApproval({ request, signingRequests, displayData, updateTxs });
+  const response = await approvalController.requestBatchApproval({ request, signingRequests, displayData, updateTx });
 
   cleanup();
 
