@@ -194,6 +194,7 @@ describe('DeBankService', () => {
           balanceCurrencyDisplayValue: '50.00',
           priceInCurrency: 1,
           type: TokenType.ERC20,
+          reputation: null,
         },
         '0x2': {
           chainId: 1,
@@ -208,6 +209,7 @@ describe('DeBankService', () => {
           balanceCurrencyDisplayValue: '100.00',
           priceInCurrency: 1,
           type: TokenType.ERC20,
+          reputation: null,
         },
       });
     });
