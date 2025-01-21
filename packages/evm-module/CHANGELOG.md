@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 0.12.1
+
+### Patch Changes
+
+- 20e096d: chore: update SDKs
+- Updated dependencies [20e096d]
+  - @avalabs/vm-module-types@0.12.1
+
 ## 0.12.0
 
 ### Patch Changes
