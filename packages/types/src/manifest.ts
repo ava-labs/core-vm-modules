@@ -28,6 +28,7 @@ const manifestSchema = object({
     rpc: object({
       dapps: boolean(),
       methods: string().array(),
+      nonRestrictedMethods: string().array(),
     }),
   }),
   manifestVersion: string(),
