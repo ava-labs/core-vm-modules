@@ -22,7 +22,8 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["hvm_signTransaction"]
+      "methods": ["hvm_signTransaction"],
+      "nonRestrictedMethods": []
     }
   },
   "manifestVersion": "0.0"
