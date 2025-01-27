@@ -27,6 +27,9 @@ pnpm build    # builds all packages
 
 - `evm-module`: EVM module
 - `avalanche-module`: Avalanche module
+- `bitcoin-module`: Bitcoin module
+- `hvm-module`: Hyper VM Module
+- `svm-module`: Solana Virtual Machine module
 - `types`: shared types for modules
 
 #### Internal

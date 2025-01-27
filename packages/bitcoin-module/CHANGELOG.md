@@ -1,5 +1,20 @@
 # @avalabs/bitcoin-module
 
+## 0.12.1
+
+### Patch Changes
+
+- 20e096d: chore: update SDKs
+- Updated dependencies [20e096d]
+  - @avalabs/vm-module-types@0.12.1
+
+## 0.12.0
+
+### Patch Changes
+
+- Updated dependencies [b504f6f]
+  - @avalabs/vm-module-types@0.12.0
+
 ## 0.11.14
 
 ### Patch Changes

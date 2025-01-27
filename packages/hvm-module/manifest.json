@@ -1,0 +1,29 @@
+{
+  "name": "HyperVM",
+  "description": "",
+  "version": "0.0.1",
+  "sources": {
+    "module": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/index.js",
+          "packageName": "@avalabs/hvm-module",
+          "registry": "https://registry.npmjs.org"
+        }
+      }
+    }
+  },
+  "network": {
+    "chainIds": [],
+    "namespaces": ["hvm"]
+  },
+  "cointype": "60",
+  "permissions": {
+    "rpc": {
+      "dapps": true,
+      "methods": ["hvm_signTransaction"]
+    }
+  },
+  "manifestVersion": "0.0"
+}
