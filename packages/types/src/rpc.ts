@@ -317,6 +317,12 @@ export type BatchApprovalParams = {
   updateTx: EvmTxBatchUpdateFn;
 };
 
+export type RequestPublicKeyParams = {
+  secretId: string;
+  algorithm: 'secp256k1' | 'ed25519';
+  derivationPath?: string;
+};
+
 /**
  * We want to accept both a signed data (tx/message) and a tx hash as a response
  * coming in from the client apps, hence the XORs here.
@@ -348,6 +354,7 @@ export type BatchApprovalResponse =
     };
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
+  requestPublicKey: (params: RequestPublicKeyParams) => Promise<Hex>;
   onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
   onTransactionReverted: (txHash: Hex, requestId: string) => void;
 }

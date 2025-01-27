@@ -10,6 +10,7 @@ import type {
   GetAddressResponse,
   ApprovalController,
   ConstructorParams,
+  DeriveAddressParams,
 } from '@avalabs/vm-module-types';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -24,6 +25,7 @@ import { bitcoinSendTransaction } from './handlers/bitcoin-send-transaction/bitc
 import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitcoin-sign-transaction';
+import { deriveAddress } from './handlers/derive-address/derive-address';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -45,6 +47,13 @@ export class BitcoinModule implements Module {
 
   getAddress({ accountIndex, xpub, walletType, network }: GetAddressParams): Promise<GetAddressResponse> {
     return getAddress({ accountIndex, xpub, network, walletType });
+  }
+
+  deriveAddress(params: DeriveAddressParams) {
+    return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
   }
 
   getBalances({ addresses, currency, network, storage }: GetBalancesParams) {

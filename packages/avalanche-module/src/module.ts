@@ -12,6 +12,8 @@ import type {
   ApprovalController,
   ConstructorParams,
   AppInfo,
+  DeriveAddressParams,
+  DeriveAddressResponse,
 } from '@avalabs/vm-module-types';
 import { Environment, parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -30,6 +32,7 @@ import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { isDevnet } from '@internal/utils/src/utils/is-devnet';
+import { deriveAddress } from './handlers/derive-address/derive-address';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -86,6 +89,13 @@ export class AvalancheModule implements Module {
 
   getTokens(_: Network) {
     return Promise.resolve([]);
+  }
+
+  async deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {
+    return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
   }
 
   async onRpcRequest(request: RpcRequest, network: Network) {

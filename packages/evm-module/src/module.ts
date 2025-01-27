@@ -14,6 +14,8 @@ import {
   parseManifest,
   type ConstructorParams,
   type NetworkFeeParam,
+  type DeriveAddressParams,
+  type DeriveAddressResponse,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -27,6 +29,7 @@ import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { ethSign } from './handlers/eth-sign/eth-sign';
 import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
 import { getAddress } from './handlers/get-address/get-address';
+import { deriveAddress } from './handlers/derive-address/derive-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
@@ -63,6 +66,13 @@ export class EvmModule implements Module {
 
   getAddress({ accountIndex, xpub, walletType }: GetAddressParams): Promise<GetAddressResponse> {
     return getAddress({ accountIndex, xpub, walletType });
+  }
+
+  deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {
+    return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
   }
 
   getBalances({

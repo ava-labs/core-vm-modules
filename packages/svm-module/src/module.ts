@@ -3,6 +3,7 @@ import {
   type AppInfo,
   type ApprovalController,
   type ConstructorParams,
+  type DeriveAddressParams,
   type Module,
   type NetworkFees,
   type RpcRequest,
@@ -12,6 +13,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
+import { deriveAddress } from './handlers/derive-address/derive-address';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -40,6 +42,13 @@ export class SvmModule implements Module {
   // TODO
   getAddress() {
     return Promise.resolve({});
+  }
+
+  deriveAddress(params: DeriveAddressParams) {
+    return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
   }
 
   // TODO
