@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 1.2.0
+
+### Minor Changes
+
+- 1f54063: feat: return reputation for ERC20 tokens
+
+### Patch Changes
+
+- Updated dependencies [1f54063]
+  - @avalabs/vm-module-types@1.2.0
+
 ## 1.1.0
 
 ### Minor Changes

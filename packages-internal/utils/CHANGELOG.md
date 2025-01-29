@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.4.0
+
+### Minor Changes
+
+- 1f54063: feat: return reputation for ERC20 tokens
+
 ## 0.3.5
 
 ### Patch Changes
