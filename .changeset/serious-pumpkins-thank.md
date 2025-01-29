@@ -1,8 +1,8 @@
 ---
-'@avalabs/avalanche-module': major
-'@avalabs/bitcoin-module': major
-'@avalabs/evm-module': major
-'@avalabs/vm-module-types': major
+'@avalabs/avalanche-module': minor
+'@avalabs/bitcoin-module': minor
+'@avalabs/evm-module': minor
+'@avalabs/vm-module-types': minor
 '@internal/utils': patch
 '@avalabs/hvm-module': patch
 '@avalabs/svm-module': patch
