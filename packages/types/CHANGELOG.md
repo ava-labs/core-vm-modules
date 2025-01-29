@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.2.0
+
+### Minor Changes
+
+- 1f54063: feat: return reputation for ERC20 tokens
+
 ## 1.1.0
 
 ### Minor Changes
