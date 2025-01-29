@@ -1,5 +1,20 @@
 # @avalabs/bitcoin-module
 
+## 1.1.0
+
+### Minor Changes
+
+- af15f8d: feat: batch signing for EVM, stable release for all
+
+### Patch Changes
+
+- af15f8d: feat: add list of non-restricted methods to the manifests
+- Updated dependencies [af15f8d]
+- Updated dependencies [7bee314]
+- Updated dependencies [af15f8d]
+- Updated dependencies [af15f8d]
+  - @avalabs/vm-module-types@1.1.0
+
 ## 0.12.1
 
 ### Patch Changes
