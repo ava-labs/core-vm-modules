@@ -372,6 +372,7 @@ const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBal
       marketCap: 0,
       change24: 0,
       vol24: 0,
+      reputation: null,
     };
   });
 };
@@ -402,6 +403,7 @@ const convertErc20TokenWithBalanceToTokenWithBalance = (
       balanceDisplayValue,
       balanceInCurrency,
       priceInCurrency,
+      reputation: token.tokenReputation,
       type: TokenType.ERC20,
     };
   });

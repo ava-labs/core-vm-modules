@@ -1,7 +1,7 @@
 import type { Storage, Network } from './common';
 import type { Error } from './error';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
-import type { PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
+import type { Erc20TokenBalance, PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 
 export type GetBalancesParams = {
   addresses: string[];
@@ -51,6 +51,7 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
   TokenMarketData &
   NetworkContractToken & {
     type: TokenType.ERC20;
+    reputation: Erc20TokenBalance.tokenReputation | null;
   };
 
 export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;

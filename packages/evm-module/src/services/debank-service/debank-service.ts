@@ -123,6 +123,7 @@ export class DeBankService implements BalanceServiceInterface {
         balanceInCurrency,
         priceInCurrency,
         type: TokenType.ERC20,
+        reputation: null,
       };
     }
 

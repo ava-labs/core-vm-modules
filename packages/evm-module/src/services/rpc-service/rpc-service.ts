@@ -179,6 +179,7 @@ export class RpcService implements BalanceServiceInterface {
         marketCap,
         change24,
         vol24,
+        reputation: null,
       };
     }
     return erc20TokenBalances;

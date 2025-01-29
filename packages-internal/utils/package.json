@@ -11,9 +11,9 @@
   },
   "private": true,
   "devDependencies": {
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.30",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.30",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.30",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.32",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.32",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.32",
     "@avalabs/vm-module-types": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "@internal/tsup-config": "workspace:*",
