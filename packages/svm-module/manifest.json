@@ -26,8 +26,9 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["getGenesisHash"]
+      "methods": ["getGenesisHash"],
+      "nonRestrictedMethods": ["getGenesisHash"]
     }
   },
-  "manifestVersion": "0.0"
+  "manifestVersion": "0.1"
 }

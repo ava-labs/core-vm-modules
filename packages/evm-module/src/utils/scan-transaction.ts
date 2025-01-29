@@ -1,7 +1,41 @@
 import Blockaid from '@blockaid/client';
-import type { TransactionParams } from '../types';
+import type { TransactionBulkScanParams } from '@blockaid/client/resources/evm/transaction-bulk';
+
+import type { TransactionBatchParams, TransactionParams } from '../types';
 
 const DUMMY_API_KEY = 'DUMMY_API_KEY'; // since we're using our own proxy and api key is handled there, we can use a dummy key here
+
+export const scanTransactionBatch = async ({
+  proxyApiUrl,
+  chainId,
+  params,
+  domain,
+  withGasEstimation,
+}: {
+  proxyApiUrl: string;
+  chainId: number;
+  params: TransactionBatchParams;
+  domain?: string;
+  withGasEstimation?: boolean;
+}): Promise<Blockaid.TransactionScanResponse[]> => {
+  const blockaid = new Blockaid({
+    baseURL: proxyApiUrl + '/proxy/blockaid/',
+    apiKey: DUMMY_API_KEY,
+  });
+
+  const options: TransactionBulkScanParams['options'] = ['validation', 'simulation'];
+
+  if (withGasEstimation) {
+    options.push('gas_estimation');
+  }
+
+  return blockaid.evm.transactionBulk.scan({
+    chain: chainId.toString(),
+    options,
+    data: params,
+    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
+  });
+};
 
 export const scanTransaction = async ({
   proxyApiUrl,

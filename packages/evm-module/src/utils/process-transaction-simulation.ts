@@ -13,6 +13,7 @@ import {
   type TokenApprovals,
   type RpcRequest,
   RpcMethod,
+  type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
@@ -20,48 +21,74 @@ import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
+import { transactionAlerts } from './transaction-alerts';
 
-export const processTransactionSimulation = async ({
-  request,
+export const simulateTransaction = async ({
+  rpcMethod,
   dAppUrl,
   params,
   chainId,
-  proxyApiUrl,
   provider,
+  proxyApiUrl,
 }: {
-  request: RpcRequest;
+  rpcMethod: RpcMethod;
   dAppUrl?: string;
   params: TransactionParams;
   chainId: number;
-  proxyApiUrl: string;
   provider: JsonRpcBatchInternal;
+  proxyApiUrl: string;
 }) => {
-  let alert: Alert | undefined;
-  let balanceChange: BalanceChange | undefined;
-  let tokenApprovals: TokenApprovals | undefined;
-  let isSimulationSuccessful = false;
+  let simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation'> = {};
 
   try {
-    const { validation, simulation } = await scanTransaction({
+    simulationResult = await scanTransaction({
       proxyApiUrl,
       chainId,
       params,
       domain: dAppUrl,
     });
-
-    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
-      alert = transactionAlerts[AlertType.WARNING];
-    } else if (validation.result_type === 'Malicious') {
-      alert = transactionAlerts[AlertType.DANGER];
-    }
-
-    if (simulation?.status === 'Success') {
-      isSimulationSuccessful = true;
-      tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
-      balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
-    }
   } catch (error) {
-    console.error('processTransactionSimulation error', error);
+    console.error('simulateTransaction error', error);
+  }
+
+  return processTransactionSimulation({ rpcMethod, params, chainId, provider, simulationResult });
+};
+
+export const processTransactionSimulation = async ({
+  rpcMethod,
+  params,
+  chainId,
+  provider,
+  simulationResult,
+}: {
+  rpcMethod: RpcMethod;
+  params: TransactionParams;
+  chainId: number;
+  provider: JsonRpcBatchInternal;
+  simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation' | 'gas_estimation'>;
+}): Promise<TransactionSimulationResult> => {
+  let alert: Alert | undefined;
+  let balanceChange: BalanceChange | undefined;
+  let tokenApprovals: TokenApprovals | undefined;
+  let isSimulationSuccessful = false;
+  let estimatedGasLimit: number | undefined;
+
+  const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
+
+  if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+    alert = transactionAlerts[AlertType.WARNING];
+  } else if (validation.result_type === 'Malicious') {
+    alert = transactionAlerts[AlertType.DANGER];
+  }
+
+  if (simulation?.status === 'Success') {
+    isSimulationSuccessful = true;
+    tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary.exposures);
+    balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+  }
+
+  if (gasEstimation?.status === 'Success') {
+    estimatedGasLimit = Number(gasEstimation.estimate);
   }
 
   // If debank parsing failed, check if toAddress is a known ERC20
@@ -71,11 +98,11 @@ export const processTransactionSimulation = async ({
     tokenApprovals = erc20ParseResult.tokenApprovals;
   }
 
-  return { alert, balanceChange, tokenApprovals, isSimulationSuccessful };
+  return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
 const processTokenApprovals = (
-  request: RpcRequest,
+  rpcMethod: RpcMethod,
   exposures: Blockaid.AddressAssetExposure[],
 ): TokenApprovals | undefined => {
   const approvals: TokenApproval[] = [];
@@ -123,7 +150,7 @@ const processTokenApprovals = (
   const isEditable =
     approvals.length === 1 &&
     approvals[0]?.token.type === TokenType.ERC20 &&
-    request.method === RpcMethod.ETH_SEND_TRANSACTION;
+    rpcMethod === RpcMethod.ETH_SEND_TRANSACTION;
 
   return { isEditable, approvals };
 };
@@ -273,7 +300,7 @@ export const processJsonRpcSimulation = async ({
     }
 
     if (simulation?.status === 'Success') {
-      tokenApprovals = processTokenApprovals(request, simulation.account_summary.exposures);
+      tokenApprovals = processTokenApprovals(request.method, simulation.account_summary.exposures);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
   } catch (error) {
@@ -282,25 +309,4 @@ export const processJsonRpcSimulation = async ({
   }
 
   return { alert, balanceChange, tokenApprovals };
-};
-
-const transactionAlerts = {
-  [AlertType.WARNING]: {
-    type: AlertType.WARNING,
-    details: {
-      title: 'Suspicious Transaction',
-      description: 'Use caution, this transaction may be malicious.',
-    },
-  },
-  [AlertType.DANGER]: {
-    type: AlertType.DANGER,
-    details: {
-      title: 'Scam Transaction',
-      description: 'This transaction is malicious, do not proceed.',
-      actionTitles: {
-        reject: 'Reject Transaction',
-        proceed: 'Proceed Anyway',
-      },
-    },
-  },
 };
