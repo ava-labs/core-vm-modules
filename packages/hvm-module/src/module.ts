@@ -43,6 +43,10 @@ export class HvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
+  deriveAddress() {
+    return Promise.reject(new Error('not implemented'));
+  }
+
   getAddress(_params: GetAddressParams): Promise<GetAddressResponse> {
     // The current parameter set does not support ed25519 public keys and this method is not used yet in the clients
     throw new Error('not implemented');
