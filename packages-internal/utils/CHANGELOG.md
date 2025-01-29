@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.3.5
+
+### Patch Changes
+
+- af15f8d: feat: batch signing for EVM, stable release for all
+
 ## 0.3.4
 
 ### Patch Changes
