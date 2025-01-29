@@ -303,9 +303,10 @@ export class EvmGlacierService implements BalanceServiceInterface {
           pageToken: nextPageToken,
         });
 
-        tokensWithBalance.push(
-          ...convertErc20TokenWithBalanceToTokenWithBalance(response.erc20TokenBalances, Number(chainId)),
-        );
+        const filteredResponse = response.erc20TokenBalances.filter((token) => {
+          return token.tokenReputation !== Erc20TokenBalance.tokenReputation.MALICIOUS;
+        });
+        tokensWithBalance.push(...convertErc20TokenWithBalanceToTokenWithBalance(filteredResponse, Number(chainId)));
         nextPageToken = response.nextPageToken;
       } while (nextPageToken);
 
