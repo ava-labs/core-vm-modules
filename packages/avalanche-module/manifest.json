@@ -30,8 +30,9 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["avalanche_sendTransaction", "avalanche_signTransaction", "avalanche_signMessage"]
+      "methods": ["avalanche_sendTransaction", "avalanche_signTransaction", "avalanche_signMessage"],
+      "nonRestrictedMethods": []
     }
   },
-  "manifestVersion": "0.0"
+  "manifestVersion": "0.1"
 }

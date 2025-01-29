@@ -1,5 +1,23 @@
 # @avalabs/vm-module-types
 
+## 1.1.0
+
+### Minor Changes
+
+- af15f8d: feat: batch signing for EVM, stable release for all
+- af15f8d: feat: eth_sendTransactionBatch
+
+### Patch Changes
+
+- af15f8d: feat: add list of non-restricted methods to the manifests
+- 7bee314: feat: adds an empty module for Solana VM
+
+## 0.12.1
+
+### Patch Changes
+
+- 20e096d: chore: update SDKs
+
 ## 0.12.0
 
 ### Minor Changes
