@@ -301,6 +301,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
           currency: currency.toLocaleLowerCase() as CurrencyCode,
           pageSize: 100, // glacier has a cap on page size of 100
           pageToken: nextPageToken,
+          contractAddresses: customTokens.map((token) => token.address).join(','),
         });
 
         tokensWithBalance.push(
