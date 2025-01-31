@@ -1,8 +1,8 @@
 import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
-import type { BigNumberish } from 'ethers';
+import type { AccessList, BigNumberish } from 'ethers';
 
 export const estimateGasLimit = async ({
-  transactionParams: { from, to, data, value },
+  transactionParams: { from, to, data, value, accessList },
   provider,
 }: {
   transactionParams: {
@@ -10,6 +10,7 @@ export const estimateGasLimit = async ({
     to?: string;
     data?: string;
     value?: BigNumberish;
+    accessList?: AccessList;
   };
   provider: JsonRpcBatchInternal;
 }): Promise<number> => {
@@ -22,6 +23,7 @@ export const estimateGasLimit = async ({
       nonce,
       data,
       value,
+      accessList,
     }),
   );
 };

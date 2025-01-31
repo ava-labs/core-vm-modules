@@ -54,6 +54,7 @@ export const ethSendTransaction = async ({
           to: transaction.to,
           data: transaction.data,
           value: transaction.value,
+          accessList: transaction.accessList,
         },
         provider,
       });
