@@ -16,7 +16,15 @@ import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
 import type { HyperSDKClient } from 'hypersdk-client';
-import { type Rpc, type SolanaRpcApiDevnet, type SolanaRpcApiMainnet } from '@solana/rpc';
+import type {
+  Rpc,
+  RpcDevnet,
+  RpcMainnet,
+  RpcTestnet,
+  SolanaRpcApiDevnet,
+  SolanaRpcApiMainnet,
+  SolanaRpcApiTestnet,
+} from '@solana/rpc';
 
 export type AppInfo = {
   name: AppName;
@@ -29,18 +37,18 @@ export type ConstructorParams = {
   appInfo: AppInfo;
 };
 
+export type SVMProvider =
+  | Rpc<SolanaRpcApiMainnet | SolanaRpcApiMainnet>
+  | RpcDevnet<SolanaRpcApiDevnet | SolanaRpcApiMainnet>
+  | RpcMainnet<SolanaRpcApiMainnet | SolanaRpcApiMainnet>
+  | RpcTestnet<SolanaRpcApiTestnet | SolanaRpcApiMainnet>;
+
 export type NetworkFeeParam = Network & { caipId?: string };
 
 export interface Module {
   getProvider: (
     network: Network,
-  ) => Promise<
-    | JsonRpcBatchInternal
-    | BitcoinProvider
-    | Avalanche.JsonRpcProvider
-    | HyperSDKClient
-    | Rpc<SolanaRpcApiMainnet | SolanaRpcApiDevnet>
-  >;
+  ) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider | HyperSDKClient | SVMProvider>;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;

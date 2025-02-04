@@ -4,12 +4,19 @@ import {
   parseManifest,
   RpcMethod,
   type ApprovalController,
+  type Network,
   type RpcRequest,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 import ManifestJson from '../manifest.json';
 import { SvmModule } from './module';
+
+jest.mock('@solana/rpc', () => ({
+  createSolanaRpc: jest.fn().mockReturnValue({}),
+}));
+
+const mainnetChainId = 4503599627370463;
 
 describe('SVM Module', () => {
   const svm = new SvmModule({
@@ -23,7 +30,7 @@ describe('SVM Module', () => {
 
   describe('getProvider()', () => {
     it('returns an empty object', async () => {
-      expect(await svm.getProvider()).toEqual({});
+      expect(await svm.getProvider({ chainId: mainnetChainId } as Network)).toEqual({});
     });
   });
 

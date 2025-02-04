@@ -6,11 +6,21 @@ import {
   type ConstructorParams,
   type DeriveAddressParams,
   type Module,
+  type Network,
   type NetworkFees,
   type RpcRequest,
+  type SVMProvider,
 } from '@avalabs/vm-module-types';
-import { type Rpc, type SolanaRpcApiDevnet } from '@solana/rpc';
+// import {
+//   type SolanaRpcApi,
+//   type SolanaRpcApiDevnet,
+//   type SolanaRpcApiForAllClusters,
+//   type SolanaRpcApiMainnet,
+//   type SolanaRpcApiTestnet,
+// } from '@solana/rpc-api';
+// import { type Rpc, type RpcDevnet, type RpcMainnet, type RpcTestnet } from '@solana/rpc';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getProvider } from './utils/get-provider';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
@@ -36,9 +46,14 @@ export class SvmModule implements Module {
     this.#appInfo;
   }
 
-  // TODO
-  getProvider() {
-    return Promise.resolve({} as Rpc<SolanaRpcApiDevnet>);
+  getProvider(network: Network): Promise<SVMProvider> {
+    const provider = getProvider(network);
+    return new Promise((resolve, reject) => {
+      if (provider) {
+        resolve(provider);
+      }
+      reject('We cannot get the SVM provider');
+    });
   }
 
   // TODO
