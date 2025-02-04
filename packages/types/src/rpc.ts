@@ -319,7 +319,7 @@ export type BatchApprovalParams = {
 
 export type RequestPublicKeyParams = {
   secretId: string;
-  algorithm: 'secp256k1' | 'ed25519';
+  curve: 'secp256k1' | 'ed25519';
   derivationPath?: string;
 };
 
@@ -354,7 +354,7 @@ export type BatchApprovalResponse =
     };
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
-  requestPublicKey: (params: RequestPublicKeyParams) => Promise<Hex>;
+  requestPublicKey: (params: RequestPublicKeyParams) => Promise<string>;
   onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
   onTransactionReverted: (txHash: Hex, requestId: string) => void;
 }

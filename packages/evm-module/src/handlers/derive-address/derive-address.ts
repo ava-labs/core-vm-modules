@@ -35,12 +35,12 @@ export const deriveAddress = async (
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const derivationPath = hasDerivationDetails(params) ? getDerivationPath(params) : undefined;
   const publicKeyHex = await approvalController.requestPublicKey({
-    algorithm: 'secp256k1',
+    curve: 'secp256k1',
     secretId,
     derivationPath,
   });
 
   return {
-    [NetworkVMType.EVM]: computeAddress(publicKeyHex),
+    [NetworkVMType.EVM]: computeAddress(`0x${publicKeyHex}`), // ApprovalController does not return the 0x prefix
   };
 };

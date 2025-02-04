@@ -18,7 +18,7 @@
     "chainIds": [],
     "namespaces": ["hvm"]
   },
-  "cointype": "60",
+  "cointype": "9000",
   "permissions": {
     "rpc": {
       "dapps": true,

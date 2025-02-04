@@ -30,7 +30,7 @@ export const deriveAddress = async (
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const derivationPath = hasDerivationDetails(params) ? getDerivationPath(params) : undefined;
   const publicKeyHex = await approvalController.requestPublicKey({
-    algorithm: 'ed25519',
+    curve: 'ed25519',
     secretId,
     derivationPath,
   });

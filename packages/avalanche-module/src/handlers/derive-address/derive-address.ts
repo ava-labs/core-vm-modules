@@ -6,7 +6,6 @@ import type {
 } from '@avalabs/vm-module-types';
 import { NetworkVMType } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { strip0x } from '@avalabs/core-utils-sdk';
 
 import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 import { hasDerivationDetails } from '@internal/utils/src/utils/address-derivation';
@@ -40,11 +39,11 @@ export const deriveAddress = async (
   const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: isDevnet(network) });
 
   const publicKeyHex = await approvalController.requestPublicKey({
-    algorithm: 'secp256k1',
+    curve: 'secp256k1',
     secretId,
     derivationPath,
   });
-  const publicKey = Buffer.from(strip0x(publicKeyHex), 'hex');
+  const publicKey = Buffer.from(publicKeyHex, 'hex');
 
   return {
     [NetworkVMType.AVM]: provXP.getAddress(publicKey, 'X'),
