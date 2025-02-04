@@ -22,8 +22,9 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["bitcoin_sendTransaction", "bitcoin_signTransaction"]
+      "methods": ["bitcoin_sendTransaction", "bitcoin_signTransaction"],
+      "nonRestrictedMethods": []
     }
   },
-  "manifestVersion": "0.0"
+  "manifestVersion": "0.1"
 }

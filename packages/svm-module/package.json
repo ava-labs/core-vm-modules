@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/svm-module",
-  "version": "0.0.0",
+  "version": "1.2.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
     "@solana/rpc": "2.0.0",
-    "@solana/rpc-types": "^2.0.0"
+    "@solana/rpc-types": "2.0.0"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

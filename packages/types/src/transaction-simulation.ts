@@ -1,3 +1,4 @@
+import type { Alert } from './rpc';
 import type { NetworkContractToken, NetworkToken } from './token';
 
 export type BalanceChange = {
@@ -26,4 +27,12 @@ export type TokenApproval = {
 export type TokenApprovals = {
   isEditable: boolean;
   approvals: TokenApproval[];
+};
+
+export type TransactionSimulationResult = {
+  alert?: Alert;
+  balanceChange?: BalanceChange;
+  tokenApprovals?: TokenApprovals;
+  isSimulationSuccessful: boolean;
+  estimatedGasLimit?: number;
 };

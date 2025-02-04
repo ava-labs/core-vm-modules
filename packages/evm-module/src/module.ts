@@ -31,6 +31,8 @@ import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { getCoreHeaders } from '@internal/utils';
+import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
+import { supportsBatchApprovals } from './utils/type-utils';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -130,6 +132,20 @@ export class EvmModule implements Module {
           approvalController: this.#approvalController,
           proxyApiUrl: this.#proxyApiUrl,
         });
+      case RpcMethod.ETH_SEND_TRANSACTION_BATCH: {
+        if (!supportsBatchApprovals(this.#approvalController)) {
+          return {
+            error: rpcErrors.methodNotSupported(`Method ${request.method} requires BatchApprovalController`),
+          };
+        }
+
+        return ethSendTransactionBatch({
+          request,
+          network,
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+        });
+      }
       case RpcMethod.PERSONAL_SIGN:
       case RpcMethod.ETH_SIGN:
       case RpcMethod.SIGN_TYPED_DATA:

@@ -15,19 +15,16 @@
     }
   },
   "network": {
-    "chainIds": [
-      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-      "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
-      "solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z"
-    ],
+    "chainIds": [],
     "namespaces": ["solana"]
   },
   "cointype": "501",
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["getGenesisHash"]
+      "methods": ["getGenesisHash"],
+      "nonRestrictedMethods": ["getGenesisHash"]
     }
   },
-  "manifestVersion": "0.0"
+  "manifestVersion": "0.1"
 }

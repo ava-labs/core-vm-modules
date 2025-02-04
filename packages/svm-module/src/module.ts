@@ -9,14 +9,6 @@ import {
   type RpcRequest,
   type SVMProvider,
 } from '@avalabs/vm-module-types';
-// import {
-//   type SolanaRpcApi,
-//   type SolanaRpcApiDevnet,
-//   type SolanaRpcApiForAllClusters,
-//   type SolanaRpcApiMainnet,
-//   type SolanaRpcApiTestnet,
-// } from '@solana/rpc-api';
-// import { type Rpc, type RpcDevnet, type RpcMainnet, type RpcTestnet } from '@solana/rpc';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from './utils/get-provider';
 

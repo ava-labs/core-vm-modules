@@ -3,7 +3,14 @@
   "changelog": "@changesets/cli/changelog",
   "commit": ["@changesets/cli/commit", { "skipCI": false }],
   "fixed": [
-    ["@avalabs/evm-module", "@avalabs/avalanche-module", "@avalabs/vm-module-types", "@avalabs/bitcoin-module"]
+    [
+      "@avalabs/evm-module",
+      "@avalabs/avalanche-module",
+      "@avalabs/vm-module-types",
+      "@avalabs/bitcoin-module",
+      "@avalabs/hvm-module",
+      "@avalabs/svm-module"
+    ]
   ],
   "linked": [],
   "access": "public",

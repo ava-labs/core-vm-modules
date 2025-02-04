@@ -1,5 +1,40 @@
 # @avalabs/evm-module
 
+## 1.2.0
+
+### Minor Changes
+
+- 1f54063: feat: return reputation for ERC20 tokens
+
+### Patch Changes
+
+- Updated dependencies [1f54063]
+  - @avalabs/vm-module-types@1.2.0
+
+## 1.1.0
+
+### Minor Changes
+
+- af15f8d: feat: batch signing for EVM, stable release for all
+- af15f8d: feat: eth_sendTransactionBatch
+
+### Patch Changes
+
+- af15f8d: feat: add list of non-restricted methods to the manifests
+- Updated dependencies [af15f8d]
+- Updated dependencies [7bee314]
+- Updated dependencies [af15f8d]
+- Updated dependencies [af15f8d]
+  - @avalabs/vm-module-types@1.1.0
+
+## 0.12.1
+
+### Patch Changes
+
+- 20e096d: chore: update SDKs
+- Updated dependencies [20e096d]
+  - @avalabs/vm-module-types@0.12.1
+
 ## 0.12.0
 
 ### Patch Changes

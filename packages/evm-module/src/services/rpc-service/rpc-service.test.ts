@@ -178,6 +178,7 @@ describe('RpcService', () => {
         name: 'MOCKY',
         symbol: 'MOCK',
         decimals: 18,
+        reputation: null,
       });
     });
   });

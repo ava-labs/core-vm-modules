@@ -1,5 +1,23 @@
 # @internal/utils
 
+## 0.4.0
+
+### Minor Changes
+
+- 1f54063: feat: return reputation for ERC20 tokens
+
+## 0.3.5
+
+### Patch Changes
+
+- af15f8d: feat: batch signing for EVM, stable release for all
+
+## 0.3.4
+
+### Patch Changes
+
+- 20e096d: chore: update SDKs
+
 ## 0.3.3
 
 ### Patch Changes
