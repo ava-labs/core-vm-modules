@@ -10,6 +10,7 @@ jest.mock('@avalabs/core-wallets-sdk');
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
+  requestPublicKey: jest.fn(),
   requestApproval: mockRequestApproval,
   onTransactionConfirmed: jest.fn(),
   onTransactionReverted: jest.fn(),
