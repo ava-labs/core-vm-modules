@@ -1,9 +1,32 @@
 import Blockaid from '@blockaid/client';
-import { processBalanceChange } from './process-transaction-simulation';
+import { processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
+import { RpcMethod } from '@avalabs/vm-module-types';
 
 jest.mock('@blockaid/client', () => {
   return jest.fn().mockImplementation(() => {
     return {};
+  });
+});
+
+describe('processTransactionSimulation', () => {
+  it('does not mark transactions as suspicious if the simulation result is not present at all', async () => {
+    const params = {
+      from: '0xFromAddress',
+      to: '0xToAddress',
+      value: '0xValue',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: undefined,
+    });
+
+    expect(result).toEqual(expect.objectContaining({ alert: undefined, isSimulationSuccessful: false }));
   });
 });
 
