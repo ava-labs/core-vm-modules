@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.2.1
+
+### Patch Changes
+
+- 682d1a8: fix: falsely malicious transaction validation
+  - @avalabs/vm-module-types@1.2.1
+
 ## 1.2.0
 
 ### Minor Changes
