@@ -38,7 +38,7 @@ export const simulateTransaction = async ({
   provider: JsonRpcBatchInternal;
   proxyApiUrl: string;
 }) => {
-  let simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation'> = {};
+  let simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation'> | undefined;
 
   try {
     simulationResult = await scanTransaction({
@@ -65,7 +65,7 @@ export const processTransactionSimulation = async ({
   params: TransactionParams;
   chainId: number;
   provider: JsonRpcBatchInternal;
-  simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation' | 'gas_estimation'>;
+  simulationResult?: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation' | 'gas_estimation'>;
 }): Promise<TransactionSimulationResult> => {
   let alert: Alert | undefined;
   let balanceChange: BalanceChange | undefined;
@@ -73,22 +73,24 @@ export const processTransactionSimulation = async ({
   let isSimulationSuccessful = false;
   let estimatedGasLimit: number | undefined;
 
-  const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
+  if (simulationResult) {
+    const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
 
-  if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
-    alert = transactionAlerts[AlertType.WARNING];
-  } else if (validation.result_type === 'Malicious') {
-    alert = transactionAlerts[AlertType.DANGER];
-  }
+    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+      alert = transactionAlerts[AlertType.WARNING];
+    } else if (validation.result_type === 'Malicious') {
+      alert = transactionAlerts[AlertType.DANGER];
+    }
 
-  if (simulation?.status === 'Success') {
-    isSimulationSuccessful = true;
-    tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary.exposures);
-    balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
-  }
+    if (simulation?.status === 'Success') {
+      isSimulationSuccessful = true;
+      tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary.exposures);
+      balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
+    }
 
-  if (gasEstimation?.status === 'Success') {
-    estimatedGasLimit = Number(gasEstimation.estimate);
+    if (gasEstimation?.status === 'Success') {
+      estimatedGasLimit = Number(gasEstimation.estimate);
+    }
   }
 
   // If debank parsing failed, check if toAddress is a known ERC20
