@@ -36,12 +36,16 @@ export type DetailedDeriveAddressParams = SimpleDeriveAddressParams & {
    * Type of the derivation path to use.
    * Useful when working with Ledger devices, which support BIP44 and Ledger Live derivation paths.
    */
-  derivationPathType: 'bip44' | 'ledger_live';
+  derivationPathType: DerivationPathType;
 };
 
 export type DeriveAddressParams = SimpleDeriveAddressParams | DetailedDeriveAddressParams;
 
 export type DeriveAddressResponse = Partial<Record<NetworkVMType, string>>;
+
+export type DerivationPathType = 'bip44' | 'ledger_live';
+export type BuildDerivationPathParams = { accountIndex: number; derivationPathType: DerivationPathType };
+export type BuildDerivationPathResponse = Partial<Record<NetworkVMType, string>>;
 
 export type PubKeyType = {
   evm: string;

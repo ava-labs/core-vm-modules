@@ -1,5 +1,12 @@
 import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
-import type { DeriveAddressParams, DeriveAddressResponse, GetAddressParams, GetAddressResponse } from './account';
+import type {
+  BuildDerivationPathParams,
+  BuildDerivationPathResponse,
+  DeriveAddressParams,
+  DeriveAddressResponse,
+  GetAddressParams,
+  GetAddressResponse,
+} from './account';
 import type { GetBalancesParams, GetBalancesResponse } from './balance';
 import { AppName, Environment, type Network } from './common';
 import type { Manifest } from './manifest';
@@ -43,6 +50,7 @@ export interface Module {
    */
   getAddress: (params: GetAddressParams) => Promise<GetAddressResponse>;
   deriveAddress: (params: DeriveAddressParams) => Promise<DeriveAddressResponse>;
+  buildDerivationPath: (params: BuildDerivationPathParams) => BuildDerivationPathResponse;
   getTokens: (network: Network) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
 }

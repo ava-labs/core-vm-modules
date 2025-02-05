@@ -11,6 +11,7 @@ import type {
   ApprovalController,
   ConstructorParams,
   DeriveAddressParams,
+  BuildDerivationPathParams,
 } from '@avalabs/vm-module-types';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -26,6 +27,7 @@ import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitcoin-sign-transaction';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -47,6 +49,10 @@ export class BitcoinModule implements Module {
 
   getAddress({ accountIndex, xpub, walletType, network }: GetAddressParams): Promise<GetAddressResponse> {
     return getAddress({ accountIndex, xpub, network, walletType });
+  }
+
+  buildDerivationPath(params: BuildDerivationPathParams) {
+    return buildDerivationPath(params);
   }
 
   deriveAddress(params: DeriveAddressParams) {

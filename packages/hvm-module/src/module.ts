@@ -16,6 +16,7 @@ import {
   RpcMethod,
   type GetAddressParams,
   type DeriveAddressParams,
+  type BuildDerivationPathParams,
 } from '@avalabs/vm-module-types';
 
 import ManifestJson from '../manifest.json';
@@ -24,6 +25,7 @@ import { hvmGetBalances } from './handlers/get-balances';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { hvmSign } from './handlers/sign-transaction/sign-transaction';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class HvmModule implements Module {
   #approvalController: ApprovalController;
@@ -43,6 +45,10 @@ export class HvmModule implements Module {
   getManifest(): Manifest | undefined {
     const result = parseManifest(ManifestJson);
     return result.success ? result.data : undefined;
+  }
+
+  buildDerivationPath(params: BuildDerivationPathParams) {
+    return buildDerivationPath(params);
   }
 
   deriveAddress(params: DeriveAddressParams) {

@@ -16,6 +16,7 @@ import {
   type NetworkFeeParam,
   type DeriveAddressParams,
   type DeriveAddressResponse,
+  type BuildDerivationPathParams,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTokens } from './handlers/get-tokens/get-tokens';
@@ -36,6 +37,7 @@ import { getProvider } from './utils/get-provider';
 import { getCoreHeaders } from '@internal/utils';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -66,6 +68,10 @@ export class EvmModule implements Module {
 
   getAddress({ accountIndex, xpub, walletType }: GetAddressParams): Promise<GetAddressResponse> {
     return getAddress({ accountIndex, xpub, walletType });
+  }
+
+  buildDerivationPath(params: BuildDerivationPathParams) {
+    return buildDerivationPath(params);
   }
 
   deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {

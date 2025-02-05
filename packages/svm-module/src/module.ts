@@ -2,6 +2,7 @@ import {
   parseManifest,
   type AppInfo,
   type ApprovalController,
+  type BuildDerivationPathParams,
   type ConstructorParams,
   type DeriveAddressParams,
   type Module,
@@ -14,6 +15,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -42,6 +44,10 @@ export class SvmModule implements Module {
   // TODO
   getAddress() {
     return Promise.resolve({});
+  }
+
+  buildDerivationPath(params: BuildDerivationPathParams) {
+    return buildDerivationPath(params);
   }
 
   deriveAddress(params: DeriveAddressParams) {

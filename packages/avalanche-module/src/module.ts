@@ -14,6 +14,7 @@ import type {
   AppInfo,
   DeriveAddressParams,
   DeriveAddressResponse,
+  BuildDerivationPathParams,
 } from '@avalabs/vm-module-types';
 import { Environment, parseManifest, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -33,6 +34,7 @@ import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -89,6 +91,10 @@ export class AvalancheModule implements Module {
 
   getTokens(_: Network) {
     return Promise.resolve([]);
+  }
+
+  buildDerivationPath(params: BuildDerivationPathParams) {
+    return buildDerivationPath(params);
   }
 
   async deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {
