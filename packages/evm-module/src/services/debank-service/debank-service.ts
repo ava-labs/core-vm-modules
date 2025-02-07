@@ -1,5 +1,5 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface, TokenId } from '../../handlers/get-balances/balance-service-interface';
+import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import {

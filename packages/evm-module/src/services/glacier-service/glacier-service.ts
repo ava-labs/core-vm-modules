@@ -7,7 +7,6 @@ import {
   Erc721TokenBalance,
   Glacier,
 } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
   type Error,
@@ -18,8 +17,10 @@ import {
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { DEFAULT_DECIMALS } from '../../constants';
-import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
+
+import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
+import { DEFAULT_DECIMALS } from '@src/constants';
+import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';

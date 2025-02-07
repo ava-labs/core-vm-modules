@@ -7,7 +7,7 @@
     "incremental": false, // Need to turn off because of tsup dts
     "paths": {
       "@src/*": ["src/*"]
-    },
+    }
   },
   "include": ["src"],
   "references": [
