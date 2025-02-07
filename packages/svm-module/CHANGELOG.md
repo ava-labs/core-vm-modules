@@ -1,5 +1,18 @@
 # @avalabs/svm-module
 
+## 1.4.0
+
+### Minor Changes
+
+- 8969b33: Add EIP-2930 support
+
+### Patch Changes
+
+- 0954386: Fix broken lock file
+- Updated dependencies [0954386]
+- Updated dependencies [8969b33]
+  - @avalabs/vm-module-types@1.4.0
+
 ## 1.3.0
 
 ### Patch Changes
