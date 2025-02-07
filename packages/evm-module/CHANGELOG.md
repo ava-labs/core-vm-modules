@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 1.3.0
+
+### Minor Changes
+
+- b7f273c: feat: eth_suggestPriceOptions for c-chain
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.3.0
+
 ## 1.2.1
 
 ### Patch Changes
