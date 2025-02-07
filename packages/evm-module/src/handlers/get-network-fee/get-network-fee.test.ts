@@ -34,6 +34,87 @@ describe('get-network-fee', () => {
     await expect(getNetworkFee(params)).rejects.toThrow('Pre-EIP-1559 networks are not supported');
   });
 
+  describe('for C-Chain', () => {
+    const cChainParams = {
+      ...params,
+      chainId: 43114,
+    };
+
+    const suggestedPrices = {
+      slow: {
+        maxPriorityFeePerGas: '0x1',
+        maxFeePerGas: '0x3b9aca01',
+      },
+      normal: {
+        maxPriorityFeePerGas: '0x1',
+        maxFeePerGas: '0x3b9aca01',
+      },
+      fast: {
+        maxPriorityFeePerGas: '0x1',
+        maxFeePerGas: '0x3e95ba81',
+      },
+    };
+
+    beforeEach(() => {
+      jest.spyOn(JsonRpcProvider.prototype, 'getBlock').mockImplementationOnce(async () => {
+        return {
+          baseFeePerGas: 1000000000n,
+        } as Block;
+      });
+    });
+
+    it('uses eth_suggestPriceOptions', async () => {
+      jest.spyOn(JsonRpcProvider.prototype, 'send').mockImplementationOnce(async () => {
+        return suggestedPrices;
+      });
+
+      const fee = await getNetworkFee({ ...cChainParams });
+
+      expect(JsonRpcProvider.prototype.send).toHaveBeenCalledWith('eth_suggestPriceOptions', []);
+      expect(fee).toEqual({
+        baseFee: BigInt(suggestedPrices.normal.maxFeePerGas),
+        low: {
+          maxFeePerGas: BigInt(suggestedPrices.slow.maxFeePerGas),
+          maxPriorityFeePerGas: BigInt(suggestedPrices.slow.maxPriorityFeePerGas),
+        },
+        medium: {
+          maxFeePerGas: BigInt(suggestedPrices.normal.maxFeePerGas),
+          maxPriorityFeePerGas: BigInt(suggestedPrices.normal.maxPriorityFeePerGas),
+        },
+        high: {
+          maxFeePerGas: BigInt(suggestedPrices.fast.maxFeePerGas),
+          maxPriorityFeePerGas: BigInt(suggestedPrices.fast.maxPriorityFeePerGas),
+        },
+        isFixedFee: false,
+        displayDecimals: 9,
+      });
+    });
+
+    it('falls back to regular fee fetching if eth_suggestPriceOptions fails', async () => {
+      jest.spyOn(JsonRpcProvider.prototype, 'send').mockRejectedValueOnce(new Error('Oopsies'));
+
+      const fee = await getNetworkFee({ ...cChainParams });
+
+      expect(fee).toEqual({
+        baseFee: 3000000000n,
+        low: {
+          maxFeePerGas: 3500000000n,
+          maxPriorityFeePerGas: 500000000n,
+        },
+        medium: {
+          maxFeePerGas: 5000000000n,
+          maxPriorityFeePerGas: 2000000000n,
+        },
+        high: {
+          maxFeePerGas: 6000000000n,
+          maxPriorityFeePerGas: 3000000000n,
+        },
+        isFixedFee: false,
+        displayDecimals: 9,
+      });
+    });
+  });
+
   it('should return correct network fees based on maxFeePerGas returned from the last block and the default gas multiplier for the unknown network', async () => {
     jest.spyOn(JsonRpcProvider.prototype, 'getBlock').mockImplementationOnce(async () => {
       return {
