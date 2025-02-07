@@ -11,6 +11,14 @@ export const transactionSchema = z.object({
   maxPriorityFeePerGas: z.string().startsWith('0x').optional(),
   nonce: z.string().optional(),
   chainId: z.string().optional().or(z.number().optional()),
+  accessList: z
+    .array(
+      z.object({
+        address: z.string().startsWith('0x'),
+        storageKeys: z.array(z.string()),
+      }),
+    )
+    .optional(),
 });
 
 export type TransactionParams = z.infer<typeof transactionSchema>;

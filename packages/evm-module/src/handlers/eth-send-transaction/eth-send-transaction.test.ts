@@ -94,6 +94,7 @@ const testParams = {
   nonce: '12',
   gas: '0x5208',
   chainId: '0x1',
+  accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
 };
 const testDapp = { url: 'https://example.com', name: 'dapp', icon: 'icon' };
 const testRequestParams = () => ({
@@ -163,6 +164,7 @@ const signingData = {
     data: '0xdata',
     value: '0xvalue',
     chainId: 1,
+    accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
   },
 };
 
@@ -203,7 +205,16 @@ describe('eth_sendTransaction handler', () => {
     });
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12' }],
+      data: [
+        {
+          from: '0xfrom',
+          to: '0xto',
+          data: '0xdata',
+          value: '0xvalue',
+          nonce: '12',
+          accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+        },
+      ],
     });
     mockEstimateGasLimit.mockResolvedValue(21000);
 
@@ -221,7 +232,13 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockEstimateGasLimit).toHaveBeenCalledWith({
       provider: mockProvider,
-      transactionParams: { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' },
+      transactionParams: {
+        from: '0xfrom',
+        to: '0xto',
+        data: '0xdata',
+        value: '0xvalue',
+        accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+      },
     });
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -243,7 +260,16 @@ describe('eth_sendTransaction handler', () => {
     });
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', gas: '0x5208' }],
+      data: [
+        {
+          from: '0xfrom',
+          to: '0xto',
+          data: '0xdata',
+          value: '0xvalue',
+          gas: '0x5208',
+          accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+        },
+      ],
     });
     mockGetNonce.mockResolvedValue(12);
 
@@ -282,7 +308,15 @@ describe('eth_sendTransaction handler', () => {
     });
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' }],
+      data: [
+        {
+          from: '0xfrom',
+          to: '0xto',
+          data: '0xdata',
+          value: '0xvalue',
+          accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+        },
+      ],
     });
     mockGetNonce.mockResolvedValue(12);
     mockEstimateGasLimit.mockResolvedValue(21000);
@@ -305,7 +339,13 @@ describe('eth_sendTransaction handler', () => {
 
     expect(mockEstimateGasLimit).toHaveBeenCalledWith({
       provider: mockProvider,
-      transactionParams: { from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue' },
+      transactionParams: {
+        from: '0xfrom',
+        to: '0xto',
+        data: '0xdata',
+        value: '0xvalue',
+        accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+      },
     });
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -381,7 +421,17 @@ describe('eth_sendTransaction handler', () => {
 
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
+      data: [
+        {
+          from: '0xfrom',
+          to: '0xto',
+          data: '0xdata',
+          value: '0xvalue',
+          nonce: '12',
+          gas: '0x5208',
+          accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+        },
+      ],
     });
 
     const updateTx = jest.fn();
@@ -601,7 +651,17 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
 
   mockParseRequestParams.mockReturnValue({
     success: true,
-    data: [{ from: '0xfrom', to: '0xto', data: '0xdata', value: '0xvalue', nonce: '12', gas: '0x5208' }],
+    data: [
+      {
+        from: '0xfrom',
+        to: '0xto',
+        data: '0xdata',
+        value: '0xvalue',
+        nonce: '12',
+        gas: '0x5208',
+        accessList: [{ address: '0x123', storageKeys: ['0xkey1', '0xkey2'] }],
+      },
+    ],
   });
 
   const requestParams = testRequestParams();
