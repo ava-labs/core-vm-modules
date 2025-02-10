@@ -23,6 +23,11 @@ import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
 import { transactionAlerts } from './transaction-alerts';
 
+type TokenDetail = { asset: { address: string } };
+type ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace & TokenDetail;
+type Trace = Blockaid.Evm.TransactionSimulation.AccountSummary['traces']['0'];
+type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
+
 export const simulateTransaction = async ({
   rpcMethod,
   dAppUrl,
@@ -84,7 +89,7 @@ export const processTransactionSimulation = async ({
 
     if (simulation?.status === 'Success') {
       isSimulationSuccessful = true;
-      tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary.exposures);
+      tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
 
@@ -103,10 +108,32 @@ export const processTransactionSimulation = async ({
   return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
+const isExposureTrace = (trace: Trace): trace is ExposureTrace => {
+  return (trace as ExposureTrace).trace_type !== undefined;
+};
+
+const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, ExposureTrace> => {
+  return traces.reduce(
+    (accumulator, trace) => {
+      if (!isExposureTrace(trace)) {
+        return accumulator;
+      }
+      return {
+        [`${trace.spender}.${trace.asset.address}`]: trace,
+      };
+    },
+    {} as Record<string, ExposureTrace>,
+  );
+};
+
 const processTokenApprovals = (
   rpcMethod: RpcMethod,
-  exposures: Blockaid.AddressAssetExposure[],
+  accountSummary: Blockaid.Evm.TransactionSimulation.AccountSummary,
 ): TokenApprovals | undefined => {
+  const { exposures, traces } = accountSummary;
+
+  const mappedTraces = mapExposureTracesToSpenderAsset(traces);
+
   const approvals: TokenApproval[] = [];
 
   for (const exposurePerAsset of exposures) {
@@ -125,11 +152,12 @@ const processTokenApprovals = (
       } else {
         for (const exposure of exposurePerSpender.exposure) {
           if ('raw_value' in exposure) {
+            const traceForExposure = mappedTraces[`${spenderAddress}.${token.address}`];
             approvals.push({
               token,
               spenderAddress,
-              value: exposure.raw_value,
-              usdPrice: exposure.usd_price,
+              value: traceForExposure?.exposed.raw_value ?? exposure.raw_value,
+              usdPrice: traceForExposure?.exposed?.usd_price ?? exposure.usd_price,
               logoUri: token.logoUri,
             });
           } else {
@@ -157,7 +185,7 @@ const processTokenApprovals = (
   return { isEditable, approvals };
 };
 
-export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
+export const processBalanceChange = (assetDiffs: AssetDiffs): BalanceChange | undefined => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
 
@@ -168,7 +196,7 @@ export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceC
   return { ins, outs };
 };
 
-const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out'): TokenDiff[] => {
+const processAssetDiffs = (assetDiffs: AssetDiffs, type: 'in' | 'out'): TokenDiff[] => {
   return (
     assetDiffs
       .filter((assetDiff) => assetDiff[type].length > 0)
@@ -302,7 +330,7 @@ export const processJsonRpcSimulation = async ({
     }
 
     if (simulation?.status === 'Success') {
-      tokenApprovals = processTokenApprovals(request.method, simulation.account_summary.exposures);
+      tokenApprovals = processTokenApprovals(request.method, simulation.account_summary);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
   } catch (error) {
