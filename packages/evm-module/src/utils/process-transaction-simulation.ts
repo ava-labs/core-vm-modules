@@ -26,7 +26,7 @@ import { transactionAlerts } from './transaction-alerts';
 type TokenDetail = { asset: { address: string } };
 type ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace & TokenDetail;
 type Trace = Blockaid.Evm.TransactionSimulation.AccountSummary['traces']['0'];
-type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
+export type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
 
 export const simulateTransaction = async ({
   rpcMethod,
