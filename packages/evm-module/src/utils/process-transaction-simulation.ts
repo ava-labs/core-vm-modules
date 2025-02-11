@@ -113,6 +113,10 @@ const isExposureTrace = (trace: Trace): trace is ExposureTrace => {
 };
 
 const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, ExposureTrace> => {
+  if (traces === undefined || traces.length === 0) {
+    return {};
+  }
+
   return traces.reduce(
     (accumulator, trace) => {
       if (!isExposureTrace(trace)) {
