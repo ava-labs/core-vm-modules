@@ -21,7 +21,6 @@ import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
@@ -51,8 +50,7 @@ export const avalancheSendTransaction = async ({
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
     const isTestnet = network.isTestnet ?? false;
-    // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
-    const provider = await getProvider({ isTestnet, isDevnet: isDevnet(network) });
+    const provider = await getProvider({ isTestnet });
     const currentAddress = request.context?.['currentAddress'];
 
     if (!currentAddress || typeof currentAddress !== 'string') {
@@ -71,7 +69,7 @@ export const avalancheSendTransaction = async ({
       : await Avalanche.getUtxosByTxFromGlacier({
           transactionHex,
           chainAlias,
-          network: isDevnet(network) ? GlacierNetwork.DEVNET : isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
+          network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
           token: GLACIER_API_KEY,
           headers: getCoreHeaders(appInfo),
