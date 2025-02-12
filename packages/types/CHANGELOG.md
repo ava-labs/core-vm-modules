@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 1.4.1
+
+### Patch Changes
+
+- 0a75fcc: remove devnet logic
+- 0a75fcc: upgrade internal sdks
+
 ## 1.4.0
 
 ### Minor Changes
