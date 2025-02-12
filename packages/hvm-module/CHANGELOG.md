@@ -1,5 +1,14 @@
 # @avalabs/hvm-module
 
+## 1.4.1
+
+### Patch Changes
+
+- 0a75fcc: upgrade @avalabs/core-utils-sdk in hvm module
+- Updated dependencies [0a75fcc]
+- Updated dependencies [0a75fcc]
+  - @avalabs/vm-module-types@1.4.1
+
 ## 1.4.0
 
 ### Minor Changes
