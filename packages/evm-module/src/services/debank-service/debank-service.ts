@@ -90,6 +90,7 @@ export class DeBankService implements BalanceServiceInterface {
     if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
 
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
+    const exchangeRates = await getExchangeRates();
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
     for (const tokenBalance of tokenBalances) {
@@ -100,7 +101,6 @@ export class DeBankService implements BalanceServiceInterface {
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
-      const exchangeRates = await getExchangeRates();
       const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
       const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * tokenBalance.price : undefined;
       const balanceCurrencyDisplayValue = priceInCurrency
