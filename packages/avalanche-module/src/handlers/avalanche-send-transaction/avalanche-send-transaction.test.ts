@@ -405,7 +405,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams(testRequestParams);
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'AVM');
 
@@ -422,7 +422,7 @@ describe('avalanche_sendTransaction handler', () => {
       });
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'AVM');
 
@@ -436,7 +436,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams({ transactionHex: '0x000142', chainAlias: 'C' });
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
 
       expect(issueTxHexMock).toHaveBeenCalledWith(testSignedTxHash, 'EVM');
 
@@ -450,7 +450,7 @@ describe('avalanche_sendTransaction handler', () => {
       const params = testParams(testRequestParams);
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
 
       expect(response).toStrictEqual({ result: testTxHash });
 
@@ -467,7 +467,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       const response = await avalancheSendTransaction(params);
 
-      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true, isDevnet: false });
+      expect(mockGetProvider).toHaveBeenCalledWith({ isTestnet: true });
 
       expect(response).toStrictEqual({ result: testTxHash });
 

@@ -1,5 +1,15 @@
 # @avalabs/bitcoin-module
 
+## 1.4.1
+
+### Patch Changes
+
+- 0a75fcc: remove devnet logic
+- 0a75fcc: upgrade internal sdks
+- Updated dependencies [0a75fcc]
+- Updated dependencies [0a75fcc]
+  - @avalabs/vm-module-types@1.4.1
+
 ## 1.4.0
 
 ### Minor Changes
