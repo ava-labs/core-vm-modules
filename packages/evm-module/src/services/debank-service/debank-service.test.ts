@@ -133,11 +133,12 @@ describe('DeBankService', () => {
       const mockTokenList: DeBankToken[] = [
         { id: '0x1', symbol: 'DAI' } as unknown as DeBankToken,
         { id: '0x2', symbol: 'USDT' } as unknown as DeBankToken,
+        { id: '0x3', symbol: 'DOGE' } as unknown as DeBankToken,
       ];
       const mockTokenBalance1: DeBankToken = {
         amount: 50000000000000000000n,
         chain: 'eth',
-        is_core: false,
+        is_core: true,
         is_wallet: false,
         optimized_symbol: 'DAI',
         protocol_id: '',
@@ -154,7 +155,7 @@ describe('DeBankService', () => {
         amount: 100000000000000000000n,
         chain: 'eth',
         id: '0x2',
-        is_core: false,
+        is_core: true,
         is_wallet: false,
         optimized_symbol: 'USDT',
         protocol_id: '',
@@ -166,12 +167,35 @@ describe('DeBankService', () => {
         logo_url: 'http://usdt.logo.url',
         price: 1,
       };
+      const mockTokenBalance3: DeBankToken = {
+        amount: 100000000000000000000n,
+        chain: 'eth',
+        id: '0x3',
+        is_core: false,
+        is_wallet: false,
+        optimized_symbol: 'DOGE',
+        protocol_id: '',
+        time_at: 0,
+        raw_amount: 100000000000000000000n,
+        decimals: 18,
+        symbol: 'DOGE',
+        name: 'Doge',
+        logo_url: 'http://doge.logo.url',
+        price: 1,
+      };
 
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 42161, id: 'arb' } as unknown as DeBankChainInfo]);
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenList.mockResolvedValue(mockTokenList);
-      mockDeBank.getTokenBalance.mockResolvedValueOnce(mockTokenBalance1).mockResolvedValueOnce(mockTokenBalance2);
-      mockDeBank.getTokensBalanceOnChain.mockResolvedValueOnce([mockTokenBalance1, mockTokenBalance2]);
+      mockDeBank.getTokenBalance
+        .mockResolvedValueOnce(mockTokenBalance1)
+        .mockResolvedValueOnce(mockTokenBalance2)
+        .mockResolvedValueOnce(mockTokenBalance3);
+      mockDeBank.getTokensBalanceOnChain.mockResolvedValueOnce([
+        mockTokenBalance1,
+        mockTokenBalance2,
+        mockTokenBalance3,
+      ]);
 
       const result = await deBankService.listErc20Balances({
         chainId: 42161,
