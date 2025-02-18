@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/hvm-module",
-  "version": "1.3.0",
+  "version": "1.4.1",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -21,7 +21,7 @@
     "@avalabs/vm-module-types": "workspace:*",
     "hypersdk-client": "0.4.16",
     "@noble/hashes": "1.5.0",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.30",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.34",
     "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8"
   },
