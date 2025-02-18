@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.4.2
+
+### Patch Changes
+
+- 8af7654: Filtering out the ethereum chain from the supported chain list in the Glacier service so the DeBank service can provide the data
+  - @avalabs/vm-module-types@1.4.2
+
 ## 1.4.1
 
 ### Patch Changes
