@@ -107,8 +107,8 @@ export class DeBankService implements BalanceServiceInterface {
     const exchangeRates = await getExchangeRates();
 
     for (const tokenBalance of tokenBalances) {
-      //skip native token
-      if (tokenBalance.id === chainInfo.native_token_id) {
+      // skip native token or tokens which are not core tokens
+      if (tokenBalance.id === chainInfo.native_token_id || tokenBalance.is_core === false) {
         continue;
       }
 
