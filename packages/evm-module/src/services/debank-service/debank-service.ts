@@ -1,5 +1,5 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface, TokenId } from '../../handlers/get-balances/balance-service-interface';
+import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import {
@@ -9,7 +9,7 @@ import {
   type Error,
   type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { DeBank } from './de-bank';
+import { DeBank, type DeBankChainInfo } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
 
@@ -24,6 +24,25 @@ export class DeBankService implements BalanceServiceInterface {
     return this.#deBank.isNetworkSupported(chainId);
   }
 
+  async #getChainInfo(chainId: number): Promise<{ chainInfo: DeBankChainInfo; chainIdString: string }> {
+    const chainList = await this.#deBank.getChainList();
+    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
+    if (!chainIdString) {
+      throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    }
+
+    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
+
+    if (!chainInfo) {
+      throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    }
+
+    return {
+      chainInfo,
+      chainIdString,
+    };
+  }
+
   async getNativeBalance({
     chainId,
     address,
@@ -34,11 +53,8 @@ export class DeBankService implements BalanceServiceInterface {
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('getNativeBalance: not valid address: ' + address);
-    const chainList = await this.#deBank.getChainList();
-    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
-    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
-    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
+
     const tokenId = chainInfo.native_token_id;
     const nativeTokenBalance = await this.#deBank.getTokenBalance({ address, chainId: chainIdString, tokenId });
     const tokenUnit = new TokenUnit(
@@ -83,24 +99,21 @@ export class DeBankService implements BalanceServiceInterface {
     pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
-    const chainList = await this.#deBank.getChainList();
-    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
-    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
-    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
 
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
+    const exchangeRates = await getExchangeRates();
+
     for (const tokenBalance of tokenBalances) {
-      //skip native token
-      if (tokenBalance.id === chainInfo.native_token_id) {
+      // skip native token or tokens which are not core tokens
+      if (tokenBalance.id === chainInfo.native_token_id || tokenBalance.is_core === false) {
         continue;
       }
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
-      const exchangeRates = await getExchangeRates();
       const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
       const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * tokenBalance.price : undefined;
       const balanceCurrencyDisplayValue = priceInCurrency
