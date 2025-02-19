@@ -77,8 +77,9 @@ export async function getNetworkFee(network: NetworkFeeParam, proxyApiUrl: strin
   }
 
   const sortedFees = ensureEnoughData(feesRaw.map((block) => Number(block.prioritizationFee)));
-  const minFeeInRecentBlocks = Math.min(...sortedFees);
-  const maxFeeInRecentBlocks = Math.max(...sortedFees);
+  // We know the array is not empty and sorted, so we can safely access the first and last elements
+  const minFeeInRecentBlocks = sortedFees.at(0)!;
+  const maxFeeInRecentBlocks = sortedFees.at(-1)!;
   const midIndex = Math.floor(sortedFees.length / 2);
   const medianFee =
     sortedFees.length % 2 === 1
