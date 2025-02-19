@@ -2,6 +2,10 @@
   "extends": "@internal/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"]
+    },
     "declaration": false,
     "incremental": false // Need to turn off because of tsup dts
   },
