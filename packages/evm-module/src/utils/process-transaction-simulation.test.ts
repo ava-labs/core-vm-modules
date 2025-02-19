@@ -59,6 +59,35 @@ describe('processTransactionSimulation', () => {
       }),
     );
   });
+
+  it('should disregard asset traces in the traces array', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.simulation.account_summary.traces = clonedSimulation.simulation.account_summary.traces.map(
+      (trace) => ({
+        ...trace,
+        type: 'NativeAssetTrace',
+        trace_type: 'AssetTrace',
+      }),
+    );
+
+    const params = {
+      from: '0xFromAddress',
+      to: '0xToAddress',
+      value: '0xValue',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = (await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    })) as { tokenApprovals: TokenApprovals };
+
+    expect(tokenApprovals).toBeUndefined();
+  });
 });
 
 describe('processBalanceChange', () => {
