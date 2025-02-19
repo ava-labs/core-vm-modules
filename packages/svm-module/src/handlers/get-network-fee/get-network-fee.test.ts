@@ -1,12 +1,12 @@
 import { rpcErrors } from '@metamask/rpc-errors';
 import type { Network } from '@avalabs/vm-module-types';
 
-import { getProvider } from '../../utils/get-provider';
-import { SOL_DECIMALS, SOLANA_MAINNET_CAIP2_ID } from '../../constants';
+import { getProvider } from '@src/utils/get-provider';
+import { SOL_DECIMALS, SOLANA_MAINNET_CAIP2_ID } from '@src/constants';
 
 import { DEFAULT_PRIORITY_FEE, getNetworkFee } from './get-network-fee';
 
-jest.mock('../../utils/get-provider');
+jest.mock('@src/utils/get-provider');
 
 describe('src/handlers/get-network-fee', () => {
   const network = { caipId: SOLANA_MAINNET_CAIP2_ID } as unknown as Network;
