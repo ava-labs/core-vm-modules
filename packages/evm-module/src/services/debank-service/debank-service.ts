@@ -102,9 +102,9 @@ export class DeBankService implements BalanceServiceInterface {
     const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
 
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
+    const exchangeRates = await getExchangeRates();
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
-    const exchangeRates = await getExchangeRates();
 
     for (const tokenBalance of tokenBalances) {
       // skip native token or tokens which are not core tokens

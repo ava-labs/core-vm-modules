@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.4.3
+
+### Patch Changes
+
+- e8e9306: chore: release optimization fix
+  - @avalabs/vm-module-types@1.4.3
+
 ## 1.4.2
 
 ### Patch Changes
