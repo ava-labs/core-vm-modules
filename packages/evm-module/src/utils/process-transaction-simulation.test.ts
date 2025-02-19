@@ -54,7 +54,7 @@ describe('processTransactionSimulation', () => {
     expect(testSimulationResult).toEqual(
       expect.objectContaining({
         spenderAddress: '0xSpenderAddress',
-        usdPrice: 111110555.55555545,
+        usdPrice: '111110555.55555545',
         value: '0x650e124ef1c7',
       }),
     );

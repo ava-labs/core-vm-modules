@@ -23,8 +23,18 @@ import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
 import { transactionAlerts } from './transaction-alerts';
 
-type TokenDetail = { asset: { address: string } };
-type ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace & TokenDetail;
+type Erc20ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace;
+type Erc721ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc721ExposureTrace;
+type Erc1155ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc1155ExposureTrace;
+
+/*
+ * Although in the type definition they don't specify it, but for traces they are returning the asset as well:
+ * https://docs.blockaid.io/changelog/november-12-2024#account-traces
+ * */
+type ExposureTrace =
+  | (Erc20ExposureTrace & { asset: Blockaid.Evm.Erc20TokenDetails })
+  | (Erc721ExposureTrace & { asset: Blockaid.Evm.Erc721TokenDetails })
+  | (Erc1155ExposureTrace & { asset: Blockaid.Evm.Erc1155TokenDetails });
 type Trace = Blockaid.Evm.TransactionSimulation.AccountSummary['traces']['0'];
 export type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
 
@@ -109,8 +119,11 @@ export const processTransactionSimulation = async ({
 };
 
 const isExposureTrace = (trace: Trace): trace is ExposureTrace => {
-  return (trace as ExposureTrace).trace_type !== undefined;
+  return (trace as ExposureTrace).trace_type === 'ExposureTrace';
 };
+
+const normalizeAddresses = (spender: string, assetAddress: string): string =>
+  `${spender.toLowerCase()}.${assetAddress.toLowerCase()}`;
 
 const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, ExposureTrace> => {
   if (traces === undefined || traces.length === 0) {
@@ -123,7 +136,7 @@ const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, Exposu
         return accumulator;
       }
       return {
-        [`${trace.spender}.${trace.asset.address}`]: trace,
+        [normalizeAddresses(trace.spender, trace.asset.address)]: trace,
       };
     },
     {} as Record<string, ExposureTrace>,
@@ -134,48 +147,44 @@ const processTokenApprovals = (
   rpcMethod: RpcMethod,
   accountSummary: Blockaid.Evm.TransactionSimulation.AccountSummary,
 ): TokenApprovals | undefined => {
-  const { exposures, traces } = accountSummary;
+  const { traces } = accountSummary;
 
-  const mappedTraces = mapExposureTracesToSpenderAsset(traces);
+  const mappedExposureTraces = mapExposureTracesToSpenderAsset(traces);
 
-  const approvals: TokenApproval[] = [];
-
-  for (const exposurePerAsset of exposures) {
-    const token = convertAssetToNetworkContractToken(exposurePerAsset.asset);
-    if (!token) {
-      continue;
-    }
-
-    for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
-      if (exposurePerSpender.exposure.length === 0) {
-        approvals.push({
-          token,
-          spenderAddress,
-          logoUri: token.logoUri,
-        });
-      } else {
-        for (const exposure of exposurePerSpender.exposure) {
-          if ('raw_value' in exposure) {
-            const traceForExposure = mappedTraces[`${spenderAddress}.${token.address}`];
-            approvals.push({
-              token,
-              spenderAddress,
-              value: traceForExposure?.exposed.raw_value ?? exposure.raw_value,
-              usdPrice: traceForExposure?.exposed?.usd_price ?? exposure.usd_price,
-              logoUri: token.logoUri,
-            });
-          } else {
-            approvals.push({
-              token,
-              spenderAddress,
-              logoUri: exposure.logo_url,
-              usdPrice: exposure.usd_price,
-            });
-          }
-        }
+  const approvals = Object.entries(mappedExposureTraces)
+    .map(([_, trace]) => {
+      const token = convertAssetToNetworkContractToken(trace.asset);
+      if (!token) {
+        return;
       }
-    }
-  }
+
+      const tokenApproval: TokenApproval = {
+        token,
+        spenderAddress: trace.spender,
+        logoUri: token.logoUri,
+      };
+
+      if (trace.type === 'ERC20ExposureTrace') {
+        const {
+          exposed: { raw_value, usd_price },
+        } = trace as Erc20ExposureTrace;
+
+        tokenApproval.value = raw_value;
+        tokenApproval.usdPrice = `${usd_price}`;
+      }
+
+      if (trace.type === 'ERC721ExposureTrace') {
+        const {
+          exposed: { usd_price, amount },
+        } = trace as Erc721ExposureTrace;
+
+        tokenApproval.value = `${amount}`;
+        tokenApproval.usdPrice = `${usd_price}`;
+      }
+
+      return tokenApproval;
+    })
+    .filter(Boolean) as TokenApproval[];
 
   if (approvals.length === 0) {
     return undefined;
