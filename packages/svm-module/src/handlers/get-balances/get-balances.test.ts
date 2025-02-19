@@ -1,14 +1,14 @@
 import { TokenType, type Network } from '@avalabs/vm-module-types';
 
-import { MoralisService } from '../../utils/moralis-service/moralis-service';
-import { getNetworkName } from '../../utils/get-network-name';
-import { SOL_DECIMALS } from '../../constants';
+import { MoralisService } from '@src/utils/moralis-service';
+import { getNetworkName } from '@src/utils/get-network-name';
+import { SOL_DECIMALS } from '@src/constants';
 
 import { getBalances } from './get-balances';
 import type { TokenService } from '@internal/utils';
 
-jest.mock('../../utils/moralis-service/moralis-service');
-jest.mock('../../utils/get-network-name');
+jest.mock('@src/utils/moralis-service');
+jest.mock('@src/utils/get-network-name');
 
 describe('src/handlers/get-balances', () => {
   const mockMoralisService = {

@@ -1,6 +1,6 @@
 import { fetchAndVerify } from '@internal/utils/src/utils/fetch-and-verify';
 
-import type { SolanaNetworkName } from '../../types';
+import type { SolanaNetworkName } from '@src/types';
 
 import { PORTFOLIO_SCHEMA, type PortfolioResponse } from './moralis-schemas';
 

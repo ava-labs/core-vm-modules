@@ -1,8 +1,8 @@
 import { type NetworkFeeParam, type NetworkFees } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
-import { getProvider } from '../../utils/get-provider';
-import { SOL_DECIMALS } from '../../constants';
+import { getProvider } from '@src/utils/get-provider';
+import { SOL_DECIMALS } from '@src/constants';
 
 const LamportsMultiplier = 1e6;
 export const DEFAULT_PRIORITY_FEE = {

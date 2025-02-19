@@ -12,9 +12,9 @@ import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import type { TokenService } from '@internal/utils';
 import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
-import { SOL_DECIMALS } from '../../constants';
-import { MoralisService } from '../../utils/moralis-service';
-import { getNetworkName } from '../../utils/get-network-name';
+import { SOL_DECIMALS } from '@src/constants';
+import { MoralisService } from '@src/utils/moralis-service';
+import { getNetworkName } from '@src/utils/get-network-name';
 
 type GetSolanaBalancesResponse = Record<
   string,
