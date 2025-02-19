@@ -139,8 +139,8 @@ importers:
   packages/avalanche-module:
     dependencies:
       '@avalabs/avalanchejs':
-        specifier: 4.1.2-alpha.3
-        version: 4.1.2-alpha.3
+        specifier: 4.2.0-alpha.1
+        version: 4.2.0-alpha.1
       '@avalabs/core-chains-sdk':
         specifier: 3.1.0-alpha.37
         version: 3.1.0-alpha.37(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
