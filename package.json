@@ -28,6 +28,9 @@
     "turbo": "1.10.12",
     "typescript": "5.2.2"
   },
+  "engines": {
+    "node": "20.11.0"
+  },
   "packageManager": "pnpm@8.6.10",
   "volta": {
     "node": "20.11.0",

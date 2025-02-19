@@ -88,7 +88,8 @@ export class TokenService {
           useCoingeckoProxy,
         }),
       );
-    } catch {
+    } catch (err) {
+      console.error(err);
       data = undefined;
     }
     this.#storage?.set?.(cacheId, data);
@@ -107,7 +108,7 @@ export class TokenService {
     useCoingeckoProxy?: boolean;
   }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
-      return new CoingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses({
+      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses({
         id: assetPlatformId,
         contract_addresses: tokenAddresses,
         vs_currencies: [currency],
@@ -115,6 +116,7 @@ export class TokenService {
         include_24hr_vol: true,
         include_24hr_change: true,
       });
+      return this.transformSimplePriceResponse(rawData, [currency]);
     }
 
     return simpleTokenPrice(coingeckoBasicClient, {

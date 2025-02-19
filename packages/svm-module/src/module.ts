@@ -5,27 +5,25 @@ import {
   type BuildDerivationPathParams,
   type ConstructorParams,
   type DeriveAddressParams,
+  type GetBalancesParams,
   type Module,
   type Network,
-  type NetworkFees,
+  type NetworkFeeParam,
   type RpcRequest,
   type SVMProvider,
 } from '@avalabs/vm-module-types';
-// import {
-//   type SolanaRpcApi,
-//   type SolanaRpcApiDevnet,
-//   type SolanaRpcApiForAllClusters,
-//   type SolanaRpcApiMainnet,
-//   type SolanaRpcApiTestnet,
-// } from '@solana/rpc-api';
-// import { type Rpc, type RpcDevnet, type RpcMainnet, type RpcTestnet } from '@solana/rpc';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getProvider } from './utils/get-provider';
+
+import { TokenService } from '@internal/utils';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { deriveAddress } from './handlers/derive-address/derive-address';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getTokens } from './handlers/get-tokens/get-tokens';
+import { getBalances } from './handlers/get-balances/get-balances';
+import { getProvider } from './utils/get-provider';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -46,13 +44,30 @@ export class SvmModule implements Module {
     this.#appInfo;
   }
 
-  getProvider(network: Network): Promise<SVMProvider> {
-    const provider = getProvider(network);
-    return new Promise((resolve, reject) => {
-      if (provider) {
-        resolve(provider);
-      }
-      reject('We cannot get the SVM provider');
+  async getProvider(network: Network): Promise<SVMProvider> {
+    if (!network.caipId) {
+      throw { error: rpcErrors.invalidParams(`Network must have a CAIP-2 id`) };
+    }
+
+    const provider = getProvider({ caipId: network.caipId, proxyApiUrl: this.#proxyApiUrl });
+
+    return new Proxy(provider, {
+      get(target, prop, receiver) {
+        // Since the result of createSolanaRpc() (@solana/rpc util called internally
+        // by getProvider()) is a somewhat blind Proxy object, awaiting its
+        // result is impossible.
+        //
+        // That's because `.then()` points back to the proxy object's `.then()`,
+        // and then again, and again, resulting in an endless loop of .then() calls.
+        //
+        // So I'm wrapping it in another Proxy object that breaks the loop
+        // for Promise-like methods: then, catch and finally.
+        if (prop === 'then' || prop === 'catch' || prop === 'finally') {
+          return target;
+        }
+
+        return Reflect.get(target, prop, receiver);
+      },
     });
   }
 
@@ -72,9 +87,14 @@ export class SvmModule implements Module {
     });
   }
 
-  // TODO
-  getBalances() {
-    return Promise.resolve({});
+  getBalances(params: GetBalancesParams) {
+    const tokenService = new TokenService({ storage: params.storage, proxyApiUrl: this.#proxyApiUrl });
+
+    return getBalances({
+      ...params,
+      tokenService,
+      proxyApiUrl: this.#proxyApiUrl,
+    });
   }
 
   getManifest() {
@@ -82,9 +102,8 @@ export class SvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  // TODO
-  getNetworkFee() {
-    return Promise.resolve({} as NetworkFees);
+  getNetworkFee(network: NetworkFeeParam) {
+    return getNetworkFee(network, this.#proxyApiUrl);
   }
 
   // TODO
@@ -94,9 +113,12 @@ export class SvmModule implements Module {
     });
   }
 
-  // TODO
-  getTokens() {
-    return Promise.resolve([]);
+  getTokens(network: Network) {
+    if (!network.caipId) {
+      return Promise.reject({ error: rpcErrors.invalidParams(`Network must have a CAIP-2 id`) });
+    }
+
+    return getTokens({ caip2Id: network.caipId, proxyApiUrl: this.#proxyApiUrl });
   }
 
   // TODO

@@ -1,30 +1,31 @@
-import type { Network } from '@avalabs/vm-module-types';
+import { createSolanaRpc } from '@solana/rpc';
+
 import { getClusterUrl, getProvider } from './get-provider';
+import { SOLANA_DEVNET_CAIP2_ID, SOLANA_MAINNET_CAIP2_ID, SOLANA_TESTNET_CAIP2_ID } from '../constants';
 
 jest.mock('@solana/rpc', () => ({
   createSolanaRpc: jest.fn(),
 }));
 
-import { createSolanaRpc } from '@solana/rpc';
+const proxyApiUrl = 'https://localhost:3000';
 
-const mainnetChainId = 4503599627370463;
-const devnetChainId = 4503599627370462;
-const testnetChainId = 4503599627370461;
 describe('packages/svm-module/src/utils/get-provider', () => {
   it('should return with the right cluster url from the chainId or scope', () => {
-    expect(getClusterUrl(mainnetChainId)).toBe('/proxy/nownodes/sol');
+    expect(getClusterUrl(proxyApiUrl, SOLANA_MAINNET_CAIP2_ID)).toBe('https://localhost:3000/proxy/nownodes/sol');
 
-    expect(getClusterUrl(devnetChainId)).toBe('https://api.devnet.solana.com');
+    expect(getClusterUrl(proxyApiUrl, SOLANA_DEVNET_CAIP2_ID)).toBe('https://api.devnet.solana.com');
 
-    expect(getClusterUrl(testnetChainId)).toBe('https://api.testnet.solana.com');
+    expect(getClusterUrl(proxyApiUrl, SOLANA_TESTNET_CAIP2_ID)).toBe('https://api.testnet.solana.com');
   });
-  it('should call the `createSolanaRpc` with the right cluster url', () => {
-    getProvider({ chainId: mainnetChainId } as Network);
-    getProvider({ chainId: devnetChainId } as Network);
-    getProvider({ chainId: testnetChainId } as Network);
 
-    expect(createSolanaRpc).toHaveBeenCalledWith('/proxy/nownodes/sol');
+  it('should call the `createSolanaRpc` with the right cluster url', () => {
+    getProvider({ proxyApiUrl, caipId: SOLANA_MAINNET_CAIP2_ID });
+    expect(createSolanaRpc).toHaveBeenCalledWith('https://localhost:3000/proxy/nownodes/sol');
+
+    getProvider({ proxyApiUrl, caipId: SOLANA_DEVNET_CAIP2_ID });
     expect(createSolanaRpc).toHaveBeenCalledWith('https://api.devnet.solana.com');
+
+    getProvider({ proxyApiUrl, caipId: SOLANA_TESTNET_CAIP2_ID });
     expect(createSolanaRpc).toHaveBeenCalledWith('https://api.testnet.solana.com');
   });
 });

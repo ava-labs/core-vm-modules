@@ -1,6 +1,9 @@
-import type { ZodSchema } from 'zod';
+import { z, type ZodSchema } from 'zod';
 
-export async function fetchAndVerify(fetchOptions: Parameters<typeof fetch>, schema: ZodSchema) {
+export async function fetchAndVerify<S extends ZodSchema>(
+  fetchOptions: Parameters<typeof fetch>,
+  schema: S,
+): Promise<z.infer<S>> {
   const response = await fetch(...fetchOptions);
 
   if (!response.ok) {
