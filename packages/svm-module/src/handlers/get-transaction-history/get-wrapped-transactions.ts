@@ -1,0 +1,36 @@
+import { address as solAddress } from '@solana/addresses';
+import type { GetTransactionApi } from '@solana/rpc-api';
+
+import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
+
+import { getProvider } from '@src/utils/get-provider';
+import { hasPropertyDefined } from '@src/utils/has-property-defined';
+
+type ParsedTx = ReturnType<GetTransactionApi['getTransaction']>;
+type WrappedTransaction = { txHash: string; tx: NonNullable<ParsedTx> };
+
+export const getWrappedTransactions = async ({
+  caipId,
+  address,
+  proxyApiUrl,
+}: {
+  caipId: string;
+  address: string;
+  proxyApiUrl: string;
+}): Promise<WrappedTransaction[]> => {
+  const provider = getProvider({ caipId, proxyApiUrl });
+
+  const signaturesResponse = await provider.getSignaturesForAddress(solAddress(address), { limit: 25 }).send(); // Same as we do for Bitcoin
+  const signatures = signaturesResponse.map((sig) => sig.signature);
+  const txsRequests = await Promise.allSettled(
+    signatures.map(async (sig) => ({
+      txHash: sig.toString(),
+      tx: await provider.getTransaction(sig, { encoding: 'json' }).send(),
+    })),
+  );
+
+  return txsRequests
+    .filter(isFulfilled)
+    .map((tx) => tx.value)
+    .filter(hasPropertyDefined('tx'));
+};

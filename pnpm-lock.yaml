@@ -427,7 +427,7 @@ importers:
       '@solana/rpc':
         specifier: 2.0.0
         version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
-      '@solana/rpc-types':
+      '@solana/rpc-api':
         specifier: 2.0.0
         version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
       zod:
@@ -440,6 +440,9 @@ importers:
       '@internal/utils':
         specifier: workspace:*
         version: link:../../packages-internal/utils
+      '@solana/rpc-types':
+        specifier: 2.0.0
+        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7

@@ -16,6 +16,7 @@ import { SOLANA_MAINNET_CAIP2_ID } from './constants';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTokens } from './handlers/get-tokens/get-tokens';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 
 jest.mock('./handlers/get-balances/get-balances');
 jest.mock('./handlers/get-network-fee/get-network-fee');
@@ -84,8 +85,23 @@ describe('SVM Module', () => {
   });
 
   describe('getTransactionHistory()', () => {
-    it('returns an empty history', async () => {
-      expect(await svm.getTransactionHistory()).toEqual({ transactions: [] });
+    it('uses get-transaction-history handler', async () => {
+      const network = { caipId: 'solana:xyz' } as Network;
+      const mockedResult = [{}];
+
+      jest.mocked(getTransactionHistory).mockResolvedValueOnce(mockedResult as any); // eslint-disable-line
+
+      expect(
+        await svm.getTransactionHistory({
+          address: 'test-address',
+          network,
+        }),
+      ).toEqual(mockedResult);
+      expect(getTransactionHistory).toHaveBeenCalledWith({
+        network,
+        address: 'test-address',
+        proxyApiUrl: expect.any(String),
+      });
     });
   });
 

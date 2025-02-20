@@ -32,6 +32,9 @@ export interface SPLToken {
   address: string;
   name: string;
   symbol: string;
+  // Discrepancy between what's returned by Proxy API and the other types here.
+  // Proxy API returns `contractType`, but in VM Modules we populate `type`.
+  contractType: TokenType.SPL;
   type: TokenType.SPL;
   caip2Id: string;
   decimals: number;
