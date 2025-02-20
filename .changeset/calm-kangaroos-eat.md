@@ -1,0 +1,12 @@
+---
+'@internal/tsup-config': minor
+'@avalabs/avalanche-module': minor
+'@internal/utils': minor
+'@avalabs/bitcoin-module': minor
+'@avalabs/evm-module': minor
+'@avalabs/hvm-module': minor
+'@avalabs/svm-module': minor
+'@avalabs/vm-module-types': minor
+---
+
+get Solana transaction history
