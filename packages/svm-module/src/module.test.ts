@@ -21,6 +21,7 @@ import { getTransactionHistory } from './handlers/get-transaction-history/get-tr
 jest.mock('./handlers/get-balances/get-balances');
 jest.mock('./handlers/get-network-fee/get-network-fee');
 jest.mock('./handlers/get-tokens/get-tokens');
+jest.mock('./handlers/get-transaction-history/get-transaction-history');
 
 describe('SVM Module', () => {
   const svm = new SvmModule({
