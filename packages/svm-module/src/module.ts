@@ -10,7 +10,6 @@ import {
   type Network,
   type NetworkFeeParam,
   type RpcRequest,
-  type SVMProvider,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
@@ -24,6 +23,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { getProvider } from './utils/get-provider';
+import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -44,31 +44,8 @@ export class SvmModule implements Module {
     this.#appInfo;
   }
 
-  async getProvider(network: Network): Promise<SVMProvider> {
-    if (!network.caipId) {
-      throw { error: rpcErrors.invalidParams(`Network must have a CAIP-2 id`) };
-    }
-
-    const provider = getProvider({ caipId: network.caipId, proxyApiUrl: this.#proxyApiUrl });
-
-    return new Proxy(provider, {
-      get(target, prop, receiver) {
-        // Since the result of createSolanaRpc() (@solana/rpc util called internally
-        // by getProvider()) is a somewhat blind Proxy object, awaiting its
-        // result is impossible.
-        //
-        // That's because `.then()` points back to the proxy object's `.then()`,
-        // and then again, and again, resulting in an endless loop of .then() calls.
-        //
-        // So I'm wrapping it in another Proxy object that breaks the loop
-        // for Promise-like methods: then, catch and finally.
-        if (prop === 'then' || prop === 'catch' || prop === 'finally') {
-          return target;
-        }
-
-        return Reflect.get(target, prop, receiver);
-      },
-    });
+  async getProvider(network: Network): Promise<SolanaProvider> {
+    return getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl: this.#proxyApiUrl });
   }
 
   // TODO

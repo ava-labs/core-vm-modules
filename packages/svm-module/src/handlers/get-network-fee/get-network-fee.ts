@@ -1,5 +1,4 @@
 import { type NetworkFeeParam, type NetworkFees } from '@avalabs/vm-module-types';
-import { rpcErrors } from '@metamask/rpc-errors';
 
 import { getProvider } from '@src/utils/get-provider';
 import { SOL_DECIMALS } from '@src/constants';
@@ -45,11 +44,7 @@ const ensureEnoughData = (fees: number[]): ValidRecentFees => {
  *    we will suggest paying higher priority fees.
  */
 export async function getNetworkFee(network: NetworkFeeParam, proxyApiUrl: string): Promise<NetworkFees> {
-  if (!network.caipId) {
-    return Promise.reject({ error: rpcErrors.invalidParams(`Network must have a CAIP-2 id`) });
-  }
-
-  const provider = getProvider({ caipId: network.caipId, proxyApiUrl });
+  const provider = getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl });
 
   const getFees = await provider.getRecentPrioritizationFees();
   const feesRaw = await getFees.send();
