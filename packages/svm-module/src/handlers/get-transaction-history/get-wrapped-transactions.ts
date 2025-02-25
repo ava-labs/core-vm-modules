@@ -1,5 +1,4 @@
-import { address as solAddress } from '@solana/addresses';
-import type { GetTransactionApi } from '@solana/rpc-api';
+import { address as solAddress, type GetTransactionApi } from '@solana/web3.js';
 
 import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 

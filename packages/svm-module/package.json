@@ -17,21 +17,19 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.4e1f85e.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.801d1a5.0",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.801d1a5.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.801d1a5.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
     "@scure/base": "1.2.4",
-    "@solana/addresses": "2.0.0",
-    "@solana/rpc": "2.0.0",
-    "@solana/rpc-api": "2.0.0",
+    "@solana/web3.js": "2.0.0",
+    "@solana-program/system": "0.6.2",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
     "@internal/utils": "workspace:*",
-    "@solana/rpc-types": "2.0.0",
     "@types/jest": "29.5.7",
     "eslint-config-custom": "workspace:*",
     "jest": "29.7.0",

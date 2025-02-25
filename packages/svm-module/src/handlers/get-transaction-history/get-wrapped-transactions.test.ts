@@ -1,4 +1,4 @@
-import { address } from '@solana/addresses';
+import { address } from '@solana/web3.js';
 
 import { getProvider } from '@src/utils/get-provider';
 

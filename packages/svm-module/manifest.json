@@ -26,8 +26,8 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["getGenesisHash"],
-      "nonRestrictedMethods": ["getGenesisHash"]
+      "methods": ["solana_signTransaction", "solana_signAndSendTransaction"],
+      "nonRestrictedMethods": []
     }
   },
   "manifestVersion": "0.1"

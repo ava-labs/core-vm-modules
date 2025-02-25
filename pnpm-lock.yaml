@@ -103,14 +103,14 @@ importers:
   packages-internal/utils:
     devDependencies:
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -142,26 +142,26 @@ importers:
         specifier: 4.2.0-alpha.1
         version: 4.2.0-alpha.1
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@avalabs/types':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -209,14 +209,14 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -267,23 +267,23 @@ importers:
   packages/evm-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-etherscan-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@avalabs/types':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -404,14 +404,14 @@ importers:
   packages/svm-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -421,15 +421,12 @@ importers:
       '@scure/base':
         specifier: 1.2.4
         version: 1.2.4
-      '@solana/addresses':
+      '@solana-program/system':
+        specifier: 0.6.2
+        version: 0.6.2(@solana/web3.js@2.0.0)
+      '@solana/web3.js':
         specifier: 2.0.0
-        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
-      '@solana/rpc':
-        specifier: 2.0.0
-        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
-      '@solana/rpc-api':
-        specifier: 2.0.0
-        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -440,9 +437,6 @@ importers:
       '@internal/utils':
         specifier: workspace:*
         version: link:../../packages-internal/utils
-      '@solana/rpc-types':
-        specifier: 2.0.0
-        version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
       '@types/jest':
         specifier: 29.5.7
         version: 29.5.7
@@ -465,11 +459,11 @@ importers:
   packages/types:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.4e1f85e.0
-        version: 3.1.0-canary.4e1f85e.0
+        specifier: 3.1.0-canary.801d1a5.0
+        version: 3.1.0-canary.801d1a5.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -564,10 +558,10 @@ packages:
       micro-eth-signer: 0.7.2
     dev: false
 
-  /@avalabs/core-chains-sdk@3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-7DuIp4ER2RZUoWCtfv1n1JwJ0PkQe3VjMcA7fYkoW9rlqgQ3ZisCUxv6mHANya9uNoKPyq21zgH5MxWUT/mdcA==}
+  /@avalabs/core-chains-sdk@3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-Fdt+Tu5Ui2pJrUcZmgd9K/tRsV7Bph7w5xmJ4BEV+md9oLbljU73ngDsHRNdJnGmjFGeA3xEy1onSBv+o9p/bQ==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -575,10 +569,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-coingecko-sdk@3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-IVdMH2IgenAc8dBbxkIo93hQbCUGQu9euASx+lAIYaNhyhBGV/hUbEPvxGIDQt5hYf8eeLo7dJ/lh4ifBcEudw==}
+  /@avalabs/core-coingecko-sdk@3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-kF4LyvJl648KAEu82ZxzuCQCitxHTFftkaWIexHLwRG3EvCNGGoTReoT/r4GbthtyLF5LJ6gAD/FDao3qdfuXA==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -586,10 +580,10 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-etherscan-sdk@3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-l3QsjJfKWEAGLBiG6EJbr0V9S67huZfpIKoPbW4XqgcroSYPizIU+5wonN3HJuhRTbrdxOfHrTc+XfHt5SneJw==}
+  /@avalabs/core-etherscan-sdk@3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-xDtf24ulDRd/IdWrLbtJcyVUUsPN075MbO+gSB2rh8FJrIdQaw1+muUv0VOfQv+7KnzD2A8rlxioI6O2C6TBow==}
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -616,8 +610,8 @@ packages:
       - supports-color
     dev: false
 
-  /@avalabs/core-utils-sdk@3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
-    resolution: {integrity: sha512-b8SZrPlCUpdLfBPtroNouRKyxP4SV/DOu0taiSWR/8obXFCGjp2gg7Ht/YhtdYm7jZRk/zctt+OfXOUghNyObA==}
+  /@avalabs/core-utils-sdk@3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2):
+    resolution: {integrity: sha512-qfoCYhVRFFlzZVwPjAdpri0pWj21ThRQh/VW6w42fGWan7cEjQjKSY2daqYudKUWIwzIVlklC/a1GrzFE/4wBA==}
     peerDependencies:
       big.js: ^6.2.1
       bn.js: ^5.2.1
@@ -632,21 +626,24 @@ packages:
       - node-fetch
       - supports-color
 
-  /@avalabs/core-wallets-sdk@3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2):
-    resolution: {integrity: sha512-VoI0ZuHzKxURgxSom6nsjKV5B550RakFi0VdNXw8uqfIElMOHjGyw1SczK9IOEoAioSi02bzgbXvChPUMZQLAg==}
+  /@avalabs/core-wallets-sdk@3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@3.3.2)(typescript@5.2.2)(ws@8.18.0):
+    resolution: {integrity: sha512-VlwTAKvHgkTr66n4dSgFnMA3iatYvWdNQwWstJyOOqu/cTsfcDqOu/PKannP1jPcWhA7q+ShGh5+tGz1fzFluQ==}
     peerDependencies:
       ethers: ^6.7.1
     dependencies:
       '@avalabs/avalanchejs': 4.2.0-alpha.1
-      '@avalabs/core-chains-sdk': 3.1.0-canary.4e1f85e.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
-      '@avalabs/glacier-sdk': 3.1.0-canary.4e1f85e.0
+      '@avalabs/core-chains-sdk': 3.1.0-canary.801d1a5.0(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.8.1)(node-fetch@3.3.2)
+      '@avalabs/glacier-sdk': 3.1.0-canary.801d1a5.0
       '@avalabs/hw-app-avalanche': 0.14.1
       '@ledgerhq/hw-app-btc': 10.2.4
       '@ledgerhq/hw-app-eth': 6.36.1
       '@ledgerhq/hw-transport': 6.30.6
       '@metamask/eth-sig-util': 7.0.2
+      '@noble/curves': 1.6.0
       '@openzeppelin/contracts': 4.9.6
-      '@solana/rpc': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@scure/base': 1.2.4
+      '@solana-program/system': 0.6.2(@solana/web3.js@2.0.0)
+      '@solana/web3.js': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
       bip32: 2.0.6
       bip32-path: 0.4.2
       bip39: 3.1.0
@@ -656,6 +653,7 @@ packages:
       ethers: 6.8.1
       hdkey: 2.0.1
       ledger-bitcoin: 0.2.3
+      micro-key-producer: 0.7.5
       xss: 1.0.14
     transitivePeerDependencies:
       - big.js
@@ -665,10 +663,11 @@ packages:
       - node-fetch
       - supports-color
       - typescript
+      - ws
     dev: false
 
-  /@avalabs/glacier-sdk@3.1.0-canary.4e1f85e.0:
-    resolution: {integrity: sha512-Iq2+3D+1YuLN6NossGjFoH9bunKABInATfohwywV1gJBXE3GCMLUK01urUrDpXKoWISAsOUtvEfHtLUIewxW0w==}
+  /@avalabs/glacier-sdk@3.1.0-canary.801d1a5.0:
+    resolution: {integrity: sha512-pnAFZWixARMqYfBzYZPGU1N/6K93uTNrNROySPH2obtdsgWZoj2wKxELTATOPBogJ8pEpbTLhZ1USRoOW+DU/w==}
 
   /@avalabs/hw-app-avalanche@0.14.1:
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
@@ -682,8 +681,8 @@ packages:
       - debug
     dev: false
 
-  /@avalabs/types@3.1.0-canary.4e1f85e.0:
-    resolution: {integrity: sha512-Em8xHB19/RyluaGovMWQJJ/Pzcyd9lsJVxHXkac8KpGNXimq8ISX0z5XpzUq3nbuVR6Vox7WEfU+7xQLQ1F9mQ==}
+  /@avalabs/types@3.1.0-canary.801d1a5.0:
+    resolution: {integrity: sha512-7pqxPUxyGkwvyZtkfbTaTGceotQvLXcUGGQsiBV+3tLbfZvdrSHFRegGoFZKHroQYbLVLTAFvi/+4MAJ2IhBMg==}
     dev: false
 
   /@babel/code-frame@7.26.2:
@@ -3438,6 +3437,11 @@ packages:
       glob: 7.1.7
     dev: false
 
+  /@noble/ciphers@1.2.1:
+    resolution: {integrity: sha512-rONPWMC7PeExE077uLE4oqWrZ1IvAfz3oH9LibVAcVCopJiA9R62uavnbEzdkVmJYI6M6Zgkbeb07+tWjlq2XA==}
+    engines: {node: ^14.21.3 || >=16}
+    dev: false
+
   /@noble/curves@1.2.0:
     resolution: {integrity: sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==}
     dependencies:
@@ -3453,6 +3457,13 @@ packages:
     resolution: {integrity: sha512-TavHr8qycMChk8UwMld0ZDRvatedkzWfH8IiaeGCfymOP5i0hSCozz9vHOL0nkwk7HRMlFnAiKpS2jrUmSybcw==}
     dependencies:
       '@noble/hashes': 1.4.0
+    dev: false
+
+  /@noble/curves@1.6.0:
+    resolution: {integrity: sha512-TlaHRXDehJuRNR9TfZDNQ45mMEd5dwUwmicsafcIX4SsNiqnCHKjE/1alYPd/lDRVhxdhUAlv8uEhMCI5zjIJQ==}
+    engines: {node: ^14.21.3 || >=16}
+    dependencies:
+      '@noble/hashes': 1.5.0
     dev: false
 
   /@noble/curves@1.8.1:
@@ -3860,6 +3871,31 @@ packages:
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
     dev: false
 
+  /@solana-program/system@0.6.2(@solana/web3.js@2.0.0):
+    resolution: {integrity: sha512-q0ZnylK+LISjuP2jH5GWV9IJPtpzQctj5KQwij9XCDRSGkcFr2fpqptNnVupTLQiNL6Q4c1OZuG8WBmyFXVXZw==}
+    peerDependencies:
+      '@solana/web3.js': ^2.0.0
+    dependencies:
+      '@solana/web3.js': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
+    dev: false
+
+  /@solana/accounts@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-1CE4P3QSDH5x+ZtSthMY2mn/ekROBnlT3/4f3CHDJicDvLQsgAq2yCvGHsYkK3ZA0mxhFLuhJVjuKASPnmG1rQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/codecs-core': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-strings': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-spec': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
   /@solana/addresses@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
     resolution: {integrity: sha512-8n3c/mUlH1/z+pM8e7OJ6uDSXw26Be0dgYiokiqblO66DGQ0d+7pqFUFZ5pEGjJ9PU2lDTSfY8rHf4cemOqwzQ==}
     engines: {node: '>=20.18.0'}
@@ -3926,6 +3962,22 @@ packages:
       fastestsmallesttextencoderdecoder: 1.0.22
       typescript: 5.2.2
 
+  /@solana/codecs@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-xneIG5ppE6WIGaZCK7JTys0uLhzlnEJUdBO8nRVIyerwH6aqCfb0fGe7q5WNNYAVDRSxC0Pc1TDe1hpdx3KWmQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/codecs-core': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-data-structures': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-numbers': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-strings': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/options': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
   /@solana/errors@2.0.0(typescript@5.2.2):
     resolution: {integrity: sha512-IHlaPFSy4lvYco1oHJ3X8DbchWwAwJaL/4wZKnF1ugwZ0g0re8wbABrqNOe/jyZ84VU9Z14PYM8W9oDAebdJbw==}
     engines: {node: '>=20.18.0'}
@@ -3976,6 +4028,44 @@ packages:
     transitivePeerDependencies:
       - fastestsmallesttextencoderdecoder
 
+  /@solana/options@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-OVc4KnYosB8oAukQ/htgrxXSxlUP6gUu5Aau6d/BgEkPQzWd/Pr+w91VWw3i3zZuu2SGpedbyh05RoJBe/hSXA==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/codecs-core': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-data-structures': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-numbers': 2.0.0(typescript@5.2.2)
+      '@solana/codecs-strings': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
+  /@solana/programs@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-JPIKB61pWfODnsvEAaPALc6vR5rn7kmHLpFaviWhBtfUlEVgB8yVTR0MURe4+z+fJCPRV5wWss+svA4EeGDYzQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
+  /@solana/promises@2.0.0(typescript@5.2.2):
+    resolution: {integrity: sha512-4teQ52HDjK16ORrZe1zl+Q9WcZdQ+YEl0M1gk59XG7D0P9WqaVEQzeXGnKSCs+Y9bnB1u5xCJccwpUhHYWq6gg==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      typescript: 5.2.2
+    dev: false
+
   /@solana/rpc-api@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
     resolution: {integrity: sha512-1FwitYxwADMF/6zKP2kNXg8ESxB6GhNBNW1c4f5dEmuXuBbeD/enLV3WMrpg8zJkIaaYarEFNbt7R7HyFzmURQ==}
     engines: {node: '>=20.18.0'}
@@ -4022,6 +4112,75 @@ packages:
       '@solana/errors': 2.0.0(typescript@5.2.2)
       '@solana/rpc-spec-types': 2.0.0(typescript@5.2.2)
       typescript: 5.2.2
+
+  /@solana/rpc-subscriptions-api@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-NAJQvSFXYIIf8zxsMFBCkSbZNZgT32pzPZ1V6ZAd+U2iDEjx3L+yFwoJgfOcHp8kAV+alsF2lIsGBlG4u+ehvw==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/keys': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-subscriptions-spec': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-transformers': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transaction-messages': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transactions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
+  /@solana/rpc-subscriptions-channel-websocket@2.0.0(typescript@5.2.2)(ws@8.18.0):
+    resolution: {integrity: sha512-hSQDZBmcp2t+gLZsSBqs/SqVw4RuNSC7njiP46azyzW7oGg8X2YPV36AHGsHD12KPsc0UpT1OAZ4+AN9meVKww==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+      ws: ^8.18.0
+    dependencies:
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/functional': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-subscriptions-spec': 2.0.0(typescript@5.2.2)
+      '@solana/subscribable': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+      ws: 8.18.0
+    dev: false
+
+  /@solana/rpc-subscriptions-spec@2.0.0(typescript@5.2.2):
+    resolution: {integrity: sha512-VXMiI3fYtU1PkVVTXL87pcY48ZY8aCi1N6FqtxSP2xg/GASL01j1qbwyIL1OvoCqGyRgIxdd/YfaByW9wmWBhA==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/promises': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-spec-types': 2.0.0(typescript@5.2.2)
+      '@solana/subscribable': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+    dev: false
+
+  /@solana/rpc-subscriptions@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0):
+    resolution: {integrity: sha512-AdwMJHMrhlj7q1MPjZmVcKq3iLqMW3N0MT8kzIAP2vP+8o/d6Fn4aqGxoz2Hlfn3OYIZoYStN2VBtwzbcfEgMA==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/fast-stable-stringify': 2.0.0(typescript@5.2.2)
+      '@solana/functional': 2.0.0(typescript@5.2.2)
+      '@solana/promises': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-spec-types': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-subscriptions-api': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-subscriptions-channel-websocket': 2.0.0(typescript@5.2.2)(ws@8.18.0)
+      '@solana/rpc-subscriptions-spec': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-transformers': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/subscribable': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+      - ws
+    dev: false
 
   /@solana/rpc-transformers@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
     resolution: {integrity: sha512-H6tN0qcqzUangowsLLQtYXKJsf1Roe3/qJ1Cy0gv9ojY9uEvNbJqpeEj+7blv0MUZfEe+rECAwBhxxRKPMhYGw==}
@@ -4083,6 +4242,71 @@ packages:
     transitivePeerDependencies:
       - fastestsmallesttextencoderdecoder
 
+  /@solana/signers@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-JEYJS3x/iKkqPV/3b1nLpX9lHib21wQKV3fOuu1aDLQqmX9OYKrnIIITYdnFDhmvGhpEpkkbPnqu7yVaFIBYsQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/codecs-core': 2.0.0(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/instructions': 2.0.0(typescript@5.2.2)
+      '@solana/keys': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transaction-messages': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transactions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
+  /@solana/subscribable@2.0.0(typescript@5.2.2):
+    resolution: {integrity: sha512-Ex7d2GnTSNVMZDU3z6nKN4agRDDgCgBDiLnmn1hmt0iFo3alr3gRAqiqa7qGouAtYh9/29pyc8tVJCijHWJPQQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      typescript: 5.2.2
+    dev: false
+
+  /@solana/sysvars@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
+    resolution: {integrity: sha512-8D4ajKcCYQsTG1p4k30lre2vjxLR6S5MftUGJnIaQObDCzGmaeA9GRti4Kk4gSPWVYFTBoj1ASx8EcEXaB3eIQ==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/accounts': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/codecs': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+    dev: false
+
+  /@solana/transaction-confirmation@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0):
+    resolution: {integrity: sha512-JkTw5gXLiqQjf6xK0fpVcoJ/aMp2kagtFSD/BAOazdJ3UYzOzbzqvECt6uWa3ConcMswQ2vXalVtI7ZjmYuIeg==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/codecs-strings': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/keys': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/promises': 2.0.0(typescript@5.2.2)
+      '@solana/rpc': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-subscriptions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transaction-messages': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transactions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+      - ws
+    dev: false
+
   /@solana/transaction-messages@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2):
     resolution: {integrity: sha512-Uc6Fw1EJLBrmgS1lH2ZfLAAKFvprWPQQzOVwZS78Pv8Whsk7tweYTK6S0Upv0nHr50rGpnORJfmdBrXE6OfNGg==}
     engines: {node: '>=20.18.0'}
@@ -4121,6 +4345,36 @@ packages:
       typescript: 5.2.2
     transitivePeerDependencies:
       - fastestsmallesttextencoderdecoder
+
+  /@solana/web3.js@2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0):
+    resolution: {integrity: sha512-x+ZRB2/r5tVK/xw8QRbAfgPcX51G9f2ifEyAQ/J5npOO+6+MPeeCjtr5UxHNDAYs9Ypo0PN+YJATCO4vhzQJGg==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      '@solana/accounts': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/addresses': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/codecs': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/errors': 2.0.0(typescript@5.2.2)
+      '@solana/functional': 2.0.0(typescript@5.2.2)
+      '@solana/instructions': 2.0.0(typescript@5.2.2)
+      '@solana/keys': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/programs': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/rpc-parsed-types': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-spec-types': 2.0.0(typescript@5.2.2)
+      '@solana/rpc-subscriptions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
+      '@solana/rpc-types': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/signers': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/sysvars': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transaction-confirmation': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
+      '@solana/transaction-messages': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      '@solana/transactions': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)
+      typescript: 5.2.2
+    transitivePeerDependencies:
+      - fastestsmallesttextencoderdecoder
+      - ws
+    dev: false
 
   /@tootallnate/once@2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -8839,10 +9093,26 @@ packages:
     resolution: {integrity: sha512-/0LLxhzP0tfiR5hcQebtudP56gUurs2CLkGarnCiB/OqEyUFQ6U3paQi/tgLv0hBJYt2rnr9MNpxz4fiiugstg==}
     dev: false
 
+  /micro-key-producer@0.7.5:
+    resolution: {integrity: sha512-pFVPJVr3yrxr03qeplzPEfIsiBgBTJiffx75jFKESAl9kyGWE7hx4B348znT8Ey1e/K1Z+WzQLjUay90yVVQGA==}
+    dependencies:
+      '@noble/ciphers': 1.2.1
+      '@noble/curves': 1.8.1
+      '@noble/hashes': 1.7.1
+      '@scure/base': 1.2.4
+      micro-packed: 0.7.2
+    dev: false
+
   /micro-packed@0.5.3:
     resolution: {integrity: sha512-zWRoH+qUb/ZMp9gVZhexvRGCENDM5HEQF4sflqpdilUHWK2/zKR7/MT8GBctnTwbhNJwy1iuk5q6+TYP7/twYA==}
     dependencies:
       '@scure/base': 1.1.9
+    dev: false
+
+  /micro-packed@0.7.2:
+    resolution: {integrity: sha512-HJ/u8+tMzgrJVAl6P/4l8KGjJSA3SCZaRb1m4wpbovNScCSmVOGUYbkkcoPPcknCHWPpRAdjy+yqXqyQWf+k8g==}
+    dependencies:
+      '@scure/base': 1.2.4
     dev: false
 
   /micromatch@4.0.5:
@@ -11514,7 +11784,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
 
   /ws@8.5.0:
     resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
