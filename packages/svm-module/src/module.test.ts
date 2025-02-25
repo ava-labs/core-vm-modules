@@ -8,7 +8,6 @@ import {
   type RpcRequest,
   type Storage,
 } from '@avalabs/vm-module-types';
-import { rpcErrors } from '@metamask/rpc-errors';
 
 import ManifestJson from '../manifest.json';
 import { SvmModule } from './module';
@@ -17,11 +16,13 @@ import { getBalances } from './handlers/get-balances/get-balances';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { signAndSendTransaction } from './handlers/send-and-sign-transaction/send-and-sign-transaction';
 
 jest.mock('./handlers/get-balances/get-balances');
 jest.mock('./handlers/get-network-fee/get-network-fee');
 jest.mock('./handlers/get-tokens/get-tokens');
 jest.mock('./handlers/get-transaction-history/get-transaction-history');
+jest.mock('./handlers/send-and-sign-transaction/send-and-sign-transaction');
 
 describe('SVM Module', () => {
   const svm = new SvmModule({
@@ -122,13 +123,23 @@ describe('SVM Module', () => {
   });
 
   describe('onRpcRequest()', () => {
-    it('returns an empty object', async () => {
-      expect(
-        await svm.onRpcRequest({
-          method: 'getGenesisHash' as RpcMethod,
-        } as RpcRequest),
-      ).toEqual({
-        error: rpcErrors.methodNotSupported('Method getGenesisHash not supported'),
+    it('passes the request to the correct handler', async () => {
+      jest.mocked(signAndSendTransaction).mockResolvedValueOnce({
+        result: 'success',
+      });
+      const req = {
+        method: RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION,
+        params: {},
+      } as RpcRequest;
+      const network = { caipId: 'solana:xyz' } as Network;
+      expect(await svm.onRpcRequest(req, network)).toEqual({
+        result: 'success',
+      });
+      expect(signAndSendTransaction).toHaveBeenCalledWith({
+        approvalController: expect.any(Object),
+        proxyApiUrl: expect.any(String),
+        network,
+        request: req,
       });
     });
   });
