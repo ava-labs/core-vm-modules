@@ -20,7 +20,6 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
   });
 
   it('should return wrapped transactions', async () => {
-    const caipId = 'test-caipId';
     const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
@@ -35,9 +34,9 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue(sig === 'sig1' ? transactionResponse1 : transactionResponse2),
     }));
 
-    const result = await getWrappedTransactions({ caipId, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ isTestnet: false, address, proxyApiUrl });
 
-    expect(getProvider).toHaveBeenCalledWith({ caipId, proxyApiUrl });
+    expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl });
     expect(mockProvider.getSignaturesForAddress).toHaveBeenCalledWith(expect.anything(), { limit: 25 });
     expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig1', { encoding: 'json' });
     expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig2', { encoding: 'json' });
@@ -48,7 +47,6 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
   });
 
   it('should handle empty signatures response', async () => {
-    const caipId = 'test-caipId';
     const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
@@ -56,13 +54,12 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue([]),
     });
 
-    const result = await getWrappedTransactions({ caipId, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ isTestnet: true, address, proxyApiUrl });
 
     expect(result).toEqual([]);
   });
 
   it('should handle rejected transactions', async () => {
-    const caipId = 'test-caipId';
     const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
@@ -76,7 +73,7 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue(sig === 'sig1' ? transactionResponse1 : Promise.reject('error')),
     }));
 
-    const result = await getWrappedTransactions({ caipId, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ isTestnet: false, address, proxyApiUrl });
 
     expect(result).toEqual([{ txHash: 'sig1', tx: transactionResponse1 }]);
   });

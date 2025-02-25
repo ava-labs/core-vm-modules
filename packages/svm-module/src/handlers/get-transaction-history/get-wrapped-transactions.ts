@@ -10,15 +10,15 @@ type ParsedTx = ReturnType<GetTransactionApi['getTransaction']>;
 type WrappedTransaction = { txHash: string; tx: NonNullable<ParsedTx> };
 
 export const getWrappedTransactions = async ({
-  caipId,
+  isTestnet,
   address,
   proxyApiUrl,
 }: {
-  caipId: string;
+  isTestnet: boolean;
   address: string;
   proxyApiUrl: string;
 }): Promise<WrappedTransaction[]> => {
-  const provider = getProvider({ caipId, proxyApiUrl });
+  const provider = getProvider({ isTestnet, proxyApiUrl });
 
   const signaturesResponse = await provider.getSignaturesForAddress(solAddress(address), { limit: 25 }).send(); // Same as we do for Bitcoin
   const signatures = signaturesResponse.map((sig) => sig.signature);

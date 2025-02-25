@@ -22,7 +22,7 @@ export async function getTransactionHistory({
     });
   }
 
-  const rawTransactions = await getWrappedTransactions({ caipId: network.caipId, address, proxyApiUrl });
+  const rawTransactions = await getWrappedTransactions({ isTestnet: Boolean(network.isTestnet), address, proxyApiUrl });
   const transactions = rawTransactions
     .map(({ txHash, tx }) => {
       if (!tx.meta) {
