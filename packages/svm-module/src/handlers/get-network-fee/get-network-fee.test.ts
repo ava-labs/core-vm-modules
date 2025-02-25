@@ -1,4 +1,3 @@
-import { rpcErrors } from '@metamask/rpc-errors';
 import type { Network } from '@avalabs/vm-module-types';
 
 import { getProvider } from '@src/utils/get-provider';
@@ -20,12 +19,6 @@ describe('src/handlers/get-network-fee', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
-  });
-
-  it('should reject if network does not have a CAIP-2 id', async () => {
-    await expect(getNetworkFee({ caipId: '' } as unknown as Network, proxyApiUrl)).rejects.toEqual({
-      error: rpcErrors.invalidParams('Network must have a CAIP-2 id'),
-    });
   });
 
   it('should return default fees if RPC call returns empty array', async () => {

@@ -1,31 +1,25 @@
-import { createSolanaRpc } from '@solana/rpc';
+import { getSolanaProvider } from '@avalabs/core-wallets-sdk';
 
-import { getClusterUrl, getProvider } from './get-provider';
-import { SOLANA_DEVNET_CAIP2_ID, SOLANA_MAINNET_CAIP2_ID, SOLANA_TESTNET_CAIP2_ID } from '../constants';
+import { getProvider } from './get-provider';
 
-jest.mock('@solana/rpc', () => ({
-  createSolanaRpc: jest.fn(),
+jest.mock('@avalabs/core-wallets-sdk', () => ({
+  getSolanaProvider: jest.fn(),
 }));
 
 const proxyApiUrl = 'https://localhost:3000';
 
 describe('packages/svm-module/src/utils/get-provider', () => {
-  it('should return with the right cluster url from the chainId or scope', () => {
-    expect(getClusterUrl(proxyApiUrl, SOLANA_MAINNET_CAIP2_ID)).toBe('https://localhost:3000/proxy/nownodes/sol');
-
-    expect(getClusterUrl(proxyApiUrl, SOLANA_DEVNET_CAIP2_ID)).toBe('https://api.devnet.solana.com');
-
-    expect(getClusterUrl(proxyApiUrl, SOLANA_TESTNET_CAIP2_ID)).toBe('https://api.testnet.solana.com');
-  });
-
   it('should call the `createSolanaRpc` with the right cluster url', () => {
-    getProvider({ proxyApiUrl, caipId: SOLANA_MAINNET_CAIP2_ID });
-    expect(createSolanaRpc).toHaveBeenCalledWith('https://localhost:3000/proxy/nownodes/sol');
+    getProvider({ proxyApiUrl, isTestnet: false });
+    expect(getSolanaProvider).toHaveBeenCalledWith({
+      isTestnet: false,
+      rpcUrl: 'https://localhost:3000/proxy/nownodes/sol',
+    });
 
-    getProvider({ proxyApiUrl, caipId: SOLANA_DEVNET_CAIP2_ID });
-    expect(createSolanaRpc).toHaveBeenCalledWith('https://api.devnet.solana.com');
-
-    getProvider({ proxyApiUrl, caipId: SOLANA_TESTNET_CAIP2_ID });
-    expect(createSolanaRpc).toHaveBeenCalledWith('https://api.testnet.solana.com');
+    getProvider({ proxyApiUrl, isTestnet: true });
+    expect(getSolanaProvider).toHaveBeenCalledWith({
+      isTestnet: true,
+      rpcUrl: 'https://api.devnet.solana.com',
+    });
   });
 });
