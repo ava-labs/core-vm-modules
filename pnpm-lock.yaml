@@ -424,6 +424,9 @@ importers:
       '@solana-program/system':
         specifier: 0.6.2
         version: 0.6.2(@solana/web3.js@2.0.0)
+      '@solana-program/token':
+        specifier: 0.4.1
+        version: 0.4.1(@solana/web3.js@2.0.0)
       '@solana/web3.js':
         specifier: 2.0.0
         version: 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
@@ -3873,6 +3876,14 @@ packages:
 
   /@solana-program/system@0.6.2(@solana/web3.js@2.0.0):
     resolution: {integrity: sha512-q0ZnylK+LISjuP2jH5GWV9IJPtpzQctj5KQwij9XCDRSGkcFr2fpqptNnVupTLQiNL6Q4c1OZuG8WBmyFXVXZw==}
+    peerDependencies:
+      '@solana/web3.js': ^2.0.0
+    dependencies:
+      '@solana/web3.js': 2.0.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.2.2)(ws@8.18.0)
+    dev: false
+
+  /@solana-program/token@0.4.1(@solana/web3.js@2.0.0):
+    resolution: {integrity: sha512-eSYmjsapzE9jXT2J9xydlMj/zsangMEIZAy9dy75VCXM6kgDCSnH5R7+HsIoKOTvb2VggU7GojC+YhMwWGCIBw==}
     peerDependencies:
       '@solana/web3.js': ^2.0.0
     dependencies:

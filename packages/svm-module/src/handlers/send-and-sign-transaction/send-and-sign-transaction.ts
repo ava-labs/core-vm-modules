@@ -8,17 +8,19 @@ import {
   type RpcRequest,
   type SigningData,
   type SigningResult,
+  type SPLToken,
 } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { deserializeTransactionMessage } from '@avalabs/core-wallets-sdk';
-import { isInstructionWithAccounts, isInstructionWithData, type Base64EncodedWireTransaction } from '@solana/web3.js';
-import { identifySystemInstruction, parseTransferSolInstruction, SystemInstruction } from '@solana-program/system';
+import { type Base64EncodedWireTransaction } from '@solana/web3.js';
 
-import { addressItem, dataItem, textItem } from '@internal/utils/src/utils/detail-item';
+import { dataItem } from '@internal/utils/src/utils/detail-item';
 
 import { getProvider } from '@src/utils/get-provider';
 import { isEmpty } from '@src/utils/is-empty';
 import { parseRequestParams } from './schema';
+import { tryToParseSolTransfer } from '@src/utils/instruction-parsers/sol-transfer';
+import { tryToParseSPLTransfer } from '@src/utils/instruction-parsers/spl-transfer';
+import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 export const signAndSendTransaction = async ({
   request,
@@ -55,42 +57,20 @@ export const signAndSendTransaction = async ({
   };
 
   // TODO: simulate transaction with Blockaid. Parsing like below can be used as a fallback.
-  const details = transaction.instructions
-    .map((instruction) => {
-      if (isInstructionWithAccounts(instruction) && isInstructionWithData(instruction)) {
-        const systemInstruction = identifySystemInstruction(instruction);
-
-        if (systemInstruction === SystemInstruction.TransferSol) {
-          const { accounts, data } = parseTransferSolInstruction(instruction);
-
-          const isOutgoing = accounts.source.address === account;
-          const balanceChangeKey = isOutgoing === true ? 'outs' : 'ins';
-          if (isOutgoing) {
-            balanceChange[balanceChangeKey].push({
-              token: {
-                ...network.networkToken,
-                address: '',
-              },
-              items: [
-                {
-                  displayValue: new TokenUnit(data.amount, network.networkToken.decimals, '').toString(),
-                  usdPrice: undefined,
-                },
-              ],
-            });
-          }
-          return {
-            title: 'Native Transfer',
-            items: [
-              addressItem('From', accounts.source.address),
-              addressItem('To', accounts.destination.address),
-              textItem('Type', 'Native transfer'),
-            ],
-          };
-        }
-      }
-    })
-    .filter(<D>(detail: D | undefined): detail is D => detail !== undefined);
+  const details = await Promise.allSettled(
+    transaction.instructions.map(async (instruction) => {
+      return (
+        tryToParseSolTransfer(instruction, balanceChange, account, network.networkToken) ??
+        (await tryToParseSPLTransfer(provider, instruction, balanceChange, account, network.tokens as SPLToken[])) ??
+        null
+      );
+    }),
+  ).then((results) =>
+    results
+      .filter(isFulfilled)
+      .map((result) => result.value)
+      .filter(<D>(detail: D | undefined | null): detail is D => detail != null),
+  );
 
   const displayData: DisplayData = {
     title: 'Approve Transaction',
