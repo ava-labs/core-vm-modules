@@ -19,12 +19,12 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.801d1a5.0",
-    "@avalabs/core-etherscan-sdk": "3.1.0-canary.801d1a5.0",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.801d1a5.0",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.801d1a5.0",
-    "@avalabs/glacier-sdk": "3.1.0-canary.801d1a5.0",
-    "@avalabs/types": "3.1.0-canary.801d1a5.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.4a6f312.0",
+    "@avalabs/core-etherscan-sdk": "3.1.0-canary.4a6f312.0",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.4a6f312.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.4a6f312.0",
+    "@avalabs/glacier-sdk": "3.1.0-canary.4a6f312.0",
+    "@avalabs/types": "3.1.0-canary.4a6f312.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.11.0",
     "@metamask/rpc-errors": "6.3.0",
