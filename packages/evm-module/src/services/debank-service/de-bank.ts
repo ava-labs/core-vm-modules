@@ -83,7 +83,27 @@ export class DeBank {
     }
     return this.#supportedChainIds;
   }
+
+  /**
+   * @param chainId - DeBank chain id (ex. "base", "eth")
+   * @param address - account address
+   */
+  async getNftList({ address, chainId }: { chainId: string; address: Hex }): Promise<DeBankNftToken[]> {
+    const nftListResponse = await fetch(`${this.baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`);
+    if (nftListResponse.ok) {
+      return await nftListResponse.json();
+    } else {
+      throw new Error(`${nftListResponse.status}:${nftListResponse.statusText}`);
+    }
+  }
 }
+
+type BaseDeBankToken = {
+  id: Hex | string; //address or native token id (eth, matic, bsc)
+  chain: string;
+  name: string;
+};
+
 /**
  * Example:
  * ```json
@@ -109,10 +129,7 @@ export class DeBank {
  *   }
  * ```
  */
-export type DeBankToken = {
-  id: Hex | string; //address or native token id (eth, matic, bsc)
-  chain: string;
-  name: string;
+export type DeBankToken = BaseDeBankToken & {
   symbol: string;
   optimized_symbol: string;
   decimals: number;
@@ -148,4 +165,82 @@ export type DeBankChainInfo = {
   logo_url: string;
   wrapped_token_id: Hex;
   is_support_pre_exec: boolean;
+};
+
+/**
+ * Example:
+ * ```json
+ * {
+ *     "id": "defc948fbe6d3b138b49bf981e276f0b",
+ *     "contract_id": "0x495f947276749ce646f68ac8c248420045cb7b5e",
+ *     "inner_id": "55575360221028374465659771733000318579577403829328624053715758637886677712897",
+ *     "chain": "eth",
+ *     "name": "A New Era has begun",
+ *     "description": "3 of 9\n\nOn February 8, 2021, one of the most influential men in the world decided to invest in Bitcoin. Elon Musk, owner of Tesl",
+ *     "content_type": "image_url",
+ *     "content": "https://lh3.googleusercontent.com/WQnK8JxSSPj5YIxegh9iaprMaMmv-JswrcnTp9Mi5PXKDWmigkOzTBBIAkhdXtLPe7EwIe6Q1gi2gdtLzV08d2y67rMVTHx0Ei0S",
+ *     "detail_url": "https://opensea.io/assets/0x495f947276749ce646f68ac8c248420045cb7b5e/55575360221028374465659771733000318579577403829328624053715758637886677712897",
+ *     "contract_name": "OpenSea Shared Storefront",
+ *     "is_erc1155": true,
+ *     "amount": 1,
+ *     "protocol": {
+ *       "id": "opensea",
+ *       "chain": "eth",
+ *       "name": "OpenSea",
+ *       "site_url": "https://opensea.io",
+ *       "logo_url": "https://static.debank.com/image/project/logo_url/opensea/4b23246fac2d4ce53bd8e8079844821c.png",
+ *       "has_supported_portfolio": false,
+ *       "tvl": 114295.77061458935
+ *     },
+ *     "pay_token": {
+ *       "id": "eth",
+ *       "chain": "eth",
+ *       "name": "ETH",
+ *       "symbol": "ETH",
+ *       "display_symbol": null,
+ *       "optimized_symbol": "ETH",
+ *       "decimals": 18,
+ *       "logo_url": "https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png",
+ *       "protocol_id": "",
+ *       "price": 2510.46,
+ *       "is_verified": true,
+ *       "is_core": true,
+ *       "is_wallet": true,
+ *       "time_at": 1628248886,
+ *       "amount": 0.0178,
+ *       "date_at": "2021-08-06"
+ *     },
+ *     "attributes": [
+ *       {
+ *         "trait_type": "Artist",
+ *         "value": "SpaceTurtleShip"
+ *       },
+ *       {
+ *         "trait_type": "Edition",
+ *         "value": "1"
+ *       }
+ *     ],
+ *     "usd_price": 51.492552,
+ *     "collection_id": null
+ *   }
+ * ```
+ * */
+
+export type DeBankNftToken = BaseDeBankToken & {
+  contract_id: string;
+  description: string;
+  content_type: 'image_url';
+  content: string;
+  thumbnail_url: string;
+  total_supply: number;
+  detail_url: string;
+  collection_id: string;
+  is_core: boolean;
+  inner_id: number;
+  collection_name: string;
+  contract_name: string;
+  amount: number;
+  usd_price: number;
+  is_erc721?: boolean;
+  is_erc1155?: boolean;
 };

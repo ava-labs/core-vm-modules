@@ -106,4 +106,22 @@ describe('DeBank', () => {
       expect(tokenList).toEqual([{ token: 'list' }]);
     });
   });
+
+  describe('getNftList', () => {
+    beforeEach(() => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve([{ token: 'list' }]),
+        }),
+      ) as jest.Mock;
+    });
+    it('should fetch nft list from the API', async () => {
+      const chainId = 'eth';
+      const address = '0x123';
+      const tokenList = await debank.getNftList({ chainId, address });
+      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`);
+      expect(tokenList).toEqual([{ token: 'list' }]);
+    });
+  });
 });
