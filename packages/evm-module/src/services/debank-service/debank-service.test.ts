@@ -266,7 +266,7 @@ describe('DeBankService', () => {
         {
           id: 'someid',
           contract_id: '0x9876',
-          inner_id: 30276,
+          inner_id: '30276',
           chain: 'eth',
           name: 'Gemesis',
           description: 'Some description',

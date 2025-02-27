@@ -1,4 +1,7 @@
 import type { Hex } from '@avalabs/vm-module-types';
+import { isHexString } from 'ethers';
+import { fetchAndVerify } from '@internal/utils';
+import { z } from 'zod';
 
 export class DeBank {
   #supportedChainIds: DeBankChainInfo[] = [];
@@ -89,20 +92,20 @@ export class DeBank {
    * @param address - account address
    */
   async getNftList({ address, chainId }: { chainId: string; address: Hex }): Promise<DeBankNftToken[]> {
-    const nftListResponse = await fetch(`${this.baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`);
-    if (nftListResponse.ok) {
-      return await nftListResponse.json();
-    } else {
-      throw new Error(`${nftListResponse.status}:${nftListResponse.statusText}`);
-    }
+    return fetchAndVerify<typeof DeBankNftTokenListSchema>(
+      [`${this.baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`],
+      DeBankNftTokenListSchema,
+    );
   }
 }
 
-type BaseDeBankToken = {
-  id: Hex | string; //address or native token id (eth, matic, bsc)
-  chain: string;
-  name: string;
-};
+const BaseDeBankTokenSchema = z.object({
+  id: z.union([z.custom<string>(isHexString), z.string()]), //address or native token id (eth, matic, bsc)
+  chain: z.string(),
+  name: z.string(),
+});
+
+type BaseDeBankToken = z.infer<typeof BaseDeBankTokenSchema>;
 
 /**
  * Example:
@@ -129,6 +132,8 @@ type BaseDeBankToken = {
  *   }
  * ```
  */
+
+// TODO: create zod schema
 export type DeBankToken = BaseDeBankToken & {
   symbol: string;
   optimized_symbol: string;
@@ -157,6 +162,7 @@ export type DeBankToken = BaseDeBankToken & {
  * }
  * ```
  */
+// TODO: create zod schema
 export type DeBankChainInfo = {
   id: string;
   community_id: number;
@@ -226,21 +232,27 @@ export type DeBankChainInfo = {
  * ```
  * */
 
-export type DeBankNftToken = BaseDeBankToken & {
-  contract_id: string;
-  description: string;
-  content_type: 'image_url';
-  content: string;
-  thumbnail_url: string;
-  total_supply: number;
-  detail_url: string;
-  collection_id: string;
-  is_core: boolean;
-  inner_id: number;
-  collection_name: string;
-  contract_name: string;
-  amount: number;
-  usd_price: number;
-  is_erc721?: boolean;
-  is_erc1155?: boolean;
-};
+const DeBankNftTokenSchema = BaseDeBankTokenSchema.merge(
+  z.object({
+    contract_id: z.string(),
+    description: z.string(),
+    content_type: z.string(),
+    content: z.string(),
+    thumbnail_url: z.string(),
+    total_supply: z.number(),
+    detail_url: z.string(),
+    collection_id: z.string(),
+    is_core: z.boolean(),
+    inner_id: z.string(),
+    collection_name: z.string(),
+    contract_name: z.string(),
+    amount: z.number(),
+    usd_price: z.number(),
+    is_erc721: z.boolean().optional(),
+    is_erc1155: z.boolean().optional(),
+  }),
+);
+
+const DeBankNftTokenListSchema = z.array(DeBankNftTokenSchema);
+
+export type DeBankNftToken = z.infer<typeof DeBankNftTokenSchema>;
