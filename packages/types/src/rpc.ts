@@ -228,6 +228,11 @@ export type SigningData =
       data: string; // Base-64 encoded "Wire Transaction"
     }
   | {
+      type: RpcMethod.SOLANA_SIGN_TRANSACTION;
+      account: string;
+      data: string; // Base-64 encoded "Wire Transaction"
+    }
+  | {
       type: RpcMethod.BITCOIN_SEND_TRANSACTION;
       account: string;
       data: BitcoinExecuteTxData;

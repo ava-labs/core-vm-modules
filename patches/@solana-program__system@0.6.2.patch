@@ -1,0 +1,22 @@
+diff --git a/dist/src/index.js b/dist/src/index.js
+index 06a94e758b6b17ad00a9a4ddc149b2cbd6d288e6..fceb71e5cca451690e5da17c441361ae176b7a1f 100644
+--- a/dist/src/index.js
++++ b/dist/src/index.js
+@@ -1,6 +1,6 @@
+ 'use strict';
+ 
+-var web3_js = require('@solana/web3.js');
++var web3_js = require('@solana/kit');
+ 
+ // src/generated/accounts/nonce.ts
+ var NonceState = /* @__PURE__ */ ((NonceState2) => {
+diff --git a/dist/src/index.mjs b/dist/src/index.mjs
+index ddd159430cbb7d03e9740d24e4ca526ea079da1e..e526d78b634e03e8851bc4d0b164ebd365711e69 100644
+--- a/dist/src/index.mjs
++++ b/dist/src/index.mjs
+@@ -1,4 +1,4 @@
+-import { getEnumEncoder, getU32Encoder, getEnumDecoder, getU32Decoder, combineCodec, getStructEncoder, getAddressEncoder, getU64Encoder, getStructDecoder, getAddressDecoder, getU64Decoder, decodeAccount, assertAccountExists, fetchEncodedAccount, assertAccountsExist, fetchEncodedAccounts, containsBytes, isProgramError, transformEncoder, addEncoderSizePrefix, getUtf8Encoder, addDecoderSizePrefix, getUtf8Decoder, BASE_ACCOUNT_SIZE, AccountRole, upgradeRoleToSigner, isTransactionSigner as isTransactionSigner$1 } from '@solana/web3.js';
++import { getEnumEncoder, getU32Encoder, getEnumDecoder, getU32Decoder, combineCodec, getStructEncoder, getAddressEncoder, getU64Encoder, getStructDecoder, getAddressDecoder, getU64Decoder, decodeAccount, assertAccountExists, fetchEncodedAccount, assertAccountsExist, fetchEncodedAccounts, containsBytes, isProgramError, transformEncoder, addEncoderSizePrefix, getUtf8Encoder, addDecoderSizePrefix, getUtf8Decoder, BASE_ACCOUNT_SIZE, AccountRole, upgradeRoleToSigner, isTransactionSigner as isTransactionSigner$1 } from '@solana/kit';
+ 
+ // src/generated/accounts/nonce.ts
+ var NonceState = /* @__PURE__ */ ((NonceState2) => {

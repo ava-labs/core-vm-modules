@@ -7,11 +7,9 @@ import {
   type Network,
   type RpcRequest,
   type SigningData,
-  type SigningResult,
   type SPLToken,
 } from '@avalabs/vm-module-types';
 import { deserializeTransactionMessage } from '@avalabs/core-wallets-sdk';
-import { type Base64EncodedWireTransaction } from '@solana/kit';
 
 import { dataItem } from '@internal/utils/src/utils/detail-item';
 
@@ -22,7 +20,7 @@ import { tryToParseSolTransfer } from '@src/utils/instruction-parsers/sol-transf
 import { tryToParseSPLTransfer } from '@src/utils/instruction-parsers/spl-transfer';
 import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
-export const signAndSendTransaction = async ({
+export const signTransaction = async ({
   request,
   network,
   approvalController,
@@ -73,7 +71,7 @@ export const signAndSendTransaction = async ({
   );
 
   const displayData: DisplayData = {
-    title: 'Approve Transaction',
+    title: 'Sign Transaction',
     network: {
       chainId: network.chainId,
       name: network.chainName,
@@ -92,7 +90,7 @@ export const signAndSendTransaction = async ({
   };
 
   const signingData: SigningData = {
-    type: RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION,
+    type: RpcMethod.SOLANA_SIGN_TRANSACTION,
     account,
     data: serializedTx,
   };
@@ -105,31 +103,11 @@ export const signAndSendTransaction = async ({
     };
   }
 
-  let txHash;
-
-  try {
-    txHash = await getTxHash(provider, response);
-  } catch (error) {
+  if (!('signedData' in response)) {
     return {
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+      error: rpcErrors.invalidRequest('No signed data returned'),
     };
   }
 
-  return {
-    result: txHash,
-  };
-};
-
-const getTxHash = async (provider: ReturnType<typeof getProvider>, response: SigningResult) => {
-  if ('txHash' in response) {
-    return response.txHash;
-  }
-
-  // broadcast the signed transaction
-  const txHash = await provider
-    .sendTransaction(response.signedData as Base64EncodedWireTransaction, {
-      encoding: 'base64',
-    })
-    .send();
-  return txHash;
+  return { result: response.signedData };
 };

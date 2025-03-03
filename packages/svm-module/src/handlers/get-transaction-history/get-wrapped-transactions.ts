@@ -1,4 +1,4 @@
-import { address as solAddress, type GetTransactionApi } from '@solana/web3.js';
+import { address as solAddress, type GetTransactionApi } from '@solana/kit';
 
 import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
@@ -24,7 +24,7 @@ export const getWrappedTransactions = async ({
   const txsRequests = await Promise.allSettled(
     signatures.map(async (sig) => ({
       txHash: sig.toString(),
-      tx: await provider.getTransaction(sig, { encoding: 'json' }).send(),
+      tx: await provider.getTransaction(sig, { encoding: 'json', maxSupportedTransactionVersion: 0 }).send(),
     })),
   );
 

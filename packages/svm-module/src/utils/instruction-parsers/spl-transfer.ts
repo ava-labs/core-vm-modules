@@ -2,7 +2,7 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 import type { BalanceChange, SPLToken } from '@avalabs/vm-module-types';
 import { parseTransferInstruction, identifyTokenInstruction, TokenInstruction } from '@solana-program/token';
-import { isInstructionWithAccounts, isInstructionWithData, type Address, type IInstruction } from '@solana/web3.js';
+import { isInstructionWithAccounts, isInstructionWithData, type Address, type IInstruction } from '@solana/kit';
 
 import { addressItem } from '@internal/utils';
 

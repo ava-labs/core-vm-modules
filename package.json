@@ -44,7 +44,9 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "jest-runner@29.7.0": "patches/jest-runner@29.7.0.patch"
+      "jest-runner@29.7.0": "patches/jest-runner@29.7.0.patch",
+      "@solana-program/system@0.6.2": "patches/@solana-program__system@0.6.2.patch",
+      "@solana-program/token@0.4.1": "patches/@solana-program__token@0.4.1.patch"
     }
   }
 }

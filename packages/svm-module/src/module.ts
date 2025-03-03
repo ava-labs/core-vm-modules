@@ -28,6 +28,7 @@ import { getBalances } from './handlers/get-balances/get-balances';
 import { getProvider } from './utils/get-provider';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { signAndSendTransaction } from './handlers/send-and-sign-transaction/send-and-sign-transaction';
+import { signTransaction } from './handlers/sign-transaction/sign-transaction';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -106,6 +107,14 @@ export class SvmModule implements Module {
   // TODO
   async onRpcRequest(request: RpcRequest, network: Network) {
     switch (request.method) {
+      case RpcMethod.SOLANA_SIGN_TRANSACTION: {
+        return signTransaction({
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+          network,
+          request,
+        });
+      }
       case RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION: {
         return signAndSendTransaction({
           approvalController: this.#approvalController,

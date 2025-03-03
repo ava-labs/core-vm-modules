@@ -1,7 +1,7 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { BalanceChange, NetworkToken } from '@avalabs/vm-module-types';
 import { identifySystemInstruction, parseTransferSolInstruction, SystemInstruction } from '@solana-program/system';
-import { isInstructionWithAccounts, isInstructionWithData, type IInstruction } from '@solana/web3.js';
+import { isInstructionWithAccounts, isInstructionWithData, type IInstruction } from '@solana/kit';
 
 import { addressItem } from '@internal/utils';
 

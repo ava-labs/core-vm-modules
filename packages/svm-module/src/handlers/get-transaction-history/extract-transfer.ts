@@ -1,6 +1,6 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { TokenType, type Network, type SPLToken, type TxToken } from '@avalabs/vm-module-types';
-import type { TokenBalance } from '@solana/web3.js';
+import type { TokenBalance } from '@solana/kit';
 
 export const simplifyTokenBalance = (balance: TokenBalance): SimpleTokenBalance => ({
   mint: balance.mint as string,
