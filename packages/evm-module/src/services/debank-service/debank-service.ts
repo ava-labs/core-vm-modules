@@ -3,15 +3,16 @@ import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balance
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import {
+  type Error,
   type NetworkTokenWithBalance,
+  type NftTokenWithBalance,
   TokenType,
   type TokenWithBalanceEVM,
-  type Error,
-  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { DeBank, type DeBankChainInfo } from './de-bank';
+import { DeBank, type DeBankChainInfo, type DeBankNftToken } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
+import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -143,8 +144,46 @@ export class DeBankService implements BalanceServiceInterface {
     return erc20TokenBalances;
   }
 
-  async listNftBalances(): Promise<Record<string, NftTokenWithBalance | Error>> {
-    // we are not supporting NFTs on debank powered chains
-    return {};
+  #mapNftList(deBankNftList: DeBankNftToken[]): Record<string, NftTokenWithBalance | Error> {
+    return deBankNftList.reduce(
+      (accumulator, token) => ({
+        ...accumulator,
+        [`${token.contract_id}-${token.id}`]: {
+          address: token.contract_id,
+          description: token.description,
+          logoUri: token.thumbnail_url,
+          logoSmall: getSmallImageForNFT(token.content),
+          name: token.name,
+          symbol: '',
+          tokenId: `${token.inner_id}`,
+          tokenUri: token.detail_url,
+          collectionName: token.collection_name,
+          balance: BigInt(token.amount),
+          balanceDisplayValue: `${token.amount}`,
+          type: token.is_erc721 ? TokenType.ERC721 : TokenType.ERC1155,
+          metadata: {
+            description: token.description,
+            properties: '',
+          },
+        },
+      }),
+      {} as Record<string, NftTokenWithBalance>,
+    );
+  }
+
+  async listNftBalances({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }): Promise<Record<string, NftTokenWithBalance | Error>> {
+    if (!isHexString(address)) {
+      throw rpcErrors.invalidParams('listNftBalances: not valid address');
+    }
+    const { chainIdString } = await this.#getChainInfo(chainId);
+
+    const nftList = await this.#deBank.getNftList({ chainId: chainIdString, address });
+    return this.#mapNftList(nftList);
   }
 }

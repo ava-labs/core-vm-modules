@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.4.4
+
+### Patch Changes
+
+- 09a5996: Implementing the blank getNftBalances method on the DeBank service
+  - @avalabs/vm-module-types@1.4.4
+
 ## 1.4.3
 
 ### Patch Changes

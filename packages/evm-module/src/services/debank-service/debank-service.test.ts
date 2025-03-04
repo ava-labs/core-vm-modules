@@ -238,4 +238,75 @@ describe('DeBankService', () => {
       });
     });
   });
+
+  describe('listNftBalances', () => {
+    it('should throw an error if the address is not valid', async () => {
+      await expect(
+        deBankService.listNftBalances({
+          chainId: 1,
+          address: 'invalidAddress',
+        }),
+      ).rejects.toThrow('listNftBalances: not valid address');
+    });
+
+    it('should throw an error if the chainId is not supported', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
+      await expect(
+        deBankService.listNftBalances({
+          chainId: 888,
+          address: '0x1234567890abcdef1234567890abcdef12345678',
+        }),
+      ).rejects.toThrow('getNativeBalance: not valid chainId: 888');
+    });
+
+    it('should return the correctly mapped token', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1, id: '1' } as unknown as DeBankChainInfo]);
+      mockDeBank.getChainInfo.mockResolvedValue({ id: 1 } as unknown as DeBankChainInfo);
+      mockDeBank.getNftList.mockResolvedValue([
+        {
+          id: 'someid',
+          contract_id: '0x9876',
+          inner_id: '30276',
+          chain: 'eth',
+          name: 'Gemesis',
+          description: 'Some description',
+          content_type: 'image_url',
+          content: 'https://image.png',
+          thumbnail_url: 'https://thumbnail.png',
+          total_supply: 1,
+          detail_url: 'https://details.txt',
+          collection_id: 'eth:0x123456789',
+          is_core: true,
+          collection_name: 'Gemesis',
+          contract_name: 'Gemesis',
+          is_erc721: true,
+          amount: 1,
+          usd_price: 99.05227399999998,
+        },
+      ]);
+
+      const result = await deBankService.listNftBalances({ chainId: 1, address: '0x1223456789' });
+
+      expect(result).toEqual({
+        '0x9876-someid': {
+          address: '0x9876',
+          balance: 1n,
+          balanceDisplayValue: '1',
+          collectionName: 'Gemesis',
+          description: 'Some description',
+          logoSmall: 'https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://image.png',
+          logoUri: 'https://thumbnail.png',
+          metadata: {
+            description: 'Some description',
+            properties: '',
+          },
+          name: 'Gemesis',
+          symbol: '',
+          tokenId: '30276',
+          tokenUri: 'https://details.txt',
+          type: TokenType.ERC721,
+        },
+      });
+    });
+  });
 });
