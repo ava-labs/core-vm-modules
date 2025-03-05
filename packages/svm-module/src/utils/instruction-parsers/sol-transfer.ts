@@ -1,7 +1,17 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { BalanceChange, NetworkToken } from '@avalabs/vm-module-types';
-import { identifySystemInstruction, parseTransferSolInstruction, SystemInstruction } from '@solana-program/system';
-import { isInstructionWithAccounts, isInstructionWithData, type IInstruction } from '@solana/kit';
+import {
+  identifySystemInstruction,
+  parseTransferSolInstruction,
+  SYSTEM_PROGRAM_ADDRESS,
+  SystemInstruction,
+} from '@solana-program/system';
+import {
+  isInstructionForProgram,
+  isInstructionWithAccounts,
+  isInstructionWithData,
+  type IInstruction,
+} from '@solana/kit';
 
 import { addressItem } from '@internal/utils';
 
@@ -11,7 +21,11 @@ export const tryToParseSolTransfer = (
   account: string,
   networkToken: NetworkToken,
 ) => {
-  if (!isInstructionWithAccounts(instruction) || !isInstructionWithData(instruction)) {
+  if (
+    !isInstructionForProgram(instruction, SYSTEM_PROGRAM_ADDRESS) ||
+    !isInstructionWithAccounts(instruction) ||
+    !isInstructionWithData(instruction)
+  ) {
     return;
   }
 
@@ -22,7 +36,10 @@ export const tryToParseSolTransfer = (
       return null;
     }
 
-    const { accounts, data } = parseTransferSolInstruction(instruction);
+    const { accounts, data } = parseTransferSolInstruction({
+      ...instruction,
+      data: Uint8Array.from(instruction.data), // Fixing the typings here to satisfy parseTransferSolInstruction()
+    });
 
     const isOutgoing = accounts.source.address === account;
     const balanceChangeKey = isOutgoing === true ? 'outs' : 'ins';

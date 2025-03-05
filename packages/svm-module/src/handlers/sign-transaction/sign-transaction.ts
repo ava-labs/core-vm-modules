@@ -48,7 +48,7 @@ export const signTransaction = async ({
     proxyApiUrl,
   });
 
-  const transaction = deserializeTransactionMessage(serializedTx);
+  const transaction = await deserializeTransactionMessage(serializedTx, provider);
   const balanceChange: BalanceChange = {
     ins: [],
     outs: [],

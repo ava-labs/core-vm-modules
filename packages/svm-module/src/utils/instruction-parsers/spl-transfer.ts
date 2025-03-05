@@ -39,7 +39,10 @@ export const tryToParseSPLTransfer = async (
       return null;
     }
 
-    const { accounts, data } = parseTransferInstruction(instruction);
+    const { accounts, data } = parseTransferInstruction({
+      ...instruction,
+      data: Uint8Array.from(instruction.data), // Fixing the typings here to satisfy parseTransferInstruction()
+    });
     const tokenMint = await getTokenMintFromAccountInfo(provider, accounts.source.address);
 
     if (!tokenMint) {

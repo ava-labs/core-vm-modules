@@ -1,4 +1,4 @@
-import { address } from '@solana/web3.js';
+import { address } from '@solana/kit';
 
 import { getProvider } from '@src/utils/get-provider';
 
@@ -38,8 +38,14 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
 
     expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl });
     expect(mockProvider.getSignaturesForAddress).toHaveBeenCalledWith(expect.anything(), { limit: 25 });
-    expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig1', { encoding: 'json' });
-    expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig2', { encoding: 'json' });
+    expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig1', {
+      encoding: 'json',
+      maxSupportedTransactionVersion: 0,
+    });
+    expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig2', {
+      encoding: 'json',
+      maxSupportedTransactionVersion: 0,
+    });
     expect(result).toEqual([
       { txHash: 'sig1', tx: transactionResponse1 },
       { txHash: 'sig2', tx: transactionResponse2 },
