@@ -235,8 +235,8 @@ export type DeBankChainInfo = {
 const DeBankNftTokenSchema = BaseDeBankTokenSchema.merge(
   z.object({
     contract_id: z.string(),
-    description: z.string(),
-    content_type: z.string(),
+    description: z.string().nullable(),
+    content_type: z.string().nullable(),
     content: z.string(),
     thumbnail_url: z.string(),
     total_supply: z.number(),
@@ -247,7 +247,7 @@ const DeBankNftTokenSchema = BaseDeBankTokenSchema.merge(
     collection_name: z.string(),
     contract_name: z.string(),
     amount: z.number(),
-    usd_price: z.number(),
+    usd_price: z.number().optional(),
     is_erc721: z.boolean().optional(),
     is_erc1155: z.boolean().optional(),
   }),
