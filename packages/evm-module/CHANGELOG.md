@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.4.6
+
+### Patch Changes
+
+- 40def8f: adjust debank nft schema
+  - @avalabs/vm-module-types@1.4.6
+
 ## 1.4.5
 
 ### Patch Changes
