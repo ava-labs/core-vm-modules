@@ -6,11 +6,13 @@ import {
   type ConstructorParams,
   type DeriveAddressParams,
   type GetBalancesParams,
+  type GetTransactionHistory,
   type Module,
   type Network,
   type NetworkFeeParam,
   type RpcRequest,
 } from '@avalabs/vm-module-types';
+import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 import { TokenService } from '@internal/utils';
@@ -23,7 +25,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTokens } from './handlers/get-tokens/get-tokens';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { getProvider } from './utils/get-provider';
-import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -83,10 +85,11 @@ export class SvmModule implements Module {
     return getNetworkFee(network, this.#proxyApiUrl);
   }
 
-  // TODO
-  getTransactionHistory() {
-    return Promise.resolve({
-      transactions: [],
+  getTransactionHistory(params: GetTransactionHistory) {
+    return getTransactionHistory({
+      network: params.network,
+      address: params.address,
+      proxyApiUrl: this.#proxyApiUrl,
     });
   }
 

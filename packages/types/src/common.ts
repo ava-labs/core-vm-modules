@@ -1,4 +1,4 @@
-import type { NetworkToken } from './token';
+import type { NetworkContractToken, NetworkToken } from './token';
 
 export type Network = {
   isTestnet?: boolean;
@@ -16,6 +16,7 @@ export type Network = {
       nativeTokenId?: string;
     };
   };
+  tokens?: NetworkContractToken[];
   explorerUrl?: string;
   logoUri?: string;
   vmName: NetworkVMType;
