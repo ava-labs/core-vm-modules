@@ -1,7 +1,6 @@
 import type { ApprovalController, DeriveAddressParams, DeriveAddressResponse } from '@avalabs/vm-module-types';
 import { NetworkVMType } from '@avalabs/vm-module-types';
 
-import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 import { hasDerivationDetails } from '@internal/utils/src/utils/address-derivation';
 
 import { getProvider } from '../../utils/get-provider';
@@ -14,7 +13,7 @@ export const deriveAddress = async (
 
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const derivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).AVM : undefined;
-  const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet), isDevnet: isDevnet(network) });
+  const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet) });
 
   const publicKeyHex = await approvalController.requestPublicKey({
     curve: 'secp256k1',
