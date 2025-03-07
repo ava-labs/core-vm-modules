@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.4.5
+
+### Patch Changes
+
+- f127197: Getting the token approvals from the traces array instead of the exposures array from the simulation result returned by Blockaid
+  - @avalabs/vm-module-types@1.4.5
+
 ## 1.4.4
 
 ### Patch Changes
