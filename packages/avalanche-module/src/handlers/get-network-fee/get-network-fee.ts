@@ -13,8 +13,8 @@ export async function getNetworkFee({
 }): Promise<NetworkFees> {
   const provider = await getProvider({ isTestnet });
 
-  // Return static fees for X-Chain and pre-Etna P-Chain
-  if (vmName === NetworkVMType.AVM || !provider.isEtnaEnabled()) {
+  // Return static fees for X-Chain
+  if (vmName === NetworkVMType.AVM) {
     // this is 0.001 Avax denominated in nAvax, taken from https://docs.avax.network/reference/standards/guides/txn-fees#fee-schedule
     return {
       baseFee: BigInt(1000000),

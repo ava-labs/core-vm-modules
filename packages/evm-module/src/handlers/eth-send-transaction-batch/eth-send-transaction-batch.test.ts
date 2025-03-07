@@ -56,6 +56,7 @@ const mockOnTransactionReverted = jest.fn();
 const mockApprovalController: jest.Mocked<BatchApprovalController> = {
   requestApproval: jest.fn(),
   requestBatchApproval: jest.fn(),
+  requestPublicKey: jest.fn(),
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };

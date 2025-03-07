@@ -1,4 +1,4 @@
-import type { Network } from './common';
+import type { Network, NetworkVMType } from './common';
 
 export enum WalletType {
   // Primary wallet types
@@ -18,6 +18,34 @@ export type GetAddressParams = {
 };
 
 export type GetAddressResponse = Record<string, string>;
+
+export type SimpleDeriveAddressParams = {
+  network: Network;
+  /**
+   * ID of the secret key to use for derivation.
+   */
+  secretId: string;
+};
+export type DetailedDeriveAddressParams = SimpleDeriveAddressParams & {
+  /**
+   * Account index for which the public key is requested.
+   * Leave empty if requesting a public key for a single-account private key.
+   */
+  accountIndex: number;
+  /**
+   * Type of the derivation path to use.
+   * Useful when working with Ledger devices, which support BIP44 and Ledger Live derivation paths.
+   */
+  derivationPathType: DerivationPathType;
+};
+
+export type DeriveAddressParams = SimpleDeriveAddressParams | DetailedDeriveAddressParams;
+
+export type DeriveAddressResponse = Partial<Record<NetworkVMType, string>>;
+
+export type DerivationPathType = 'bip44' | 'ledger_live';
+export type BuildDerivationPathParams = { accountIndex: number; derivationPathType: DerivationPathType };
+export type BuildDerivationPathResponse = Partial<Record<NetworkVMType, string>>;
 
 export type PubKeyType = {
   evm: string;
