@@ -4,6 +4,7 @@ export enum TokenType {
   ERC721 = 'ERC721',
   ERC1155 = 'ERC1155',
   NONERC = 'NONERC',
+  SPL = 'SPL',
 }
 
 export interface NetworkToken {
@@ -14,7 +15,7 @@ export interface NetworkToken {
   description?: string;
 }
 
-export type NetworkContractToken = ERC20Token | ERC1155Token | ERC721Token | NONERCToken;
+export type NetworkContractToken = ERC20Token | ERC1155Token | ERC721Token | NONERCToken | SPLToken;
 
 export interface ERC20Token {
   address: string;
@@ -25,6 +26,18 @@ export interface ERC20Token {
   logoUri?: string;
   name: string;
   symbol: string;
+}
+
+export interface SPLToken {
+  address: string;
+  name: string;
+  symbol: string;
+  type: TokenType.SPL;
+  caip2Id: string;
+  decimals: number;
+  chainId?: number;
+  logoUri?: string;
+  color?: string;
 }
 
 export interface ERC1155Token {

@@ -7,4 +7,7 @@ export default {
   transform: {
     '.ts': ['ts-jest', { tsconfig: './tsconfig.jest.json' }],
   },
+  moduleNameMapper: {
+    '^@src/(.*)': '<rootDir>/src/$1',
+  },
 };

@@ -5,17 +5,25 @@ import {
   type BuildDerivationPathParams,
   type ConstructorParams,
   type DeriveAddressParams,
+  type GetBalancesParams,
   type Module,
-  type NetworkFees,
+  type Network,
+  type NetworkFeeParam,
   type RpcRequest,
 } from '@avalabs/vm-module-types';
-import { type Rpc, type SolanaRpcApiDevnet } from '@solana/rpc';
 import { rpcErrors } from '@metamask/rpc-errors';
+
+import { TokenService } from '@internal/utils';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { deriveAddress } from './handlers/derive-address/derive-address';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getTokens } from './handlers/get-tokens/get-tokens';
+import { getBalances } from './handlers/get-balances/get-balances';
+import { getProvider } from './utils/get-provider';
+import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -36,9 +44,8 @@ export class SvmModule implements Module {
     this.#appInfo;
   }
 
-  // TODO
-  getProvider() {
-    return Promise.resolve({} as Rpc<SolanaRpcApiDevnet>);
+  async getProvider(network: Network): Promise<SolanaProvider> {
+    return getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl: this.#proxyApiUrl });
   }
 
   // TODO
@@ -57,9 +64,14 @@ export class SvmModule implements Module {
     });
   }
 
-  // TODO
-  getBalances() {
-    return Promise.resolve({});
+  getBalances(params: GetBalancesParams) {
+    const tokenService = new TokenService({ storage: params.storage, proxyApiUrl: this.#proxyApiUrl });
+
+    return getBalances({
+      ...params,
+      tokenService,
+      proxyApiUrl: this.#proxyApiUrl,
+    });
   }
 
   getManifest() {
@@ -67,9 +79,8 @@ export class SvmModule implements Module {
     return result.success ? result.data : undefined;
   }
 
-  // TODO
-  getNetworkFee() {
-    return Promise.resolve({} as NetworkFees);
+  getNetworkFee(network: NetworkFeeParam) {
+    return getNetworkFee(network, this.#proxyApiUrl);
   }
 
   // TODO
@@ -79,9 +90,12 @@ export class SvmModule implements Module {
     });
   }
 
-  // TODO
-  getTokens() {
-    return Promise.resolve([]);
+  getTokens(network: Network) {
+    if (!network.caipId) {
+      return Promise.reject({ error: rpcErrors.invalidParams(`Network must have a CAIP-2 id`) });
+    }
+
+    return getTokens({ caip2Id: network.caipId, proxyApiUrl: this.#proxyApiUrl });
   }
 
   // TODO

@@ -1,4 +1,4 @@
-import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal, SolanaProvider } from '@avalabs/core-wallets-sdk';
 import type {
   BuildDerivationPathParams,
   BuildDerivationPathResponse,
@@ -16,7 +16,6 @@ import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
 import type { HyperSDKClient } from 'hypersdk-client';
-import { type Rpc, type SolanaRpcApiDevnet, type SolanaRpcApiMainnet } from '@solana/rpc';
 
 export type AppInfo = {
   name: AppName;
@@ -34,13 +33,7 @@ export type NetworkFeeParam = Network & { caipId?: string };
 export interface Module {
   getProvider: (
     network: Network,
-  ) => Promise<
-    | JsonRpcBatchInternal
-    | BitcoinProvider
-    | Avalanche.JsonRpcProvider
-    | HyperSDKClient
-    | Rpc<SolanaRpcApiMainnet | SolanaRpcApiDevnet>
-  >;
+  ) => Promise<JsonRpcBatchInternal | BitcoinProvider | Avalanche.JsonRpcProvider | HyperSDKClient | SolanaProvider>;
   getManifest: () => Manifest | undefined;
   getBalances: (params: GetBalancesParams) => Promise<GetBalancesResponse>;
   getTransactionHistory: (params: GetTransactionHistory) => Promise<TransactionHistoryResponse>;

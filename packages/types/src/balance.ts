@@ -54,6 +54,17 @@ export type TokenWithBalanceERC20 = TokenBalanceDataWithDecimals &
     reputation: Erc20TokenBalance.tokenReputation | null;
   };
 
+/**
+ * SPL TokenWithBalance interface.
+ */
+export type TokenWithBalanceSPL = TokenBalanceDataWithDecimals &
+  TokenMarketData & {
+    address: string; // mint address
+    type: TokenType.SPL;
+    logoUri?: string;
+    reputation: null;
+  };
+
 export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;
 
 /**
@@ -82,6 +93,10 @@ export interface TokenWithBalanceBTC extends NetworkTokenWithBalance {
   unconfirmedBalanceDisplayValue?: string;
   unconfirmedBalanceCurrencyDisplayValue?: string;
   unconfirmedBalanceInCurrency?: number;
+}
+
+export interface TokenWithBalanceSVM extends NetworkTokenWithBalance {
+  logoUri: string;
 }
 
 /**
@@ -151,6 +166,12 @@ export interface TokenAttribute {
   value: string;
 }
 
-export type TokenWithBalance = TokenWithBalanceEVM | TokenWithBalanceBTC | TokenWithBalancePVM | TokenWithBalanceAVM;
+export type TokenWithBalance =
+  | TokenWithBalanceEVM
+  | TokenWithBalanceBTC
+  | TokenWithBalancePVM
+  | TokenWithBalanceAVM
+  | TokenWithBalanceSVM
+  | TokenWithBalanceSPL;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;

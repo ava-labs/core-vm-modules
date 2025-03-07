@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
-    "@solana/rpc": "2.0.0",
     "@types/bn.js": "5.1.5",
     "bn.js": "5.2.1",
     "eslint-config-custom": "workspace:*",

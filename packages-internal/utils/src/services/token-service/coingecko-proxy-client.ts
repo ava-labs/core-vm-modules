@@ -1,4 +1,4 @@
-import { RawSimplePriceResponseSchema, SimplePriceResponseSchema } from '@avalabs/vm-module-types';
+import { RawSimplePriceResponseSchema } from '@avalabs/vm-module-types';
 import { fetchAndVerify } from '../../utils/fetch-and-verify';
 
 export class CoingeckoProxyClient {
@@ -55,7 +55,7 @@ export class CoingeckoProxyClient {
           },
         },
       ],
-      SimplePriceResponseSchema,
+      RawSimplePriceResponseSchema,
     );
   }
 }
