@@ -150,7 +150,7 @@ export class DeBankService implements BalanceServiceInterface {
         ...accumulator,
         [`${token.contract_id}-${token.id}`]: {
           address: token.contract_id,
-          description: token.description,
+          description: token.description ?? '',
           logoUri: token.thumbnail_url,
           logoSmall: getSmallImageForNFT(token.content),
           name: token.name,
@@ -162,7 +162,7 @@ export class DeBankService implements BalanceServiceInterface {
           balanceDisplayValue: `${token.amount}`,
           type: token.is_erc721 ? TokenType.ERC721 : TokenType.ERC1155,
           metadata: {
-            description: token.description,
+            description: token.description ?? '',
             properties: '',
           },
         },
