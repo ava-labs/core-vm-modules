@@ -381,8 +381,10 @@ describe('eth_sendTransaction handler', () => {
             simulation: {
               status: 'Success',
               account_summary: {
-                exposures: [
+                traces: [
                   {
+                    trace_type: 'ExposureTrace',
+                    type: 'ERC20ExposureTrace',
                     asset: {
                       type: TokenType.ERC20,
                       address: '0xTokenAddress',
@@ -391,10 +393,10 @@ describe('eth_sendTransaction handler', () => {
                       decimals: 18,
                       logo_url: 'logo_url',
                     },
-                    spenders: {
-                      '0xSpenderAddress': {
-                        exposure: [{ raw_value: '1', usd_price: '1' }],
-                      },
+                    spender: '0xSpenderAddress',
+                    exposed: {
+                      raw_value: '1',
+                      usd_price: 1,
                     },
                   },
                 ],

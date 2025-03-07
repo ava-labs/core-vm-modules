@@ -291,8 +291,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@blockaid/client':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: 0.36.0
+        version: 0.36.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -1984,8 +1984,8 @@ packages:
       '@noble/curves': 1.8.1
     dev: false
 
-  /@blockaid/client@0.11.0:
-    resolution: {integrity: sha512-Lvg+lrQTDTBr03yKdrMOerjYovxEmWM5gUToO3Bbd5Qiybq4rBxoZBFvtBrg/vu5ENIA1f+jIo+1EI8TOktI4w==}
+  /@blockaid/client@0.36.0:
+    resolution: {integrity: sha512-38zdKJKGp8DhUzURRnnnIpi3prelKgMsPNhoY5hsyWcliE6ednG4wIvKIPmFZf1I1nMb3rzhtNN0hDQ0XvjEQg==}
     dependencies:
       '@types/node': 18.19.76
       '@types/node-fetch': 2.6.12
@@ -1994,7 +1994,6 @@ packages:
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
-      web-streams-polyfill: 3.3.3
     transitivePeerDependencies:
       - encoding
     dev: false

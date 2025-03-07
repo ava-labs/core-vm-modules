@@ -27,7 +27,7 @@
     "@avalabs/glacier-sdk": "3.1.0-alpha.34",
     "@avalabs/types": "3.1.0-alpha.34",
     "@avalabs/vm-module-types": "workspace:*",
-    "@blockaid/client": "0.11.0",
+    "@blockaid/client": "0.36.0",
     "@metamask/rpc-errors": "6.3.0",
     "@openzeppelin/contracts": "4.9.6",
     "bn.js": "5.2.1",

@@ -429,6 +429,27 @@ describe('eth_sendTransactionBatch handler', () => {
                 status: 'Success',
                 account_summary: {
                   assets_diffs: [],
+                  traces: [
+                    {
+                      type: 'ERC20ExposureTrace',
+                      exposed: {
+                        raw_value: '0x1',
+                        value: 1,
+                        usd_price: '1',
+                      },
+                      trace_type: 'ExposureTrace',
+                      owner: '0xOwenerAddress',
+                      spender: '0xSpenderAddress',
+                      asset: {
+                        type: TokenType.ERC20,
+                        address: '0xSwapTokenAAddress',
+                        name: 'SwapTokenA',
+                        symbol: 'TKNA',
+                        decimals: 18,
+                        logo_url: 'logo_url',
+                      },
+                    },
+                  ],
                   exposures: [
                     {
                       asset: {
@@ -458,6 +479,7 @@ describe('eth_sendTransactionBatch handler', () => {
                 status: 'Success',
                 account_summary: {
                   exposures: [],
+                  traces: [],
                   assets_diffs: [
                     {
                       asset: {
