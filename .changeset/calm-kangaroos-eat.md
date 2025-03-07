@@ -1,5 +1,4 @@
 ---
-'@internal/tsup-config': minor
 '@avalabs/avalanche-module': minor
 '@internal/utils': minor
 '@avalabs/bitcoin-module': minor
