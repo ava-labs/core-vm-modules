@@ -133,11 +133,12 @@ describe('DeBankService', () => {
       const mockTokenList: DeBankToken[] = [
         { id: '0x1', symbol: 'DAI' } as unknown as DeBankToken,
         { id: '0x2', symbol: 'USDT' } as unknown as DeBankToken,
+        { id: '0x3', symbol: 'DOGE' } as unknown as DeBankToken,
       ];
       const mockTokenBalance1: DeBankToken = {
         amount: 50000000000000000000n,
         chain: 'eth',
-        is_core: false,
+        is_core: true,
         is_wallet: false,
         optimized_symbol: 'DAI',
         protocol_id: '',
@@ -154,7 +155,7 @@ describe('DeBankService', () => {
         amount: 100000000000000000000n,
         chain: 'eth',
         id: '0x2',
-        is_core: false,
+        is_core: true,
         is_wallet: false,
         optimized_symbol: 'USDT',
         protocol_id: '',
@@ -166,12 +167,35 @@ describe('DeBankService', () => {
         logo_url: 'http://usdt.logo.url',
         price: 1,
       };
+      const mockTokenBalance3: DeBankToken = {
+        amount: 100000000000000000000n,
+        chain: 'eth',
+        id: '0x3',
+        is_core: false,
+        is_wallet: false,
+        optimized_symbol: 'DOGE',
+        protocol_id: '',
+        time_at: 0,
+        raw_amount: 100000000000000000000n,
+        decimals: 18,
+        symbol: 'DOGE',
+        name: 'Doge',
+        logo_url: 'http://doge.logo.url',
+        price: 1,
+      };
 
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 42161, id: 'arb' } as unknown as DeBankChainInfo]);
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenList.mockResolvedValue(mockTokenList);
-      mockDeBank.getTokenBalance.mockResolvedValueOnce(mockTokenBalance1).mockResolvedValueOnce(mockTokenBalance2);
-      mockDeBank.getTokensBalanceOnChain.mockResolvedValueOnce([mockTokenBalance1, mockTokenBalance2]);
+      mockDeBank.getTokenBalance
+        .mockResolvedValueOnce(mockTokenBalance1)
+        .mockResolvedValueOnce(mockTokenBalance2)
+        .mockResolvedValueOnce(mockTokenBalance3);
+      mockDeBank.getTokensBalanceOnChain.mockResolvedValueOnce([
+        mockTokenBalance1,
+        mockTokenBalance2,
+        mockTokenBalance3,
+      ]);
 
       const result = await deBankService.listErc20Balances({
         chainId: 42161,
@@ -210,6 +234,77 @@ describe('DeBankService', () => {
           priceInCurrency: 1,
           type: TokenType.ERC20,
           reputation: null,
+        },
+      });
+    });
+  });
+
+  describe('listNftBalances', () => {
+    it('should throw an error if the address is not valid', async () => {
+      await expect(
+        deBankService.listNftBalances({
+          chainId: 1,
+          address: 'invalidAddress',
+        }),
+      ).rejects.toThrow('listNftBalances: not valid address');
+    });
+
+    it('should throw an error if the chainId is not supported', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
+      await expect(
+        deBankService.listNftBalances({
+          chainId: 888,
+          address: '0x1234567890abcdef1234567890abcdef12345678',
+        }),
+      ).rejects.toThrow('getNativeBalance: not valid chainId: 888');
+    });
+
+    it('should return the correctly mapped token', async () => {
+      mockDeBank.getChainList.mockResolvedValue([{ community_id: 1, id: '1' } as unknown as DeBankChainInfo]);
+      mockDeBank.getChainInfo.mockResolvedValue({ id: 1 } as unknown as DeBankChainInfo);
+      mockDeBank.getNftList.mockResolvedValue([
+        {
+          id: 'someid',
+          contract_id: '0x9876',
+          inner_id: '30276',
+          chain: 'eth',
+          name: 'Gemesis',
+          description: 'Some description',
+          content_type: 'image_url',
+          content: 'https://image.png',
+          thumbnail_url: 'https://thumbnail.png',
+          total_supply: 1,
+          detail_url: 'https://details.txt',
+          collection_id: 'eth:0x123456789',
+          is_core: true,
+          collection_name: 'Gemesis',
+          contract_name: 'Gemesis',
+          is_erc721: true,
+          amount: 1,
+          usd_price: 99.05227399999998,
+        },
+      ]);
+
+      const result = await deBankService.listNftBalances({ chainId: 1, address: '0x1223456789' });
+
+      expect(result).toEqual({
+        '0x9876-someid': {
+          address: '0x9876',
+          balance: 1n,
+          balanceDisplayValue: '1',
+          collectionName: 'Gemesis',
+          description: 'Some description',
+          logoSmall: 'https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://image.png',
+          logoUri: 'https://thumbnail.png',
+          metadata: {
+            description: 'Some description',
+            properties: '',
+          },
+          name: 'Gemesis',
+          symbol: '',
+          tokenId: '30276',
+          tokenUri: 'https://details.txt',
+          type: TokenType.ERC721,
         },
       });
     });

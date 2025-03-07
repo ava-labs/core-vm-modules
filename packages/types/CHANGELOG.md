@@ -1,5 +1,32 @@
 # @avalabs/vm-module-types
 
+## 1.4.5
+
+## 1.4.4
+
+## 1.4.3
+
+## 1.4.2
+
+## 1.4.1
+
+### Patch Changes
+
+- 0a75fcc: remove devnet logic
+- 0a75fcc: upgrade internal sdks
+
+## 1.4.0
+
+### Minor Changes
+
+- 8969b33: Add EIP-2930 support
+
+### Patch Changes
+
+- 0954386: Fix broken lock file
+
+## 1.3.0
+
 ## 1.2.1
 
 ## 1.2.0
