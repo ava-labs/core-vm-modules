@@ -1,6 +1,7 @@
+import { type AssetDiffs, processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
+import { RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
+import simulationResult from './__mocks__/simulation-result';
 import Blockaid from '@blockaid/client';
-import { processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
-import { RpcMethod } from '@avalabs/vm-module-types';
 
 jest.mock('@blockaid/client', () => {
   return jest.fn().mockImplementation(() => {
@@ -9,7 +10,7 @@ jest.mock('@blockaid/client', () => {
 });
 
 describe('processTransactionSimulation', () => {
-  it('does not mark transactions as suspicious if the simulation result is not present at all', async () => {
+  it('should not mark transactions as suspicious if the simulation result is not present at all', async () => {
     const params = {
       from: '0xFromAddress',
       to: '0xToAddress',
@@ -28,12 +29,72 @@ describe('processTransactionSimulation', () => {
 
     expect(result).toEqual(expect.objectContaining({ alert: undefined, isSimulationSuccessful: false }));
   });
+
+  it('should get the tokenApprovals from the traces of the simulation result', async () => {
+    const params = {
+      from: '0xFromAddress',
+      to: '0xToAddress',
+      value: '0xValue',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = (await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: simulationResult as unknown as Blockaid.TransactionScanResponse,
+    })) as { tokenApprovals: TokenApprovals };
+
+    const {
+      approvals: [testSimulationResult],
+    } = tokenApprovals;
+
+    expect(testSimulationResult).toEqual(
+      expect.objectContaining({
+        spenderAddress: '0xSpenderAddress',
+        usdPrice: '111110555.55555545',
+        value: '0x650e124ef1c7',
+      }),
+    );
+  });
+
+  it('should disregard asset traces in the traces array', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.simulation.account_summary.traces = clonedSimulation.simulation.account_summary.traces.map(
+      (trace) => ({
+        ...trace,
+        type: 'NativeAssetTrace',
+        trace_type: 'AssetTrace',
+      }),
+    );
+
+    const params = {
+      from: '0xFromAddress',
+      to: '0xToAddress',
+      value: '0xValue',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = (await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    })) as { tokenApprovals: TokenApprovals };
+
+    expect(tokenApprovals).toBeUndefined();
+  });
 });
 
 describe('processBalanceChange', () => {
   it('should sort asset diffs correctly within ins and outs', () => {
-    const assetDiffs: Blockaid.AssetDiff[] = [
+    const assetDiffs: AssetDiffs = [
       {
+        asset_type: 'ERC20',
         asset: {
           type: 'ERC20',
           address: '0xTokenAddress1',
@@ -52,6 +113,7 @@ describe('processBalanceChange', () => {
         ],
       },
       {
+        asset_type: 'ERC20',
         asset: {
           type: 'ERC20',
           address: '0xTokenAddress2',

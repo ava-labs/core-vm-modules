@@ -1,10 +1,7 @@
-import { address } from '@solana/addresses';
-
 import { getProvider } from '@src/utils/get-provider';
 
 import { getWrappedTransactions } from './get-wrapped-transactions';
 
-jest.mock('@solana/addresses');
 jest.mock('@src/utils/get-provider');
 
 describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => {
@@ -16,11 +13,11 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
   beforeEach(() => {
     jest.clearAllMocks();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
-    (address as jest.Mock).mockImplementation((addr) => addr);
   });
 
+  const address = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijk';
+
   it('should return wrapped transactions', async () => {
-    const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
     const signaturesResponse = [{ signature: 'sig1' }, { signature: 'sig2' }];
@@ -47,7 +44,6 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
   });
 
   it('should handle empty signatures response', async () => {
-    const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
     mockProvider.getSignaturesForAddress.mockReturnValue({
@@ -60,7 +56,6 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
   });
 
   it('should handle rejected transactions', async () => {
-    const address = 'test-address';
     const proxyApiUrl = 'test-proxyApiUrl';
 
     const signaturesResponse = [{ signature: 'sig1' }, { signature: 'sig2' }];

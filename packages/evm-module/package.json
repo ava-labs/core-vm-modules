@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/evm-module",
-  "version": "1.2.1",
+  "version": "1.4.6",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -19,14 +19,15 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/core-etherscan-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/glacier-sdk": "3.1.0-canary.4e1f85e.0",
-    "@avalabs/types": "3.1.0-canary.4e1f85e.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.42",
+    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.42",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.42",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.42",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.42",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.42",
+    "@avalabs/types": "3.1.0-alpha.42",
     "@avalabs/vm-module-types": "workspace:*",
-    "@blockaid/client": "0.11.0",
+    "@blockaid/client": "0.36.0",
     "@metamask/rpc-errors": "6.3.0",
     "@openzeppelin/contracts": "4.9.6",
     "bn.js": "5.2.1",
@@ -42,7 +43,7 @@
     "@types/jest": "29.5.7",
     "@types/lodash.startcase": "4.4.9",
     "eslint-config-custom": "workspace:*",
-    "ethers": "6.8.1",
+    "ethers": "6.13.5",
     "jest": "29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "ts-jest": "29.1.1",
@@ -50,7 +51,7 @@
     "typechain": "8.3.1"
   },
   "peerDependencies": {
-    "ethers": "6.8.1"
+    "ethers": "6.13.5"
   },
   "volta": {
     "node": "20.11.0",

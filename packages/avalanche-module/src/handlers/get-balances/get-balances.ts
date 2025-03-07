@@ -16,7 +16,6 @@ import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
 import { convertXChainBalance } from './covnert-x-chain-balance';
-import { isDevnet } from '@internal/utils/src/utils/is-devnet';
 
 type GetAvalancheBalancesResponse = Record<string, Record<string, TokenWithBalanceAVM | TokenWithBalancePVM>>;
 
@@ -41,8 +40,7 @@ export const getBalances = async ({
   const coingeckoId = network.pricingProviders?.coingecko.nativeTokenId;
 
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
-  // TODO(@meeh0w): remove `isDevnet` case after E-upgrade activation on Fuji
-  const glacierNetwork = isDevnet(network) ? Network.DEVNET : network.isTestnet ? Network.FUJI : Network.MAINNET;
+  const glacierNetwork = network.isTestnet ? Network.FUJI : Network.MAINNET;
 
   const chainBalances = await glacierService
     .getChainBalance({

@@ -64,6 +64,8 @@ export const scanTransaction = async ({
       value: params.value,
       gas: params.gas,
       gas_price: params.gasPrice,
+      // TODO: provide accessList once Blockaid supports it
+      // access_list: params.accessList
     },
     metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
   });
