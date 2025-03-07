@@ -75,6 +75,7 @@ export const buildTxApprovalRequest = (
       data: transaction.data,
       value: transaction.value,
       chainId: transaction.chainId ?? network.chainId,
+      accessList: transaction.accessList,
     },
   };
 

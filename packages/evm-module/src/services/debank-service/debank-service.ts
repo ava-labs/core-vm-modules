@@ -1,17 +1,18 @@
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface, TokenId } from '../../handlers/get-balances/balance-service-interface';
+import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import {
+  type Error,
   type NetworkTokenWithBalance,
+  type NftTokenWithBalance,
   TokenType,
   type TokenWithBalanceEVM,
-  type Error,
-  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { DeBank } from './de-bank';
+import { DeBank, type DeBankChainInfo, type DeBankNftToken } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
+import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
@@ -24,6 +25,25 @@ export class DeBankService implements BalanceServiceInterface {
     return this.#deBank.isNetworkSupported(chainId);
   }
 
+  async #getChainInfo(chainId: number): Promise<{ chainInfo: DeBankChainInfo; chainIdString: string }> {
+    const chainList = await this.#deBank.getChainList();
+    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
+    if (!chainIdString) {
+      throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    }
+
+    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
+
+    if (!chainInfo) {
+      throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    }
+
+    return {
+      chainInfo,
+      chainIdString,
+    };
+  }
+
   async getNativeBalance({
     chainId,
     address,
@@ -34,11 +54,8 @@ export class DeBankService implements BalanceServiceInterface {
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('getNativeBalance: not valid address: ' + address);
-    const chainList = await this.#deBank.getChainList();
-    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
-    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
-    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
+
     const tokenId = chainInfo.native_token_id;
     const nativeTokenBalance = await this.#deBank.getTokenBalance({ address, chainId: chainIdString, tokenId });
     const tokenUnit = new TokenUnit(
@@ -83,19 +100,15 @@ export class DeBankService implements BalanceServiceInterface {
     pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
-    const chainList = await this.#deBank.getChainList();
-    const chainIdString = chainList.find((value) => value.community_id === chainId)?.id;
-    if (!chainIdString) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
-    const chainInfo = await this.#deBank.getChainInfo({ chainId: chainIdString });
-    if (!chainInfo) throw rpcErrors.invalidParams('getNativeBalance: not valid chainId: ' + chainId);
+    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
 
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
+    const exchangeRates = await getExchangeRates();
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
-    const exchangeRates = await getExchangeRates();
     for (const tokenBalance of tokenBalances) {
-      //skip native token
-      if (tokenBalance.id === chainInfo.native_token_id) {
+      // skip native token or tokens which are not core tokens
+      if (tokenBalance.id === chainInfo.native_token_id || tokenBalance.is_core === false) {
         continue;
       }
 
@@ -130,8 +143,46 @@ export class DeBankService implements BalanceServiceInterface {
     return erc20TokenBalances;
   }
 
-  async listNftBalances(): Promise<Record<string, NftTokenWithBalance | Error>> {
-    // we are not supporting NFTs on debank powered chains
-    return {};
+  #mapNftList(deBankNftList: DeBankNftToken[]): Record<string, NftTokenWithBalance | Error> {
+    return deBankNftList.reduce(
+      (accumulator, token) => ({
+        ...accumulator,
+        [`${token.contract_id}-${token.id}`]: {
+          address: token.contract_id,
+          description: token.description ?? '',
+          logoUri: token.thumbnail_url,
+          logoSmall: getSmallImageForNFT(token.content),
+          name: token.name,
+          symbol: '',
+          tokenId: `${token.inner_id}`,
+          tokenUri: token.detail_url,
+          collectionName: token.collection_name,
+          balance: BigInt(token.amount),
+          balanceDisplayValue: `${token.amount}`,
+          type: token.is_erc721 ? TokenType.ERC721 : TokenType.ERC1155,
+          metadata: {
+            description: token.description ?? '',
+            properties: '',
+          },
+        },
+      }),
+      {} as Record<string, NftTokenWithBalance>,
+    );
+  }
+
+  async listNftBalances({
+    chainId,
+    address,
+  }: {
+    chainId: number;
+    address: string;
+  }): Promise<Record<string, NftTokenWithBalance | Error>> {
+    if (!isHexString(address)) {
+      throw rpcErrors.invalidParams('listNftBalances: not valid address');
+    }
+    const { chainIdString } = await this.#getChainInfo(chainId);
+
+    const nftList = await this.#deBank.getNftList({ chainId: chainIdString, address });
+    return this.#mapNftList(nftList);
   }
 }

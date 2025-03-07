@@ -1,7 +1,9 @@
-import type { NetworkFees } from '@avalabs/vm-module-types';
+import type { NetworkFees, SuggestGasPriceOptionsResponse } from '@avalabs/vm-module-types';
 import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { ChainId } from '@avalabs/core-chains-sdk';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 const DEFAULT_PRESETS = {
   LOW: 1n,
@@ -10,6 +12,9 @@ const DEFAULT_PRESETS = {
 };
 
 const BASE_PRIORITY_FEE_WEI = 500000000n; //0.5 GWei
+
+const isCChain = (chainId: number) =>
+  chainId === ChainId.AVALANCHE_TESTNET_ID || chainId === ChainId.AVALANCHE_MAINNET_ID;
 
 /**
  * Returns {@link NetworkFees} based on {@link DEFAULT_PRESETS} multipliers.
@@ -40,6 +45,22 @@ export async function getNetworkFee({
   if (!proxyApiUrl) {
     throw rpcErrors.internal('Proxy API URL is needed');
   }
+
+  if (isCChain(chainId)) {
+    try {
+      const suggestedFees = await suggestPriceOptions(provider);
+
+      return {
+        ...suggestedFees,
+        baseFee: suggestedFees.medium.maxFeePerGas,
+        displayDecimals: 9,
+        isFixedFee: false,
+      };
+    } catch (err) {
+      console.error('eth_suggestPriceOptions call failed, falling back to legacy fee fetching');
+    }
+  }
+
   const lastBlock = await provider.getBlock('latest', false);
 
   if (!lastBlock) {
@@ -79,6 +100,27 @@ export async function getNetworkFee({
     },
     isFixedFee: false,
     displayDecimals: 9,
+  };
+}
+
+async function suggestPriceOptions(
+  provider: JsonRpcBatchInternal,
+): Promise<Pick<NetworkFees, 'low' | 'medium' | 'high'>> {
+  const options: SuggestGasPriceOptionsResponse = await provider.send('eth_suggestPriceOptions', []);
+
+  return {
+    low: {
+      maxFeePerGas: BigInt(options.slow.maxFeePerGas),
+      maxPriorityFeePerGas: BigInt(options.slow.maxPriorityFeePerGas),
+    },
+    medium: {
+      maxFeePerGas: BigInt(options.normal.maxFeePerGas),
+      maxPriorityFeePerGas: BigInt(options.normal.maxPriorityFeePerGas),
+    },
+    high: {
+      maxFeePerGas: BigInt(options.fast.maxFeePerGas),
+      maxPriorityFeePerGas: BigInt(options.fast.maxPriorityFeePerGas),
+    },
   };
 }
 
