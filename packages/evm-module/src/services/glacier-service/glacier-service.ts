@@ -7,7 +7,6 @@ import {
   Erc721TokenBalance,
   Glacier,
 } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface } from '../../handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
   type Error,
@@ -18,12 +17,17 @@ import {
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
-import { DEFAULT_DECIMALS } from '../../constants';
-import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
+
+import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
+import { DEFAULT_DECIMALS } from '@src/constants';
+import { ChainId } from '@avalabs/core-chains-sdk';
+import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
 }
+
+const CHAINS_TO_FILTER = [ChainId.ETHEREUM_HOMESTEAD];
 
 export class EvmGlacierService implements BalanceServiceInterface {
   glacierSdk: Glacier;
@@ -65,7 +69,13 @@ export class EvmGlacierService implements BalanceServiceInterface {
 
     try {
       const supportedChains = await this.glacierSdk.evmChains.supportedChains({});
-      this.supportedChainIds = supportedChains.chains.map((chain) => chain.chainId);
+      /*
+       * https://ava-labs.atlassian.net/browse/CP-9855
+       * We are removing the support for Ethereum chain, so it is queried from DeBank instead
+       */
+      this.supportedChainIds = supportedChains.chains
+        .map((chain) => chain.chainId)
+        .filter((chainId) => !CHAINS_TO_FILTER.includes(Number(chainId)));
       return this.supportedChainIds;
     } catch {
       return [];

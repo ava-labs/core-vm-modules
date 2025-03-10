@@ -1,5 +1,73 @@
 # @avalabs/evm-module
 
+## 1.4.6
+
+### Patch Changes
+
+- 40def8f: adjust debank nft schema
+  - @avalabs/vm-module-types@1.4.6
+
+## 1.4.5
+
+### Patch Changes
+
+- f127197: Getting the token approvals from the traces array instead of the exposures array from the simulation result returned by Blockaid
+  - @avalabs/vm-module-types@1.4.5
+
+## 1.4.4
+
+### Patch Changes
+
+- 09a5996: Implementing the blank getNftBalances method on the DeBank service
+  - @avalabs/vm-module-types@1.4.4
+
+## 1.4.3
+
+### Patch Changes
+
+- e8e9306: chore: release optimization fix
+  - @avalabs/vm-module-types@1.4.3
+
+## 1.4.2
+
+### Patch Changes
+
+- 8af7654: Filtering out the ethereum chain from the supported chain list in the Glacier service so the DeBank service can provide the data
+  - @avalabs/vm-module-types@1.4.2
+
+## 1.4.1
+
+### Patch Changes
+
+- 0a75fcc: remove devnet logic
+- 0a75fcc: upgrade internal sdks
+- Updated dependencies [0a75fcc]
+- Updated dependencies [0a75fcc]
+  - @avalabs/vm-module-types@1.4.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 8969b33: Add EIP-2930 support
+
+### Patch Changes
+
+- 0954386: Fix broken lock file
+- Updated dependencies [0954386]
+- Updated dependencies [8969b33]
+  - @avalabs/vm-module-types@1.4.0
+
+## 1.3.0
+
+### Minor Changes
+
+- b7f273c: feat: eth_suggestPriceOptions for c-chain
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.3.0
+
 ## 1.2.1
 
 ### Patch Changes

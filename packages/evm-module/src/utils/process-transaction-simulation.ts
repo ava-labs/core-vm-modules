@@ -23,6 +23,21 @@ import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
 import { transactionAlerts } from './transaction-alerts';
 
+type Erc20ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace;
+type Erc721ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc721ExposureTrace;
+type Erc1155ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc1155ExposureTrace;
+
+/*
+ * Although in the type definition they don't specify it, but for traces they are returning the asset as well:
+ * https://docs.blockaid.io/changelog/november-12-2024#account-traces
+ * */
+type ExposureTrace =
+  | (Erc20ExposureTrace & { asset: Blockaid.Evm.Erc20TokenDetails })
+  | (Erc721ExposureTrace & { asset: Blockaid.Evm.Erc721TokenDetails })
+  | (Erc1155ExposureTrace & { asset: Blockaid.Evm.Erc1155TokenDetails });
+type Trace = Blockaid.Evm.TransactionSimulation.AccountSummary['traces']['0'];
+export type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
+
 export const simulateTransaction = async ({
   rpcMethod,
   dAppUrl,
@@ -84,7 +99,7 @@ export const processTransactionSimulation = async ({
 
     if (simulation?.status === 'Success') {
       isSimulationSuccessful = true;
-      tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary.exposures);
+      tokenApprovals = processTokenApprovals(rpcMethod, simulation.account_summary);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
 
@@ -103,47 +118,73 @@ export const processTransactionSimulation = async ({
   return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
+const isExposureTrace = (trace: Trace): trace is ExposureTrace => {
+  return (trace as ExposureTrace).trace_type === 'ExposureTrace';
+};
+
+const normalizeAddresses = (spender: string, assetAddress: string): string =>
+  `${spender.toLowerCase()}.${assetAddress.toLowerCase()}`;
+
+const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, ExposureTrace> => {
+  if (traces === undefined || traces.length === 0) {
+    return {};
+  }
+
+  return traces.reduce(
+    (accumulator, trace) => {
+      if (!isExposureTrace(trace)) {
+        return accumulator;
+      }
+      return {
+        [normalizeAddresses(trace.spender, trace.asset.address)]: trace,
+      };
+    },
+    {} as Record<string, ExposureTrace>,
+  );
+};
+
 const processTokenApprovals = (
   rpcMethod: RpcMethod,
-  exposures: Blockaid.AddressAssetExposure[],
+  accountSummary: Blockaid.Evm.TransactionSimulation.AccountSummary,
 ): TokenApprovals | undefined => {
-  const approvals: TokenApproval[] = [];
+  const { traces } = accountSummary;
 
-  for (const exposurePerAsset of exposures) {
-    const token = convertAssetToNetworkContractToken(exposurePerAsset.asset);
-    if (!token) {
-      continue;
-    }
+  const mappedExposureTraces = mapExposureTracesToSpenderAsset(traces);
 
-    for (const [spenderAddress, exposurePerSpender] of Object.entries(exposurePerAsset.spenders)) {
-      if (exposurePerSpender.exposure.length === 0) {
-        approvals.push({
-          token,
-          spenderAddress,
-          logoUri: token.logoUri,
-        });
-      } else {
-        for (const exposure of exposurePerSpender.exposure) {
-          if ('raw_value' in exposure) {
-            approvals.push({
-              token,
-              spenderAddress,
-              value: exposure.raw_value,
-              usdPrice: exposure.usd_price,
-              logoUri: token.logoUri,
-            });
-          } else {
-            approvals.push({
-              token,
-              spenderAddress,
-              logoUri: exposure.logo_url,
-              usdPrice: exposure.usd_price,
-            });
-          }
-        }
+  const approvals = Object.entries(mappedExposureTraces)
+    .map(([_, trace]) => {
+      const token = convertAssetToNetworkContractToken(trace.asset);
+      if (!token) {
+        return;
       }
-    }
-  }
+
+      const tokenApproval: TokenApproval = {
+        token,
+        spenderAddress: trace.spender,
+        logoUri: token.logoUri,
+      };
+
+      if (trace.type === 'ERC20ExposureTrace') {
+        const {
+          exposed: { raw_value, usd_price },
+        } = trace as Erc20ExposureTrace;
+
+        tokenApproval.value = raw_value;
+        tokenApproval.usdPrice = `${usd_price}`;
+      }
+
+      if (trace.type === 'ERC721ExposureTrace') {
+        const {
+          exposed: { usd_price, amount },
+        } = trace as Erc721ExposureTrace;
+
+        tokenApproval.value = `${amount}`;
+        tokenApproval.usdPrice = `${usd_price}`;
+      }
+
+      return tokenApproval;
+    })
+    .filter(Boolean) as TokenApproval[];
 
   if (approvals.length === 0) {
     return undefined;
@@ -157,7 +198,7 @@ const processTokenApprovals = (
   return { isEditable, approvals };
 };
 
-export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceChange | undefined => {
+export const processBalanceChange = (assetDiffs: AssetDiffs): BalanceChange | undefined => {
   const ins = processAssetDiffs(assetDiffs, 'in');
   const outs = processAssetDiffs(assetDiffs, 'out');
 
@@ -168,7 +209,7 @@ export const processBalanceChange = (assetDiffs: Blockaid.AssetDiff[]): BalanceC
   return { ins, outs };
 };
 
-const processAssetDiffs = (assetDiffs: Blockaid.AssetDiff[], type: 'in' | 'out'): TokenDiff[] => {
+const processAssetDiffs = (assetDiffs: AssetDiffs, type: 'in' | 'out'): TokenDiff[] => {
   return (
     assetDiffs
       .filter((assetDiff) => assetDiff[type].length > 0)
@@ -302,7 +343,7 @@ export const processJsonRpcSimulation = async ({
     }
 
     if (simulation?.status === 'Success') {
-      tokenApprovals = processTokenApprovals(request.method, simulation.account_summary.exposures);
+      tokenApprovals = processTokenApprovals(request.method, simulation.account_summary);
       balanceChange = processBalanceChange(simulation.account_summary.assets_diffs);
     }
   } catch (error) {
