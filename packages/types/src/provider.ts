@@ -63,7 +63,7 @@ export type JsonRpcRequestPayload<Method extends string, Params = unknown> = Par
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface ChainAgnosticProvider extends EventEmitter {
-  request({
+  request<T = unknown>({
     data,
     sessionId,
     scope,
@@ -71,7 +71,7 @@ export interface ChainAgnosticProvider extends EventEmitter {
     data: PartialBy<JsonRpcRequestPayload<string>, 'id' | 'params'>;
     sessionId?: string;
     scope?: string | null;
-  }): Promise<unknown>;
+  }): Promise<T>;
 
   subscribeToMessage(callback: ({ method, params }: { method: string; params: unknown }) => void): void;
 }
