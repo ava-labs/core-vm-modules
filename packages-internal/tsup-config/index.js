@@ -10,7 +10,7 @@ export const baseConfig = {
   clean: true,
   dts: true,
   splitting: true,
-  minify: false,
+  minify: true,
   treeshake: true,
   tsconfig: './tsconfig.json',
 };
