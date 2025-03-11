@@ -9,10 +9,6 @@
     "dist",
     "manifest.json"
   ],
-  "exports": {
-    ".": "./dist/index.js",
-    "./provider": "./dist/provider/index.js"
-  },
   "license": "Limited Ecosystem License",
   "scripts": {
     "build": "tsup",
