@@ -1,5 +1,6 @@
 import {
   parseManifest,
+  RpcMethod,
   type AppInfo,
   type ApprovalController,
   type BuildDerivationPathParams,
@@ -19,13 +20,15 @@ import { TokenService } from '@internal/utils';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
-import { deriveAddress } from './handlers/derive-address/derive-address';
-import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
-import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
-import { getTokens } from './handlers/get-tokens/get-tokens';
-import { getBalances } from './handlers/get-balances/get-balances';
+import { deriveAddress } from './handlers/derive-address';
+import { buildDerivationPath } from './handlers/build-derivation-path';
+import { getNetworkFee } from './handlers/get-network-fee';
+import { getTokens } from './handlers/get-tokens';
+import { getBalances } from './handlers/get-balances';
 import { getProvider } from './utils/get-provider';
-import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
+import { getTransactionHistory } from './handlers/get-transaction-history';
+import { signAndSendTransaction } from './handlers/sign-and-send-transaction';
+import { signTransaction } from './handlers/sign-transaction';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -102,7 +105,25 @@ export class SvmModule implements Module {
   }
 
   // TODO
-  async onRpcRequest(request: RpcRequest) {
+  async onRpcRequest(request: RpcRequest, network: Network) {
+    switch (request.method) {
+      case RpcMethod.SOLANA_SIGN_TRANSACTION: {
+        return signTransaction({
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+          network,
+          request,
+        });
+      }
+      case RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION: {
+        return signAndSendTransaction({
+          approvalController: this.#approvalController,
+          proxyApiUrl: this.#proxyApiUrl,
+          network,
+          request,
+        });
+      }
+    }
     return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
   }
 }
