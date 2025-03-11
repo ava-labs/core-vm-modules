@@ -12,6 +12,16 @@
           "registry": "https://registry.npmjs.org"
         }
       }
+    },
+    "provider": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/provider/index.js",
+          "packageName": "@avalabs/svm-module",
+          "registry": "https://registry.npmjs.org"
+        }
+      }
     }
   },
   "network": {
