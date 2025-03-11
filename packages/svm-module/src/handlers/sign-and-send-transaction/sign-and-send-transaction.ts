@@ -14,13 +14,13 @@ import { deserializeTransactionMessage } from '@avalabs/core-wallets-sdk';
 import { type Base64EncodedWireTransaction } from '@solana/kit';
 
 import { dataItem } from '@internal/utils/src/utils/detail-item';
+import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 import { getProvider } from '@src/utils/get-provider';
-import { isEmpty } from '@src/utils/is-empty';
-import { parseRequestParams } from './schema';
+import { isBalanceChangeEmpty, isNotNullish } from '@src/utils/functional';
 import { tryToParseSolTransfer } from '@src/utils/instruction-parsers/sol-transfer';
 import { tryToParseSPLTransfer } from '@src/utils/instruction-parsers/spl-transfer';
-import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
+import { parseRequestParams, type SendOptions } from './schema';
 
 export const signAndSendTransaction = async ({
   request,
@@ -43,7 +43,7 @@ export const signAndSendTransaction = async ({
     };
   }
 
-  const [{ account, serializedTx }] = data;
+  const [{ account, serializedTx, sendOptions }] = data;
 
   const provider = getProvider({
     isTestnet: Boolean(network.isTestnet),
@@ -69,7 +69,7 @@ export const signAndSendTransaction = async ({
     results
       .filter(isFulfilled)
       .map((result) => result.value)
-      .filter(<D>(detail: D | undefined | null): detail is D => detail != null),
+      .filter(isNotNullish),
   );
 
   const displayData: DisplayData = {
@@ -86,7 +86,7 @@ export const signAndSendTransaction = async ({
       },
       ...details,
     ],
-    balanceChange: isEmpty(balanceChange) ? undefined : balanceChange,
+    balanceChange: isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
     networkFeeSelector: false,
     isSimulationSuccessful: false,
   };
@@ -108,8 +108,9 @@ export const signAndSendTransaction = async ({
   let txHash;
 
   try {
-    txHash = await getTxHash(provider, response);
+    txHash = await getTxHash(provider, response, sendOptions);
   } catch (error) {
+    console.error(error);
     return {
       error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
     };
@@ -120,7 +121,11 @@ export const signAndSendTransaction = async ({
   };
 };
 
-const getTxHash = async (provider: ReturnType<typeof getProvider>, response: SigningResult) => {
+const getTxHash = async (
+  provider: ReturnType<typeof getProvider>,
+  response: SigningResult,
+  sendOptions?: SendOptions,
+) => {
   if ('txHash' in response) {
     return response.txHash;
   }
@@ -128,6 +133,7 @@ const getTxHash = async (provider: ReturnType<typeof getProvider>, response: Sig
   // broadcast the signed transaction
   const txHash = await provider
     .sendTransaction(response.signedData as Base64EncodedWireTransaction, {
+      ...sendOptions,
       encoding: 'base64',
     })
     .send();

@@ -12,13 +12,13 @@ import {
 import { deserializeTransactionMessage } from '@avalabs/core-wallets-sdk';
 
 import { dataItem } from '@internal/utils/src/utils/detail-item';
+import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 import { getProvider } from '@src/utils/get-provider';
-import { isEmpty } from '@src/utils/is-empty';
-import { parseRequestParams } from './schema';
+import { isBalanceChangeEmpty, isNotNullish } from '@src/utils/functional';
 import { tryToParseSolTransfer } from '@src/utils/instruction-parsers/sol-transfer';
 import { tryToParseSPLTransfer } from '@src/utils/instruction-parsers/spl-transfer';
-import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
+import { parseRequestParams } from './schema';
 
 export const signTransaction = async ({
   request,
@@ -67,7 +67,7 @@ export const signTransaction = async ({
     results
       .filter(isFulfilled)
       .map((result) => result.value)
-      .filter(<D>(detail: D | undefined | null): detail is D => detail != null),
+      .filter(isNotNullish),
   );
 
   const displayData: DisplayData = {
@@ -84,7 +84,7 @@ export const signTransaction = async ({
       },
       ...details,
     ],
-    balanceChange: isEmpty(balanceChange) ? undefined : balanceChange,
+    balanceChange: isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
     networkFeeSelector: false,
     isSimulationSuccessful: false,
   };
