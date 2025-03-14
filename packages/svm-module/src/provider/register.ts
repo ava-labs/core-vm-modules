@@ -29,7 +29,7 @@ class RegisterWalletEvent extends Event implements WindowRegisterWalletEvent {
     return this.#detail;
   }
 
-  get type() {
+  override get type() {
     return 'wallet-standard:register-wallet' as const;
   }
 
@@ -43,17 +43,17 @@ class RegisterWalletEvent extends Event implements WindowRegisterWalletEvent {
   }
 
   /** @deprecated */
-  preventDefault(): never {
+  override preventDefault(): never {
     throw new Error('preventDefault cannot be called');
   }
 
   /** @deprecated */
-  stopImmediatePropagation(): never {
+  override stopImmediatePropagation(): never {
     throw new Error('stopImmediatePropagation cannot be called');
   }
 
   /** @deprecated */
-  stopPropagation(): never {
+  override stopPropagation(): never {
     throw new Error('stopPropagation cannot be called');
   }
 }

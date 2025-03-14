@@ -28,7 +28,6 @@ import {
 } from '@wallet-standard/features';
 import { base58, base64 } from '@scure/base';
 import { CoreWalletAccount } from './account';
-import { icon } from './icon';
 import type { SolanaChain } from './solana';
 import { getSolanaCaip2Id, isSolanaChain, SOLANA_CHAINS } from './solana';
 import { bytesEqual } from './util';
@@ -47,21 +46,25 @@ export class CoreWallet implements Wallet {
     [E in StandardEventsNames]?: StandardEventsListeners[E][];
   } = {};
   readonly #version = '1.0.0' as const;
-  readonly #name = 'Core' as const;
-  readonly #icon = icon;
-  #account: CoreWalletAccount | null = null;
   readonly #core: Core;
+  #account: CoreWalletAccount | null = null;
 
+  /** Wallet Standard version this wallet implements */
   get version() {
     return this.#version;
   }
 
+  /** Wallet version (i.e. Core Extension's version) */
+  get walletVersion() {
+    return this.#core.info.version;
+  }
+
   get name() {
-    return this.#name;
+    return this.#core.info.name;
   }
 
   get icon() {
-    return this.#icon;
+    return this.#core.info.icon;
   }
 
   get chains() {

@@ -1,5 +1,6 @@
 import { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 import type { PublicKey, SendOptions } from '@solana/web3.js';
+import type { WalletIcon } from '@wallet-standard/base';
 
 export interface CoreEvent {
   connect(...args: unknown[]): unknown;
@@ -22,6 +23,11 @@ export interface CoreEventEmitter {
 
 export interface Core extends CoreEventEmitter {
   publicKey: PublicKey | null;
+  info: {
+    icon: WalletIcon;
+    version: string;
+    name: string;
+  };
   connect(options?: { onlyIfTrusted?: boolean }): Promise<{ publicKey: PublicKey }>;
   disconnect(): Promise<void>;
   signAndSendTransaction(

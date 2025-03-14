@@ -5,7 +5,7 @@ import type { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
 import type { Core } from './window';
 import { legacyPublicKey } from './public-key';
-import { initialize } from './initialize';
+import type { WalletIcon } from '@wallet-standard/base';
 
 enum DAppProviderRequest {
   WALLET_CONNECT = 'wallet_requestAccountPermission',
@@ -13,12 +13,21 @@ enum DAppProviderRequest {
 
 export class SolanaWalletProvider extends EventEmitter implements Core {
   #chainAgnosticProvider: ChainAgnosticProvider | undefined;
-
+  #info: { icon: WalletIcon; version: string; name: string };
   public publicKey: PublicKey | null = null;
 
-  constructor() {
+  constructor({ icon, version, name }: { icon: WalletIcon; version: string; name: string }) {
     super();
+    this.#info = {
+      icon,
+      name,
+      version,
+    };
     this.#waitForChainAgnosticProvider();
+  }
+
+  get info() {
+    return this.#info;
   }
 
   #waitForChainAgnosticProvider() {
@@ -28,8 +37,6 @@ export class SolanaWalletProvider extends EventEmitter implements Core {
       }
       this.#chainAgnosticProvider = (<CustomEvent>event).detail.provider;
       this.#chainAgnosticProvider?.subscribeToMessage(this.#handleBackgroundMessage);
-
-      initialize(this);
     });
 
     window.dispatchEvent(new Event(EventNames.CORE_WALLET_REQUEST_PROVIDER));
