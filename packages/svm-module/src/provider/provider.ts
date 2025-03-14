@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { EventNames, NetworkVMType, RpcMethod, type ChainAgnosticProvider } from '@avalabs/vm-module-types';
+import { NetworkVMType, RpcMethod, type ChainAgnosticProvider } from '@avalabs/vm-module-types';
 import type { PublicKey, SendOptions } from '@solana/web3.js';
 import type { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
@@ -12,45 +12,29 @@ enum DAppProviderRequest {
 }
 
 export class SolanaWalletProvider extends EventEmitter implements Core {
-  #chainAgnosticProvider: ChainAgnosticProvider | undefined;
+  #chainAgnosticProvider: ChainAgnosticProvider;
   #info: { icon: WalletIcon; version: string; name: string };
   public publicKey: PublicKey | null = null;
 
-  constructor({ icon, version, name }: { icon: WalletIcon; version: string; name: string }) {
+  constructor(
+    chainAgnosticProvider: ChainAgnosticProvider,
+    { icon, version, name }: { icon: WalletIcon; version: string; name: string },
+  ) {
     super();
     this.#info = {
       icon,
       name,
       version,
     };
-    this.#waitForChainAgnosticProvider();
+    this.#chainAgnosticProvider = chainAgnosticProvider;
+    this.#chainAgnosticProvider.subscribeToMessage(this.#handleBackgroundMessage);
   }
 
   get info() {
     return this.#info;
   }
 
-  #waitForChainAgnosticProvider() {
-    window.addEventListener(EventNames.CORE_WALLET_ANNOUNCE_PROVIDER, (event) => {
-      if (this.#chainAgnosticProvider) {
-        return;
-      }
-      this.#chainAgnosticProvider = (<CustomEvent>event).detail.provider;
-      this.#chainAgnosticProvider?.subscribeToMessage(this.#handleBackgroundMessage);
-    });
-
-    window.dispatchEvent(new Event(EventNames.CORE_WALLET_REQUEST_PROVIDER));
-  }
-
-  #assertInitialized(provider: ChainAgnosticProvider | undefined): asserts provider is ChainAgnosticProvider {
-    if (!provider) {
-      throw new Error('Provider not initialized');
-    }
-  }
-
   async connect({ onlyIfTrusted }: { onlyIfTrusted?: boolean } = {}) {
-    this.#assertInitialized(this.#chainAgnosticProvider);
-
     if (this.publicKey) {
       return { publicKey: this.publicKey };
     }
@@ -80,8 +64,6 @@ export class SolanaWalletProvider extends EventEmitter implements Core {
     serializedTx: string,
     sendOptions: SendOptions,
   ) {
-    this.#assertInitialized(this.#chainAgnosticProvider);
-
     const signature = await this.#chainAgnosticProvider.request<string>({
       scope: caipId,
       data: {
@@ -100,8 +82,6 @@ export class SolanaWalletProvider extends EventEmitter implements Core {
   }
 
   async signTransaction(account: string, caipId: SolanaCaip2ChainId, serializedTx: string) {
-    this.#assertInitialized(this.#chainAgnosticProvider);
-
     const signedTx = await this.#chainAgnosticProvider.request<string>({
       scope: caipId,
       data: {
