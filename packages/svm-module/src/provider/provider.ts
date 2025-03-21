@@ -11,11 +11,25 @@ enum DAppProviderRequest {
   WALLET_CONNECT = 'wallet_requestAccountPermission',
 }
 
+/**
+ * Represents a Solana Wallet Provider that interacts with a chain-agnostic provider
+ * to manage wallet connections, transactions, and events.
+ *
+ * @extends EventEmitter
+ * @implements Connection
+ */
 export class SolanaWalletProvider extends EventEmitter implements Connection {
-  #chainAgnosticProvider: ChainAgnosticProvider;
-  #info: { icon: WalletIcon; version: string; name: string };
   public publicKey: PublicKey | null = null;
 
+  readonly #chainAgnosticProvider: ChainAgnosticProvider;
+  readonly #info: { icon: WalletIcon; version: string; name: string };
+
+  /**
+   * Creates an instance of SolanaWalletProvider.
+   *
+   * @param chainAgnosticProvider - The chain-agnostic provider used for communication.
+   * @param options - Wallet information including icon, version, and name.
+   */
   constructor(
     chainAgnosticProvider: ChainAgnosticProvider,
     { icon, version, name }: { icon: WalletIcon; version: string; name: string },
@@ -30,18 +44,25 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     this.#chainAgnosticProvider.subscribeToMessage(this.#handleBackgroundMessage);
   }
 
+  /**
+   * Retrieves wallet metadata such as icon, version, and name.
+   */
   get info() {
     return this.#info;
   }
 
+  /**
+   * Connects to the wallet. If already connected, returns the public key.
+   *
+   * @param options - Connection options.
+   * @param options.onlyIfTrusted - If true, connects without approval if previously approved.
+   * @returns An object containing the public key.
+   */
   async connect({ onlyIfTrusted }: { onlyIfTrusted?: boolean } = {}) {
     if (this.publicKey) {
       return { publicKey: this.publicKey };
     }
 
-    // We don't use the options, as "onlyIfTrusted" essentially means
-    // "connect without approval window if previously approved"
-    // and it is already our default mode of operation in Core.
     const [address] = await this.#chainAgnosticProvider.request<[string]>({
       data: {
         method: DAppProviderRequest.WALLET_CONNECT,
@@ -58,6 +79,15 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     this.emit('disconnect');
   }
 
+  /**
+   * Signs and sends a transaction.
+   *
+   * @param account - The account to use for signing.
+   * @param caipId - The Solana CAIP-2 chain ID.
+   * @param serializedTx - The serialized transaction to sign and send.
+   * @param sendOptions - Options for sending the transaction. See the docs here: https://solana.com/pl/docs/rpc/http/sendtransaction.
+   * @returns The transaction signature.
+   */
   async signAndSendTransaction(
     account: string,
     caipId: SolanaCaip2ChainId,
@@ -81,6 +111,14 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     return signature;
   }
 
+  /**
+   * Signs a transaction without sending it.
+   *
+   * @param account - The account to use for signing.
+   * @param caipId - The Solana CAIP-2 chain ID.
+   * @param serializedTx - The serialized transaction to sign.
+   * @returns The signed transaction.
+   */
   async signTransaction(account: string, caipId: SolanaCaip2ChainId, serializedTx: string) {
     const signedTx = await this.#chainAgnosticProvider.request<string>({
       scope: caipId,
@@ -98,6 +136,11 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     return signedTx;
   }
 
+  /**
+   * Handles account changes by updating the public key and emitting appropriate events.
+   * The incoming {accounts} array may include non-Solana accounts, so we filter for the
+   * address described with the Solana VM type.
+   */
   #accountsChanged = (accounts: { address: string; vm: NetworkVMType }[]) => {
     const address = accounts.find(({ vm }) => vm === NetworkVMType.SVM)?.address;
 
@@ -105,11 +148,11 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
       // Account switched to an unknown account
       this.disconnect();
     } else if (this.publicKey) {
-      // Account switched to a known account
+      // Account switched to a known account while we're already connected to a different one
       this.publicKey = legacyPublicKey(address);
       this.emit('accountChanged');
     } else {
-      // Account switched to a known account
+      // Account switched to a known account while we're not connected
       this.publicKey = legacyPublicKey(address);
       this.emit('connect');
     }
@@ -135,6 +178,14 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     this.emit(method, params);
   };
 
+  /**
+   * Signs multiple transactions without sending them.
+   *
+   * @param address - The address to use for signing.
+   * @param caipId - The Solana CAIP-2 chain ID.
+   * @param serializedTxs - An array of serialized transactions to sign.
+   * @returns An array of signed transactions.
+   */
   async signAllTransactions(address: string, caipId: SolanaCaip2ChainId, serializedTxs: string[]): Promise<string[]> {
     const results: string[] = [];
 

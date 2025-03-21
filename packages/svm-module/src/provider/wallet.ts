@@ -290,7 +290,7 @@ export class StandardWallet implements Wallet {
   //     const { message, account } = inputs[0]!;
   //     if (account !== this.#account) throw new Error('invalid account');
 
-  //     const { signature } = await this.#core.signMessage(message);
+  //     const { signature } = await this.#connection.signMessage(message);
 
   //     outputs.push({ signedMessage: message, signature });
   //   } else if (inputs.length > 1) {
@@ -307,10 +307,10 @@ export class StandardWallet implements Wallet {
 
   //   if (inputs.length > 1) {
   //     for (const input of inputs) {
-  //       outputs.push(await this.#core.signIn(input));
+  //       outputs.push(await this.#connection.signIn(input));
   //     }
   //   } else {
-  //     return [await this.#core.signIn(inputs[0])];
+  //     return [await this.#connection.signIn(inputs[0])];
   //   }
 
   //   return outputs;
