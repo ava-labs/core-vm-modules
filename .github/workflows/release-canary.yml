@@ -16,23 +16,20 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Create .npmrc
         run: |
           echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
 
-      # https://github.com/pnpm/action-setup/issues/135
-      # https://github.com/pnpm/action-setup/releases/tag/v2.4.1
-      - name: Setup pnpm 8.6.10
-        uses: pnpm/action-setup@v2.4.1
-        with:
-          version: 8.6.10
-
       - name: Setup Node.js 20.11.0
         uses: actions/setup-node@v2
         with:
           node-version: 20.11.0
+
+      - name: enable corepack
+        run: |
+          corepack enable
 
       - name: Install Dependencies
         run: pnpm i
