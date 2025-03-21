@@ -27,27 +27,32 @@ import {
   type StandardEventsOnMethod,
 } from '@wallet-standard/features';
 import { base58, base64 } from '@scure/base';
-import { CoreWalletAccount } from './account';
+import { ConnectedWalletAccount } from './account';
 import type { SolanaChain } from './solana';
 import { getSolanaCaip2Id, isSolanaChain, SOLANA_CHAINS } from './solana';
 import { bytesEqual } from './util';
-import type { Core } from './window';
+import type { Connection } from './window';
 
-export const CoreNamespace = 'core:';
+export const ConnectionNamespace = 'connection:';
 
-export type CoreFeature = {
-  [CoreNamespace]: {
-    core: Core;
+export type ConnectorFeature = {
+  [ConnectionNamespace]: {
+    connection: Connection;
   };
 };
 
-export class CoreWallet implements Wallet {
+export class StandardWallet implements Wallet {
   readonly #listeners: {
     [E in StandardEventsNames]?: StandardEventsListeners[E][];
   } = {};
+  // Version of the Wallet Standard this wallet implements
   readonly #version = '1.0.0' as const;
-  readonly #core: Core;
-  #account: CoreWalletAccount | null = null;
+
+  // Wallet connection
+  readonly #connection: Connection;
+
+  // Current account the wallet is connected with
+  #account: ConnectedWalletAccount | null = null;
 
   /** Wallet Standard version this wallet implements */
   get version() {
@@ -56,15 +61,17 @@ export class CoreWallet implements Wallet {
 
   /** Wallet version (i.e. Core Extension's version) */
   get walletVersion() {
-    return this.#core.info.version;
+    return this.#connection.info.version;
   }
 
+  /** Name of the connected wallet app */
   get name() {
-    return this.#core.info.name;
+    return this.#connection.info.name;
   }
 
+  /** Icon of the connected wallet app */
   get icon() {
-    return this.#core.info.icon;
+    return this.#connection.info.icon;
   }
 
   get chains() {
@@ -78,7 +85,7 @@ export class CoreWallet implements Wallet {
     SolanaSignTransactionFeature &
     // SolanaSignMessageFeature &
     // SolanaSignInFeature &
-    CoreFeature {
+    ConnectorFeature {
     return {
       [StandardConnect]: {
         version: '1.0.0',
@@ -110,8 +117,8 @@ export class CoreWallet implements Wallet {
       //   version: '1.0.0',
       //   signIn: this.#signIn,
       // },
-      [CoreNamespace]: {
-        core: this.#core,
+      [ConnectionNamespace]: {
+        connection: this.#connection,
       },
     };
   }
@@ -120,16 +127,16 @@ export class CoreWallet implements Wallet {
     return this.#account ? [this.#account] : [];
   }
 
-  constructor(core: Core) {
-    if (new.target === CoreWallet) {
+  constructor(connection: Connection) {
+    if (new.target === StandardWallet) {
       Object.freeze(this);
     }
 
-    this.#core = core;
+    this.#connection = connection;
 
-    core.on('connect', this.#connected, this);
-    core.on('disconnect', this.#disconnected, this);
-    core.on('accountChanged', this.#reconnected, this);
+    connection.on('connect', this.#connected, this);
+    connection.on('disconnect', this.#disconnected, this);
+    connection.on('accountChanged', this.#reconnected, this);
 
     this.#connected();
   }
@@ -151,13 +158,13 @@ export class CoreWallet implements Wallet {
   }
 
   #connected = () => {
-    const address = this.#core.publicKey?.toBase58();
+    const address = this.#connection.publicKey?.toBase58();
     if (address) {
-      const publicKey = this.#core.publicKey!.toBytes();
+      const publicKey = this.#connection.publicKey!.toBytes();
 
       const account = this.#account;
       if (!account || account.address !== address || !bytesEqual(account.publicKey, publicKey)) {
-        this.#account = new CoreWalletAccount({ address, publicKey });
+        this.#account = new ConnectedWalletAccount({ address, publicKey });
         this.#emit('change', { accounts: this.accounts });
       }
     }
@@ -171,7 +178,7 @@ export class CoreWallet implements Wallet {
   };
 
   #reconnected = () => {
-    if (this.#core.publicKey) {
+    if (this.#connection.publicKey) {
       this.#connected();
     } else {
       this.#disconnected();
@@ -180,7 +187,7 @@ export class CoreWallet implements Wallet {
 
   #connect: StandardConnectMethod = async ({ silent } = {}) => {
     if (!this.#account) {
-      await this.#core.connect(silent ? { onlyIfTrusted: true } : undefined);
+      await this.#connection.connect(silent ? { onlyIfTrusted: true } : undefined);
     }
 
     this.#connected();
@@ -189,7 +196,7 @@ export class CoreWallet implements Wallet {
   };
 
   #disconnect: StandardDisconnectMethod = async () => {
-    await this.#core.disconnect();
+    await this.#connection.disconnect();
   };
 
   #signAndSendTransaction: SolanaSignAndSendTransactionMethod = async (...inputs) => {
@@ -203,7 +210,7 @@ export class CoreWallet implements Wallet {
       if (account !== this.#account) throw new Error('invalid account');
       if (!isSolanaChain(chain)) throw new Error('invalid chain');
 
-      const signature = await this.#core.signAndSendTransaction(
+      const signature = await this.#connection.signAndSendTransaction(
         this.#account.address,
         getSolanaCaip2Id(chain),
         base64.encode(transaction),
@@ -235,7 +242,7 @@ export class CoreWallet implements Wallet {
       if (account !== this.#account) throw new Error('invalid account');
       if (chain && !isSolanaChain(chain)) throw new Error('invalid chain');
 
-      const signedTransaction = await this.#core.signTransaction(
+      const signedTransaction = await this.#connection.signTransaction(
         this.#account.address,
         getSolanaCaip2Id(chain || SOLANA_CHAINS[0]),
         base64.encode(transaction),
@@ -258,7 +265,7 @@ export class CoreWallet implements Wallet {
 
       const transactions = inputs.map(({ transaction }) => base64.encode(transaction));
 
-      const signedTransactions = await this.#core.signAllTransactions(
+      const signedTransactions = await this.#connection.signAllTransactions(
         this.#account.address,
         getSolanaCaip2Id(chain || SOLANA_CHAINS[0]),
         transactions,

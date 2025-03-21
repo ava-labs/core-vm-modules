@@ -15,7 +15,7 @@ const features = [
   // SolanaSignMessage,
 ] as const;
 
-export class CoreWalletAccount implements WalletAccount {
+export class ConnectedWalletAccount implements WalletAccount {
   readonly #address: WalletAccount['address'];
   readonly #publicKey: WalletAccount['publicKey'];
   readonly #chains: WalletAccount['chains'];
@@ -48,7 +48,7 @@ export class CoreWalletAccount implements WalletAccount {
   }
 
   constructor({ address, publicKey, label, icon }: Omit<WalletAccount, 'chains' | 'features'>) {
-    if (new.target === CoreWalletAccount) {
+    if (new.target === ConnectedWalletAccount) {
       Object.freeze(this);
     }
 

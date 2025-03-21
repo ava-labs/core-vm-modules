@@ -3,7 +3,7 @@ import { NetworkVMType, RpcMethod, type ChainAgnosticProvider } from '@avalabs/v
 import type { PublicKey, SendOptions } from '@solana/web3.js';
 import type { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
-import type { Core } from './window';
+import type { Connection } from './window';
 import { legacyPublicKey } from './public-key';
 import type { WalletIcon } from '@wallet-standard/base';
 
@@ -11,7 +11,7 @@ enum DAppProviderRequest {
   WALLET_CONNECT = 'wallet_requestAccountPermission',
 }
 
-export class SolanaWalletProvider extends EventEmitter implements Core {
+export class SolanaWalletProvider extends EventEmitter implements Connection {
   #chainAgnosticProvider: ChainAgnosticProvider;
   #info: { icon: WalletIcon; version: string; name: string };
   public publicKey: PublicKey | null = null;

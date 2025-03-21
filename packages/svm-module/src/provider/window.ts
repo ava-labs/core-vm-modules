@@ -2,26 +2,26 @@ import { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 import type { PublicKey, SendOptions } from '@solana/web3.js';
 import type { WalletIcon } from '@wallet-standard/base';
 
-export interface CoreEvent {
+export interface ConnectionEvent {
   connect(...args: unknown[]): unknown;
   disconnect(...args: unknown[]): unknown;
   accountChanged(...args: unknown[]): unknown;
 }
 
-export interface CoreEventEmitter {
-  on<E extends keyof CoreEvent>(
+export interface ConnectionEventEmitter {
+  on<E extends keyof ConnectionEvent>(
     event: E,
-    listener: CoreEvent[E],
+    listener: ConnectionEvent[E],
     context?: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void;
-  off<E extends keyof CoreEvent>(
+  off<E extends keyof ConnectionEvent>(
     event: E,
-    listener: CoreEvent[E],
+    listener: ConnectionEvent[E],
     context?: any, // eslint-disable-line @typescript-eslint/no-explicit-any
   ): void;
 }
 
-export interface Core extends CoreEventEmitter {
+export interface Connection extends ConnectionEventEmitter {
   publicKey: PublicKey | null;
   info: {
     icon: WalletIcon;

@@ -1,7 +1,7 @@
 import { registerWallet } from './register';
-import { CoreWallet } from './wallet';
-import type { Core } from './window';
+import { StandardWallet } from './wallet';
+import type { Connection } from './window';
 
-export function initialize(core: Core): void {
-  registerWallet(new CoreWallet(core));
+export function initialize(core: Connection): void {
+  registerWallet(new StandardWallet(core));
 }
