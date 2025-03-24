@@ -1,5 +1,23 @@
 # @avalabs/evm-module
 
+## 1.5.0
+
+### Minor Changes
+
+- b4b6652: get Solana transaction history
+- 55f2c23: feat: introduce deriveAddress() method
+
+### Patch Changes
+
+- 00f59fe: Solana signing RPC calls
+- 8acff70: bump internal sdks to 3.1.0-alpha.44
+- Updated dependencies [00f59fe]
+- Updated dependencies [b4b6652]
+- Updated dependencies [8acff70]
+- Updated dependencies [1c2d817]
+- Updated dependencies [55f2c23]
+  - @avalabs/vm-module-types@1.5.0
+
 ## 1.4.6
 
 ### Patch Changes
