@@ -1,5 +1,16 @@
 # @internal/utils
 
+## 0.5.0
+
+### Minor Changes
+
+- b4b6652: get Solana transaction history
+- 55f2c23: feat: introduce deriveAddress() method
+
+### Patch Changes
+
+- 00f59fe: Solana signing RPC calls
+
 ## 0.4.0
 
 ### Minor Changes
