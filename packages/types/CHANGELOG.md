@@ -1,5 +1,18 @@
 # @avalabs/vm-module-types
 
+## 1.5.0
+
+### Minor Changes
+
+- b4b6652: get Solana transaction history
+- 55f2c23: feat: introduce deriveAddress() method
+
+### Patch Changes
+
+- 00f59fe: Solana signing RPC calls
+- 8acff70: bump internal sdks to 3.1.0-alpha.44
+- 1c2d817: feat: adds an empty module for Solana VM
+
 ## 1.4.6
 
 ## 1.4.5

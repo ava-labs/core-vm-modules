@@ -1,6 +1,6 @@
 {
   "name": "@internal/utils",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "main": "src/index.ts",
   "module": "src/index.ts",
   "type": "module",
@@ -11,9 +11,9 @@
   },
   "private": true,
   "devDependencies": {
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.43",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.43",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.43",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.44",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.44",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.44",
     "@avalabs/vm-module-types": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "@internal/tsup-config": "workspace:*",

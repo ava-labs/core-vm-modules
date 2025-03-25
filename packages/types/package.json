@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/vm-module-types",
-  "version": "1.4.6",
+  "version": "1.5.0",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -15,8 +15,8 @@
     "lint": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.43",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.43",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.44",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.44",
     "@metamask/rpc-errors": "6.3.0",
     "bitcoinjs-lib": "5.2.0",
     "zod": "3.23.8",
