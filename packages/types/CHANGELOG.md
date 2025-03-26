@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.6.0
+
+### Patch Changes
+
+- 7896a19: Solana provider for dApps
+
 ## 1.5.0
 
 ### Minor Changes
