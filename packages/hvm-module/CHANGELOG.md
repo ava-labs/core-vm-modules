@@ -1,5 +1,12 @@
 # @avalabs/hvm-module
 
+## 1.6.0
+
+### Patch Changes
+
+- Updated dependencies [7896a19]
+  - @avalabs/vm-module-types@1.6.0
+
 ## 1.5.0
 
 ### Minor Changes
