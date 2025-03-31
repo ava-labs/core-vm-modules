@@ -1,5 +1,11 @@
 # @avalabs/svm-module
 
+## 1.6.2
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.6.2
+
 ## 1.6.1
 
 ### Patch Changes
