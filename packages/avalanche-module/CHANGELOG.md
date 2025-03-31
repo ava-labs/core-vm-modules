@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 1.6.2
+
+### Patch Changes
+
+- 967a800: fix CoreEth derivation
+  - @avalabs/vm-module-types@1.6.2
+
 ## 1.6.1
 
 ### Patch Changes
