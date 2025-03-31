@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 1.6.1
+
+### Patch Changes
+
+- 26bd15f: derive CoreEth address
+  - @avalabs/vm-module-types@1.6.1
+
 ## 1.6.0
 
 ### Patch Changes
