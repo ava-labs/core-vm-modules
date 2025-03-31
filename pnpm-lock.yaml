@@ -421,6 +421,9 @@ importers:
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
+      '@blockaid/client':
+        specifier: 0.48.0
+        version: 0.48.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -1241,6 +1244,9 @@ packages:
 
   '@blockaid/client@0.36.0':
     resolution: {integrity: sha512-38zdKJKGp8DhUzURRnnnIpi3prelKgMsPNhoY5hsyWcliE6ednG4wIvKIPmFZf1I1nMb3rzhtNN0hDQ0XvjEQg==}
+
+  '@blockaid/client@0.48.0':
+    resolution: {integrity: sha512-rKJcArxgp1yGUWfwzeNrvCvzhO/PV8aR2kkzMf10Q2ORoZpw+iijXN0D9vThlubhWMj1cUqStPGrMmAHUTZUPw==}
 
   '@changesets/apply-release-plan@6.1.4':
     resolution: {integrity: sha512-FMpKF1fRlJyCZVYHr3CbinpZZ+6MwvOtWUuO8uo+svcATEoc1zRDcj23pAurJ2TZ/uVz1wFHH6K3NlACy0PLew==}
@@ -7429,6 +7435,18 @@ snapshots:
       '@noble/curves': 1.8.1
 
   '@blockaid/client@0.36.0':
+    dependencies:
+      '@types/node': 18.19.83
+      '@types/node-fetch': 2.6.12
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
+  '@blockaid/client@0.48.0':
     dependencies:
       '@types/node': 18.19.83
       '@types/node-fetch': 2.6.12

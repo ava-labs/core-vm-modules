@@ -22,6 +22,7 @@
     "@avalabs/core-utils-sdk": "3.1.0-alpha.44",
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.44",
     "@avalabs/vm-module-types": "workspace:*",
+    "@blockaid/client": "0.48.0",
     "@metamask/rpc-errors": "6.3.0",
     "@scure/base": "1.2.4",
     "@solana/kit": "2.1.0",
