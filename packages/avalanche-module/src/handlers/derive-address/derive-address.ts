@@ -12,19 +12,27 @@ export const deriveAddress = async (
   const { approvalController, network, secretId } = params;
 
   // When dealing with single-account private keys, we don't need the derivation path any more.
-  const derivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).AVM : undefined;
+  const xpDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).AVM : undefined;
+  const coreEthDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).CoreEth : undefined;
   const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet) });
 
-  const publicKeyHex = await approvalController.requestPublicKey({
+  const xpPublicKeyHex = await approvalController.requestPublicKey({
     curve: 'secp256k1',
     secretId,
-    derivationPath,
+    derivationPath: xpDerivationPath,
   });
-  const publicKey = Buffer.from(publicKeyHex, 'hex');
+  const coreEthPublicKeyHex = await approvalController.requestPublicKey({
+    curve: 'secp256k1',
+    secretId,
+    derivationPath: coreEthDerivationPath,
+  });
+
+  const publicKeyXP = Buffer.from(xpPublicKeyHex, 'hex');
+  const publicKeyCoreEth = Buffer.from(coreEthPublicKeyHex, 'hex');
 
   return {
-    [NetworkVMType.CoreEth]: provXP.getAddress(publicKey, 'C'),
-    [NetworkVMType.AVM]: provXP.getAddress(publicKey, 'X'),
-    [NetworkVMType.PVM]: provXP.getAddress(publicKey, 'P'),
+    [NetworkVMType.CoreEth]: provXP.getAddress(publicKeyCoreEth, 'C'),
+    [NetworkVMType.AVM]: provXP.getAddress(publicKeyXP, 'X'),
+    [NetworkVMType.PVM]: provXP.getAddress(publicKeyXP, 'P'),
   };
 };
