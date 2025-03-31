@@ -23,6 +23,7 @@ export const deriveAddress = async (
   const publicKey = Buffer.from(publicKeyHex, 'hex');
 
   return {
+    [NetworkVMType.CoreEth]: provXP.getAddress(publicKey, 'C'),
     [NetworkVMType.AVM]: provXP.getAddress(publicKey, 'X'),
     [NetworkVMType.PVM]: provXP.getAddress(publicKey, 'P'),
   };
