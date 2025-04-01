@@ -2,18 +2,14 @@
 
 import {
   SolanaSignAndSendTransaction,
-  // SolanaSignMessage,
+  SolanaSignMessage,
   SolanaSignTransaction,
 } from '@solana/wallet-standard-features';
 import type { WalletAccount } from '@wallet-standard/base';
 import { SOLANA_CHAINS } from './solana';
 
 const chains = SOLANA_CHAINS;
-const features = [
-  SolanaSignAndSendTransaction,
-  SolanaSignTransaction,
-  // SolanaSignMessage,
-] as const;
+const features = [SolanaSignAndSendTransaction, SolanaSignTransaction, SolanaSignMessage] as const;
 
 export class ConnectedWalletAccount implements WalletAccount {
   readonly #address: WalletAccount['address'];

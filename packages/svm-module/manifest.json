@@ -36,7 +36,7 @@
   "permissions": {
     "rpc": {
       "dapps": true,
-      "methods": ["solana_signTransaction", "solana_signAndSendTransaction"],
+      "methods": ["solana_signTransaction", "solana_signAndSendTransaction", "solana_signMessage"],
       "nonRestrictedMethods": []
     }
   },

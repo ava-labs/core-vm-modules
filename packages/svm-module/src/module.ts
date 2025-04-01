@@ -29,6 +29,7 @@ import { getProvider } from './utils/get-provider';
 import { getTransactionHistory } from './handlers/get-transaction-history';
 import { signAndSendTransaction } from './handlers/sign-and-send-transaction';
 import { signTransaction } from './handlers/sign-transaction';
+import { signMessage } from './handlers/sign-message';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
@@ -119,6 +120,13 @@ export class SvmModule implements Module {
         return signAndSendTransaction({
           approvalController: this.#approvalController,
           proxyApiUrl: this.#proxyApiUrl,
+          network,
+          request,
+        });
+      }
+      case RpcMethod.SOLANA_SIGN_MESSAGE: {
+        return signMessage({
+          approvalController: this.#approvalController,
           network,
           request,
         });

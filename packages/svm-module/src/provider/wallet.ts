@@ -3,10 +3,12 @@ import {
   type SolanaSignAndSendTransactionFeature,
   type SolanaSignAndSendTransactionMethod,
   type SolanaSignAndSendTransactionOutput,
+  SolanaSignMessage,
+  type SolanaSignMessageFeature,
   // type SolanaSignInMethod,
   // type SolanaSignInOutput,
-  // type SolanaSignMessageMethod,
-  // type SolanaSignMessageOutput,
+  type SolanaSignMessageMethod,
+  type SolanaSignMessageOutput,
   SolanaSignTransaction,
   type SolanaSignTransactionFeature,
   type SolanaSignTransactionMethod,
@@ -83,7 +85,7 @@ export class StandardWallet implements Wallet {
     StandardEventsFeature &
     SolanaSignAndSendTransactionFeature &
     SolanaSignTransactionFeature &
-    // SolanaSignMessageFeature &
+    SolanaSignMessageFeature &
     // SolanaSignInFeature &
     ConnectorFeature {
     return {
@@ -109,10 +111,10 @@ export class StandardWallet implements Wallet {
         supportedTransactionVersions: ['legacy', 0],
         signTransaction: this.#signTransaction,
       },
-      // [SolanaSignMessage]: {
-      //   version: '1.0.0',
-      //   signMessage: this.#signMessage,
-      // },
+      [SolanaSignMessage]: {
+        version: '1.0.0',
+        signMessage: this.#signMessage,
+      },
       // [SolanaSignIn]: {
       //   version: '1.0.0',
       //   signIn: this.#signIn,
@@ -281,26 +283,27 @@ export class StandardWallet implements Wallet {
     return outputs;
   };
 
-  // #signMessage: SolanaSignMessageMethod = async (...inputs) => {
-  //   if (!this.#account) throw new Error('not connected');
+  #signMessage: SolanaSignMessageMethod = async (...inputs) => {
+    if (!this.#account) throw new Error('not connected');
 
-  //   const outputs: SolanaSignMessageOutput[] = [];
+    const outputs: SolanaSignMessageOutput[] = [];
 
-  //   if (inputs.length === 1) {
-  //     const { message, account } = inputs[0]!;
-  //     if (account !== this.#account) throw new Error('invalid account');
+    if (inputs.length === 1) {
+      const { message, account } = inputs[0]!;
+      if (account !== this.#account) throw new Error('invalid account');
+      const serializedMessage = base64.encode(message);
 
-  //     const { signature } = await this.#connection.signMessage(message);
+      const signature = await this.#connection.signMessage(account.address, serializedMessage);
 
-  //     outputs.push({ signedMessage: message, signature });
-  //   } else if (inputs.length > 1) {
-  //     for (const input of inputs) {
-  //       outputs.push(...(await this.#signMessage(input)));
-  //     }
-  //   }
+      outputs.push({ signedMessage: message, signature: base64.decode(signature) });
+    } else if (inputs.length > 1) {
+      for (const input of inputs) {
+        outputs.push(...(await this.#signMessage(input)));
+      }
+    }
 
-  //   return outputs;
-  // };
+    return outputs;
+  };
 
   // #signIn: SolanaSignInMethod = async (...inputs) => {
   //   const outputs: SolanaSignInOutput[] = [];

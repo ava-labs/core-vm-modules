@@ -38,6 +38,6 @@ export interface Connection extends ConnectionEventEmitter {
   ): Promise<string>;
   signTransaction(account: string, caip2Id: SolanaCaip2ChainId, base64EncodedTx: string): Promise<string>;
   signAllTransactions(account: string, caip2Id: SolanaCaip2ChainId, base64EncodedTxs: string[]): Promise<string[]>;
-  // signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
+  signMessage(account: string, base64EncodedMsg: string): Promise<string>;
   // signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput>;
 }
