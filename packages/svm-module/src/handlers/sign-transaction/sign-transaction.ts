@@ -12,9 +12,10 @@ import { dataItem } from '@internal/utils/src/utils/detail-item';
 
 import { getProvider } from '@src/utils/get-provider';
 import { isBalanceChangeEmpty } from '@src/utils/functional';
-import { parseRequestParams } from './schema';
-import { simulateTransaction } from '@src/utils/scan-solana-transaction';
 import { getNetworkName } from '@src/utils/get-network-name';
+import { explainTransaction } from '@src/utils/explain/explain-transaction';
+
+import { parseRequestParams } from './schema';
 
 export const signTransaction = async ({
   request,
@@ -44,7 +45,7 @@ export const signTransaction = async ({
     proxyApiUrl,
   });
 
-  const { details, isSimulationSuccessful, alert, balanceChange } = await simulateTransaction({
+  const { details, isSimulationSuccessful, alert, balanceChange } = await explainTransaction({
     simulationParams: {
       dAppUrl: request.dappInfo.url,
       params: {

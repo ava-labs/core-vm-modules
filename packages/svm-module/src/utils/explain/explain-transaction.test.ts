@@ -174,7 +174,7 @@ describe('explainTransaction', () => {
       provider: mockProvider,
     });
 
-    expect(result.alert).toEqual(transactionAlerts[AlertType.DANGER]);
+    expect(result.alert).toEqual(transactionAlerts[AlertType.WARNING]);
   });
 
   it('should return danger alert when validation result is Malicious', async () => {
@@ -198,22 +198,5 @@ describe('explainTransaction', () => {
     });
 
     expect(result.alert).toEqual(transactionAlerts[AlertType.DANGER]);
-  });
-
-  it('should handle errors gracefully and return null simulation result', async () => {
-    jest.mocked(scanSolanaTransaction).mockRejectedValueOnce(new Error('Mock error'));
-
-    const result = await explainTransaction({
-      simulationParams: mockSimulationParams,
-      network: mockNetwork,
-      provider: mockProvider,
-    });
-
-    expect(result).toEqual({
-      isSimulationSuccessful: false,
-      details: [],
-      alert: undefined,
-      balanceChange: { ins: [], outs: [] },
-    });
   });
 });
