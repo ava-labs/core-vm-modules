@@ -4,6 +4,7 @@ import {
   type ApprovalController,
   type Network,
   type RpcRequest,
+  RpcMethod,
 } from '@avalabs/vm-module-types';
 import { deserializeTransactionMessage, type SolanaProvider } from '@avalabs/core-wallets-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -13,20 +14,30 @@ import { SOLANA_MAINNET_CAIP2_ID } from '@src/constants';
 
 import { parseRequestParams } from './schema';
 import { signAndSendTransaction } from './sign-and-send-transaction';
+import { ChainId, SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@src/utils/get-provider');
 jest.mock('./schema');
 
 describe('src/handlers/sign-and-send-transaction', () => {
-  const mockRequest = {
+  const mockRequest: RpcRequest = {
+    dappInfo: {
+      url: 'chrome-extension://test',
+      name: 'Test dApp',
+      icon: 'test-icon',
+    },
+    sessionId: 'test-session-id',
+    chainId: ChainId.SOLANA_DEVNET_ID.toString(),
+    method: RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION,
+    requestId: 'test-request-id',
     params: [
       {
         account: '83astBRguLMdt2h5U1Tpdq5tjFoJ6noeGwaY3mDLVcri', // random address from Solana docs
         serializedTx: 'dGVzdFR4', // base64 for 'testTx'
       },
     ],
-  } as unknown as RpcRequest;
+  } as const;
 
   const mockNetwork: Network = {
     isTestnet: true,
@@ -34,6 +45,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     vmName: NetworkVMType.SVM,
     chainId: 1234,
     chainName: 'Solana',
+    caipId: SolanaCaip2ChainId.DEVNET,
     logoUri: 'test-logo-uri',
     networkToken: {
       symbol: 'SOL',
@@ -185,6 +197,9 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     const result = await signAndSendTransaction({
       request: {
+        dappInfo: {
+          url: 'chrome-extension://test',
+        },
         params: [
           {
             account: '83astBRguLMdt2h5U1Tpdq5tjFoJ6noeGwaY3mDLVcri', // random address from Solana docs

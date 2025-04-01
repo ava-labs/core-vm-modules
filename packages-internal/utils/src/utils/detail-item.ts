@@ -9,6 +9,7 @@ import {
   DetailItemType,
   type LinkItem,
   type FundsRecipientItem,
+  type AddressListItem,
 } from '@avalabs/vm-module-types';
 
 export const fundsRecipientItem = (
@@ -52,6 +53,12 @@ export const linkItem = (label: string, value: LinkItemValue): LinkItem => ({
 export const addressItem = (label: string, value: string): AddressItem => ({
   label,
   type: DetailItemType.ADDRESS,
+  value,
+});
+
+export const addressListItem = (label: string, value: string[]): AddressListItem => ({
+  label,
+  type: DetailItemType.ADDRESS_LIST,
   value,
 });
 

@@ -1,5 +1,5 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import type { BalanceChange, NetworkToken } from '@avalabs/vm-module-types';
+import type { BalanceChange, DetailSection, NetworkToken } from '@avalabs/vm-module-types';
 import {
   identifySystemInstruction,
   parseTransferSolInstruction,
@@ -20,13 +20,13 @@ export const tryToParseSolTransfer = (
   balanceChange: BalanceChange,
   account: string,
   networkToken: NetworkToken,
-) => {
+): DetailSection | null => {
   if (
     !isInstructionForProgram(instruction, SYSTEM_PROGRAM_ADDRESS) ||
     !isInstructionWithAccounts(instruction) ||
     !isInstructionWithData(instruction)
   ) {
-    return;
+    return null;
   }
 
   try {
@@ -58,7 +58,7 @@ export const tryToParseSolTransfer = (
     });
 
     return {
-      title: 'Native Transfer',
+      title: 'Transfer SOL',
       items: [addressItem('From', accounts.source.address), addressItem('To', accounts.destination.address)],
     };
   } catch {

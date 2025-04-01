@@ -10,11 +10,10 @@ import {
 } from '@avalabs/vm-module-types';
 import { type Base64EncodedWireTransaction } from '@solana/kit';
 
-import { dataItem } from '@internal/utils/src/utils/detail-item';
-
 import { getProvider } from '@src/utils/get-provider';
-import { simulateTransaction } from '@src/utils/scan-solana-transaction';
 import { getNetworkName } from '@src/utils/get-network-name';
+import { explainTransaction } from '@src/utils/explain/explain-transaction';
+
 import { parseRequestParams, type SendOptions } from './schema';
 
 export const signAndSendTransaction = async ({
@@ -45,7 +44,7 @@ export const signAndSendTransaction = async ({
     proxyApiUrl,
   });
 
-  const { details, isSimulationSuccessful, alert, balanceChange } = await simulateTransaction({
+  const { details, isSimulationSuccessful, alert, balanceChange } = await explainTransaction({
     simulationParams: {
       dAppUrl: request.dappInfo.url,
       params: {
@@ -66,13 +65,7 @@ export const signAndSendTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    details: [
-      {
-        title: 'Transaction Details',
-        items: [dataItem('Raw Data', serializedTx)],
-      },
-      ...details,
-    ],
+    details,
     alert,
     balanceChange,
     networkFeeSelector: false,

@@ -2,23 +2,19 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import {
   RpcMethod,
   type ApprovalController,
-  type BalanceChange,
   type DisplayData,
   type Network,
   type RpcRequest,
   type SigningData,
-  type SPLToken,
 } from '@avalabs/vm-module-types';
-import { deserializeTransactionMessage } from '@avalabs/core-wallets-sdk';
 
 import { dataItem } from '@internal/utils/src/utils/detail-item';
-import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 import { getProvider } from '@src/utils/get-provider';
-import { isBalanceChangeEmpty, isNotNullish } from '@src/utils/functional';
-import { tryToParseSolTransfer } from '@src/utils/instruction-parsers/sol-transfer';
-import { tryToParseSPLTransfer } from '@src/utils/instruction-parsers/spl-transfer';
+import { isBalanceChangeEmpty } from '@src/utils/functional';
 import { parseRequestParams } from './schema';
+import { simulateTransaction } from '@src/utils/scan-solana-transaction';
+import { getNetworkName } from '@src/utils/get-network-name';
 
 export const signTransaction = async ({
   request,
@@ -48,27 +44,19 @@ export const signTransaction = async ({
     proxyApiUrl,
   });
 
-  const transaction = await deserializeTransactionMessage(serializedTx, provider);
-  const balanceChange: BalanceChange = {
-    ins: [],
-    outs: [],
-  };
-
-  // TODO: simulate transaction with Blockaid. Parsing like below can be used as a fallback.
-  const details = await Promise.allSettled(
-    transaction.instructions.map(async (instruction) => {
-      return (
-        tryToParseSolTransfer(instruction, balanceChange, account, network.networkToken) ??
-        (await tryToParseSPLTransfer(provider, instruction, balanceChange, account, network.tokens as SPLToken[])) ??
-        null
-      );
-    }),
-  ).then((results) =>
-    results
-      .filter(isFulfilled)
-      .map((result) => result.value)
-      .filter(isNotNullish),
-  );
+  const { details, isSimulationSuccessful, alert, balanceChange } = await simulateTransaction({
+    simulationParams: {
+      dAppUrl: request.dappInfo.url,
+      params: {
+        account,
+        chain: getNetworkName(network),
+        transactionBase64: serializedTx,
+      },
+      proxyApiUrl,
+    },
+    network,
+    provider,
+  });
 
   const displayData: DisplayData = {
     title: 'Sign Transaction',
@@ -84,9 +72,10 @@ export const signTransaction = async ({
       },
       ...details,
     ],
-    balanceChange: isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
+    alert,
+    balanceChange: balanceChange && isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
     networkFeeSelector: false,
-    isSimulationSuccessful: false,
+    isSimulationSuccessful,
   };
 
   const signingData: SigningData = {
