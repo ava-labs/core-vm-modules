@@ -8,8 +8,6 @@ import {
   type SigningData,
 } from '@avalabs/vm-module-types';
 
-import { dataItem } from '@internal/utils/src/utils/detail-item';
-
 import { getProvider } from '@src/utils/get-provider';
 import { isBalanceChangeEmpty } from '@src/utils/functional';
 import { getNetworkName } from '@src/utils/get-network-name';
@@ -66,13 +64,7 @@ export const signTransaction = async ({
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    details: [
-      {
-        title: 'Transaction Details',
-        items: [dataItem('Raw Data', serializedTx)],
-      },
-      ...details,
-    ],
+    details,
     alert,
     balanceChange: balanceChange && isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
     networkFeeSelector: false,
