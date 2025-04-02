@@ -93,6 +93,7 @@ export type BaseDetailItem = {
 export enum DetailItemType {
   TEXT = 'text',
   ADDRESS = 'address',
+  ADDRESS_LIST = 'addressList',
   NODE_ID = 'nodeID',
   CURRENCY = 'currency',
   FUNDS_RECIPIENT = 'fundsRecipient',
@@ -120,6 +121,11 @@ export type TextItem = BaseDetailItem & {
 export type AddressItem = BaseDetailItem & {
   type: DetailItemType.ADDRESS;
   value: string;
+};
+
+export type AddressListItem = BaseDetailItem & {
+  type: DetailItemType.ADDRESS_LIST;
+  value: string[];
 };
 
 export type NodeIDItem = BaseDetailItem & {
@@ -155,6 +161,7 @@ export type DetailItem =
   | string
   | TextItem
   | AddressItem
+  | AddressListItem
   | NodeIDItem
   | CurrencyItem
   | DataItem

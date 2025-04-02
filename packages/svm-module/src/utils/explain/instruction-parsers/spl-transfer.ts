@@ -1,6 +1,6 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
-import type { BalanceChange, SPLToken } from '@avalabs/vm-module-types';
+import type { BalanceChange, DetailSection, SPLToken } from '@avalabs/vm-module-types';
 import { parseTransferInstruction, identifyTokenInstruction, TokenInstruction } from '@solana-program/token';
 import { isInstructionWithAccounts, isInstructionWithData, type Address, type IInstruction } from '@solana/kit';
 
@@ -27,9 +27,9 @@ export const tryToParseSPLTransfer = async (
   balanceChange: BalanceChange,
   account: string,
   tokens?: SPLToken[],
-) => {
+): Promise<DetailSection | null> => {
   if (!tokens?.length || !isInstructionWithAccounts(instruction) || !isInstructionWithData(instruction)) {
-    return;
+    return null;
   }
 
   try {
