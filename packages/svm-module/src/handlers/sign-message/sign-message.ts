@@ -7,24 +7,20 @@ import {
   type RpcRequest,
   type SigningData,
 } from '@avalabs/vm-module-types';
+import { base64 } from '@scure/base';
 
-import { getProvider } from '@src/utils/get-provider';
-import { isBalanceChangeEmpty } from '@src/utils/functional';
-import { getNetworkName } from '@src/utils/get-network-name';
-import { explainTransaction } from '@src/utils/explain/explain-transaction';
+import { addressItem, dataItem, textItem } from '@internal/utils';
 
 import { parseRequestParams } from './schema';
 
-export const signTransaction = async ({
+export const signMessage = async ({
   request,
   network,
   approvalController,
-  proxyApiUrl,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
-  proxyApiUrl: string;
 }) => {
   const { params } = request;
   const { data, success, error } = parseRequestParams(params);
@@ -32,49 +28,43 @@ export const signTransaction = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams({ message: 'Message signing params are invalid', data: { cause: error } }),
     };
   }
 
-  const [{ account, serializedTx }] = data;
+  const [{ account, serializedMessage }] = data;
 
-  const provider = getProvider({
-    isTestnet: Boolean(network.isTestnet),
-    proxyApiUrl,
-  });
-
-  const { details, isSimulationSuccessful, alert, balanceChange } = await explainTransaction({
-    simulationParams: {
-      dAppUrl: request.dappInfo.url,
-      params: {
-        account,
-        chain: getNetworkName(network),
-        transactionBase64: serializedTx,
-      },
-      proxyApiUrl,
-    },
-    network,
-    provider,
-  });
-
+  const utf8Decoder = new TextDecoder();
   const displayData: DisplayData = {
-    title: 'Sign Transaction',
+    title: 'Sign Message',
     network: {
       chainId: network.chainId,
       name: network.chainName,
       logoUri: network.logoUri,
     },
-    details,
-    alert,
-    balanceChange: balanceChange && isBalanceChangeEmpty(balanceChange) ? undefined : balanceChange,
+    dAppInfo: {
+      name: request.dappInfo.name,
+      action: `${request.dappInfo.name} wants you to sign the following message`,
+      logoUri: request.dappInfo.icon,
+    },
+    disclaimer: 'Only confirm if you trust this website',
+    details: [
+      {
+        title: 'Message Details',
+        items: [
+          addressItem('Account', account),
+          textItem('Message', utf8Decoder.decode(base64.decode(serializedMessage))),
+          dataItem('Raw Message (Base-64)', serializedMessage),
+        ],
+      },
+    ],
     networkFeeSelector: false,
-    isSimulationSuccessful,
   };
 
   const signingData: SigningData = {
-    type: RpcMethod.SOLANA_SIGN_TRANSACTION,
+    type: RpcMethod.SOLANA_SIGN_MESSAGE,
     account,
-    data: serializedTx,
+    data: serializedMessage,
   };
 
   const response = await approvalController.requestApproval({ request, displayData, signingData });

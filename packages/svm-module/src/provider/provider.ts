@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import { NetworkVMType, RpcMethod, type ChainAgnosticProvider } from '@avalabs/vm-module-types';
 import type { PublicKey, SendOptions } from '@solana/web3.js';
-import type { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
+import { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
 import type { Connection } from './window';
 import { legacyPublicKey } from './public-key';
@@ -197,8 +197,21 @@ export class SolanaWalletProvider extends EventEmitter implements Connection {
     return results;
   }
 
-  signMessage() {
-    throw new Error('signMessage() not implemented.');
+  async signMessage(account: string, serializedMessage: string): Promise<string> {
+    const signature = await this.#chainAgnosticProvider.request<string>({
+      scope: SolanaCaip2ChainId.MAINNET, // Solana dApps do not pass it as they do for transactions, so we fake
+      data: {
+        method: RpcMethod.SOLANA_SIGN_MESSAGE,
+        params: [
+          {
+            account,
+            serializedMessage,
+          },
+        ],
+      },
+    });
+
+    return signature;
   }
 
   signIn() {

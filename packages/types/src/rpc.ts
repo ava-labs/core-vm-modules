@@ -32,6 +32,7 @@ export enum RpcMethod {
   /* SOLANA */
   SOLANA_SIGN_TRANSACTION = 'solana_signTransaction',
   SOLANA_SIGN_AND_SEND_TRANSACTION = 'solana_signAndSendTransaction',
+  SOLANA_SIGN_MESSAGE = 'solana_signMessage',
 }
 
 export type DappInfo = {
@@ -238,6 +239,11 @@ export type SigningData =
       type: RpcMethod.SOLANA_SIGN_TRANSACTION;
       account: string;
       data: string; // Base-64 encoded "Wire Transaction"
+    }
+  | {
+      type: RpcMethod.SOLANA_SIGN_MESSAGE;
+      account: string;
+      data: string; // Base-64 encoded message
     }
   | {
       type: RpcMethod.BITCOIN_SEND_TRANSACTION;

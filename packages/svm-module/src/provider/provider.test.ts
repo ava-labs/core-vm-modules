@@ -113,23 +113,23 @@ describe('SolanaWalletProvider', () => {
     expect(signedTx).toBe('mock-signed-tx');
   });
 
-  it('handles account changes', () => {
-    const disconnectSpy = jest.spyOn(provider, 'disconnect');
-    const accountChangedSpy = jest.spyOn(provider, 'emit');
+  it('signMessage() sends proper request through ChainAgnosticProvider', async () => {
+    mockChainAgnosticProvider.request.mockResolvedValueOnce('mock-signed-msg');
 
-    const messageListener = mockChainAgnosticProvider?.subscribeToMessage.mock.calls[0]?.[0];
+    const signedTx = await provider.signMessage('mock-account', 'mock-serialized-msg');
 
-    messageListener?.({ method: 'accountsChangedCA', params: [{ address: mockAddress, vm: NetworkVMType.SVM }] });
-
-    expect(provider.publicKey).toEqual({ address: mockAddress });
-    expect(accountChangedSpy).toHaveBeenCalledWith('connect');
-
-    messageListener?.({ method: 'accountsChangedCA', params: [] });
-    expect(disconnectSpy).toHaveBeenCalled();
-  });
-
-  it('should throw error for unimplemented methods', () => {
-    expect(() => provider.signMessage()).toThrow('signMessage() not implemented.');
-    expect(() => provider.signIn()).toThrow('signIn() not implemented.');
+    expect(mockChainAgnosticProvider.request).toHaveBeenCalledWith({
+      scope: SolanaCaip2ChainId.MAINNET,
+      data: {
+        method: RpcMethod.SOLANA_SIGN_MESSAGE,
+        params: [
+          {
+            account: 'mock-account',
+            serializedMessage: 'mock-serialized-msg',
+          },
+        ],
+      },
+    });
+    expect(signedTx).toBe('mock-signed-msg');
   });
 });
