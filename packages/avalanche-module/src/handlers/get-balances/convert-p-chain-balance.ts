@@ -11,6 +11,7 @@ export const convertPChainBalance = ({
   vol24,
   change24,
   coingeckoId,
+  avaxAssetId,
 }: {
   balance: PChainBalance;
   networkToken: NetworkToken;
@@ -19,6 +20,7 @@ export const convertPChainBalance = ({
   vol24?: number;
   change24?: number;
   coingeckoId: string;
+  avaxAssetId: string;
 }): TokenWithBalancePVM => {
   const balancePerType: Record<string, bigint> = {};
 
@@ -40,9 +42,12 @@ export const convertPChainBalance = ({
       continue;
     }
 
-    balancesToAdd.forEach((uxto: AggregatedAssetAmount) => {
+    balancesToAdd.forEach((utxo: AggregatedAssetAmount) => {
+      if (utxo.assetId !== avaxAssetId) {
+        return;
+      }
       const previousBalance = balancePerType[balanceType] ?? 0n;
-      const newBalance = previousBalance + BigInt(uxto.amount);
+      const newBalance = previousBalance + BigInt(utxo.amount);
       balancePerType[balanceType] = newBalance;
     });
   }
