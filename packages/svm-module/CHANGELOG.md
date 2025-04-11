@@ -1,5 +1,16 @@
 # @avalabs/svm-module
 
+## 1.7.0
+
+### Minor Changes
+
+- 02349f0: simulate transactions with Blockaid
+
+### Patch Changes
+
+- 055816d: Prevent passing transactions to signMessage() calls
+  - @avalabs/vm-module-types@1.7.0
+
 ## 1.6.2
 
 ### Patch Changes

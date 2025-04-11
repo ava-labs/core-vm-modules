@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 1.7.0
+
+### Patch Changes
+
+- 0ba2ca5: exclude non-AVAX asset from balance calculation
+  - @avalabs/vm-module-types@1.7.0
+
 ## 1.6.2
 
 ### Patch Changes
