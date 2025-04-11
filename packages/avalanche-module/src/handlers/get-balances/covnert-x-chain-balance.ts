@@ -11,6 +11,7 @@ export const convertXChainBalance = ({
   vol24,
   change24,
   coingeckoId,
+  avaxAssetId,
 }: {
   balance: XChainBalances;
   networkToken: NetworkToken;
@@ -19,6 +20,7 @@ export const convertXChainBalance = ({
   vol24?: number;
   change24?: number;
   coingeckoId: string;
+  avaxAssetId: string;
 }): TokenWithBalanceAVM => {
   const balancePerType: Record<string, bigint> = {};
 
@@ -36,9 +38,13 @@ export const convertXChainBalance = ({
       continue;
     }
 
-    balancesToAdd.forEach((uxto: AggregatedAssetAmount) => {
+    balancesToAdd.forEach((utxo: AggregatedAssetAmount) => {
+      // Skip non-AVAX assets
+      if (utxo.assetId !== avaxAssetId) {
+        return;
+      }
       const previousBalance = balancePerType[balanceType] ?? 0n;
-      const newBalance = previousBalance + BigInt(uxto.amount);
+      const newBalance = previousBalance + BigInt(utxo.amount);
       balancePerType[balanceType] = newBalance;
     });
   }

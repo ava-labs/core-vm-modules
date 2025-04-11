@@ -4,10 +4,13 @@ import type { XChainBalances } from '@avalabs/glacier-sdk';
 import type { NetworkToken } from '@avalabs/vm-module-types';
 
 const mockBalance = {
-  unlocked: [{ amount: 150_000_000_000 } as unknown],
-  locked: [{ amount: 250_000_000_000 } as unknown],
-  atomicMemoryUnlocked: [{ amount: 350_000_000_000 } as unknown],
-  atomicMemoryLocked: [{ amount: 450_000_000_000 } as unknown],
+  unlocked: [
+    { amount: 150_000_000_000, assetId: 'avaxAssetId' } as unknown,
+    { amount: 150_000_000_000, assetId: 'nonAvaxAssetId' } as unknown,
+  ],
+  locked: [{ amount: 250_000_000_000, assetId: 'avaxAssetId' } as unknown],
+  atomicMemoryUnlocked: [{ amount: 350_000_000_000, assetId: 'avaxAssetId' } as unknown],
+  atomicMemoryLocked: [{ amount: 450_000_000_000, assetId: 'avaxAssetId' } as unknown],
 } as XChainBalances;
 
 const mockNetworkToken = {
@@ -31,6 +34,7 @@ describe('convertXChainBalance', () => {
       vol24,
       change24,
       coingeckoId,
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.priceInCurrency).toBe(priceInCurrency);
@@ -45,6 +49,7 @@ describe('convertXChainBalance', () => {
       balance: mockBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token-x',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.priceInCurrency).toBeUndefined();
@@ -58,6 +63,7 @@ describe('convertXChainBalance', () => {
       balance: mockBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token-x',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.balancePerType.unlocked).toBe(BigInt(150 * 10 ** 9));
@@ -78,6 +84,7 @@ describe('convertXChainBalance', () => {
       balance: emptyBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token-x',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.balancePerType.unlocked).toBe(0n);

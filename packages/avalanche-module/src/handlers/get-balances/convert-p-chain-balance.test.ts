@@ -4,14 +4,17 @@ import { type PChainBalance } from '@avalabs/glacier-sdk';
 import type { NetworkToken } from '@avalabs/vm-module-types';
 
 const mockBalance = {
-  unlockedUnstaked: [{ amount: 1000000000 } as unknown],
-  unlockedStaked: [{ amount: 2000000000 } as unknown],
-  pendingStaked: [{ amount: 3000000000 } as unknown],
-  lockedStaked: [{ amount: 4000000000 } as unknown],
-  lockedStakeable: [{ amount: 5000000000 } as unknown],
-  lockedPlatform: [{ amount: 6000000000 } as unknown],
-  atomicMemoryLocked: [{ amount: 7000000000 } as unknown],
-  atomicMemoryUnlocked: [{ amount: 8000000000 } as unknown],
+  unlockedUnstaked: [
+    { amount: 1000000000, assetId: 'avaxAssetId' } as unknown,
+    { amount: 1000000000, assetId: 'nonAvaxAssetId' } as unknown,
+  ],
+  unlockedStaked: [{ amount: 2000000000, assetId: 'avaxAssetId' } as unknown],
+  pendingStaked: [{ amount: 3000000000, assetId: 'avaxAssetId' } as unknown],
+  lockedStaked: [{ amount: 4000000000, assetId: 'avaxAssetId' } as unknown],
+  lockedStakeable: [{ amount: 5000000000, assetId: 'avaxAssetId' } as unknown],
+  lockedPlatform: [{ amount: 6000000000, assetId: 'avaxAssetId' } as unknown],
+  atomicMemoryLocked: [{ amount: 7000000000, assetId: 'avaxAssetId' } as unknown],
+  atomicMemoryUnlocked: [{ amount: 8000000000, assetId: 'avaxAssetId' } as unknown],
 } as PChainBalance;
 
 const mockNetworkToken = {
@@ -35,6 +38,7 @@ describe('convertPChainBalance', () => {
       vol24,
       change24,
       coingeckoId,
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.priceInCurrency).toBe(priceInCurrency);
@@ -49,6 +53,7 @@ describe('convertPChainBalance', () => {
       balance: mockBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.priceInCurrency).toBeUndefined();
@@ -62,6 +67,7 @@ describe('convertPChainBalance', () => {
       balance: mockBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.balancePerType.lockedStaked).toBe(BigInt(4 * 10 ** 9));
@@ -90,6 +96,7 @@ describe('convertPChainBalance', () => {
       balance: emptyBalance,
       networkToken: mockNetworkToken,
       coingeckoId: 'test-token',
+      avaxAssetId: 'avaxAssetId',
     });
 
     expect(result.balancePerType.lockedStaked).toBe(0n);

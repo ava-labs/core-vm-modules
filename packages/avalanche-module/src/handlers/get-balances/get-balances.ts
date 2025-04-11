@@ -16,6 +16,7 @@ import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
 import { convertXChainBalance } from './covnert-x-chain-balance';
+import { getProvider } from '../../utils/get-provider';
 
 type GetAvalancheBalancesResponse = Record<string, Record<string, TokenWithBalanceAVM | TokenWithBalancePVM>>;
 
@@ -29,6 +30,7 @@ export const getBalances = async ({
   glacierService: AvalancheGlacierService;
   tokenService: TokenService;
 }): Promise<GetAvalancheBalancesResponse> => {
+  const provider = await getProvider({ isTestnet: Boolean(network.isTestnet) });
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');
@@ -72,6 +74,7 @@ export const getBalances = async ({
       vol24,
       change24,
       coingeckoId: coingeckoId ?? '',
+      avaxAssetId: provider.getContext().avaxAssetID,
     });
 
     return {
@@ -90,6 +93,7 @@ export const getBalances = async ({
       vol24,
       change24,
       coingeckoId: coingeckoId ?? '',
+      avaxAssetId: provider.getContext().avaxAssetID,
     });
     return {
       [address]: {
