@@ -101,13 +101,19 @@ const extractNativeTransfer: ExtractTransferFn<'native'> = (
   const isIncoming = nativeTransferAmount > 0;
   const unit = new TokenUnit(Math.abs(nativeTransferAmount), network.networkToken.decimals, '');
   // If it's an incoming transaction, we assume it came from the transaction signer.
-  // It it's an outgoing transaction, we need to find the address that received this exact amount (minus the fee).
-  const otherAddressIndex = isIncoming
-    ? 0
-    : Math.max(
-        0,
-        balanceDiffs.findIndex((diff) => diff === -nativeTransferAmount),
-      );
+  // It it's an outgoing transaction, we need to find the address that received the largest amount (since we only display one address).
+  const largestBeneficiary = balanceDiffs.reduce(
+    ({ index, change }, netChange, i) => {
+      if (netChange > change) {
+        return { index: i, change: netChange };
+      }
+
+      return { index, change };
+    },
+    { index: 0, change: balanceDiffs[0]! },
+  );
+
+  const otherAddressIndex = isIncoming ? 0 : largestBeneficiary.index;
 
   return {
     amount: unit.toDisplay(),

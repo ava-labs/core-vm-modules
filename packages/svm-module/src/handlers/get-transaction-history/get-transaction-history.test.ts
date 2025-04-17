@@ -40,7 +40,7 @@ describe('src/handlers/get-transaction-history', () => {
           },
           transaction: {
             message: {
-              accountKeys: ['key1', 'key2'],
+              accountKeys: ['test-address', 'key2'],
               header: {
                 numRequiredSignatures: 1,
               },
@@ -54,7 +54,7 @@ describe('src/handlers/get-transaction-history', () => {
     (getWrappedTransactions as jest.Mock).mockResolvedValue(rawTransactions);
     (extractTokenTranfers as jest.Mock).mockReturnValue([
       {
-        from: { address: 'key1' },
+        from: { address: 'test-address' },
         to: { address: 'key2' },
       },
     ]);
@@ -70,12 +70,122 @@ describe('src/handlers/get-transaction-history', () => {
           gasUsed: '500',
           tokens: [
             {
-              from: { address: 'key1' },
+              from: { address: 'test-address' },
               to: { address: 'key2' },
             },
           ],
-          from: 'key1',
+          from: 'test-address',
           to: 'key2',
+          isOutgoing: true,
+          isIncoming: false,
+          isSender: true,
+          timestamp: 1633024800000,
+          isContractCall: false,
+          gasPrice: '2',
+          chainId: '1',
+          explorerLink: 'https://explorer.solana.com/tx/txHash1',
+        },
+      ],
+    });
+  });
+
+  it('should recognize swap transactions', async () => {
+    const rawTransactions = [
+      {
+        txHash: 'txHash1',
+        tx: {
+          meta: {
+            fee: '1000',
+            preBalances: ['1000', '2000'],
+            postBalances: ['900', '2100'],
+            preTokenBalances: [
+              {
+                accountIndex: 1,
+                mint: 'some-spl-mint',
+                owner: 'some-other-address',
+                programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                uiTokenAmount: {
+                  amount: '500000',
+                  decimals: 5,
+                  uiAmount: 5,
+                  uiAmountString: '5',
+                },
+              },
+            ],
+            postTokenBalances: [
+              {
+                accountIndex: 0,
+                mint: 'some-spl-mint',
+                owner: 'ysq96dVZrrMVRassYB2Vr5cHFWoSQDRzQRGNmRRtr1L',
+                programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                uiTokenAmount: {
+                  amount: '100000',
+                  decimals: 5,
+                  uiAmount: 1,
+                  uiAmountString: '1',
+                },
+              },
+              {
+                accountIndex: 1,
+                mint: 'some-spl-mint',
+                owner: 'some-other-address',
+                programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                uiTokenAmount: {
+                  amount: '400000',
+                  decimals: 5,
+                  uiAmount: 5,
+                  uiAmountString: '4',
+                },
+              },
+            ],
+            computeUnitsConsumed: '500',
+          },
+          transaction: {
+            message: {
+              accountKeys: ['test-address', 'some-other-address'],
+              header: {
+                numRequiredSignatures: 1,
+              },
+            },
+          },
+          blockTime: '1633024800',
+        },
+      },
+    ];
+
+    (getWrappedTransactions as jest.Mock).mockResolvedValue(rawTransactions);
+    (extractTokenTranfers as jest.Mock).mockReturnValue([
+      {
+        from: { address: 'test-address' },
+        to: { address: 'some-other-address' },
+      },
+      {
+        from: { address: 'some-other-address' },
+        to: { address: 'test-address' },
+      },
+    ]);
+    (getExplorerLink as jest.Mock).mockReturnValue('https://explorer.solana.com/tx/txHash1');
+
+    const result = await getTransactionHistory({ network, address, proxyApiUrl });
+
+    expect(result).toEqual({
+      transactions: [
+        {
+          hash: 'txHash1',
+          txType: TransactionType.SWAP,
+          gasUsed: '500',
+          tokens: [
+            {
+              from: { address: 'test-address' },
+              to: { address: 'some-other-address' },
+            },
+            {
+              from: { address: 'some-other-address' },
+              to: { address: 'test-address' },
+            },
+          ],
+          from: 'test-address',
+          to: 'some-other-address',
           isOutgoing: true,
           isIncoming: false,
           isSender: true,

@@ -1,4 +1,4 @@
-import { TransactionType, type Network, type TransactionHistoryResponse } from '@avalabs/vm-module-types';
+import { TransactionType, type Network, type TransactionHistoryResponse, type TxToken } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
 import { extractTokenTranfers, simplifyTokenBalance } from './extract-transfer';
@@ -59,7 +59,7 @@ export async function getTransactionHistory({
       return {
         hash: txHash,
         // We should probably be smarter about the tx type, but this should be enough for MVP
-        txType: isSigner ? TransactionType.SEND : TransactionType.RECEIVE,
+        txType: inferTxType(transfers, address),
         gasUsed: String(tx.meta.computeUnitsConsumed ?? '0'),
         tokens: transfers,
 
@@ -85,3 +85,26 @@ export async function getTransactionHistory({
     transactions,
   };
 }
+
+const inferTxType = (transfers: TxToken[], address: string) => {
+  const isSoleSender = transfers.every((t) => t.from?.address === address);
+
+  if (isSoleSender) {
+    return TransactionType.SEND;
+  }
+
+  const isSoleReceiver = transfers.every((t) => t.to?.address === address);
+
+  if (isSoleReceiver) {
+    return TransactionType.RECEIVE;
+  }
+
+  const isBothSenderAndReceiver =
+    transfers.some((t) => t.from?.address === address) && transfers.some((t) => t.to?.address === address);
+
+  if (isBothSenderAndReceiver) {
+    return TransactionType.SWAP;
+  }
+
+  return TransactionType.UNKNOWN;
+};
