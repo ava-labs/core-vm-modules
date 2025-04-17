@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.7.1
+
+### Patch Changes
+
+- 137237f: fix transaction timestampts
+  - @avalabs/vm-module-types@1.7.1
+
 ## 1.7.0
 
 ### Minor Changes
