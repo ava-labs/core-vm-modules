@@ -1,5 +1,15 @@
 # @avalabs/svm-module
 
+## 1.8.0
+
+### Minor Changes
+
+- a662c53: feat: recognize swap tx for solana
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.8.0
+
 ## 1.7.1
 
 ### Patch Changes
