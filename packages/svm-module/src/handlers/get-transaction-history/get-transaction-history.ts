@@ -72,7 +72,7 @@ export async function getTransactionHistory({
         isOutgoing: isSigner,
         isIncoming: !isSigner,
         isSender: isSigner,
-        timestamp: Number(tx.blockTime),
+        timestamp: Number(tx.blockTime) * 1000,
         isContractCall: false,
         gasPrice: String(Number(tx.meta.fee) / Number(tx.meta.computeUnitsConsumed)),
         chainId: String(network.chainId),

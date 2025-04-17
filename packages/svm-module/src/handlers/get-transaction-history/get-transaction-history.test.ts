@@ -79,7 +79,7 @@ describe('src/handlers/get-transaction-history', () => {
           isOutgoing: true,
           isIncoming: false,
           isSender: true,
-          timestamp: 1633024800,
+          timestamp: 1633024800000,
           isContractCall: false,
           gasPrice: '2',
           chainId: '1',
