@@ -1,7 +1,12 @@
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 import type { BalanceChange, DetailSection, SPLToken } from '@avalabs/vm-module-types';
-import { parseTransferInstruction, identifyTokenInstruction, TokenInstruction } from '@solana-program/token';
+import {
+  parseTransferInstruction,
+  identifyTokenInstruction,
+  TokenInstruction,
+  parseTransferCheckedInstruction,
+} from '@solana-program/token';
 import { isInstructionWithAccounts, isInstructionWithData, type Address, type IInstruction } from '@solana/kit';
 
 import { addressItem } from '@internal/utils';
@@ -35,11 +40,16 @@ export const tryToParseSPLTransfer = async (
   try {
     const tokenInstruction = identifyTokenInstruction(instruction);
 
-    if (tokenInstruction !== TokenInstruction.Transfer) {
+    if (tokenInstruction !== TokenInstruction.Transfer && tokenInstruction !== TokenInstruction.TransferChecked) {
       return null;
     }
 
-    const { accounts, data } = parseTransferInstruction({
+    const parser =
+      tokenInstruction === TokenInstruction.TransferChecked
+        ? parseTransferCheckedInstruction
+        : parseTransferInstruction;
+
+    const { accounts, data } = parser({
       ...instruction,
       data: Uint8Array.from(instruction.data), // Fixing the typings here to satisfy parseTransferInstruction()
     });
@@ -57,12 +67,13 @@ export const tryToParseSPLTransfer = async (
 
     const isOutgoing = accounts.source.address === account || accounts.authority.address === account;
     const balanceChangeKey = isOutgoing === true ? 'outs' : 'ins';
+    const decimals = 'decimals' in data ? data.decimals : token.decimals;
 
     balanceChange[balanceChangeKey].push({
       token,
       items: [
         {
-          displayValue: new TokenUnit(data.amount, token.decimals, '').toString(),
+          displayValue: new TokenUnit(data.amount, decimals, '').toString(),
           usdPrice: undefined,
         },
       ],
