@@ -8,7 +8,7 @@ import {
 } from '@avalabs/vm-module-types';
 
 import type { getProvider } from '../get-provider';
-import { transactionAlerts } from '../transaction-alerts';
+import { getAlertForError, transactionAlerts } from '../transaction-alerts';
 
 import type { ExplainTxParams } from './types';
 import { parseTransaction } from './parse-transaction';
@@ -43,6 +43,8 @@ export const explainTransaction = async ({
     alert = transactionAlerts[AlertType.WARNING];
   } else if (validation.result_type === 'Malicious') {
     alert = transactionAlerts[AlertType.DANGER];
+  } else if (scanResponse?.error_details) {
+    alert = getAlertForError(scanResponse.error_details);
   }
 
   if (simulation) {
