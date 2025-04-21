@@ -190,7 +190,14 @@ describe('ethSign', () => {
           details: [
             {
               title: 'Message',
-              items: [expectedMessageDetails],
+              items: [
+                {
+                  label: 'Message',
+                  type: 'text',
+                  value: expectedMessageDetails,
+                  alignment: 'vertical',
+                },
+              ],
             },
           ],
           account: '0xabc',
