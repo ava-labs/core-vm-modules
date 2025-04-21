@@ -1,5 +1,11 @@
 # @avalabs/avalanche-module
 
+## 1.8.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.8.1
+
 ## 1.8.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/bitcoin-module",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
