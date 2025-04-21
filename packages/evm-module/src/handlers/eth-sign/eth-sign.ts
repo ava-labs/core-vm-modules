@@ -15,6 +15,7 @@ import { parseRequestParams } from './schemas/parse-request-params/parse-request
 import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
+import { textItem } from '@internal/utils/src/utils/detail-item';
 
 export const ethSign = async ({
   request,
@@ -133,7 +134,7 @@ export const ethSign = async ({
     details: [
       {
         title: 'Message',
-        items: [messageDetails],
+        items: [textItem('Message', messageDetails, 'vertical')],
       },
     ],
     disclaimer,
