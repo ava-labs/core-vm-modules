@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.8.1
+
+### Patch Changes
+
+- c32f7e8: adjust message item format for all eth sign
+  - @avalabs/vm-module-types@1.8.1
+
 ## 1.8.0
 
 ### Patch Changes
