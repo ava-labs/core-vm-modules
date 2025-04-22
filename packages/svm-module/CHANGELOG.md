@@ -1,5 +1,16 @@
 # @avalabs/svm-module
 
+## 1.9.0
+
+### Minor Changes
+
+- 8a98875: Handle Blockaid simulation failures for Solana
+- 8a98875: Parse TransferChecked instruction for Solana
+
+### Patch Changes
+
+- @avalabs/vm-module-types@1.9.0
+
 ## 1.8.1
 
 ### Patch Changes
