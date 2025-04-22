@@ -1,4 +1,28 @@
-import { AlertType } from '@avalabs/vm-module-types';
+import { AlertType, type Alert } from '@avalabs/vm-module-types';
+import type { MessageScanResponse } from '@blockaid/client/resources/solana/message';
+
+export const getAlertForError = (error: MessageScanResponse['error_details']): Alert => {
+  if (error?.type === 'InstructionError') {
+    switch (error.code) {
+      case 'ResultWithNegativeLamports':
+        return {
+          type: AlertType.WARNING,
+          details: {
+            title: 'This transaction will likely be reverted',
+            description: 'Your account does not have enough SOL to perform the operation',
+          },
+        };
+    }
+  }
+
+  return {
+    type: AlertType.WARNING,
+    details: {
+      title: 'Transaction simulation has failed',
+      description: 'It is possible that this transaction will fail. Please proceed with caution.',
+    },
+  };
+};
 
 export const transactionAlerts = {
   [AlertType.WARNING]: {

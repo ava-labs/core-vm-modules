@@ -119,6 +119,61 @@ describe('explainTransaction', () => {
     });
   });
 
+  it('should return alert when simulation fails', async () => {
+    const mockScanResponse = {
+      status: 'ERROR',
+      result: {
+        simulation: null,
+        validation: {
+          result_type: 'Benign',
+          reason: '',
+          features: [],
+          extended_features: [],
+        },
+      },
+      error: 'The transaction was reverted',
+      error_details: {
+        type: 'InstructionError',
+        message: 'account does not have enough SOL to perform the operation',
+        number: 1,
+        code: 'ResultWithNegativeLamports',
+        transaction_index: 0,
+        instruction_index: 0,
+        program_account: '11111111111111111111111111111111',
+      },
+    };
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(
+      mockScanResponse as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    );
+
+    const mockParseTransaction = {
+      balanceChange: {
+        ins: [],
+        outs: [],
+      },
+      details: [{ title: 'Mock section', items: [] }],
+    };
+
+    jest.mocked(parseTransaction).mockResolvedValueOnce(
+      mockParseTransaction as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    );
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    expect(result.alert).toEqual({
+      type: AlertType.WARNING,
+      details: {
+        title: 'This transaction will likely be reverted',
+        description: 'Your account does not have enough SOL to perform the operation',
+      },
+    });
+  });
+
   it('should return parsed transaction details', async () => {
     const mockParseTransaction = {
       balanceChange: {
