@@ -58,7 +58,7 @@ export const ethSign = async ({
       type: AlertType.INFO,
       details: {
         title: 'Warning: Verify Message Content',
-        description: 'This message contains non-standard elements.',
+        description: 'This message contains non-standard elements. Please verify message content!',
         detailedDescription: (typedDataValidationResult.error as Error).toString(),
       },
     };

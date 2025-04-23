@@ -12,7 +12,7 @@ export const transactionAlerts = {
     type: AlertType.DANGER,
     details: {
       title: 'Scam Transaction',
-      description: 'This transaction is malicious, do not proceed.',
+      description: 'This transaction has been flagged as malicious, I understand the risk.',
       actionTitles: {
         reject: 'Reject Transaction',
         proceed: 'Proceed Anyway',
