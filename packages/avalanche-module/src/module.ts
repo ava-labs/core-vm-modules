@@ -23,7 +23,7 @@ import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { getCoreHeaders, TokenService } from '@internal/utils';
+import { getCoreHeaders, TokenService, getRateLimitBypassHeader } from '@internal/utils';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 import { getAddress } from './handlers/get-address/get-address';
@@ -47,7 +47,10 @@ export class AvalancheModule implements Module {
     this.#appInfo = appInfo;
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
-      headers: getCoreHeaders(appInfo),
+      headers: {
+        ...getCoreHeaders(appInfo),
+        ...getRateLimitBypassHeader(),
+      },
     });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;

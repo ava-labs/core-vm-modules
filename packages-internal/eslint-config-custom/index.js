@@ -27,7 +27,7 @@ module.exports = {
     'turbo/no-undeclared-env-vars': [
       'error',
       {
-        allowList: ['GLACIER_API_KEY'],
+        allowList: ['GLACIER_API_KEY', 'NODE_ENV'],
       },
     ],
   },

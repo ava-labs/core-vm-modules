@@ -18,11 +18,9 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from './utils/get-provided-utxos';
 import { parseTxDetails } from './utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { getCoreHeaders, retry } from '@internal/utils';
+import { getCoreHeaders, getGlacierApiKey, retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-
-const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
 export const avalancheSendTransaction = async ({
   request,
@@ -71,7 +69,7 @@ export const avalancheSendTransaction = async ({
           chainAlias,
           network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
-          token: GLACIER_API_KEY,
+          token: getGlacierApiKey(),
           headers: getCoreHeaders(appInfo),
         });
 

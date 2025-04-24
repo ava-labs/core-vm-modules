@@ -1,9 +1,6 @@
 import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { getGlacierApiKey } from '@internal/utils';
 import { Network as EVMNetwork } from 'ethers';
-
-// this key is only needed in development to bypass rate limit
-// it should never be used in production
-const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
 
 type ProviderParams = {
   chainId: number;
@@ -18,7 +15,7 @@ export const getProvider = async (params: ProviderParams): Promise<JsonRpcBatchI
 
   const provider = new JsonRpcBatchInternal(
     { maxCalls: 40, multiContractAddress },
-    addGlacierAPIKeyIfNeeded(rpcUrl, GLACIER_API_KEY),
+    addGlacierAPIKeyIfNeeded(rpcUrl),
     new EVMNetwork(chainName, chainId),
   );
 
@@ -33,8 +30,9 @@ const knownHosts = ['glacier-api.avax.network', 'proxy-api.avax.network'];
 /**
  * Glacier needs an API key for development, this adds the key if needed.
  */
-export function addGlacierAPIKeyIfNeeded(url: string, glacierApiKey?: string): string {
+export function addGlacierAPIKeyIfNeeded(url: string): string {
   const urlObj = new URL(url);
+  const glacierApiKey = getGlacierApiKey();
 
   if (glacierApiKey && knownHosts.includes(urlObj.hostname)) {
     const search_params = urlObj.searchParams; // copy, does not update the URL
