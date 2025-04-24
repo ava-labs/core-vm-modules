@@ -47,7 +47,6 @@ export const signMessage = async ({
       action: `${request.dappInfo.name} is requesting to sign the following message`,
       logoUri: request.dappInfo.icon,
     },
-    disclaimer: 'Only confirm if you trust this website',
     details: [
       {
         title: 'Message Details',

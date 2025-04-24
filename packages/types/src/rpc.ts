@@ -185,7 +185,6 @@ export type DisplayData = {
   account?: string;
   details: DetailSection[];
   networkFeeSelector?: boolean;
-  disclaimer?: string;
   alert?: Alert;
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
