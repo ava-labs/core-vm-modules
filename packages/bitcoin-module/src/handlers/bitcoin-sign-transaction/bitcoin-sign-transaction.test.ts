@@ -179,7 +179,7 @@ describe('bitcoin-sign-transaction', () => {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: params.request,
       displayData: {
-        title: 'Approve Transaction',
+        title: 'Do you approve this transaction?',
         network: {
           chainId: testNetwork.chainId,
           name: testNetwork.chainName,

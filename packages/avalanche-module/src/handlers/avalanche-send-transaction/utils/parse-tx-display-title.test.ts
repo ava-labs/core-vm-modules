@@ -8,49 +8,49 @@ describe('parse-display-data-title', () => {
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.UnknownTx);
     expect(title).toEqual('Sign Message');
   });
-  it('should return title Add Delegator for AddPermissionlessDelegatorTx', () => {
+  it('should return title "Do you want to add this delegator?" for AddPermissionlessDelegatorTx', () => {
     const tx = { type: TxType.AddPermissionlessDelegator };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.AddPermissionlessDelegatorTx);
-    expect(title).toEqual('Add Delegator');
+    expect(title).toEqual('Do you want to add this delegator?');
   });
-  it('should return title Add Validator for AddPermissionlessValidatorTx', () => {
+  it('should return title "Do you want to add this validator?" for AddPermissionlessValidatorTx', () => {
     const tx = { type: TxType.AddPermissionlessValidator };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.AddPermissionlessValidatorTx);
-    expect(title).toEqual('Add Validator');
+    expect(title).toEqual('Do you want to add this validator?');
   });
-  it('should return title Approve Export for ExportTx', () => {
+  it('should return title "Do you approve this export?" for ExportTx', () => {
     const tx = { type: TxType.Export };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.ExportTx);
-    expect(title).toEqual('Approve Export');
+    expect(title).toEqual('Do you approve this export?');
   });
-  it('should return title Approve Import for ImportTx', () => {
+  it('should return title "Do you approve this import?" for ImportTx', () => {
     const tx = { type: TxType.Import };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.ImportTx);
-    expect(title).toEqual('Approve Import');
+    expect(title).toEqual('Do you approve this import?');
   });
-  it('should return title Approve Transaction for BaseTx', () => {
+  it('should return title "Do you approve this transaction?" for BaseTx', () => {
     const tx = { type: TxType.Base };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.BaseTx);
-    expect(title).toEqual('Approve Transaction');
+    expect(title).toEqual('Do you approve this transaction?');
   });
-  it('should return title Add Subnet Validator for AddSubnetValidatorTx', () => {
+  it('should return title "Do you want to add this subnet validator?" for AddSubnetValidatorTx', () => {
     const tx = { type: TxType.AddSubnetValidator };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.AddSubnetValidatorTx);
-    expect(title).toEqual('Add Subnet Validator');
+    expect(title).toEqual('Do you want to add this subnet validator?');
   });
-  it('should return title Approve Create Chain for CreateChainTx', () => {
+  it('should return title "Do you want to create this chain?" for CreateChainTx', () => {
     const tx = { type: TxType.CreateChain };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.CreateChainTx);
-    expect(title).toEqual('Approve Create Chain');
+    expect(title).toEqual('Do you want to create this chain?');
   });
-  it('should return title Approve Create Subnet for CreateSubnetTx', () => {
+  it('should return title "Do you want to create this subnet?" for CreateSubnetTx', () => {
     const tx = { type: TxType.CreateSubnet };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.CreateSubnetTx);
-    expect(title).toEqual('Approve Create Subnet');
+    expect(title).toEqual('Do you want to create this subnet?');
   });
-  it('should return title Remove Subnet Validator for RemoveSubnetValidatorTx', () => {
+  it('should return title "Do you want to remove this subnet validator?" for RemoveSubnetValidatorTx', () => {
     const tx = { type: TxType.RemoveSubnetValidator };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.RemoveSubnetValidatorTx);
-    expect(title).toEqual('Remove Subnet Validator');
+    expect(title).toEqual('Do you want to remove this subnet validator?');
   });
 });

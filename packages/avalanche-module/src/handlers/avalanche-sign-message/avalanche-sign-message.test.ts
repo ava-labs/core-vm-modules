@@ -71,7 +71,7 @@ describe('avalanche_signMessage', () => {
           },
         ],
         dAppInfo: {
-          action: 'Test DApp requests you to sign the following message',
+          action: 'Test DApp is requesting to sign the following message',
           logoUri: 'test-icon-uri',
           name: 'Test DApp',
         },

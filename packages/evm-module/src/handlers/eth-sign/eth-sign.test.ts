@@ -131,7 +131,7 @@ describe('ethSign', () => {
               type: AlertType.INFO,
               details: {
                 title: 'Warning: Verify Message Content',
-                description: 'This message contains non-standard elements.',
+                description: 'This message contains non-standard elements. Please verify message content!',
                 detailedDescription: 'Invalid typed data',
               },
             },
@@ -142,90 +142,71 @@ describe('ethSign', () => {
   );
 
   it.each([
-    [
-      RpcMethod.ETH_SIGN,
-      'data',
-      'data',
-      "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site",
-    ],
-    [RpcMethod.PERSONAL_SIGN, 'data', 'data in utf8', undefined],
-    [RpcMethod.SIGN_TYPED_DATA, 'data', 'beautified simple message', undefined],
-    [RpcMethod.SIGN_TYPED_DATA_V1, 'data', 'beautified simple message', undefined],
-    [
-      RpcMethod.SIGN_TYPED_DATA_V3,
-      { types: {}, primaryType: '', message: 'test' },
-      'beautified complex message',
-      undefined,
-    ],
-    [
-      RpcMethod.SIGN_TYPED_DATA_V4,
-      { types: {}, primaryType: '', message: 'test' },
-      'beautified complex message',
-      undefined,
-    ],
-  ])(
-    'should generate signingData and displayData for %s',
-    async (method, inputData, expectedMessageDetails, expectedDisclaimer) => {
-      if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
-        mockIsTypedDataV1.mockReturnValueOnce(true);
-      }
+    [RpcMethod.ETH_SIGN, 'data', 'data'],
+    [RpcMethod.PERSONAL_SIGN, 'data', 'data in utf8'],
+    [RpcMethod.SIGN_TYPED_DATA, 'data', 'beautified simple message'],
+    [RpcMethod.SIGN_TYPED_DATA_V1, 'data', 'beautified simple message'],
+    [RpcMethod.SIGN_TYPED_DATA_V3, { types: {}, primaryType: '', message: 'test' }, 'beautified complex message'],
+    [RpcMethod.SIGN_TYPED_DATA_V4, { types: {}, primaryType: '', message: 'test' }, 'beautified complex message'],
+  ])('should generate signingData and displayData for %s', async (method, inputData, expectedMessageDetails) => {
+    if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
+      mockIsTypedDataV1.mockReturnValueOnce(true);
+    }
 
-      mockParseRequestParams.mockReturnValueOnce({
-        success: true,
-        data: { method, data: inputData, address: '0xabc' },
-      });
-      mockIsTypedDataValid.mockReturnValueOnce({ isValid: true });
-      mockToUtf8.mockReturnValue('data in utf8');
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method, data: inputData, address: '0xabc' },
+    });
+    mockIsTypedDataValid.mockReturnValueOnce({ isValid: true });
+    mockToUtf8.mockReturnValue('data in utf8');
 
-      await ethSign({
-        request: { ...mockRequest, method },
-        network: mockNetwork,
-        approvalController: mockApprovalController,
-        proxyApiUrl: PROXY_API_URL,
-      });
+    await ethSign({
+      request: { ...mockRequest, method },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: PROXY_API_URL,
+    });
 
-      expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
-        displayData: {
-          title: 'Sign Message',
-          details: [
-            {
-              title: 'Message',
-              items: [
-                {
-                  label: 'Message',
-                  type: 'text',
-                  value: expectedMessageDetails,
-                  alignment: 'vertical',
-                },
-              ],
-            },
-          ],
-          account: '0xabc',
-          banner: undefined,
-          dAppInfo: {
-            action: 'Test DApp requests you to sign the following message',
-            logoUri: 'test-icon-uri',
-            name: 'Test DApp',
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      displayData: {
+        title: 'Sign Message',
+        details: [
+          {
+            title: 'Message',
+            items: [
+              {
+                label: 'Message',
+                type: 'text',
+                value: expectedMessageDetails,
+                alignment: 'vertical',
+              },
+            ],
           },
-          disclaimer: expectedDisclaimer,
-          network: {
-            chainId: 1,
-            logoUri: 'test-logo-uri',
-            name: 'Ethereum',
-          },
-          alert: undefined,
-          balanceChange: undefined,
-          tokenApprovals: undefined,
+        ],
+        account: '0xabc',
+        banner: undefined,
+        dAppInfo: {
+          action: 'Test DApp is requesting to sign the following message',
+          logoUri: 'test-icon-uri',
+          name: 'Test DApp',
         },
-        request: { ...mockRequest, method },
-        signingData: {
-          account: '0xabc',
-          data: inputData,
-          type: method,
+        network: {
+          chainId: 1,
+          logoUri: 'test-logo-uri',
+          name: 'Ethereum',
         },
-      });
-    },
-  );
+        alert: undefined,
+        balanceChange: undefined,
+        tokenApprovals: undefined,
+      },
+      request: { ...mockRequest, method },
+      signingData: {
+        account: '0xabc',
+        data: inputData,
+        type: method,
+      },
+    });
+  });
 
   it('should add alert object with Warning type to displayData when validation result is Warning', async () => {
     testWithValidationResultType('Warning');
@@ -346,7 +327,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
             type: AlertType.DANGER,
             details: {
               title: 'Scam Transaction',
-              description: 'This transaction is malicious, do not proceed.',
+              description: 'This transaction has been flagged as malicious, I understand the risk.',
               actionTitles: {
                 reject: 'Reject Transaction',
                 proceed: 'Proceed Anyway',

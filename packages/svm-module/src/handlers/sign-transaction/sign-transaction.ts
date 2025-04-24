@@ -58,7 +58,7 @@ export const signTransaction = async ({
   });
 
   const displayData: DisplayData = {
-    title: 'Sign Transaction',
+    title: 'Do you approve this transaction?',
     network: {
       chainId: network.chainId,
       name: network.chainName,

@@ -138,7 +138,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
       request: mockRequest,
       displayData: {
         dAppInfo: {
-          action: 'name requests you to sign the following message',
+          action: 'name is requesting to sign the following message',
           logoUri: 'icon',
           name: 'name',
         },
@@ -166,7 +166,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
           logoUri: undefined,
           name: 'example',
         },
-        title: 'Sign Transaction',
+        title: 'Do you approve this transaction?',
       },
       signingData: {
         type: RpcMethod.HVM_SIGN_TRANSACTION,

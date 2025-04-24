@@ -79,10 +79,10 @@ export const hvmSign = async ({
 
   const details = parseDetails(transaction.tx.actions);
   const displayData: DisplayData = {
-    title: 'Sign Transaction',
+    title: 'Do you approve this transaction?',
     dAppInfo: {
       name: request.dappInfo.name,
-      action: `${request.dappInfo.name} requests you to sign the following message`,
+      action: `${request.dappInfo.name} is requesting to sign the following message`,
       logoUri: request.dappInfo.icon,
     },
     network: {

@@ -50,7 +50,6 @@ export const ethSign = async ({
   // generate display data and signing data
   let signingData: SigningData | undefined;
   let messageDetails: string | undefined;
-  let disclaimer: string | undefined;
   let alert: Alert | undefined;
 
   if (typedDataValidationResult && !typedDataValidationResult.isValid) {
@@ -58,7 +57,7 @@ export const ethSign = async ({
       type: AlertType.INFO,
       details: {
         title: 'Warning: Verify Message Content',
-        description: 'This message contains non-standard elements.',
+        description: 'This message contains non-standard elements. Please verify message content!',
         detailedDescription: (typedDataValidationResult.error as Error).toString(),
       },
     };
@@ -72,9 +71,6 @@ export const ethSign = async ({
     };
 
     messageDetails = data;
-
-    disclaimer =
-      "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site";
   } else if (method === RpcMethod.PERSONAL_SIGN) {
     signingData = {
       type: method,
@@ -122,7 +118,7 @@ export const ethSign = async ({
     title: 'Sign Message',
     dAppInfo: {
       name: request.dappInfo.name,
-      action: `${request.dappInfo.name} requests you to sign the following message`,
+      action: `${request.dappInfo.name} is requesting to sign the following message`,
       logoUri: request.dappInfo.icon,
     },
     network: {
@@ -137,7 +133,6 @@ export const ethSign = async ({
         items: [textItem('Message', messageDetails, 'vertical')],
       },
     ],
-    disclaimer,
     alert: simulationResult?.alert ?? alert,
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,

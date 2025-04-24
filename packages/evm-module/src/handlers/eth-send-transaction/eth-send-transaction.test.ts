@@ -113,7 +113,7 @@ const testRequestParams = () => ({
 });
 
 const displayData = {
-  title: 'Approve Transaction',
+  title: 'Do you approve this transaction?',
   network: {
     chainId: testNetwork.chainId,
     name: testNetwork.chainName,
@@ -688,7 +688,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           type: AlertType.DANGER,
           details: {
             title: 'Scam Transaction',
-            description: 'This transaction is malicious, do not proceed.',
+            description: 'This transaction has been flagged as malicious, I understand the risk.',
             actionTitles: {
               reject: 'Reject Transaction',
               proceed: 'Proceed Anyway',

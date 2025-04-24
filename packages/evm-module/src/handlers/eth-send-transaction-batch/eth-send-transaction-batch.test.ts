@@ -125,7 +125,7 @@ const testRequestParams = () => ({
 });
 
 const displayData = {
-  title: 'Approve Transaction Batch',
+  title: 'Do you approve these transactions?',
   network: {
     chainId: testNetwork.chainId,
     name: testNetwork.chainName,
@@ -202,7 +202,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         name: 'chainName',
       },
       networkFeeSelector: true,
-      title: 'Approve Transaction',
+      title: 'Do you approve this transaction?',
     },
   },
   {
@@ -262,7 +262,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         name: 'chainName',
       },
       networkFeeSelector: true,
-      title: 'Approve Transaction',
+      title: 'Do you approve this transaction?',
     },
   },
 ];
@@ -848,7 +848,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       type: AlertType.DANGER,
       details: {
         title: 'Scam Transaction',
-        description: 'This transaction is malicious, do not proceed.',
+        description: 'This transaction has been flagged as malicious, I understand the risk.',
         actionTitles: {
           reject: 'Reject Transaction',
           proceed: 'Proceed Anyway',
