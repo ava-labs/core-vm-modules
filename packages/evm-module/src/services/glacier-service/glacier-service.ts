@@ -269,7 +269,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
               tokenId: token.tokenId,
               tokenUri: token.tokenUri,
               // glacier does not provide the collection name information
-              collectionName: 'Unkown',
+              collectionName: 'Unknown',
               balance: token.ercType === Erc1155Token.ercType.ERC_1155 ? BigInt(token.balance) : 1,
               balanceDisplayValue: token.ercType === Erc1155Token.ercType.ERC_1155 ? token.balance : '1',
               type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
