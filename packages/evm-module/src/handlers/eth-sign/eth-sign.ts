@@ -122,7 +122,7 @@ export const ethSign = async ({
     title: 'Sign Message',
     dAppInfo: {
       name: request.dappInfo.name,
-      action: `${request.dappInfo.name} requests you to sign the following message`,
+      action: `${request.dappInfo.name} is requesting to sign the following message`,
       logoUri: request.dappInfo.icon,
     },
     network: {

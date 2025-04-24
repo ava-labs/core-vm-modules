@@ -84,7 +84,7 @@ export const ethSendTransactionBatch = async ({
   }
 
   const displayData: DisplayData = {
-    title: 'Approve Transaction Batch',
+    title: 'Do you approve these transactions?',
     details: [
       {
         title: 'Transaction Details',

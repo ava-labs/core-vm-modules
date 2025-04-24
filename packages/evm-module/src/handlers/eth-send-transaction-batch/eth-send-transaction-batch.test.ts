@@ -125,7 +125,7 @@ const testRequestParams = () => ({
 });
 
 const displayData = {
-  title: 'Approve Transaction Batch',
+  title: 'Do you approve these transactions?',
   network: {
     chainId: testNetwork.chainId,
     name: testNetwork.chainName,
@@ -202,7 +202,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         name: 'chainName',
       },
       networkFeeSelector: true,
-      title: 'Approve Transaction',
+      title: 'Do you approve this transaction?',
     },
   },
   {
@@ -262,7 +262,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         name: 'chainName',
       },
       networkFeeSelector: true,
-      title: 'Approve Transaction',
+      title: 'Do you approve this transaction?',
     },
   },
 ];

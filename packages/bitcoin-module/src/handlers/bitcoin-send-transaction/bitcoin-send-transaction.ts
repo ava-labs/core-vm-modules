@@ -76,7 +76,7 @@ export const bitcoinSendTransaction = async ({
   }
 
   const displayData: DisplayData = {
-    title: 'Approve Transaction',
+    title: 'Do you approve this transaction?',
     network: {
       chainId: network.chainId,
       name: network.chainName,

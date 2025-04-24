@@ -256,7 +256,7 @@ describe('avalanche_sendTransaction handler', () => {
         context: { currentAddress: '0x0', xpubXP: 'xpubXP' },
       },
       displayData: {
-        title: 'Approve Import',
+        title: 'Do you approve this import?',
         network: { chainId: 1, name: 'chainName', logoUri: 'logoUri' },
         details: [
           {
@@ -327,7 +327,7 @@ describe('avalanche_sendTransaction handler', () => {
         context: { currentAddress: '0x0', xpubXP: 'xpubXP' },
       },
       displayData: {
-        title: 'Approve Import',
+        title: 'Do you approve this import?',
         network: { chainId: 1, name: 'chainName', logoUri: 'logoUri' },
         details: [
           {

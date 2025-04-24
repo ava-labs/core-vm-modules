@@ -24,9 +24,9 @@ export const buildTxApprovalRequest = (
   const transactionType = parseERC20TransactionType(transaction);
 
   // generate display and signing data
-  let title = 'Approve Transaction';
+  let title = 'Do you approve this transaction?';
   if (transactionType === ERC20TransactionType.APPROVE) {
-    title = 'Token Spend Approval';
+    title = 'Do you approve this spend limit?';
   }
 
   const transactionDetails: DetailItem[] = [linkItem('Website', dappInfo), addressItem('From', transaction.from)];
