@@ -21,7 +21,7 @@ export class AvalancheGlacierService {
   isGlacierHealthy = true;
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers });
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers, TOKEN: process.env.GLACIER_API_KEY });
   }
 
   isHealthy = (): boolean => this.isGlacierHealthy;

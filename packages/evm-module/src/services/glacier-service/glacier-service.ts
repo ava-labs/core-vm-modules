@@ -35,7 +35,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
   supportedChainIds: string[] = [];
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers });
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers, TOKEN: process.env.GLACIER_API_KEY });
     /**
      * This is for performance, basically we just cache the health of glacier every 5 seconds and
      * go off of that instead of every request
