@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.9.1
+
+### Patch Changes
+
+- eb4328a: adjust display data (title, action, alert) for next gen
+
 ## 1.9.0
 
 ## 1.8.1
