@@ -26,13 +26,12 @@ describe('get-provider', () => {
     expect(result).toBeInstanceOf(BitcoinProvider);
   });
 
-  describe('when process.env.GLACIER_API_KEY is defined and process.env.NODE_ENV is development', () => {
+  describe('when process.env.GLACIER_API_KEY is defined', () => {
     const env = process.env;
 
     beforeAll(() => {
       process.env = {
         ...env,
-        NODE_ENV: 'development',
         GLACIER_API_KEY: 'glacier-api-key',
       };
     });
