@@ -20,13 +20,15 @@ export class CustomFetchHttpRequest extends FetchHttpRequest {
       ...(this.globalQueryParams || {}), // Global params
       ...(options.query || {}), // Request-specific params (override globals if same key)
     };
-
+    // eslint-disable-next-line no-console
+    console.log('mergedQuery', mergedQuery);
     // Create modified options with merged query
     const modifiedOptions: ApiRequestOptions = {
       ...options,
       query: Object.keys(mergedQuery).length > 0 ? mergedQuery : undefined,
     };
-
+    // eslint-disable-next-line no-console
+    console.log('modifiedOptions', modifiedOptions);
     // Call the base class's request method
     return super.request<T>(modifiedOptions);
   }
