@@ -135,6 +135,7 @@ export const ethSendTransactionBatch = async ({
       explorerUrl: network.explorerUrl ?? '',
       provider,
       txHash,
+      onTransactionPending: approvalController.onTransactionPending,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,
       onTransactionReverted: approvalController.onTransactionReverted,
       requestId: request.requestId,

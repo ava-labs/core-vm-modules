@@ -177,6 +177,7 @@ export const avalancheSendTransaction = async ({
       provider,
       txHash,
       vm,
+      onTransactionPending: approvalController.onTransactionPending,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,
       onTransactionReverted: approvalController.onTransactionReverted,
       requestId: request.requestId,
@@ -206,6 +207,7 @@ const waitForTransactionReceipt = async ({
   provider,
   txHash,
   vm,
+  onTransactionPending,
   onTransactionConfirmed,
   onTransactionReverted,
   requestId,
@@ -214,8 +216,17 @@ const waitForTransactionReceipt = async ({
   provider: Avalanche.JsonRpcProvider;
   txHash: Hex;
   vm: 'EVM' | 'AVM' | 'PVM';
-  onTransactionConfirmed: ({ explorerLink, requestId }: { explorerLink: string; requestId: string }) => void;
-  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  onTransactionPending: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
+  onTransactionConfirmed: ({
+    txHash,
+    explorerLink,
+    requestId,
+  }: {
+    txHash: Hex;
+    explorerLink: string;
+    requestId: string;
+  }) => void;
+  onTransactionReverted: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
   requestId: string;
 }) => {
   const maxTransactionStatusCheckRetries = 7;
@@ -223,6 +234,8 @@ const waitForTransactionReceipt = async ({
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, txHash);
 
   try {
+    onTransactionPending({ txHash, requestId });
+
     if (vm === PVM) {
       // https://docs.avax.network/api-reference/p-chain/api#platformgettxstatus
       const result = await retry({
@@ -232,9 +245,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Committed') {
-        onTransactionConfirmed({ explorerLink, requestId });
+        onTransactionConfirmed({ txHash, explorerLink, requestId });
       } else {
-        onTransactionReverted(txHash, requestId);
+        onTransactionReverted({ txHash, requestId });
       }
     } else if (vm === AVM) {
       // https://docs.avax.network/api-reference/x-chain/api#avmgettxstatus
@@ -245,9 +258,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed({ explorerLink, requestId });
+        onTransactionConfirmed({ txHash, explorerLink, requestId });
       } else {
-        onTransactionReverted(txHash, requestId);
+        onTransactionReverted({ txHash, requestId });
       }
     } else {
       // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictxstatus
@@ -258,9 +271,9 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed({ explorerLink, requestId });
+        onTransactionConfirmed({ txHash, explorerLink, requestId });
       } else {
-        onTransactionReverted(txHash, requestId);
+        onTransactionReverted({ txHash, requestId });
       }
     }
   } catch (error) {
@@ -268,7 +281,7 @@ const waitForTransactionReceipt = async ({
     if (error instanceof Error && error.message.startsWith('Max retry exceeded.')) {
       // in the future, we may want to handle this timeout situation differently
     } else {
-      onTransactionReverted(txHash, requestId);
+      onTransactionReverted({ txHash, requestId });
     }
   }
 };

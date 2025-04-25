@@ -112,6 +112,7 @@ export const bitcoinSignTransaction = async ({
     explorerUrl: network.explorerUrl ?? '',
     provider,
     txHash: txHash as Hex,
+    onTransactionPending: approvalController.onTransactionPending,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
     // Pass the requestId so that client apps can pair the transaction

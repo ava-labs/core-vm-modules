@@ -36,10 +36,12 @@ jest.mock('@avalabs/core-wallets-sdk', () => ({
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockRequestApproval = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: mockRequestApproval,
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };
@@ -333,6 +335,6 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith('0x123', '1');
+    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: '0x123' });
   });
 });

@@ -381,8 +381,17 @@ export type BatchApprovalResponse =
 export interface ApprovalController {
   requestApproval: (params: ApprovalParams) => Promise<ApprovalResponse>;
   requestPublicKey: (params: RequestPublicKeyParams) => Promise<string>;
-  onTransactionConfirmed: ({ explorerLink, requestId }: { explorerLink: string; requestId: string }) => void;
-  onTransactionReverted: (txHash: Hex, requestId: string) => void;
+  onTransactionPending: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
+  onTransactionConfirmed: ({
+    txHash,
+    explorerLink,
+    requestId,
+  }: {
+    txHash: Hex;
+    explorerLink: string;
+    requestId: string;
+  }) => void;
+  onTransactionReverted: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
 }
 
 export interface BatchApprovalController extends ApprovalController {

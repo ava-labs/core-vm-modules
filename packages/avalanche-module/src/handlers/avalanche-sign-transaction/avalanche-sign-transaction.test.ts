@@ -12,6 +12,7 @@ const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true 
 const mockApprovalController = {
   requestPublicKey: jest.fn(),
   requestApproval: mockRequestApproval,
+  onTransactionPending: jest.fn(),
   onTransactionConfirmed: jest.fn(),
   onTransactionReverted: jest.fn(),
 };

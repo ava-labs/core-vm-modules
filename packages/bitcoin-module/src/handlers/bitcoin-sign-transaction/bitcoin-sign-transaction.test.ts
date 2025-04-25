@@ -17,10 +17,12 @@ jest.mock('@avalabs/core-wallets-sdk', () => ({
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockRequestApproval = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: mockRequestApproval,
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };

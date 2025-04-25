@@ -50,9 +50,11 @@ jest.mock('@blockaid/client', () => {
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: jest.fn(),
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };
@@ -598,6 +600,7 @@ describe('eth_sendTransaction handler', () => {
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
       expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        txHash: testTxHash,
         explorerLink: 'https://explorer.com/tx/' + testTxHash,
         requestId: '1',
       });
@@ -621,7 +624,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
     });
   });
 

@@ -21,9 +21,11 @@ const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: jest.fn(),
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };
@@ -457,6 +459,7 @@ describe('avalanche_sendTransaction handler', () => {
       expect(response).toStrictEqual({ result: testTxHash });
 
       expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        txHash: testTxHash,
         explorerLink: 'https://explorer.com/tx/' + testTxHash,
         requestId: '1',
       });
@@ -476,7 +479,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
     });
   });
 
