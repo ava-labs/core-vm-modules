@@ -5,4 +5,4 @@ export { retry } from './utils/retry';
 export { fetchAndVerify } from './utils/fetch-and-verify';
 export { getCoreHeaders } from './utils/get-core-headers';
 export { getGlacierApiKey } from './utils/get-glacier-api-key';
-export { CustomFetchHttpRequest, type CustomOpenAPIConfig } from './utils/custom-fetch-http-request';
+export { GlacierFetchHttpRequest } from './utils/glacier-fetch-http-request';

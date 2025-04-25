@@ -11,33 +11,18 @@ import {
   PrimaryNetworkTxType,
   SortOrder,
 } from '@avalabs/glacier-sdk';
-import { getGlacierApiKey, CustomFetchHttpRequest, type CustomOpenAPIConfig } from '@internal/utils';
+import { GlacierFetchHttpRequest } from '@internal/utils';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
 }
-
-const customGlacierConfig: Partial<CustomOpenAPIConfig> = {
-  GLOBAL_QUERY_PARAMS: {
-    rltoken: getGlacierApiKey(),
-  },
-};
 
 export class AvalancheGlacierService {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    // eslint-disable-next-line no-console
-    console.log('{ BASE: glacierApiUrl, HEADERS: headers, ...customGlacierConfig }', {
-      BASE: glacierApiUrl,
-      HEADERS: headers,
-      ...customGlacierConfig,
-    });
-    this.glacierSdk = new Glacier(
-      { BASE: glacierApiUrl, HEADERS: headers, ...customGlacierConfig },
-      CustomFetchHttpRequest,
-    );
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
   }
 
   isHealthy = (): boolean => this.isGlacierHealthy;
