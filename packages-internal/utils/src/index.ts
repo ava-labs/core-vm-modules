@@ -4,5 +4,5 @@ export { addressItem, textItem, currencyItem, nodeIDItem, dataItem, dateItem } f
 export { retry } from './utils/retry';
 export { fetchAndVerify } from './utils/fetch-and-verify';
 export { getCoreHeaders } from './utils/get-core-headers';
-export { getRateLimitBypassHeader } from './utils/get-rate-limit-bypass-header';
 export { getGlacierApiKey } from './utils/get-glacier-api-key';
+export { CustomFetchHttpRequest, type CustomOpenAPIConfig } from './utils/custom-fetch-http-request';
