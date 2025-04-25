@@ -15,9 +15,7 @@ import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-import { getCoreHeaders } from '@internal/utils';
-
-const GLACIER_API_KEY = process.env.GLACIER_API_KEY;
+import { getCoreHeaders, getGlacierApiKey } from '@internal/utils';
 
 export const avalancheSignTransaction = async ({
   request,
@@ -54,7 +52,7 @@ export const avalancheSignTransaction = async ({
     chainAlias,
     network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
     url: glacierApiUrl,
-    token: GLACIER_API_KEY,
+    token: getGlacierApiKey(),
     headers: getCoreHeaders(appInfo),
   });
 

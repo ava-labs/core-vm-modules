@@ -4,3 +4,5 @@ export { addressItem, textItem, currencyItem, nodeIDItem, dataItem, dateItem } f
 export { retry } from './utils/retry';
 export { fetchAndVerify } from './utils/fetch-and-verify';
 export { getCoreHeaders } from './utils/get-core-headers';
+export { getGlacierApiKey } from './utils/get-glacier-api-key';
+export { GlacierFetchHttpRequest } from './utils/glacier-fetch-http-request';

@@ -109,8 +109,8 @@ importers:
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -155,10 +155,10 @@ importers:
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/types':
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48
@@ -216,7 +216,7 @@ importers:
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -280,10 +280,10 @@ importers:
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/types':
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48
@@ -484,10 +484,10 @@ importers:
     dependencies:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        version: 3.1.0-alpha.48(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.8.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-alpha.48
-        version: 3.1.0-alpha.48
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -565,6 +565,9 @@ packages:
 
   '@avalabs/glacier-sdk@3.1.0-alpha.48':
     resolution: {integrity: sha512-FDfuspsovtJG7lgXpxd3P8vZ8aWC9GUpEM85VhVkc2dPjwMoSGu5RTzHhebzX34RsfjNBzaSSykxhHLCIcnV8Q==}
+
+  '@avalabs/glacier-sdk@3.1.0-alpha.51':
+    resolution: {integrity: sha512-ieii3zTwzlrie+O33345Pmykm0TPOHx6OCy5qzbA8QYRSVmOgohYkzk8Sd3ZMD0uEy2OF1qcLyD30EdL9tySKg==}
 
   '@avalabs/hw-app-avalanche@0.14.1':
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
@@ -6546,45 +6549,7 @@ snapshots:
       - typescript
       - ws
 
-  '@avalabs/core-wallets-sdk@3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@avalabs/avalanchejs': 4.2.0-alpha.1
-      '@avalabs/core-chains-sdk': 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/glacier-sdk': 3.1.0-alpha.48
-      '@avalabs/hw-app-avalanche': 0.14.1
-      '@ledgerhq/hw-app-btc': 10.2.4
-      '@ledgerhq/hw-app-eth': 6.36.1
-      '@ledgerhq/hw-app-solana': 7.2.4
-      '@ledgerhq/hw-transport': 6.30.6
-      '@metamask/eth-sig-util': 7.0.2
-      '@noble/curves': 1.6.0
-      '@openzeppelin/contracts': 4.9.6
-      '@scure/base': 1.2.4
-      '@solana-program/system': 0.7.0(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
-      '@solana-program/token': 0.5.1(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
-      '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      bip32: 2.0.6
-      bip32-path: 0.4.2
-      bip39: 3.1.0
-      bitcoinjs-lib: 5.2.0
-      coinselect: 3.1.13
-      create-hash: 1.2.0
-      ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      hdkey: 2.0.1
-      ledger-bitcoin: 0.2.3
-      micro-key-producer: 0.7.5
-      xss: 1.0.14
-    transitivePeerDependencies:
-      - big.js
-      - bn.js
-      - debug
-      - fastestsmallesttextencoderdecoder
-      - node-fetch
-      - supports-color
-      - typescript
-      - ws
-
-  '@avalabs/core-wallets-sdk@3.1.0-alpha.48(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
+  '@avalabs/core-wallets-sdk@3.1.0-alpha.48(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.8.2)':
     dependencies:
       '@avalabs/avalanchejs': 4.2.0-alpha.1
       '@avalabs/core-chains-sdk': 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -6598,9 +6563,9 @@ snapshots:
       '@noble/curves': 1.6.0
       '@openzeppelin/contracts': 4.9.6
       '@scure/base': 1.2.4
-      '@solana-program/system': 0.7.0(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
-      '@solana-program/token': 0.5.1(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
-      '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+      '@solana-program/system': 0.7.0(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
+      '@solana-program/token': 0.5.1(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)))
+      '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       bip32: 2.0.6
       bip32-path: 0.4.2
       bip39: 3.1.0
@@ -6623,6 +6588,8 @@ snapshots:
       - ws
 
   '@avalabs/glacier-sdk@3.1.0-alpha.48': {}
+
+  '@avalabs/glacier-sdk@3.1.0-alpha.51': {}
 
   '@avalabs/hw-app-avalanche@0.14.1':
     dependencies:
@@ -8749,17 +8716,9 @@ snapshots:
     dependencies:
       '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
 
-  '@solana-program/system@0.7.0(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))':
-    dependencies:
-      '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-
   '@solana-program/token@0.5.1(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)))':
     dependencies:
       '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-
-  '@solana-program/token@0.5.1(@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)))':
-    dependencies:
-      '@solana/kit': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
 
   '@solana/accounts@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)':
     dependencies:
@@ -8884,31 +8843,6 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - ws
 
-  '@solana/kit@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@solana/accounts': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/addresses': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/codecs': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/errors': 2.1.0(typescript@5.8.2)
-      '@solana/functional': 2.1.0(typescript@5.8.2)
-      '@solana/instructions': 2.1.0(typescript@5.8.2)
-      '@solana/keys': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/programs': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/rpc': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/rpc-parsed-types': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-spec-types': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-subscriptions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@solana/rpc-types': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/signers': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/sysvars': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/transaction-confirmation': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@solana/transaction-messages': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/transactions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      typescript: 5.8.2
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-      - ws
-
   '@solana/options@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)':
     dependencies:
       '@solana/codecs-core': 2.1.0(typescript@5.8.2)
@@ -8985,15 +8919,6 @@ snapshots:
       typescript: 5.8.2
       ws: 7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10)
 
-  '@solana/rpc-subscriptions-channel-websocket@2.1.0(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@solana/errors': 2.1.0(typescript@5.8.2)
-      '@solana/functional': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-subscriptions-spec': 2.1.0(typescript@5.8.2)
-      '@solana/subscribable': 2.1.0(typescript@5.8.2)
-      typescript: 5.8.2
-      ws: 8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-
   '@solana/rpc-subscriptions-spec@2.1.0(typescript@5.8.2)':
     dependencies:
       '@solana/errors': 2.1.0(typescript@5.8.2)
@@ -9011,24 +8936,6 @@ snapshots:
       '@solana/rpc-spec-types': 2.1.0(typescript@5.8.2)
       '@solana/rpc-subscriptions-api': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
       '@solana/rpc-subscriptions-channel-websocket': 2.1.0(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@solana/rpc-subscriptions-spec': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-transformers': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/rpc-types': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/subscribable': 2.1.0(typescript@5.8.2)
-      typescript: 5.8.2
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-      - ws
-
-  '@solana/rpc-subscriptions@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@solana/errors': 2.1.0(typescript@5.8.2)
-      '@solana/fast-stable-stringify': 2.1.0(typescript@5.8.2)
-      '@solana/functional': 2.1.0(typescript@5.8.2)
-      '@solana/promises': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-spec-types': 2.1.0(typescript@5.8.2)
-      '@solana/rpc-subscriptions-api': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/rpc-subscriptions-channel-websocket': 2.1.0(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@solana/rpc-subscriptions-spec': 2.1.0(typescript@5.8.2)
       '@solana/rpc-transformers': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
       '@solana/rpc-types': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
@@ -9119,23 +9026,6 @@ snapshots:
       '@solana/promises': 2.1.0(typescript@5.8.2)
       '@solana/rpc': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
       '@solana/rpc-subscriptions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
-      '@solana/rpc-types': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/transaction-messages': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/transactions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      typescript: 5.8.2
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-      - ws
-
-  '@solana/transaction-confirmation@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
-    dependencies:
-      '@solana/addresses': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/codecs-strings': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/errors': 2.1.0(typescript@5.8.2)
-      '@solana/keys': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/promises': 2.1.0(typescript@5.8.2)
-      '@solana/rpc': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
-      '@solana/rpc-subscriptions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)(ws@8.18.1(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@solana/rpc-types': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
       '@solana/transaction-messages': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)
       '@solana/transactions': 2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2)

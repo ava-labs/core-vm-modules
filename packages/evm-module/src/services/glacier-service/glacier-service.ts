@@ -22,6 +22,7 @@ import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance
 import { DEFAULT_DECIMALS } from '@src/constants';
 import { ChainId } from '@avalabs/core-chains-sdk';
 import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
+import { GlacierFetchHttpRequest } from '@internal/utils';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
@@ -35,7 +36,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
   supportedChainIds: string[] = [];
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers });
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
     /**
      * This is for performance, basically we just cache the health of glacier every 5 seconds and
      * go off of that instead of every request

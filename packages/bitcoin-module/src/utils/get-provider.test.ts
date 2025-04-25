@@ -1,5 +1,5 @@
 import { BitcoinProvider } from '@avalabs/core-wallets-sdk';
-
+import * as utils from '@internal/utils';
 import { getProvider } from './get-provider';
 
 jest.mock('@avalabs/core-wallets-sdk');
@@ -26,18 +26,9 @@ describe('get-provider', () => {
     expect(result).toBeInstanceOf(BitcoinProvider);
   });
 
-  describe('when process.env.GLACIER_API_KEY is defined', () => {
-    const env = process.env;
-
+  describe('when glacier api key is defined', () => {
     beforeAll(() => {
-      process.env = {
-        ...env,
-        GLACIER_API_KEY: 'glacier-api-key',
-      };
-    });
-
-    afterAll(() => {
-      process.env = env;
+      jest.spyOn(utils, 'getGlacierApiKey').mockReturnValue('glacier-api-key');
     });
 
     it('passes it to the constructor', async () => {

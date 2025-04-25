@@ -24,7 +24,7 @@
     "@avalabs/core-utils-sdk": "3.1.0-alpha.48",
     "@avalabs/core-chains-sdk": "3.1.0-alpha.48",
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.48",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.48",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.51",
     "@avalabs/types": "3.1.0-alpha.48",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.36.0",

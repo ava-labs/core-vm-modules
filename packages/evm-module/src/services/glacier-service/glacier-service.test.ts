@@ -2,9 +2,13 @@ import { EvmGlacierService } from '@src/services/glacier-service/glacier-service
 import { type ChainInfo, EvmChainsService, Glacier } from '@avalabs/glacier-sdk';
 import { ChainId } from '@avalabs/core-chains-sdk';
 
-jest.mock('@avalabs/glacier-sdk', () => ({
-  Glacier: jest.fn(),
-}));
+jest.mock('@avalabs/glacier-sdk', () => {
+  const actual = jest.requireActual('@avalabs/glacier-sdk');
+  return {
+    ...actual,
+    Glacier: jest.fn(),
+  };
+});
 
 describe('GlacierService', () => {
   let glacierService: EvmGlacierService;

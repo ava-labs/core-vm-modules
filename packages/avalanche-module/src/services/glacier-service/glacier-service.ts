@@ -11,6 +11,7 @@ import {
   PrimaryNetworkTxType,
   SortOrder,
 } from '@avalabs/glacier-sdk';
+import { GlacierFetchHttpRequest } from '@internal/utils';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
@@ -21,7 +22,7 @@ export class AvalancheGlacierService {
   isGlacierHealthy = true;
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers });
+    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
   }
 
   isHealthy = (): boolean => this.isGlacierHealthy;
