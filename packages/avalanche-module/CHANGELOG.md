@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 1.9.2
+
+### Patch Changes
+
+- 76c5994: add glacier api key
+  - @avalabs/vm-module-types@1.9.2
+
 ## 1.9.1
 
 ### Patch Changes
