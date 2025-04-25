@@ -28,6 +28,12 @@ export class AvalancheGlacierService {
   isGlacierHealthy = true;
 
   constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
+    // eslint-disable-next-line no-console
+    console.log('{ BASE: glacierApiUrl, HEADERS: headers, ...customGlacierConfig }', {
+      BASE: glacierApiUrl,
+      HEADERS: headers,
+      ...customGlacierConfig,
+    });
     this.glacierSdk = new Glacier(
       { BASE: glacierApiUrl, HEADERS: headers, ...customGlacierConfig },
       CustomFetchHttpRequest,
