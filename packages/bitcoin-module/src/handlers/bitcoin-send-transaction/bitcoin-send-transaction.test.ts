@@ -318,6 +318,7 @@ describe('bitcoinSendTransaction', () => {
 
     expect(result).toEqual({ result: '0x123' });
     expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith({
+      txHash: '0x123',
       explorerLink: 'https://explorer.com/tx/0x123',
       requestId: '1',
     });
