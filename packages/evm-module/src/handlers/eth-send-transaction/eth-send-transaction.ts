@@ -116,6 +116,7 @@ export const ethSendTransaction = async ({
   }
 
   waitForTransactionReceipt({
+    explorerUrl: network.explorerUrl ?? '',
     provider,
     txHash,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,

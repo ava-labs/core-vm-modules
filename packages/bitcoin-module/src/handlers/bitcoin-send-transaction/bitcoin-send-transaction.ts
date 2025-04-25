@@ -133,6 +133,7 @@ export const bitcoinSendTransaction = async ({
   }
 
   waitForTransactionReceipt({
+    explorerUrl: network.explorerUrl ?? '',
     provider,
     txHash: txHash as Hex,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,

@@ -72,6 +72,7 @@ const testNetwork: Network = {
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
   logoUri: 'logoUri',
+  explorerUrl: 'https://explorer.com',
   utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
     name: 'Avalanche',
@@ -455,7 +456,10 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        requestId: '1',
+      });
     });
 
     it('should notify when transaction is reverted', async () => {

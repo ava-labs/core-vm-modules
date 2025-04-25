@@ -2,6 +2,7 @@ import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 import { waitForTransactionReceipt } from './wait-for-transaction-receipt';
 
+const explorerUrl = 'https://explorer.com';
 describe('waitForTransactionReceipt', () => {
   let provider: JsonRpcBatchInternal;
   let txHash: `0x${string}`;
@@ -23,6 +24,7 @@ describe('waitForTransactionReceipt', () => {
     jest.mocked(provider.waitForTransaction).mockResolvedValue({ status: 1 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const result = await waitForTransactionReceipt({
+      explorerUrl,
       provider,
       txHash,
       onTransactionConfirmed,
@@ -31,7 +33,10 @@ describe('waitForTransactionReceipt', () => {
     });
 
     expect(result).toBe(true);
-    expect(onTransactionConfirmed).toHaveBeenCalledWith(txHash, requestId);
+    expect(onTransactionConfirmed).toHaveBeenCalledWith({
+      explorerLink: 'https://explorer.com/tx/' + txHash,
+      requestId,
+    });
     expect(onTransactionReverted).not.toHaveBeenCalled();
   });
 
@@ -39,6 +44,7 @@ describe('waitForTransactionReceipt', () => {
     jest.mocked(provider.waitForTransaction).mockResolvedValue({ status: 0 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const result = await waitForTransactionReceipt({
+      explorerUrl,
       provider,
       txHash,
       onTransactionConfirmed,
@@ -55,6 +61,7 @@ describe('waitForTransactionReceipt', () => {
     jest.mocked(provider.waitForTransaction).mockRejectedValue(new Error('Transaction error')); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const result = await waitForTransactionReceipt({
+      explorerUrl,
       provider,
       txHash,
       onTransactionConfirmed,

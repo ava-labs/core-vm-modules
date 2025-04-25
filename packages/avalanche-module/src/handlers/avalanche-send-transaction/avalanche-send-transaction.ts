@@ -21,6 +21,7 @@ import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, getGlacierApiKey, retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
+import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
 
 export const avalancheSendTransaction = async ({
   request,
@@ -172,6 +173,7 @@ export const avalancheSendTransaction = async ({
     const txHash = (await getTxHash(provider, response, vm)) as Hex;
 
     waitForTransactionReceipt({
+      explorerUrl: network.explorerUrl ?? '',
       provider,
       txHash,
       vm,
@@ -200,6 +202,7 @@ const getTxHash = async (provider: Avalanche.JsonRpcProvider, response: SigningR
 };
 
 const waitForTransactionReceipt = async ({
+  explorerUrl,
   provider,
   txHash,
   vm,
@@ -207,14 +210,17 @@ const waitForTransactionReceipt = async ({
   onTransactionReverted,
   requestId,
 }: {
+  explorerUrl: string;
   provider: Avalanche.JsonRpcProvider;
   txHash: Hex;
   vm: 'EVM' | 'AVM' | 'PVM';
-  onTransactionConfirmed: (txHash: Hex, requestId: string) => void;
+  onTransactionConfirmed: ({ explorerLink, requestId }: { explorerLink: string; requestId: string }) => void;
   onTransactionReverted: (txHash: Hex, requestId: string) => void;
   requestId: string;
 }) => {
   const maxTransactionStatusCheckRetries = 7;
+
+  const explorerLink = getExplorerAddressByNetwork(explorerUrl, txHash);
 
   try {
     if (vm === PVM) {
@@ -226,7 +232,7 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Committed') {
-        onTransactionConfirmed(txHash, requestId);
+        onTransactionConfirmed({ explorerLink, requestId });
       } else {
         onTransactionReverted(txHash, requestId);
       }
@@ -239,7 +245,7 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed(txHash, requestId);
+        onTransactionConfirmed({ explorerLink, requestId });
       } else {
         onTransactionReverted(txHash, requestId);
       }
@@ -252,7 +258,7 @@ const waitForTransactionReceipt = async ({
       });
 
       if (result.status === 'Accepted') {
-        onTransactionConfirmed(txHash, requestId);
+        onTransactionConfirmed({ explorerLink, requestId });
       } else {
         onTransactionReverted(txHash, requestId);
       }

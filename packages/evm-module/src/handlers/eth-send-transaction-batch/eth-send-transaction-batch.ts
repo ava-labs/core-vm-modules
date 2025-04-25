@@ -132,6 +132,7 @@ export const ethSendTransactionBatch = async ({
     const txHash = await getTxHash(provider, result);
 
     const receiptPromise = waitForTransactionReceipt({
+      explorerUrl: network.explorerUrl ?? '',
       provider,
       txHash,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,

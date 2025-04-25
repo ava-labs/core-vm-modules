@@ -51,6 +51,7 @@ const testNetwork: Network = {
   chainName: 'Bitcoin',
   rpcUrl: 'rpcUrl',
   logoUri: 'logoUri',
+  explorerUrl: 'https://explorer.com',
   utilityAddresses: { multicall: '' },
   networkToken: {
     name: 'Bitcoin',
@@ -314,7 +315,10 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith('0x123', '1');
+    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith({
+      explorerLink: 'https://explorer.com/tx/0x123',
+      requestId: '1',
+    });
   });
 
   it('should wait for transaction receipt and handle reversion', async () => {

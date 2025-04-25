@@ -76,6 +76,7 @@ const testNetwork: Network = {
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
   logoUri: 'logoUri',
+  explorerUrl: 'https://explorer.com',
   utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
     name: 'Ethereum',
@@ -596,7 +597,10 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        requestId: '1',
+      });
     });
 
     it('should notify when transaction is reverted', async () => {
