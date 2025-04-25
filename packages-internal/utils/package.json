@@ -13,7 +13,7 @@
   "devDependencies": {
     "@avalabs/core-chains-sdk": "3.1.0-alpha.48",
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.48",
-    "@avalabs/glacier-sdk": "3.1.0-canary.deafb4f.0+deafb4f",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.51",
     "@avalabs/vm-module-types": "workspace:*",
     "@internal/tsconfig": "workspace:*",
     "@internal/tsup-config": "workspace:*",

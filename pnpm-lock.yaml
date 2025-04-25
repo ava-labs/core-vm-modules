@@ -109,8 +109,8 @@ importers:
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.deafb4f.0+deafb4f
-        version: 3.1.0-canary.deafb4f.0
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -157,8 +157,8 @@ importers:
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.deafb4f.0+deafb4f
-        version: 3.1.0-canary.deafb4f.0
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/types':
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48
@@ -282,8 +282,8 @@ importers:
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.deafb4f.0+deafb4f
-        version: 3.1.0-canary.deafb4f.0
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@avalabs/types':
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48
@@ -486,8 +486,8 @@ importers:
         specifier: 3.1.0-alpha.48
         version: 3.1.0-alpha.48(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10))(typescript@5.8.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.deafb4f.0+deafb4f
-        version: 3.1.0-canary.deafb4f.0
+        specifier: 3.1.0-alpha.51
+        version: 3.1.0-alpha.51
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -566,8 +566,8 @@ packages:
   '@avalabs/glacier-sdk@3.1.0-alpha.48':
     resolution: {integrity: sha512-FDfuspsovtJG7lgXpxd3P8vZ8aWC9GUpEM85VhVkc2dPjwMoSGu5RTzHhebzX34RsfjNBzaSSykxhHLCIcnV8Q==}
 
-  '@avalabs/glacier-sdk@3.1.0-canary.deafb4f.0':
-    resolution: {integrity: sha512-ZxE0AocEIdSrHEo4vZlDxJ9pGzTSaHNPNXq6p016uDGMcZQvZ/xAmk57dvOhlNA5GA6DlVc5iVEDWoRsGwpTNA==}
+  '@avalabs/glacier-sdk@3.1.0-alpha.51':
+    resolution: {integrity: sha512-ieii3zTwzlrie+O33345Pmykm0TPOHx6OCy5qzbA8QYRSVmOgohYkzk8Sd3ZMD0uEy2OF1qcLyD30EdL9tySKg==}
 
   '@avalabs/hw-app-avalanche@0.14.1':
     resolution: {integrity: sha512-EHJPqe305LaGls66aEqRIKPvxB8NMV5wU70hX3i58QsySfId/O3hbgiOe+tYzY3HBvJtZz1ih8DZds00JJmXJQ==}
@@ -6589,7 +6589,7 @@ snapshots:
 
   '@avalabs/glacier-sdk@3.1.0-alpha.48': {}
 
-  '@avalabs/glacier-sdk@3.1.0-canary.deafb4f.0': {}
+  '@avalabs/glacier-sdk@3.1.0-alpha.51': {}
 
   '@avalabs/hw-app-avalanche@0.14.1':
     dependencies:

@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.48",
-    "@avalabs/glacier-sdk": "3.1.0-canary.deafb4f.0+deafb4f",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.51",
     "@metamask/rpc-errors": "6.3.0",
     "bitcoinjs-lib": "5.2.0",
     "zod": "3.23.8",
