@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 1.9.3
+
+### Patch Changes
+
+- f0a0c85: expose explorer link via onTransactionConfirmed
+- f0a0c85: add onTransactionPending callback
+
 ## 1.9.2
 
 ## 1.9.1
