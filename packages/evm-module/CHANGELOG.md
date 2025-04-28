@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 1.9.3
+
+### Patch Changes
+
+- f0a0c85: expose explorer link via onTransactionConfirmed
+- f0a0c85: add onTransactionPending callback
+- Updated dependencies [f0a0c85]
+- Updated dependencies [f0a0c85]
+  - @avalabs/vm-module-types@1.9.3
+
 ## 1.9.2
 
 ### Patch Changes
