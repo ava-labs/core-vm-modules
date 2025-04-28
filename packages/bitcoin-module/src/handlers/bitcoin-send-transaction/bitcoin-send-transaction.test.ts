@@ -36,10 +36,12 @@ jest.mock('@avalabs/core-wallets-sdk', () => ({
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockRequestApproval = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: mockRequestApproval,
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };
@@ -51,6 +53,7 @@ const testNetwork: Network = {
   chainName: 'Bitcoin',
   rpcUrl: 'rpcUrl',
   logoUri: 'logoUri',
+  explorerUrl: 'https://explorer.com',
   utilityAddresses: { multicall: '' },
   networkToken: {
     name: 'Bitcoin',
@@ -314,7 +317,11 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith('0x123', '1');
+    expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith({
+      txHash: '0x123',
+      explorerLink: 'https://explorer.com/tx/0x123',
+      requestId: '1',
+    });
   });
 
   it('should wait for transaction receipt and handle reversion', async () => {
@@ -329,6 +336,6 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith('0x123', '1');
+    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: '0x123' });
   });
 });

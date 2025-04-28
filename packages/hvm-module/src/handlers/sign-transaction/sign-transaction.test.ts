@@ -12,6 +12,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
   const mockApprovalControler: ApprovalController = {
     requestApproval: jest.fn(),
     requestPublicKey: jest.fn(),
+    onTransactionPending: jest.fn(),
     onTransactionConfirmed: jest.fn(),
     onTransactionReverted: jest.fn(),
   };

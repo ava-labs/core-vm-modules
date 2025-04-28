@@ -50,9 +50,11 @@ jest.mock('@blockaid/client', () => {
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
+const mockOnTransactionPending = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: jest.fn(),
   requestPublicKey: jest.fn(),
+  onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
 };
@@ -76,6 +78,7 @@ const testNetwork: Network = {
   chainName: 'chainName',
   rpcUrl: 'rpcUrl',
   logoUri: 'logoUri',
+  explorerUrl: 'https://explorer.com',
   utilityAddresses: { multicall: 'multiContractAddress' },
   networkToken: {
     name: 'Ethereum',
@@ -596,7 +599,11 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        txHash: testTxHash,
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        requestId: '1',
+      });
     });
 
     it('should notify when transaction is reverted', async () => {
@@ -617,7 +624,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith(testTxHash, '1');
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
     });
   });
 

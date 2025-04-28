@@ -80,6 +80,7 @@ const mockNetwork = {
 
 const mockApprovalController = {
   requestApproval: jest.fn(),
+  onTransactionPending: jest.fn(),
   onTransactionConfirmed: jest.fn(),
   requestPublicKey: jest.fn(),
   onTransactionReverted: jest.fn(),
