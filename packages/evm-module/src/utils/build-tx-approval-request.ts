@@ -8,7 +8,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, dataItem, linkItem, textItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem } from '@internal/utils/src/utils/detail-item';
 
 import { ERC20TransactionType } from '../types';
 import type { TransactionParams } from './transaction-schema';
@@ -29,18 +29,10 @@ export const buildTxApprovalRequest = (
     title = 'Do you approve this spend limit?';
   }
 
-  const transactionDetails: DetailItem[] = [linkItem('Website', dappInfo), addressItem('From', transaction.from)];
+  const transactionDetails: DetailItem[] = [linkItem('Website', dappInfo), addressItem('Account', transaction.from)];
 
   if (transaction.to) {
-    transactionDetails.push(addressItem('To', transaction.to));
-  }
-
-  if (transactionType) {
-    transactionDetails.push(textItem('Type', transactionType as string));
-  }
-
-  if (transaction.data) {
-    transactionDetails.push(dataItem('Data', transaction.data));
+    transactionDetails.push(addressItem('Contract', transaction.to));
   }
 
   const displayData: DisplayData = {

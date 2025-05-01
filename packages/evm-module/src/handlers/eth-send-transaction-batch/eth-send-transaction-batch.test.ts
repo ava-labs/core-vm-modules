@@ -136,7 +136,7 @@ const displayData = {
   details: [
     {
       title: 'Transaction Details',
-      items: [linkItem('Website', testDapp), addressItem('From', tx1.from)],
+      items: [linkItem('Website', testDapp), addressItem('Account', tx1.from)],
     },
   ],
   networkFeeSelector: true,
@@ -179,19 +179,14 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'From',
+              label: 'Account',
               type: DetailItemType.ADDRESS,
               value: tx1.from,
             },
             {
-              label: 'To',
+              label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx1.to,
-            },
-            {
-              label: 'Data',
-              type: DetailItemType.DATA,
-              value: tx1.data,
             },
           ],
           title: 'Transaction Details',
@@ -239,19 +234,14 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'From',
+              label: 'Account',
               type: DetailItemType.ADDRESS,
               value: tx2.from,
             },
             {
-              label: 'To',
+              label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx2.to,
-            },
-            {
-              label: 'Data',
-              type: DetailItemType.DATA,
-              value: tx2.data,
             },
           ],
           title: 'Transaction Details',

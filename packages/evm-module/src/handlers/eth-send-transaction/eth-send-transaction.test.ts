@@ -132,19 +132,14 @@ const displayData = {
           type: 'link',
         },
         {
-          label: 'From',
+          label: 'Account',
           value: '0xfrom',
           type: 'address',
         },
         {
-          label: 'To',
+          label: 'Contract',
           value: '0xto',
           type: 'address',
-        },
-        {
-          label: 'Data',
-          value: '0xdata',
-          type: 'data',
         },
       ],
     },
