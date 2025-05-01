@@ -141,6 +141,14 @@ const displayData = {
           value: '0xto',
           type: 'address',
         },
+        {
+          label: 'Network',
+          type: 'network',
+          value: {
+            name: testNetwork.chainName,
+            logoUri: testNetwork.logoUri,
+          },
+        },
       ],
     },
   ],

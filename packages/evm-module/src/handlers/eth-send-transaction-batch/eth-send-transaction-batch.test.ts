@@ -152,6 +152,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
       type: RpcMethod.ETH_SEND_TRANSACTION,
       account: tx1.from,
       data: {
+        accessList: undefined,
         type: 2,
         nonce: 12,
         gasLimit: 4096,
@@ -188,6 +189,14 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               type: DetailItemType.ADDRESS,
               value: tx1.to,
             },
+            {
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
+            },
           ],
           title: 'Transaction Details',
         },
@@ -207,6 +216,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
       type: RpcMethod.ETH_SEND_TRANSACTION,
       account: tx1.from,
       data: {
+        accessList: undefined,
         type: 2,
         nonce: 13,
         gasLimit: 8192,
@@ -242,6 +252,14 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx2.to,
+            },
+            {
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
             },
           ],
           title: 'Transaction Details',

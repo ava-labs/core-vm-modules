@@ -8,7 +8,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, linkItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
 
 import { ERC20TransactionType } from '../types';
 import type { TransactionParams } from './transaction-schema';
@@ -34,6 +34,13 @@ export const buildTxApprovalRequest = (
   if (transaction.to) {
     transactionDetails.push(addressItem('Contract', transaction.to));
   }
+
+  transactionDetails.push(
+    networkItem('Network', {
+      name: network.chainName,
+      logoUri: network.logoUri,
+    }),
+  );
 
   const displayData: DisplayData = {
     title,
