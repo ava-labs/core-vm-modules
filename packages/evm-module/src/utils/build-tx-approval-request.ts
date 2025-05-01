@@ -44,11 +44,6 @@ export const buildTxApprovalRequest = (
 
   const displayData: DisplayData = {
     title,
-    network: {
-      chainId: network.chainId,
-      name: network.chainName,
-      logoUri: network.logoUri,
-    },
     details: [
       {
         title: 'Transaction Details',

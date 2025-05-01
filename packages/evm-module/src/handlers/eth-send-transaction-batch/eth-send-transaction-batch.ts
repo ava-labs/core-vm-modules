@@ -16,7 +16,7 @@ import { getTxHash } from '../../utils/get-tx-hash';
 import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-receipt';
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import { simulateTransactionBatch } from './utils/process-transaction-batch-simulation';
-import { addressItem, linkItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
 
 export const ethSendTransactionBatch = async ({
   request,
@@ -88,14 +88,16 @@ export const ethSendTransactionBatch = async ({
     details: [
       {
         title: 'Transaction Details',
-        items: [linkItem('Website', request.dappInfo), addressItem('Account', transactionRequests[0].from)],
+        items: [
+          linkItem('Website', request.dappInfo),
+          addressItem('Account', transactionRequests[0].from),
+          networkItem('Network', {
+            name: network.chainName,
+            logoUri: network.logoUri,
+          }),
+        ],
       },
     ],
-    network: {
-      chainId: network.chainId,
-      name: network.chainName,
-      logoUri: network.logoUri,
-    },
     isSimulationSuccessful,
     balanceChange,
     alert,

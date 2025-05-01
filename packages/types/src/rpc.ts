@@ -189,7 +189,7 @@ export type DisplayData = {
     action: string;
     logoUri?: string;
   };
-  network: {
+  network?: {
     chainId: number;
     name: string;
     logoUri?: string;
