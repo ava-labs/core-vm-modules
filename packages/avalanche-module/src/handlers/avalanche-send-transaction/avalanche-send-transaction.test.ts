@@ -461,7 +461,7 @@ describe('avalanche_sendTransaction handler', () => {
       expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
         txHash: testTxHash,
         explorerLink: 'https://explorer.com/tx/' + testTxHash,
-        requestId: '1',
+        request: params.request,
       });
     });
 
@@ -479,7 +479,7 @@ describe('avalanche_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: params.request, txHash: testTxHash });
     });
   });
 

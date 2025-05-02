@@ -122,7 +122,7 @@ export const ethSendTransaction = async ({
     onTransactionPending: approvalController.onTransactionPending,
     onTransactionConfirmed: approvalController.onTransactionConfirmed,
     onTransactionReverted: approvalController.onTransactionReverted,
-    requestId: request.requestId,
+    request,
   });
 
   return { result: txHash };

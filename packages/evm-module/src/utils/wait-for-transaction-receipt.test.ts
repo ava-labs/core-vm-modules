@@ -1,6 +1,7 @@
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 import { waitForTransactionReceipt } from './wait-for-transaction-receipt';
+import type { RpcRequest } from '@avalabs/vm-module-types';
 
 const explorerUrl = 'https://explorer.com';
 describe('waitForTransactionReceipt', () => {
@@ -9,7 +10,7 @@ describe('waitForTransactionReceipt', () => {
   let onTransactionPending: jest.Mock;
   let onTransactionConfirmed: jest.Mock;
   let onTransactionReverted: jest.Mock;
-  let requestId: string;
+  let request: RpcRequest;
 
   beforeEach(() => {
     provider = {
@@ -19,7 +20,12 @@ describe('waitForTransactionReceipt', () => {
     onTransactionPending = jest.fn();
     onTransactionConfirmed = jest.fn();
     onTransactionReverted = jest.fn();
-    requestId = 'request-1';
+    request = {
+      requestId: 'request-1',
+      sessionId: 'session-1',
+      method: 'eth_sendTransaction',
+      chainId: '0x1',
+    } as RpcRequest;
   });
 
   it('should call onTransactionPending when waiting for transaction receipt', async () => {
@@ -32,12 +38,12 @@ describe('waitForTransactionReceipt', () => {
       onTransactionPending,
       onTransactionConfirmed,
       onTransactionReverted,
-      requestId,
+      request,
     });
 
     expect(onTransactionPending).toHaveBeenCalledWith({
       txHash,
-      requestId,
+      request,
     });
   });
 
@@ -51,14 +57,14 @@ describe('waitForTransactionReceipt', () => {
       onTransactionPending,
       onTransactionConfirmed,
       onTransactionReverted,
-      requestId,
+      request,
     });
 
     expect(result).toBe(true);
     expect(onTransactionConfirmed).toHaveBeenCalledWith({
       txHash,
       explorerLink: 'https://explorer.com/tx/' + txHash,
-      requestId,
+      request,
     });
     expect(onTransactionReverted).not.toHaveBeenCalled();
   });
@@ -73,11 +79,11 @@ describe('waitForTransactionReceipt', () => {
       onTransactionPending,
       onTransactionConfirmed,
       onTransactionReverted,
-      requestId,
+      request,
     });
 
     expect(result).toBe(false);
-    expect(onTransactionReverted).toHaveBeenCalledWith({ txHash, requestId });
+    expect(onTransactionReverted).toHaveBeenCalledWith({ txHash, request });
     expect(onTransactionConfirmed).not.toHaveBeenCalled();
   });
 
@@ -91,11 +97,11 @@ describe('waitForTransactionReceipt', () => {
       onTransactionPending,
       onTransactionConfirmed,
       onTransactionReverted,
-      requestId,
+      request,
     });
 
     expect(result).toBe(false);
-    expect(onTransactionReverted).toHaveBeenCalledWith({ txHash, requestId });
+    expect(onTransactionReverted).toHaveBeenCalledWith({ txHash, request });
     expect(onTransactionConfirmed).not.toHaveBeenCalled();
   });
 });

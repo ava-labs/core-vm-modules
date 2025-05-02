@@ -141,7 +141,7 @@ export const bitcoinSendTransaction = async ({
     onTransactionReverted: approvalController.onTransactionReverted,
     // Pass the requestId so that client apps can pair the transaction
     // status changes back to their respective requests for better tracking.
-    requestId: request.requestId,
+    request: request,
   });
 
   return {

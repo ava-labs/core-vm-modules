@@ -1,4 +1,4 @@
-import type { Hex } from '@avalabs/vm-module-types';
+import type { Hex, RpcRequest } from '@avalabs/vm-module-types';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getExplorerAddressByNetwork } from '@src/handlers/get-transaction-history/utils/get-explorer-address-by-network';
 
@@ -9,26 +9,26 @@ export const waitForTransactionReceipt = async ({
   onTransactionPending,
   onTransactionConfirmed,
   onTransactionReverted,
-  requestId,
+  request,
 }: {
   explorerUrl: string;
   provider: JsonRpcBatchInternal;
   txHash: Hex;
-  onTransactionPending: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
+  onTransactionPending: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
   onTransactionConfirmed: ({
     txHash,
     explorerLink,
-    requestId,
+    request,
   }: {
     txHash: Hex;
     explorerLink: string;
-    requestId: string;
+    request: RpcRequest;
   }) => void;
-  onTransactionReverted: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
-  requestId: string;
+  onTransactionReverted: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
+  request: RpcRequest;
 }) => {
   try {
-    onTransactionPending({ txHash, requestId });
+    onTransactionPending({ txHash, request });
 
     const receipt = await provider.waitForTransaction(txHash);
 
@@ -37,14 +37,14 @@ export const waitForTransactionReceipt = async ({
     const explorerLink = getExplorerAddressByNetwork(explorerUrl, txHash);
 
     if (success) {
-      onTransactionConfirmed({ txHash, explorerLink, requestId });
+      onTransactionConfirmed({ txHash, explorerLink, request });
       return true;
     }
   } catch (error) {
     console.error(error);
   }
 
-  onTransactionReverted({ txHash, requestId });
+  onTransactionReverted({ txHash, request });
 
   return false;
 };

@@ -600,7 +600,7 @@ describe('eth_sendTransaction handler', () => {
       expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
         txHash: testTxHash,
         explorerLink: 'https://explorer.com/tx/' + testTxHash,
-        requestId: '1',
+        request: requestParams.request,
       });
     });
 
@@ -622,7 +622,7 @@ describe('eth_sendTransaction handler', () => {
 
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
     });
   });
 
