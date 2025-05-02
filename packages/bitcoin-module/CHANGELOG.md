@@ -1,5 +1,15 @@
 # @avalabs/bitcoin-module
 
+## 1.9.4
+
+### Patch Changes
+
+- e5d2d06: transaction callbacks: expose request instead of just request id
+- Updated dependencies [b38bc40]
+- Updated dependencies [e5d2d06]
+- Updated dependencies [b38bc40]
+  - @avalabs/vm-module-types@1.9.4
+
 ## 1.9.3
 
 ### Patch Changes
