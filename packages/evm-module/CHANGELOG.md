@@ -1,5 +1,17 @@
 # @avalabs/evm-module
 
+## 1.9.4
+
+### Patch Changes
+
+- b38bc40: remove network as a separate item in display data
+- e5d2d06: transaction callbacks: expose request instead of just request id
+- b38bc40: adjust evm display data
+- Updated dependencies [b38bc40]
+- Updated dependencies [e5d2d06]
+- Updated dependencies [b38bc40]
+  - @avalabs/vm-module-types@1.9.4
+
 ## 1.9.3
 
 ### Patch Changes
