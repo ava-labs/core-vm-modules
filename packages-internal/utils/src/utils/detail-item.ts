@@ -10,6 +10,8 @@ import {
   type LinkItem,
   type FundsRecipientItem,
   type AddressListItem,
+  type NetworkItemValue,
+  type NetworkItem,
 } from '@avalabs/vm-module-types';
 
 export const fundsRecipientItem = (
@@ -77,5 +79,11 @@ export const dataItem = (label: string, value: string): DataItem => ({
 export const dateItem = (label: string, value: string): DateItem => ({
   label,
   type: DetailItemType.DATE,
+  value,
+});
+
+export const networkItem = (label: string, value: NetworkItemValue): NetworkItem => ({
+  label,
+  type: DetailItemType.NETWORK,
   value,
 });

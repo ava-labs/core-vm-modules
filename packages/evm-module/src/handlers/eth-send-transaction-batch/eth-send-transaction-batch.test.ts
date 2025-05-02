@@ -18,7 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import type { TransactionParams } from '../../types';
-import { addressItem, linkItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -128,15 +128,17 @@ const testRequestParams = () => ({
 
 const displayData = {
   title: 'Do you approve these transactions?',
-  network: {
-    chainId: testNetwork.chainId,
-    name: testNetwork.chainName,
-    logoUri: testNetwork.logoUri,
-  },
   details: [
     {
       title: 'Transaction Details',
-      items: [linkItem('Website', testDapp), addressItem('From', tx1.from)],
+      items: [
+        linkItem('Website', testDapp),
+        addressItem('Account', tx1.from),
+        networkItem('Network', {
+          name: testNetwork.chainName,
+          logoUri: testNetwork.logoUri,
+        }),
+      ],
     },
   ],
   networkFeeSelector: true,
@@ -152,6 +154,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
       type: RpcMethod.ETH_SEND_TRANSACTION,
       account: tx1.from,
       data: {
+        accessList: undefined,
         type: 2,
         nonce: 12,
         gasLimit: 4096,
@@ -179,30 +182,28 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'From',
+              label: 'Account',
               type: DetailItemType.ADDRESS,
               value: tx1.from,
             },
             {
-              label: 'To',
+              label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx1.to,
             },
             {
-              label: 'Data',
-              type: DetailItemType.DATA,
-              value: tx1.data,
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
             },
           ],
           title: 'Transaction Details',
         },
       ],
       isSimulationSuccessful: false,
-      network: {
-        chainId: 1,
-        logoUri: 'logoUri',
-        name: 'chainName',
-      },
       networkFeeSelector: true,
       title: 'Do you approve this transaction?',
     },
@@ -212,6 +213,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
       type: RpcMethod.ETH_SEND_TRANSACTION,
       account: tx1.from,
       data: {
+        accessList: undefined,
         type: 2,
         nonce: 13,
         gasLimit: 8192,
@@ -239,30 +241,28 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'From',
+              label: 'Account',
               type: DetailItemType.ADDRESS,
               value: tx2.from,
             },
             {
-              label: 'To',
+              label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx2.to,
             },
             {
-              label: 'Data',
-              type: DetailItemType.DATA,
-              value: tx2.data,
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
             },
           ],
           title: 'Transaction Details',
         },
       ],
       isSimulationSuccessful: false,
-      network: {
-        chainId: 1,
-        logoUri: 'logoUri',
-        name: 'chainName',
-      },
       networkFeeSelector: true,
       title: 'Do you approve this transaction?',
     },

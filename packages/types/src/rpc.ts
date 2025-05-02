@@ -101,6 +101,7 @@ export enum DetailItemType {
   DATA = 'data',
   DATE = 'date',
   LINK = 'link',
+  NETWORK = 'network',
 }
 
 // It's very similar as CurrencyItem, but we want the client apps
@@ -158,6 +159,16 @@ export type LinkItem = BaseDetailItem & {
   value: LinkItemValue;
 };
 
+export type NetworkItemValue = {
+  logoUri: string | undefined;
+  name: string;
+};
+
+export type NetworkItem = BaseDetailItem & {
+  type: DetailItemType.NETWORK;
+  value: NetworkItemValue;
+};
+
 export type DetailItem =
   | string
   | TextItem
@@ -168,7 +179,8 @@ export type DetailItem =
   | DataItem
   | DateItem
   | LinkItem
-  | FundsRecipientItem;
+  | FundsRecipientItem
+  | NetworkItem;
 
 export type DisplayData = {
   title: string;
@@ -177,7 +189,7 @@ export type DisplayData = {
     action: string;
     logoUri?: string;
   };
-  network: {
+  network?: {
     chainId: number;
     name: string;
     logoUri?: string;

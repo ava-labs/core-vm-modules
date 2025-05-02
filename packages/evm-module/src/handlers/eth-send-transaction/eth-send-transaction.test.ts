@@ -117,11 +117,6 @@ const testRequestParams = () => ({
 
 const displayData = {
   title: 'Do you approve this transaction?',
-  network: {
-    chainId: testNetwork.chainId,
-    name: testNetwork.chainName,
-    logoUri: testNetwork.logoUri,
-  },
   details: [
     {
       title: 'Transaction Details',
@@ -132,19 +127,22 @@ const displayData = {
           type: 'link',
         },
         {
-          label: 'From',
+          label: 'Account',
           value: '0xfrom',
           type: 'address',
         },
         {
-          label: 'To',
+          label: 'Contract',
           value: '0xto',
           type: 'address',
         },
         {
-          label: 'Data',
-          value: '0xdata',
-          type: 'data',
+          label: 'Network',
+          type: 'network',
+          value: {
+            name: testNetwork.chainName,
+            logoUri: testNetwork.logoUri,
+          },
         },
       ],
     },
