@@ -1,4 +1,4 @@
-import type { Hex } from '@avalabs/vm-module-types';
+import type { Hex, RpcRequest } from '@avalabs/vm-module-types';
 import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
 export const waitForTransactionReceipt = async ({
@@ -8,31 +8,31 @@ export const waitForTransactionReceipt = async ({
   onTransactionPending,
   onTransactionConfirmed,
   onTransactionReverted,
-  requestId,
+  request,
 }: {
   explorerUrl: string;
   provider: BitcoinProvider;
   txHash: Hex;
-  onTransactionPending: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
+  onTransactionPending: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
   onTransactionConfirmed: ({
     txHash,
     explorerLink,
-    requestId,
+    request,
   }: {
     txHash: Hex;
     explorerLink: string;
-    requestId: string;
+    request: RpcRequest;
   }) => void;
-  onTransactionReverted: ({ txHash, requestId }: { txHash: Hex; requestId: string }) => void;
-  requestId: string;
+  onTransactionReverted: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
+  request: RpcRequest;
 }) => {
   try {
-    onTransactionPending({ txHash, requestId });
+    onTransactionPending({ txHash, request });
     await provider.waitForTx(txHash);
     const explorerLink = `${explorerUrl}/tx/${txHash}`;
-    onTransactionConfirmed({ txHash, explorerLink, requestId });
+    onTransactionConfirmed({ txHash, explorerLink, request });
   } catch (err) {
     console.error(err);
-    onTransactionReverted({ txHash, requestId });
+    onTransactionReverted({ txHash, request });
   }
 };

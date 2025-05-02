@@ -782,7 +782,7 @@ describe('eth_sendTransactionBatch handler', () => {
       expect(mockWaitForTransaction).toHaveBeenCalledTimes(1);
       expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: testTxHash });
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
     });
   });
 

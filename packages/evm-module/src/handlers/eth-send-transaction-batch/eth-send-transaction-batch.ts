@@ -140,7 +140,7 @@ export const ethSendTransactionBatch = async ({
       onTransactionPending: approvalController.onTransactionPending,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,
       onTransactionReverted: approvalController.onTransactionReverted,
-      requestId: request.requestId,
+      request,
     });
 
     // If it's the last transaction, we don't need to await the receipt, as there

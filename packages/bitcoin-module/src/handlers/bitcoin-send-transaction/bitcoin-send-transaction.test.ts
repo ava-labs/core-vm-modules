@@ -320,7 +320,7 @@ describe('bitcoinSendTransaction', () => {
     expect(mockApprovalController.onTransactionConfirmed).toHaveBeenCalledWith({
       txHash: '0x123',
       explorerLink: 'https://explorer.com/tx/0x123',
-      requestId: '1',
+      request: testRequestParams().request,
     });
   });
 
@@ -336,6 +336,9 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({ result: '0x123' });
-    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith({ requestId: '1', txHash: '0x123' });
+    expect(mockApprovalController.onTransactionReverted).toHaveBeenCalledWith({
+      request: testRequestParams().request,
+      txHash: '0x123',
+    });
   });
 });
