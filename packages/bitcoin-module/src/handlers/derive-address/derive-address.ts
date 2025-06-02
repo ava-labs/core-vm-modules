@@ -10,7 +10,7 @@ import { buildDerivationPath } from '../build-derivation-path/build-derivation-p
 export const deriveAddress = async (
   params: DeriveAddressParams & { approvalController: ApprovalController },
 ): Promise<DeriveAddressResponse> => {
-  const { approvalController, network, secretId } = params;
+  const { approvalController, isTestnet, secretId } = params;
 
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const derivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).BITCOIN : undefined;
@@ -22,9 +22,6 @@ export const deriveAddress = async (
   const publicKey = Buffer.from(publicKeyHex, 'hex');
 
   return {
-    [NetworkVMType.BITCOIN]: getBtcAddressFromPubKey(
-      publicKey,
-      network.isTestnet ? networks.testnet : networks.bitcoin,
-    ),
+    [NetworkVMType.BITCOIN]: getBtcAddressFromPubKey(publicKey, isTestnet ? networks.testnet : networks.bitcoin),
   };
 };

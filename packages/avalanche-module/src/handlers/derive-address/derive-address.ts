@@ -9,12 +9,12 @@ import { buildDerivationPath } from '../build-derivation-path/build-derivation-p
 export const deriveAddress = async (
   params: DeriveAddressParams & { approvalController: ApprovalController },
 ): Promise<DeriveAddressResponse> => {
-  const { approvalController, network, secretId } = params;
+  const { approvalController, isTestnet, secretId } = params;
 
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const xpDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).AVM : undefined;
   const coreEthDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).CoreEth : undefined;
-  const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet) });
+  const provXP = await getProvider({ isTestnet });
 
   const xpPublicKeyHex = await approvalController.requestPublicKey({
     curve: 'secp256k1',

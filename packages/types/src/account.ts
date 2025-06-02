@@ -20,7 +20,7 @@ export type GetAddressParams = {
 export type GetAddressResponse = Record<string, string>;
 
 export type SimpleDeriveAddressParams = {
-  network: Omit<Network, 'tokens'>;
+  isTestnet: boolean;
   /**
    * ID of the secret key to use for derivation.
    */
