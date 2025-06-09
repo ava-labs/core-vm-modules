@@ -16,6 +16,7 @@ export const deriveAddress = async (
     curve: 'ed25519',
     secretId,
     derivationPath,
+    accountIndex: 'accountIndex' in params ? params.accountIndex : undefined,
   });
 
   return {

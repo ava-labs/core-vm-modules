@@ -20,11 +20,13 @@ export const deriveAddress = async (
     curve: 'secp256k1',
     secretId,
     derivationPath: xpDerivationPath,
+    accountIndex: 'accountIndex' in params ? params.accountIndex : undefined,
   });
   const coreEthPublicKeyHex = await approvalController.requestPublicKey({
     curve: 'secp256k1',
     secretId,
     derivationPath: coreEthDerivationPath,
+    accountIndex: 'accountIndex' in params ? params.accountIndex : undefined,
   });
 
   const publicKeyXP = Buffer.from(xpPublicKeyHex, 'hex');

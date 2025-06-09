@@ -359,6 +359,7 @@ export type RequestPublicKeyParams = {
   secretId: string;
   curve: 'secp256k1' | 'ed25519';
   derivationPath?: string;
+  accountIndex?: number;
 };
 
 /**

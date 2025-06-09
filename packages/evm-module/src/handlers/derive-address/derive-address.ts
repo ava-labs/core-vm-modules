@@ -20,6 +20,7 @@ export const deriveAddress = async (
     curve: 'secp256k1',
     secretId,
     derivationPath,
+    accountIndex: 'accountIndex' in params ? params.accountIndex : undefined,
   });
 
   return {

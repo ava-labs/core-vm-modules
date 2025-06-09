@@ -21,6 +21,7 @@ export const deriveAddress = async (
     curve: 'ed25519',
     secretId,
     derivationPath,
+    accountIndex: 'accountIndex' in params ? params.accountIndex : undefined,
   });
   const publicKeyBytes = hex.decode(publicKeyHex);
   const addressBytes = new Uint8Array([ED25519_AUTH_ID, ...sha256(publicKeyBytes)]);
