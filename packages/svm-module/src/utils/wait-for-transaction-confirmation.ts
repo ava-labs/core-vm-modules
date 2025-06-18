@@ -49,7 +49,7 @@ export const waitForTransactionConfirmation = async ({
       const { confirmationStatus, err } = status;
 
       if (err) {
-         approvalController.onTransactionReverted({ txHash, request });
+        approvalController.onTransactionReverted({ txHash, request });
         return false;
       }
 
@@ -60,7 +60,7 @@ export const waitForTransactionConfirmation = async ({
       switch (confirmationStatus) {
         case 'processed':
           if (commitment === 'processed') {
-             approvalController.onTransactionConfirmed({
+            approvalController.onTransactionConfirmed({
               txHash,
               request,
               explorerLink,
@@ -71,7 +71,7 @@ export const waitForTransactionConfirmation = async ({
 
         case 'confirmed':
           if (commitment === 'confirmed') {
-             approvalController.onTransactionConfirmed({
+            approvalController.onTransactionConfirmed({
               txHash,
               request,
               explorerLink,
@@ -81,7 +81,7 @@ export const waitForTransactionConfirmation = async ({
           break;
 
         case 'finalized':
-           approvalController.onTransactionConfirmed({
+          approvalController.onTransactionConfirmed({
             txHash,
             request,
             explorerLink,
