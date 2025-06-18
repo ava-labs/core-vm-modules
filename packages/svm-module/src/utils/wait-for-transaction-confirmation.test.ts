@@ -37,6 +37,7 @@ describe('waitForTransactionConfirmation', () => {
 
     provider = {
       getSignatureStatuses: jest.fn(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
 
     approvalController = {
@@ -55,10 +56,12 @@ describe('waitForTransactionConfirmation', () => {
 
   it('should confirm transaction when status is finalized', async () => {
     const sendMock = jest.fn().mockResolvedValue({
-      value: [{
-        confirmationStatus: 'finalized',
-        err: null,
-      }],
+      value: [
+        {
+          confirmationStatus: 'finalized',
+          err: null,
+        },
+      ],
     });
     provider.getSignatureStatuses.mockReturnValue({ send: sendMock });
 
@@ -68,15 +71,15 @@ describe('waitForTransactionConfirmation', () => {
       approvalController,
       request: mockRequest,
     });
-    
+
     await jest.runAllTimersAsync();
     const result = await resultPromise;
 
     expect(result).toBe(true);
-    expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({ 
-      txHash: mockTxHash, 
+    expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
+      txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`
+      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`,
     });
   });
 
