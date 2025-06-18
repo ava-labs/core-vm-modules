@@ -82,6 +82,9 @@ describe('src/handlers/sign-and-send-transaction', () => {
     sendTransaction: jest.fn(),
   } as unknown as jest.Mocked<SolanaProvider>;
 
+  const base58TxHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
+  const hexTxHash = '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363';
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getProvider).mockReturnValue(mockProvider as unknown as SolanaProvider);
@@ -176,7 +179,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(result).toEqual({
       error: rpcErrors.internal({
-        message: 'Unable to get transaction hash',
+        message: 'Transaction failed',
         data: { cause: new Error('Transaction error') },
       }),
     });
@@ -254,13 +257,12 @@ describe('src/handlers/sign-and-send-transaction', () => {
   });
 
   it('handles successful transaction confirmation', async () => {
-    const txHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
     (parseRequestParams as jest.Mock).mockReturnValue({
       success: true,
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue(txHash),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -278,27 +280,26 @@ describe('src/handlers/sign-and-send-transaction', () => {
     });
 
     expect(mockApprovalController.onTransactionPending).toHaveBeenCalledWith({
-      txHash,
+      txHash: hexTxHash,
       request: mockRequest,
     });
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
       provider: mockProvider,
-      txHash,
+      txHash: hexTxHash,
       approvalController: mockApprovalController,
       request: mockRequest,
       commitment: undefined,
     });
-    expect(result).toEqual({ result: txHash });
+    expect(result).toEqual({ result: hexTxHash });
   });
 
   it('handles transaction confirmation failure', async () => {
-    const txHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
     (parseRequestParams as jest.Mock).mockReturnValue({
       success: true,
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue(txHash),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -316,18 +317,22 @@ describe('src/handlers/sign-and-send-transaction', () => {
       proxyApiUrl: mockProxyApiUrl,
     });
 
-    expect(result).toEqual({ result: txHash });
+    expect(result).toEqual({ result: hexTxHash });
   });
 
   it('uses commitment level from send options for confirmation', async () => {
-    const txHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
-    const sendOptions = { preflightCommitment: 'confirmed' as const };
     (parseRequestParams as jest.Mock).mockReturnValue({
       success: true,
-      data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions }],
+      data: [
+        {
+          account: 'test-account',
+          serializedTx: 'test-tx',
+          sendOptions: { preflightCommitment: 'confirmed' as const },
+        },
+      ],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue(txHash),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -346,7 +351,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
       provider: mockProvider,
-      txHash,
+      txHash: hexTxHash,
       approvalController: mockApprovalController,
       request: mockRequest,
       commitment: 'confirmed',

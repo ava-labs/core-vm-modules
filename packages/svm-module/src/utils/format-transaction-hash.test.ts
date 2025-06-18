@@ -13,7 +13,7 @@ describe('format-transaction-hash', () => {
     },
     {
       base58: '4EPwNRmBrKQqYHKMP4G4rvBWx5rXaJgHop8HJvxrPJMPYwPuWd4GZgKUNS1P4G6qDpHxYKomQGviDtjnksVqHgK5',
-      hex: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      hex: '0xa19a4d4f1cba8d7e31c99859314cac3596574f4ce759120d958d72cb67452652c91686e5f568d6884ca9dd5688c0113b8fb1a0ec79fe1564f4a6de4eff14e094',
     },
   ];
 
