@@ -13,6 +13,8 @@ import { type Base64EncodedWireTransaction } from '@solana/kit';
 import { getProvider } from '@src/utils/get-provider';
 import { getNetworkName } from '@src/utils/get-network-name';
 import { explainTransaction } from '@src/utils/explain/explain-transaction';
+import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-confirmation';
+import { toHexTxHash } from '@src/utils/format-transaction-hash';
 
 import { parseRequestParams, type SendOptions } from './schema';
 
@@ -90,16 +92,27 @@ export const signAndSendTransaction = async ({
 
   try {
     txHash = await getTxHash(provider, response, sendOptions);
+    await approvalController.onTransactionPending({ txHash, request });
+
+    // Wait for transaction confirmation with the specified commitment level
+    await waitForTransactionConfirmation({
+      provider,
+      txHash,
+      approvalController,
+      request,
+      commitment: sendOptions?.preflightCommitment,
+    });
+
+    return {
+      result: txHash,
+    };
   } catch (error) {
     console.error(error);
+    // Note: we don't need to call onTransactionReverted here as waitForTransactionConfirmation handles that
     return {
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+      error: rpcErrors.internal({ message: 'Transaction failed', data: { cause: error } }),
     };
   }
-
-  return {
-    result: txHash,
-  };
 };
 
 const getTxHash = async (
@@ -108,15 +121,15 @@ const getTxHash = async (
   sendOptions?: SendOptions,
 ) => {
   if ('txHash' in response) {
-    return response.txHash;
+    return toHexTxHash(response.txHash);
   }
 
-  // broadcast the signed transaction
-  const txHash = await provider
+  const base58TxHash = await provider
     .sendTransaction(response.signedData as Base64EncodedWireTransaction, {
       ...sendOptions,
       encoding: 'base64',
     })
     .send();
-  return txHash;
+
+  return toHexTxHash(base58TxHash);
 };
