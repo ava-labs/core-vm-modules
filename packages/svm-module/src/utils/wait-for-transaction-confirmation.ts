@@ -93,6 +93,28 @@ export const waitForTransactionConfirmation = async ({
           break;
       }
 
+      if (!status || !confirmationStatus) {
+        // If getSignatureStatuses doesn't return status, try getTransaction as backup
+        try {
+          const txResponse = await provider
+            .getTransaction(signature(txHash), {
+              commitment: 'confirmed',
+            })
+            .send();
+          if (txResponse) {
+            // Transaction exists, mark as confirmed
+            approvalController.onTransactionConfirmed({
+              txHash,
+              request,
+              explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(txHash)}`,
+            });
+            return true;
+          }
+        } catch (e) {
+          // Ignore errors from backup check
+        }
+      }
+
       await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
       retries++;
     } catch (error) {
