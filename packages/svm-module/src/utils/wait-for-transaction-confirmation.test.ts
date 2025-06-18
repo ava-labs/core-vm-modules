@@ -1,6 +1,5 @@
 import { RpcMethod, type RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
-import { base58 } from '@scure/base';
 import { toBase58TxHash } from './format-transaction-hash';
 
 import { waitForTransactionConfirmation } from './wait-for-transaction-confirmation';
@@ -10,7 +9,7 @@ jest.mock('@solana/kit', () => ({
 }));
 
 describe('waitForTransactionConfirmation', () => {
-  const mockTxHash = `0x${Buffer.from(base58.decode('5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t')).toString('hex')}` as `0x${string}`; 
+  const mockTxHash = '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363' as const;
   const mockRequest: RpcRequest = {
     requestId: 'request-1',
     sessionId: 'session-1',
@@ -35,7 +34,7 @@ describe('waitForTransactionConfirmation', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
-    
+
     provider = {
       getSignatureStatuses: jest.fn(),
     } as any;
@@ -83,10 +82,12 @@ describe('waitForTransactionConfirmation', () => {
 
   it('should confirm transaction at specified commitment level', async () => {
     const sendMock = jest.fn().mockResolvedValue({
-      value: [{
-        confirmationStatus: 'confirmed',
-        err: null,
-      }],
+      value: [
+        {
+          confirmationStatus: 'confirmed',
+          err: null,
+        },
+      ],
     });
     provider.getSignatureStatuses.mockReturnValue({ send: sendMock });
 
@@ -97,24 +98,26 @@ describe('waitForTransactionConfirmation', () => {
       request: mockRequest,
       commitment: 'confirmed',
     });
-    
+
     await jest.runAllTimersAsync();
     const result = await resultPromise;
 
     expect(result).toBe(true);
-    expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({ 
-      txHash: mockTxHash, 
+    expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
+      txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`
+      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`,
     });
   });
 
   it('should handle transaction errors', async () => {
     const sendMock = jest.fn().mockResolvedValue({
-      value: [{
-        confirmationStatus: 'processed',
-        err: { InstructionError: [0, 'Test error'] },
-      }],
+      value: [
+        {
+          confirmationStatus: 'processed',
+          err: { InstructionError: [0, 'Test error'] },
+        },
+      ],
     });
     provider.getSignatureStatuses.mockReturnValue({ send: sendMock });
 
@@ -124,14 +127,14 @@ describe('waitForTransactionConfirmation', () => {
       approvalController,
       request: mockRequest,
     });
-    
+
     await jest.runAllTimersAsync();
     const result = await resultPromise;
 
     expect(result).toBe(false);
-    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({ 
-      txHash: mockTxHash, 
-      request: mockRequest 
+    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({
+      txHash: mockTxHash,
+      request: mockRequest,
     });
   });
 
@@ -148,15 +151,15 @@ describe('waitForTransactionConfirmation', () => {
       request: mockRequest,
       maxRetries: 2,
     });
-    
+
     await jest.runAllTimersAsync();
     const result = await resultPromise;
 
     expect(result).toBe(false);
     expect(provider.getSignatureStatuses).toHaveBeenCalledTimes(2);
-    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({ 
-      txHash: mockTxHash, 
-      request: mockRequest 
+    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({
+      txHash: mockTxHash,
+      request: mockRequest,
     });
   });
 
@@ -171,14 +174,14 @@ describe('waitForTransactionConfirmation', () => {
       request: mockRequest,
       maxRetries: 1,
     });
-    
+
     await jest.runAllTimersAsync();
     const result = await resultPromise;
 
     expect(result).toBe(false);
-    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({ 
-      txHash: mockTxHash, 
-      request: mockRequest 
+    expect(approvalController.onTransactionReverted).toHaveBeenCalledWith({
+      txHash: mockTxHash,
+      request: mockRequest,
     });
   });
 });

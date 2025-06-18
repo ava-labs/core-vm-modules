@@ -1,7 +1,7 @@
 import type { ApprovalController, RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
 import { signature } from '@solana/kit';
-import { base58 } from '@scure/base';
+import { toBase58TxHash } from './format-transaction-hash';
 
 const POLLING_INTERVAL = 1000; // 1 second
 const MAX_RETRIES = 60; // 1 minute total
@@ -49,19 +49,18 @@ export const waitForTransactionConfirmation = async ({
       const { confirmationStatus, err } = status;
 
       if (err) {
-        await approvalController.onTransactionReverted({ txHash, request });
+         approvalController.onTransactionReverted({ txHash, request });
         return false;
       }
 
       // Convert hex back to base58 for explorer URL
-      const base58TxHash = base58.encode(Buffer.from(txHash.slice(2), 'hex'));
-      const explorerLink = `https://explorer.solana.com/tx/${base58TxHash}`;
+      const explorerLink = `https://explorer.solana.com/tx/${toBase58TxHash(txHash)}`;
 
       // Handle different confirmation statuses
       switch (confirmationStatus) {
         case 'processed':
           if (commitment === 'processed') {
-            await approvalController.onTransactionConfirmed({
+             approvalController.onTransactionConfirmed({
               txHash,
               request,
               explorerLink,
@@ -72,7 +71,7 @@ export const waitForTransactionConfirmation = async ({
 
         case 'confirmed':
           if (commitment === 'confirmed') {
-            await approvalController.onTransactionConfirmed({
+             approvalController.onTransactionConfirmed({
               txHash,
               request,
               explorerLink,
@@ -82,7 +81,7 @@ export const waitForTransactionConfirmation = async ({
           break;
 
         case 'finalized':
-          await approvalController.onTransactionConfirmed({
+           approvalController.onTransactionConfirmed({
             txHash,
             request,
             explorerLink,
@@ -108,6 +107,6 @@ export const waitForTransactionConfirmation = async ({
   }
 
   // If we reach here, we've exceeded max retries
-  await approvalController.onTransactionReverted({ txHash, request });
+  approvalController.onTransactionReverted({ txHash, request });
   return false;
 };
