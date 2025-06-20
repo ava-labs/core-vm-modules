@@ -20,56 +20,48 @@ export const waitForTransactionConfirmation = async ({
   txHash,
   approvalController,
   request,
-  commitment = 'confirmed',
+  commitment = 'finalized',
   maxRetries = MAX_RETRIES,
 }: WaitForTransactionConfirmationParams): Promise<boolean> => {
   let retries = 0;
   let lastStatus: string | null = null;
+  const base58TxHash = toBase58TxHash(txHash);
+  const explorerLink = `https://explorer.solana.com/tx/${base58TxHash}`;
 
   while (retries < maxRetries) {
     try {
       const response = await provider
-        .getSignatureStatuses([signature(txHash)], { searchTransactionHistory: true })
+        .getSignatureStatuses([signature(base58TxHash)], { searchTransactionHistory: true })
         .send();
 
       if (!response?.value?.[0]) {
-        // Transaction not found yet, keep polling
         await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
         retries++;
         continue;
       }
 
-      const status = response.value[0];
-      const { confirmationStatus, err } = status;
+      const { confirmationStatus, err } = response.value[0];
 
       if (err) {
+        console.error('[waitForTransactionConfirmation] Transaction failed:', err);
         approvalController.onTransactionReverted({ txHash, request });
         return false;
       }
 
-      // Only update UI for status changes
       if (confirmationStatus && confirmationStatus !== lastStatus) {
         lastStatus = confirmationStatus;
 
-        // Convert hex back to base58 for explorer URL
-        const explorerLink = `https://explorer.solana.com/tx/${toBase58TxHash(txHash)}`;
-
-        // Show pending for processed state
         if (confirmationStatus === 'processed') {
           approvalController.onTransactionPending({ txHash, request });
         }
 
-        // Confirm when we reach target commitment level
-        if (
+        const isConfirmed =
           (commitment === 'processed' && confirmationStatus === 'processed') ||
           (commitment === 'confirmed' && ['confirmed', 'finalized'].includes(confirmationStatus)) ||
-          (commitment === 'finalized' && confirmationStatus === 'finalized')
-        ) {
-          approvalController.onTransactionConfirmed({
-            txHash,
-            request,
-            explorerLink,
-          });
+          (commitment === 'finalized' && confirmationStatus === 'finalized');
+
+        if (isConfirmed) {
+          approvalController.onTransactionConfirmed({ txHash, request, explorerLink });
           return true;
         }
       }
@@ -77,12 +69,11 @@ export const waitForTransactionConfirmation = async ({
       await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
       retries++;
     } catch (error) {
-      // Only revert on explicit transaction failure
       if (error instanceof Error && error.message.includes('Transaction failed')) {
+        console.error('[waitForTransactionConfirmation] Transaction explicitly failed');
         approvalController.onTransactionReverted({ txHash, request });
         return false;
       }
-      // For other errors, keep polling
       await new Promise((resolve) => setTimeout(resolve, POLLING_INTERVAL));
       retries++;
     }
@@ -90,16 +81,10 @@ export const waitForTransactionConfirmation = async ({
 
   // If we reach max retries but had a valid status, don't mark as reverted
   if (lastStatus === 'confirmed' || lastStatus === 'finalized') {
-    const explorerLink = `https://explorer.solana.com/tx/${toBase58TxHash(txHash)}`;
-    approvalController.onTransactionConfirmed({
-      txHash,
-      request,
-      explorerLink,
-    });
+    approvalController.onTransactionConfirmed({ txHash, request, explorerLink });
     return true;
   }
 
-  // Only revert if we never got a valid status
   approvalController.onTransactionReverted({ txHash, request });
   return false;
 };
