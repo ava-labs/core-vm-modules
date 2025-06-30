@@ -1,6 +1,5 @@
 import { RpcMethod, type RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
-import { toBase58TxHash } from './format-transaction-hash';
 
 import { waitForTransactionConfirmation } from './wait-for-transaction-confirmation';
 
@@ -79,7 +78,7 @@ describe('waitForTransactionConfirmation', () => {
     expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
       txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`,
+      explorerLink: `https://explorer.solana.com/tx/${mockTxHash}`,
     });
   });
 
@@ -109,7 +108,7 @@ describe('waitForTransactionConfirmation', () => {
     expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
       txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${toBase58TxHash(mockTxHash)}`,
+      explorerLink: `https://explorer.solana.com/tx/${mockTxHash}`,
     });
   });
 

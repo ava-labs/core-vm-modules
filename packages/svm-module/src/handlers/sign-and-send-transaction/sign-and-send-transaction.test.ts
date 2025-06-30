@@ -83,7 +83,6 @@ describe('src/handlers/sign-and-send-transaction', () => {
   } as unknown as jest.Mocked<SolanaProvider>;
 
   const base58TxHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
-  const hexTxHash = '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -191,7 +190,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue('5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t'),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -208,7 +207,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     });
 
     expect(result).toEqual({
-      result: '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363',
+      result: base58TxHash,
     });
   });
 
@@ -219,7 +218,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue('5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t'),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -248,11 +247,11 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(mockProvider.sendTransaction).toHaveBeenCalledWith('signed-data', {
       encoding: 'base64',
-      ...sendOptions,
+      maxRetries: 3n,
     });
 
     expect(result).toEqual({
-      result: '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363',
+      result: base58TxHash,
     });
   });
 
@@ -280,17 +279,17 @@ describe('src/handlers/sign-and-send-transaction', () => {
     });
 
     expect(mockApprovalController.onTransactionPending).toHaveBeenCalledWith({
-      txHash: hexTxHash,
+      txHash: base58TxHash,
       request: mockRequest,
     });
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
       provider: mockProvider,
-      txHash: hexTxHash,
+      txHash: base58TxHash,
       approvalController: mockApprovalController,
       request: mockRequest,
       commitment: undefined,
     });
-    expect(result).toEqual({ result: hexTxHash });
+    expect(result).toEqual({ result: base58TxHash });
   });
 
   it('handles transaction confirmation failure', async () => {
@@ -308,7 +307,6 @@ describe('src/handlers/sign-and-send-transaction', () => {
       signedData: 'signed-data',
     });
     mockApprovalController.onTransactionPending = jest.fn().mockResolvedValue(undefined);
-    jest.mocked(waitForTransactionConfirmation).mockResolvedValue(false);
 
     const result = await signAndSendTransaction({
       request: mockRequest,
@@ -317,19 +315,14 @@ describe('src/handlers/sign-and-send-transaction', () => {
       proxyApiUrl: mockProxyApiUrl,
     });
 
-    expect(result).toEqual({ result: hexTxHash });
+    expect(result).toEqual({ result: base58TxHash });
   });
 
   it('uses commitment level from send options for confirmation', async () => {
+    const sendOptions = { preflightCommitment: 'confirmed' as const };
     (parseRequestParams as jest.Mock).mockReturnValue({
       success: true,
-      data: [
-        {
-          account: 'test-account',
-          serializedTx: 'test-tx',
-          sendOptions: { preflightCommitment: 'confirmed' as const },
-        },
-      ],
+      data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions }],
     });
     mockProvider.sendTransaction.mockReturnValue({
       send: jest.fn().mockResolvedValue(base58TxHash),
@@ -342,7 +335,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     });
     mockApprovalController.onTransactionPending = jest.fn().mockResolvedValue(undefined);
 
-    await signAndSendTransaction({
+    const result = await signAndSendTransaction({
       request: mockRequest,
       network: mockNetwork,
       approvalController: mockApprovalController,
@@ -351,10 +344,11 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
       provider: mockProvider,
-      txHash: hexTxHash,
+      txHash: base58TxHash,
       approvalController: mockApprovalController,
       request: mockRequest,
       commitment: 'confirmed',
     });
+    expect(result).toEqual({ result: base58TxHash });
   });
 });
