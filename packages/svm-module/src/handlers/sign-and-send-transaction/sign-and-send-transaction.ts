@@ -14,7 +14,6 @@ import { getProvider } from '@src/utils/get-provider';
 import { getNetworkName } from '@src/utils/get-network-name';
 import { explainTransaction } from '@src/utils/explain/explain-transaction';
 import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-confirmation';
-import { toHexTxHash } from '@src/utils/format-transaction-hash';
 
 import { parseRequestParams, type SendOptions } from './schema';
 
@@ -120,7 +119,7 @@ const getTxHash = async (
   sendOptions?: SendOptions,
 ) => {
   if ('txHash' in response) {
-    return toHexTxHash(response.txHash);
+    return response.txHash;
   }
 
   const base58TxHash = await provider
@@ -130,5 +129,5 @@ const getTxHash = async (
     })
     .send();
 
-  return toHexTxHash(base58TxHash);
+  return base58TxHash;
 };

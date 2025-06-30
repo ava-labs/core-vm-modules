@@ -1,14 +1,13 @@
 import type { ApprovalController, RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
 import { signature } from '@solana/kit';
-import { toBase58TxHash } from './format-transaction-hash';
 
 const POLLING_INTERVAL = 1000; // 1 second
 const MAX_RETRIES = 60; // 1 minute total
 
 export type WaitForTransactionConfirmationParams = {
   provider: ReturnType<typeof getProvider>;
-  txHash: `0x${string}`;
+  txHash: string;
   approvalController: ApprovalController;
   request: RpcRequest;
   commitment?: 'processed' | 'confirmed' | 'finalized';
@@ -25,13 +24,12 @@ export const waitForTransactionConfirmation = async ({
 }: WaitForTransactionConfirmationParams): Promise<boolean> => {
   let retries = 0;
   let lastStatus: string | null = null;
-  const base58TxHash = toBase58TxHash(txHash);
-  const explorerLink = `https://explorer.solana.com/tx/${base58TxHash}`;
+  const explorerLink = `https://explorer.solana.com/tx/${txHash}`;
 
   while (retries < maxRetries) {
     try {
       const response = await provider
-        .getSignatureStatuses([signature(base58TxHash)], { searchTransactionHistory: true })
+        .getSignatureStatuses([signature(txHash)], { searchTransactionHistory: true })
         .send();
 
       if (!response?.value?.[0]) {
