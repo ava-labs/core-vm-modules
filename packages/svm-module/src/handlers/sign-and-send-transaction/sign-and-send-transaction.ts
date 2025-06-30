@@ -94,8 +94,7 @@ export const signAndSendTransaction = async ({
     txHash = await getTxHash(provider, response, sendOptions);
     await approvalController.onTransactionPending({ txHash, request });
 
-    // Wait for transaction confirmation with the specified commitment level
-    await waitForTransactionConfirmation({
+    waitForTransactionConfirmation({
       provider,
       txHash,
       approvalController,
