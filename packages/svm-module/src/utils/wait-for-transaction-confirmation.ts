@@ -1,6 +1,7 @@
-import type { ApprovalController, RpcRequest } from '@avalabs/vm-module-types';
+import type { ApprovalController, Network, RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
 import { signature } from '@solana/kit';
+import { getExplorerAddressByNetwork } from './get-explorer-address-by-network';
 
 const POLLING_INTERVAL = 1000; // 1 second
 const MAX_RETRIES = 60; // 1 minute total
@@ -10,6 +11,7 @@ export type WaitForTransactionConfirmationParams = {
   txHash: string;
   approvalController: ApprovalController;
   request: RpcRequest;
+  network: Network;
   commitment?: 'processed' | 'confirmed' | 'finalized';
   maxRetries?: number;
 };
@@ -19,12 +21,13 @@ export const waitForTransactionConfirmation = async ({
   txHash,
   approvalController,
   request,
+  network,
   commitment = 'finalized',
   maxRetries = MAX_RETRIES,
 }: WaitForTransactionConfirmationParams): Promise<boolean> => {
   let retries = 0;
   let lastStatus: string | null = null;
-  const explorerLink = `https://explorer.solana.com/tx/${txHash}`;
+  const explorerLink = getExplorerAddressByNetwork(network, txHash, 'tx');
 
   while (retries < maxRetries) {
     try {

@@ -1,4 +1,4 @@
-import { RpcMethod, type RpcRequest } from '@avalabs/vm-module-types';
+import { NetworkVMType, RpcMethod, type Network, type RpcRequest } from '@avalabs/vm-module-types';
 import type { getProvider } from './get-provider';
 
 import { waitForTransactionConfirmation } from './wait-for-transaction-confirmation';
@@ -20,6 +20,21 @@ describe('waitForTransactionConfirmation', () => {
       url: 'https://test.com',
       icon: 'https://test.com/icon.png',
     },
+  };
+
+  const mockNetwork: Network = {
+    chainId: 245022934,
+    chainName: 'Solana',
+    logoUri: 'test-logo-uri',
+    explorerUrl: 'https://explorer.solana.com',
+    networkToken: {
+      symbol: 'SOL',
+      decimals: 9,
+      name: 'SOL',
+    },
+    vmName: NetworkVMType.SVM,
+    isTestnet: false,
+    rpcUrl: 'https://api.mainnet-beta.solana.com',
   };
 
   let provider: jest.Mocked<ReturnType<typeof getProvider>>;
@@ -69,6 +84,7 @@ describe('waitForTransactionConfirmation', () => {
       txHash: mockTxHash,
       approvalController,
       request: mockRequest,
+      network: mockNetwork,
     });
 
     await jest.runAllTimersAsync();
@@ -78,7 +94,7 @@ describe('waitForTransactionConfirmation', () => {
     expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
       txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${mockTxHash}`,
+      explorerLink: new URL(`/tx/${mockTxHash}`, mockNetwork.explorerUrl).toString(),
     });
   });
 
@@ -98,6 +114,7 @@ describe('waitForTransactionConfirmation', () => {
       txHash: mockTxHash,
       approvalController,
       request: mockRequest,
+      network: mockNetwork,
       commitment: 'confirmed',
     });
 
@@ -108,7 +125,7 @@ describe('waitForTransactionConfirmation', () => {
     expect(approvalController.onTransactionConfirmed).toHaveBeenCalledWith({
       txHash: mockTxHash,
       request: mockRequest,
-      explorerLink: `https://explorer.solana.com/tx/${mockTxHash}`,
+      explorerLink: new URL(`/tx/${mockTxHash}`, mockNetwork.explorerUrl).toString(),
     });
   });
 
@@ -128,6 +145,7 @@ describe('waitForTransactionConfirmation', () => {
       txHash: mockTxHash,
       approvalController,
       request: mockRequest,
+      network: mockNetwork,
     });
 
     await jest.runAllTimersAsync();
@@ -151,6 +169,7 @@ describe('waitForTransactionConfirmation', () => {
       txHash: mockTxHash,
       approvalController,
       request: mockRequest,
+      network: mockNetwork,
       maxRetries: 2,
     });
 
@@ -174,6 +193,7 @@ describe('waitForTransactionConfirmation', () => {
       txHash: mockTxHash,
       approvalController,
       request: mockRequest,
+      network: mockNetwork,
       maxRetries: 1,
     });
 

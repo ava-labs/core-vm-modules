@@ -98,6 +98,7 @@ export const signAndSendTransaction = async ({
       txHash,
       approvalController,
       request,
+      network,
       commitment: sendOptions?.preflightCommitment,
     });
 

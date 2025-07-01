@@ -55,6 +55,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     vmName: NetworkVMType.SVM,
     chainId: 1234,
     chainName: 'Solana',
+    explorerUrl: 'https://explorer.solana.com',
     caipId: SolanaCaip2ChainId.DEVNET,
     logoUri: 'test-logo-uri',
     networkToken: {
@@ -287,6 +288,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       txHash: base58TxHash,
       approvalController: mockApprovalController,
       request: mockRequest,
+      network: mockNetwork,
       commitment: undefined,
     });
     expect(result).toEqual({ result: base58TxHash });
@@ -348,6 +350,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       approvalController: mockApprovalController,
       request: mockRequest,
       commitment: 'confirmed',
+      network: mockNetwork,
     });
     expect(result).toEqual({ result: base58TxHash });
   });
