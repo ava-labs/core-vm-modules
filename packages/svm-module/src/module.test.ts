@@ -125,7 +125,7 @@ describe('SVM Module', () => {
   describe('onRpcRequest()', () => {
     it('passes the request to the correct handler', async () => {
       jest.mocked(signAndSendTransaction).mockResolvedValueOnce({
-        result: 'success',
+        result: '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363' as `0x${string}`,
       });
       const req = {
         method: RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION,
@@ -133,7 +133,7 @@ describe('SVM Module', () => {
       } as RpcRequest;
       const network = { caipId: 'solana:xyz' } as Network;
       expect(await svm.onRpcRequest(req, network)).toEqual({
-        result: 'success',
+        result: '0xd0f608d667c54f5dae47e002c8255e777a078f333d9363' as `0x${string}`,
       });
       expect(signAndSendTransaction).toHaveBeenCalledWith({
         approvalController: expect.any(Object),

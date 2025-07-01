@@ -11,6 +11,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 
 import { getProvider } from '@src/utils/get-provider';
 import { SOLANA_MAINNET_CAIP2_ID } from '@src/constants';
+import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-confirmation';
 
 import { parseRequestParams } from './schema';
 import { signAndSendTransaction } from './sign-and-send-transaction';
@@ -19,6 +20,15 @@ import { ChainId, SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@src/utils/get-provider');
 jest.mock('./schema');
+jest.mock('@src/utils/wait-for-transaction-confirmation');
+jest.mock('@src/utils/explain/explain-transaction', () => ({
+  explainTransaction: jest.fn().mockResolvedValue({
+    details: [],
+    isSimulationSuccessful: true,
+    alert: null,
+    balanceChange: { ins: [], outs: [] },
+  }),
+}));
 
 describe('src/handlers/sign-and-send-transaction', () => {
   const mockRequest: RpcRequest = {
@@ -45,6 +55,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     vmName: NetworkVMType.SVM,
     chainId: 1234,
     chainName: 'Solana',
+    explorerUrl: 'https://explorer.solana.com',
     caipId: SolanaCaip2ChainId.DEVNET,
     logoUri: 'test-logo-uri',
     networkToken: {
@@ -64,9 +75,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       },
     ],
   };
-  const mockApprovalController = {
-    requestApproval: jest.fn(),
-  } as unknown as jest.Mocked<ApprovalController>;
+  let mockApprovalController: jest.Mocked<ApprovalController>;
 
   const mockProxyApiUrl = 'https://proxy.api.url';
 
@@ -74,9 +83,33 @@ describe('src/handlers/sign-and-send-transaction', () => {
     sendTransaction: jest.fn(),
   } as unknown as jest.Mocked<SolanaProvider>;
 
+  const base58TxHash = '5KKsT9B7J3v3N6TKwHnb6THwo8E2Xe7t';
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.mocked(getProvider).mockReturnValue(mockProvider as unknown as SolanaProvider);
+
+    mockApprovalController = {
+      requestApproval: jest.fn().mockResolvedValue({
+        signedData: 'signed-data',
+      }),
+      onTransactionPending: jest.fn(),
+      onTransactionConfirmed: jest.fn(),
+      onTransactionReverted: jest.fn(),
+      requestPublicKey: jest.fn(),
+    } as unknown as jest.Mocked<ApprovalController>;
+
+    // Mock the base64 transaction to be valid
+    (parseRequestParams as jest.Mock).mockReturnValue({
+      success: true,
+      data: [
+        {
+          account: '83astBRguLMdt2h5U1Tpdq5tjFoJ6noeGwaY3mDLVcri', // Valid Solana address
+          serializedTx: 'AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=', // Valid empty Solana transaction
+          sendOptions: { maxRetries: BigInt(3) },
+        },
+      ],
+    });
   });
 
   it('returns an error if params are invalid', async () => {
@@ -146,7 +179,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(result).toEqual({
       error: rpcErrors.internal({
-        message: 'Unable to get transaction hash',
+        message: 'Transaction failed',
         data: { cause: new Error('Transaction error') },
       }),
     });
@@ -158,7 +191,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue('tx-hash'),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -175,7 +208,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     });
 
     expect(result).toEqual({
-      result: 'tx-hash',
+      result: base58TxHash,
     });
   });
 
@@ -186,7 +219,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions }],
     });
     mockProvider.sendTransaction.mockReturnValue({
-      send: jest.fn().mockResolvedValue('tx-hash'),
+      send: jest.fn().mockResolvedValue(base58TxHash),
     });
     (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
       instructions: [],
@@ -215,11 +248,110 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(mockProvider.sendTransaction).toHaveBeenCalledWith('signed-data', {
       encoding: 'base64',
-      ...sendOptions,
+      maxRetries: 3n,
     });
 
     expect(result).toEqual({
-      result: 'tx-hash',
+      result: base58TxHash,
     });
+  });
+
+  it('handles successful transaction confirmation', async () => {
+    (parseRequestParams as jest.Mock).mockReturnValue({
+      success: true,
+      data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
+    });
+    mockProvider.sendTransaction.mockReturnValue({
+      send: jest.fn().mockResolvedValue(base58TxHash),
+    });
+    (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
+      instructions: [],
+    });
+    mockApprovalController.requestApproval.mockResolvedValue({
+      signedData: 'signed-data',
+    });
+    mockApprovalController.onTransactionPending = jest.fn().mockResolvedValue(undefined);
+
+    const result = await signAndSendTransaction({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: mockProxyApiUrl,
+    });
+
+    expect(mockApprovalController.onTransactionPending).toHaveBeenCalledWith({
+      txHash: base58TxHash,
+      request: mockRequest,
+    });
+    expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
+      provider: mockProvider,
+      txHash: base58TxHash,
+      approvalController: mockApprovalController,
+      request: mockRequest,
+      network: mockNetwork,
+      commitment: undefined,
+    });
+    expect(result).toEqual({ result: base58TxHash });
+  });
+
+  it('handles transaction confirmation failure', async () => {
+    (parseRequestParams as jest.Mock).mockReturnValue({
+      success: true,
+      data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions: {} }],
+    });
+    mockProvider.sendTransaction.mockReturnValue({
+      send: jest.fn().mockResolvedValue(base58TxHash),
+    });
+    (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
+      instructions: [],
+    });
+    mockApprovalController.requestApproval.mockResolvedValue({
+      signedData: 'signed-data',
+    });
+    mockApprovalController.onTransactionPending = jest.fn().mockResolvedValue(undefined);
+
+    const result = await signAndSendTransaction({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: mockProxyApiUrl,
+    });
+
+    expect(result).toEqual({ result: base58TxHash });
+  });
+
+  it('uses commitment level from send options for confirmation', async () => {
+    const sendOptions = { preflightCommitment: 'confirmed' as const };
+    (parseRequestParams as jest.Mock).mockReturnValue({
+      success: true,
+      data: [{ account: 'test-account', serializedTx: 'test-tx', sendOptions }],
+    });
+    mockProvider.sendTransaction.mockReturnValue({
+      send: jest.fn().mockResolvedValue(base58TxHash),
+    });
+    (deserializeTransactionMessage as jest.Mock).mockResolvedValue({
+      instructions: [],
+    });
+    mockApprovalController.requestApproval.mockResolvedValue({
+      signedData: 'signed-data',
+    });
+    mockApprovalController.onTransactionPending = jest.fn().mockResolvedValue(undefined);
+
+    const result = await signAndSendTransaction({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: mockProxyApiUrl,
+    });
+
+    expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
+      provider: mockProvider,
+      txHash: base58TxHash,
+      approvalController: mockApprovalController,
+      request: mockRequest,
+      commitment: 'confirmed',
+      network: mockNetwork,
+    });
+    expect(result).toEqual({ result: base58TxHash });
   });
 });
