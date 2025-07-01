@@ -1,5 +1,16 @@
 # @avalabs/svm-module
 
+## 1.9.5
+
+### Patch Changes
+
+- 74bb0e0: changed approval controller types to handle string instead of 0x string
+- 74bb0e0: modified ApprovalController types to utilize string instead of 0x strings for txhash
+- 74bb0e0: added waiting for a solana tx status, and proper approval controller handling
+- Updated dependencies [74bb0e0]
+- Updated dependencies [74bb0e0]
+  - @avalabs/vm-module-types@1.9.5
+
 ## 1.9.4
 
 ### Patch Changes

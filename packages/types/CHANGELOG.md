@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 1.9.5
+
+### Patch Changes
+
+- 74bb0e0: changed approval controller types to handle string instead of 0x string
+- 74bb0e0: modified ApprovalController types to utilize string instead of 0x strings for txhash
+
 ## 1.9.4
 
 ### Patch Changes
