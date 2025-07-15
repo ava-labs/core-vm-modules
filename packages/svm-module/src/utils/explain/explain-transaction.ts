@@ -14,7 +14,7 @@ import type { ExplainTxParams } from './types';
 import { parseTransaction } from './parse-transaction';
 import { processBalanceChange } from './blockaid/process-balance-change';
 import { scanSolanaTransaction } from './blockaid/scan-solana-transaction';
-import { addressItem, dataItem } from '@internal/utils';
+import { addressItem, currencyItem, dataItem } from '@internal/utils';
 import { addressListItem } from '@internal/utils/src/utils/detail-item';
 
 export const explainTransaction = async ({
@@ -66,6 +66,32 @@ export const explainTransaction = async ({
     } else {
       // Make sure to always show the user's address in the details.
       genericDetails.items.push(addressItem('Account', params.account));
+    }
+    // Calculate network fee from SOL balance changes
+    // For both native SOL and SPL token transfers, the network fee is always paid in SOL
+    const accountAssetsDiff = simulation.account_summary.account_assets_diff;
+    if (accountAssetsDiff && accountAssetsDiff.length > 0) {
+      // Find the SOL asset in the account summary (this represents the fee for any transaction type)
+      const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
+      if (solAsset && solAsset.out) {
+        // The raw_value represents the fee amount in lamports (smallest SOL unit)
+        const feeAmount = solAsset.out.raw_value;
+
+        // Only add fee section if there's an actual fee to display
+        if (feeAmount > 0) {
+          details.push({
+            title: 'Network Fee',
+            items: [
+              currencyItem(
+                'Fee Amount',
+                BigInt(feeAmount), // Convert to bigint as required by currencyItem
+                network.networkToken.decimals,
+                network.networkToken.symbol,
+              ),
+            ],
+          });
+        }
+      }
     }
     isSimulationSuccessful = true;
   } else {

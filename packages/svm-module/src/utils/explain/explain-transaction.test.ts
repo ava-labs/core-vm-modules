@@ -254,4 +254,188 @@ describe('explainTransaction', () => {
 
     expect(result.alert).toEqual(transactionAlerts[AlertType.DANGER]);
   });
+
+  it('should include network fee section for native SOL transfer', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 5000, value: 0.000005 }, // 5000 lamports fee
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    expect(result.details).toContainEqual({
+      title: 'Network Fee',
+      items: [
+        {
+          label: 'Fee Amount',
+          type: 'currency',
+          value: BigInt(5000),
+          maxDecimals: 9, // Changed from decimals to maxDecimals
+          symbol: 'SOL',
+        },
+      ],
+    });
+  });
+
+  it('should include network fee section for SPL token transfer', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'Orca',
+                  symbol: 'ORCA',
+                  address: 'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
+                  decimals: 6,
+                },
+                in: null,
+                out: { raw_value: 1000000, value: 1 }, // 1 ORCA transfer
+              },
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 5000, value: 0.000005 }, // 5000 lamports fee
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    expect(result.details).toContainEqual({
+      title: 'Network Fee',
+      items: [
+        {
+          label: 'Fee Amount',
+          type: 'currency',
+          value: BigInt(5000),
+          maxDecimals: 9, // Changed from decimals to maxDecimals
+          symbol: 'SOL',
+        },
+      ],
+    });
+  });
+
+  it('should not include network fee section when fee is zero', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 0, value: 0 }, // No fee
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // Should not contain Network Fee section
+    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
+    expect(networkFeeSection).toBeUndefined();
+  });
+
+  it('should not include network fee section when no SOL asset is present', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'USDC',
+                  symbol: 'USDC',
+                  address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+                  decimals: 6,
+                },
+                in: null,
+                out: { raw_value: 1000000, value: 1 }, // 1 USDC transfer
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // Should not contain Network Fee section
+    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
+    expect(networkFeeSection).toBeUndefined();
+  });
+
+  it('should handle simulation with empty account_assets_diff', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [], // Empty array
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // Should not contain Network Fee section
+    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
+    expect(networkFeeSection).toBeUndefined();
+  });
 });
