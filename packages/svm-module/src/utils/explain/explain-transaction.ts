@@ -67,16 +67,33 @@ export const explainTransaction = async ({
       // Make sure to always show the user's address in the details.
       genericDetails.items.push(addressItem('Account', params.account));
     }
+
     // Calculate network fee from SOL balance changes
     // For both native SOL and SPL token transfers, the network fee is always paid in SOL
     const accountAssetsDiff = simulation.account_summary.account_assets_diff;
     if (accountAssetsDiff && accountAssetsDiff.length > 0) {
-      // Find the SOL asset in the account summary (this represents the fee for any transaction type)
+      // Find the SOL asset in the account summary
       const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
-      if (solAsset && solAsset.out) {
-        // The raw_value represents the fee amount in lamports (smallest SOL unit)
-        const feeAmount = solAsset.out.raw_value;
-
+      if (solAsset) {
+        let feeAmount = 0;
+        
+        // Check if this is a swap (multiple tokens involved)
+        const tokenAssets = accountAssetsDiff.filter(asset => asset.asset.type === 'TOKEN');
+        const isSwap = tokenAssets.length > 1;
+  
+        
+        // Only calculate fees for non-swap transactions
+        if (!isSwap) {
+          if (solAsset.out && solAsset.out.raw_value > 0) {
+            // If SOL is going out, check if it's a reasonable fee amount
+            const outAmount = solAsset.out.raw_value;
+            // Solana fees are typically around 5000 lamports (0.000005 SOL)
+            if (outAmount <= 10000) { // 0.00001 SOL threshold
+              feeAmount = outAmount;
+            }
+          }
+        }
+        
         // Only add fee section if there's an actual fee to display
         if (feeAmount > 0) {
           details.push({
@@ -84,7 +101,7 @@ export const explainTransaction = async ({
             items: [
               currencyItem(
                 'Fee Amount',
-                BigInt(feeAmount), // Convert to bigint as required by currencyItem
+                BigInt(feeAmount),
                 network.networkToken.decimals,
                 network.networkToken.symbol,
               ),

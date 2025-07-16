@@ -438,4 +438,57 @@ describe('explainTransaction', () => {
     const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
     expect(networkFeeSection).toBeUndefined();
   });
+
+  it('should NOT include network fee section for swap transactions (multiple tokens)', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'Fartcoin',
+                  symbol: 'FART',
+                  address: 'fart11111111111111111111111111111111111111111',
+                  decimals: 6,
+                },
+                in: { raw_value: 1343062, value: 1.343062 }, // Swap in
+                out: null,
+              },
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'USDC',
+                  symbol: 'USDC',
+                  address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+                  decimals: 6,
+                },
+                in: null,
+                out: { raw_value: 1000000, value: 1 }, // Swap out
+              },
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 5000, value: 0.000005 }, // Network fee, should be hidden for swaps
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any;
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // Should NOT contain Network Fee section for swaps
+    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
+    expect(networkFeeSection).toBeUndefined();
+  });
 });
