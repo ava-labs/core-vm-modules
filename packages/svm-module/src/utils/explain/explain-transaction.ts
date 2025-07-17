@@ -55,14 +55,26 @@ export const explainTransaction = async ({
     );
     balanceChange = processedBalanceChange;
     if (otherAffectedAddresses.length > 0) {
-      // If there is one other affected address, we label the user's address as "From" and the other address as "To".
-      // If there are more than 1 affected addresses, we label the user's address as "Account" and the others as "Interacting with".
-      genericDetails.items.push(addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account));
-      genericDetails.items.push(
-        otherAffectedAddresses.length === 1
-          ? addressItem('To', otherAffectedAddresses[0]!)
-          : addressListItem('Interacting with', otherAffectedAddresses),
-      );
+      // Check if this is a swap (multiple tokens involved)
+      const accountAssetsDiff = simulation.account_summary.account_assets_diff;
+      const tokenAssets = accountAssetsDiff?.filter(asset => asset.asset.type === 'TOKEN') ?? [];
+      const solAsset = accountAssetsDiff?.find(asset => asset.asset.type === 'SOL');
+      const isSwap = tokenAssets.length > 1 || (tokenAssets.length === 1 && solAsset);
+      
+      // For swaps, always show "Interacting with" regardless of address count
+      // For transfers, use the existing logic
+      if (isSwap) {
+        genericDetails.items.push(addressItem('Account', params.account));
+        genericDetails.items.push(addressListItem('Interacting with', otherAffectedAddresses));
+      } else {
+        // Original logic for transfers
+        genericDetails.items.push(addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account));
+        genericDetails.items.push(
+          otherAffectedAddresses.length === 1
+            ? addressItem('To', otherAffectedAddresses[0]!)
+            : addressListItem('Interacting with', otherAffectedAddresses), // handle contract transfers
+        );
+      }
     } else {
       // Make sure to always show the user's address in the details.
       genericDetails.items.push(addressItem('Account', params.account));
