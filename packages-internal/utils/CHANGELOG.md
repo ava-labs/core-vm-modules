@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.5.1
+
+### Patch Changes
+
+- 6712674: bump internal sdks to 3.1.0-alpha.58
+
 ## 0.5.0
 
 ### Minor Changes
