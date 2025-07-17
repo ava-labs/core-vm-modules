@@ -18,9 +18,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.48",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.48",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.48",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.58",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.58",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.58",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",
