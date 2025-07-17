@@ -57,10 +57,10 @@ export const explainTransaction = async ({
     if (otherAffectedAddresses.length > 0) {
       // Check if this is a swap (multiple tokens involved)
       const accountAssetsDiff = simulation.account_summary.account_assets_diff;
-      const tokenAssets = accountAssetsDiff?.filter(asset => asset.asset.type === 'TOKEN') ?? [];
-      const solAsset = accountAssetsDiff?.find(asset => asset.asset.type === 'SOL');
+      const tokenAssets = accountAssetsDiff?.filter((asset) => asset.asset.type === 'TOKEN') ?? [];
+      const solAsset = accountAssetsDiff?.find((asset) => asset.asset.type === 'SOL');
       const isSwap = tokenAssets.length > 1 || (tokenAssets.length === 1 && solAsset);
-      
+
       // For swaps, always show "Interacting with" regardless of address count
       // For transfers, use the existing logic
       if (isSwap) {
@@ -68,7 +68,9 @@ export const explainTransaction = async ({
         genericDetails.items.push(addressListItem('Interacting with', otherAffectedAddresses));
       } else {
         // Original logic for transfers
-        genericDetails.items.push(addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account));
+        genericDetails.items.push(
+          addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account),
+        );
         genericDetails.items.push(
           otherAffectedAddresses.length === 1
             ? addressItem('To', otherAffectedAddresses[0]!)
@@ -88,35 +90,30 @@ export const explainTransaction = async ({
       const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
       if (solAsset) {
         let feeAmount = 0;
-        
+
         // Check if this is a swap (multiple tokens involved)
-        const tokenAssets = accountAssetsDiff.filter(asset => asset.asset.type === 'TOKEN');
+        const tokenAssets = accountAssetsDiff.filter((asset) => asset.asset.type === 'TOKEN');
         const isSwap = tokenAssets.length > 1;
-  
-        
+
         // Only calculate fees for non-swap transactions
         if (!isSwap) {
           if (solAsset.out && solAsset.out.raw_value > 0) {
             // If SOL is going out, check if it's a reasonable fee amount
             const outAmount = solAsset.out.raw_value;
             // Solana fees are typically around 5000 lamports (0.000005 SOL)
-            if (outAmount <= 10000) { // 0.00001 SOL threshold
+            if (outAmount <= 10000) {
+              // 0.00001 SOL threshold
               feeAmount = outAmount;
             }
           }
         }
-        
+
         // Only add fee section if there's an actual fee to display
         if (feeAmount > 0) {
           details.push({
             title: 'Network Fee',
             items: [
-              currencyItem(
-                'Fee Amount',
-                BigInt(feeAmount),
-                network.networkToken.decimals,
-                network.networkToken.symbol,
-              ),
+              currencyItem('Fee Amount', BigInt(feeAmount), network.networkToken.decimals, network.networkToken.symbol),
             ],
           });
         }

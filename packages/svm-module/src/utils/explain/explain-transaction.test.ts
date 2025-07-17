@@ -477,7 +477,7 @@ describe('explainTransaction', () => {
         },
         validation: { result_type: 'Success' },
       },
-    } as any;
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
 
