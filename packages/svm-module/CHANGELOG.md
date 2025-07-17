@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.9.7
+
+### Patch Changes
+
+- ccef6b9: modified solana fees to not be calculated for swaps
+  - @avalabs/vm-module-types@1.9.7
+
 ## 1.9.6
 
 ### Patch Changes
