@@ -55,39 +55,65 @@ export const explainTransaction = async ({
     );
     balanceChange = processedBalanceChange;
     if (otherAffectedAddresses.length > 0) {
-      // If there is one other affected address, we label the user's address as "From" and the other address as "To".
-      // If there are more than 1 affected addresses, we label the user's address as "Account" and the others as "Interacting with".
-      genericDetails.items.push(addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account));
-      genericDetails.items.push(
-        otherAffectedAddresses.length === 1
-          ? addressItem('To', otherAffectedAddresses[0]!)
-          : addressListItem('Interacting with', otherAffectedAddresses),
-      );
+      // Check if this is a swap (multiple tokens involved)
+      const accountAssetsDiff = simulation.account_summary.account_assets_diff;
+      const tokenAssets = accountAssetsDiff?.filter((asset) => asset.asset.type === 'TOKEN') ?? [];
+      const solAsset = accountAssetsDiff?.find((asset) => asset.asset.type === 'SOL');
+      const isSwap = tokenAssets.length > 1 || (tokenAssets.length === 1 && solAsset);
+
+      // For swaps, always show "Interacting with" regardless of address count
+      // For transfers, use the existing logic
+      if (isSwap) {
+        genericDetails.items.push(addressItem('Account', params.account));
+        genericDetails.items.push(addressListItem('Interacting with', otherAffectedAddresses));
+      } else {
+        // Original logic for transfers
+        genericDetails.items.push(
+          addressItem(otherAffectedAddresses.length === 1 ? 'From' : 'Account', params.account),
+        );
+        genericDetails.items.push(
+          otherAffectedAddresses.length === 1
+            ? addressItem('To', otherAffectedAddresses[0]!)
+            : addressListItem('Interacting with', otherAffectedAddresses), // handle contract transfers
+        );
+      }
     } else {
       // Make sure to always show the user's address in the details.
       genericDetails.items.push(addressItem('Account', params.account));
     }
+
     // Calculate network fee from SOL balance changes
     // For both native SOL and SPL token transfers, the network fee is always paid in SOL
     const accountAssetsDiff = simulation.account_summary.account_assets_diff;
     if (accountAssetsDiff && accountAssetsDiff.length > 0) {
-      // Find the SOL asset in the account summary (this represents the fee for any transaction type)
+      // Find the SOL asset in the account summary
       const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
-      if (solAsset && solAsset.out) {
-        // The raw_value represents the fee amount in lamports (smallest SOL unit)
-        const feeAmount = solAsset.out.raw_value;
+      if (solAsset) {
+        let feeAmount = 0;
+
+        // Check if this is a swap (multiple tokens involved)
+        const tokenAssets = accountAssetsDiff.filter((asset) => asset.asset.type === 'TOKEN');
+        const isSwap = tokenAssets.length > 1;
+
+        // Only calculate fees for non-swap transactions
+        if (!isSwap) {
+          if (solAsset.out && solAsset.out.raw_value > 0) {
+            // If SOL is going out, check if it's a reasonable fee amount
+            const outAmount = solAsset.out.raw_value;
+            // Solana fees are typically around 5000 lamports (0.000005 SOL)
+            if (outAmount <= 10000) {
+              // 0.00001 SOL threshold
+              feeAmount = outAmount;
+            }
+          }
+        }
 
         // Only add fee section if there's an actual fee to display
         if (feeAmount > 0) {
           details.push({
             title: 'Network Fee',
             items: [
-              currencyItem(
-                'Fee Amount',
-                BigInt(feeAmount), // Convert to bigint as required by currencyItem
-                network.networkToken.decimals,
-                network.networkToken.symbol,
-              ),
+              currencyItem('Fee Amount', BigInt(feeAmount), network.networkToken.decimals, network.networkToken.symbol),
             ],
           });
         }
