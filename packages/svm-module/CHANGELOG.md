@@ -1,5 +1,14 @@
 # @avalabs/svm-module
 
+## 1.9.6
+
+### Patch Changes
+
+- 6712674: bump internal sdks to 3.1.0-alpha.58
+- 18ab177: added fee calculation to svm module for sol and spl tokens
+- Updated dependencies [6712674]
+  - @avalabs/vm-module-types@1.9.6
+
 ## 1.9.5
 
 ### Patch Changes
