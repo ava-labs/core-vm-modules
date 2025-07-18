@@ -57,9 +57,11 @@ export const explainTransaction = async ({
     if (otherAffectedAddresses.length > 0) {
       // Check if this is a swap (multiple tokens involved)
       const accountAssetsDiff = simulation.account_summary.account_assets_diff;
-      const tokenAssets = accountAssetsDiff?.filter((asset) => asset.asset.type === 'TOKEN') ?? [];
-      const solAsset = accountAssetsDiff?.find((asset) => asset.asset.type === 'SOL');
-      const isSwap = tokenAssets.length > 1 || (tokenAssets.length === 1 && solAsset);
+      const outgoingAssets = accountAssetsDiff?.filter((asset) => asset.out && asset.out.raw_value > 0) ?? [];
+      const incomingAssets = accountAssetsDiff?.filter((asset) => asset.in && asset.in.raw_value > 0) ?? [];
+
+      // Swaps: multiple assets changing hands (both outgoing and incoming)
+      const isSwap = outgoingAssets.length > 0 && incomingAssets.length > 0;
 
       // For swaps, always show "Interacting with" regardless of address count
       // For transfers, use the existing logic
@@ -85,26 +87,74 @@ export const explainTransaction = async ({
     // Calculate network fee from SOL balance changes
     // For both native SOL and SPL token transfers, the network fee is always paid in SOL
     const accountAssetsDiff = simulation.account_summary.account_assets_diff;
+
     if (accountAssetsDiff && accountAssetsDiff.length > 0) {
       // Find the SOL asset in the account summary
       const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
+
       if (solAsset) {
         let feeAmount = 0;
 
-        // Check if this is a swap (multiple tokens involved)
+        // Check transaction type based on asset movements
         const tokenAssets = accountAssetsDiff.filter((asset) => asset.asset.type === 'TOKEN');
-        const isSwap = tokenAssets.length > 1;
+        const outgoingAssets = accountAssetsDiff.filter((asset) => asset.out && asset.out.raw_value > 0);
+        const incomingAssets = accountAssetsDiff.filter((asset) => asset.in && asset.in.raw_value > 0);
 
-        // Only calculate fees for non-swap transactions
-        if (!isSwap) {
-          if (solAsset.out && solAsset.out.raw_value > 0) {
-            // If SOL is going out, check if it's a reasonable fee amount
-            const outAmount = solAsset.out.raw_value;
-            // Solana fees are typically around 5000 lamports (0.000005 SOL)
-            if (outAmount <= 10000) {
-              // 0.00001 SOL threshold
-              feeAmount = outAmount;
+        // SOL transfers: only SOL involved, only SOL going out
+        const isSolTransfer = tokenAssets.length === 0 && solAsset && outgoingAssets.length === 1;
+
+        // SPL transfers: 1 token going out + SOL going out (for fee), no tokens coming in
+        const isSplTransfer =
+          tokenAssets.length === 1 && solAsset && outgoingAssets.length === 2 && incomingAssets.length === 0;
+
+        // Only calculate fees for transfers (not swaps)
+        if (isSolTransfer || isSplTransfer) {
+          if (isSolTransfer) {
+            // For SOL transfers, calculate fee by looking at the difference between sent and received amounts
+            const assetsDiff = simulation.assets_diff;
+            const accountAddress = params.account;
+
+            if (assetsDiff && assetsDiff[accountAddress]) {
+              const accountChanges = assetsDiff[accountAddress];
+              const solChange = accountChanges.find((change) => change.asset.type === 'SOL');
+
+              if (solChange && solChange.out) {
+                const sentAmount = solChange.out.raw_value;
+
+                // Look for the corresponding receiver to calculate the actual transfer amount
+                const allAddresses = Object.keys(assetsDiff);
+                let receivedAmount = 0;
+
+                for (const address of allAddresses) {
+                  if (address !== accountAddress) {
+                    const otherChanges = assetsDiff[address];
+                    if (otherChanges) {
+                      const otherSolChange = otherChanges.find((change) => change.asset.type === 'SOL');
+                      if (otherSolChange && otherSolChange.in) {
+                        receivedAmount = otherSolChange.in.raw_value;
+                        break;
+                      }
+                    }
+                  }
+                }
+
+                // Calculate fee as the difference
+                if (receivedAmount > 0) {
+                  feeAmount = sentAmount - receivedAmount;
+                }
+              }
             }
+          } else if (isSplTransfer) {
+            // For SPL transfers, use standard Solana fee (no SOL recipient)
+            feeAmount = 5000; // Standard Solana network fee
+          }
+
+          // Validate that this looks like a reasonable fee
+          if (feeAmount > 0 && feeAmount <= 10000) {
+            // 0.00001 SOL max
+            // Fee is valid, keep it
+          } else {
+            feeAmount = 0;
           }
         }
 
