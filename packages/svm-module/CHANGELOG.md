@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.9.8
+
+### Patch Changes
+
+- 61fe4d5: Solana fee fixes for transfers
+  - @avalabs/vm-module-types@1.9.8
+
 ## 1.9.7
 
 ### Patch Changes
