@@ -264,7 +264,23 @@ describe('explainTransaction', () => {
               {
                 asset: { type: 'SOL', decimals: 9 },
                 in: null,
-                out: { raw_value: 5000, value: 0.000005 }, // 5000 lamports fee
+                out: { raw_value: 10005000, value: 0.010005 }, // 0.01 SOL + 5000 lamports fee
+              },
+            ],
+          },
+          assets_diff: {
+            mockAccount: [
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 10005000, value: 0.010005 },
+              },
+            ],
+            recipientAddress: [
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: { raw_value: 10000000, value: 0.01 }, // 0.01 SOL received
+                out: null,
               },
             ],
           },
@@ -287,8 +303,8 @@ describe('explainTransaction', () => {
         {
           label: 'Fee Amount',
           type: 'currency',
-          value: BigInt(5000),
-          maxDecimals: 9, // Changed from decimals to maxDecimals
+          value: BigInt(5000), // 10005000 - 10000000 = 5000
+          maxDecimals: 9,
           symbol: 'SOL',
         },
       ],
@@ -338,12 +354,65 @@ describe('explainTransaction', () => {
         {
           label: 'Fee Amount',
           type: 'currency',
-          value: BigInt(5000),
-          maxDecimals: 9, // Changed from decimals to maxDecimals
+          value: BigInt(5000), // Standard fee for SPL transfers
+          maxDecimals: 9,
           symbol: 'SOL',
         },
       ],
     });
+  });
+
+  it('should NOT include network fee section for swap transactions (multiple tokens)', async () => {
+    const mockScanResponse = {
+      result: {
+        simulation: {
+          account_summary: {
+            account_assets_diff: [
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'Fartcoin',
+                  symbol: 'FART',
+                  address: 'fart11111111111111111111111111111111111111111',
+                  decimals: 6,
+                },
+                in: { raw_value: 1343062, value: 1.343062 }, // Swap in
+                out: null,
+              },
+              {
+                asset: {
+                  type: 'TOKEN',
+                  name: 'USDC',
+                  symbol: 'USDC',
+                  address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+                  decimals: 6,
+                },
+                in: null,
+                out: { raw_value: 1000000, value: 1 }, // Swap out
+              },
+              {
+                asset: { type: 'SOL', decimals: 9 },
+                in: null,
+                out: { raw_value: 5000, value: 0.000005 }, // Network fee, should be hidden for swaps
+              },
+            ],
+          },
+        },
+        validation: { result_type: 'Success' },
+      },
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // Should NOT contain Network Fee section for swaps
+    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
+    expect(networkFeeSection).toBeUndefined();
   });
 
   it('should not include network fee section when fee is zero', async () => {
@@ -435,59 +504,6 @@ describe('explainTransaction', () => {
     });
 
     // Should not contain Network Fee section
-    const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
-    expect(networkFeeSection).toBeUndefined();
-  });
-
-  it('should NOT include network fee section for swap transactions (multiple tokens)', async () => {
-    const mockScanResponse = {
-      result: {
-        simulation: {
-          account_summary: {
-            account_assets_diff: [
-              {
-                asset: {
-                  type: 'TOKEN',
-                  name: 'Fartcoin',
-                  symbol: 'FART',
-                  address: 'fart11111111111111111111111111111111111111111',
-                  decimals: 6,
-                },
-                in: { raw_value: 1343062, value: 1.343062 }, // Swap in
-                out: null,
-              },
-              {
-                asset: {
-                  type: 'TOKEN',
-                  name: 'USDC',
-                  symbol: 'USDC',
-                  address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-                  decimals: 6,
-                },
-                in: null,
-                out: { raw_value: 1000000, value: 1 }, // Swap out
-              },
-              {
-                asset: { type: 'SOL', decimals: 9 },
-                in: null,
-                out: { raw_value: 5000, value: 0.000005 }, // Network fee, should be hidden for swaps
-              },
-            ],
-          },
-        },
-        validation: { result_type: 'Success' },
-      },
-    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(mockScanResponse);
-
-    const result = await explainTransaction({
-      simulationParams: mockSimulationParams,
-      network: mockNetwork,
-      provider: mockProvider,
-    });
-
-    // Should NOT contain Network Fee section for swaps
     const networkFeeSection = result.details.find((detail) => detail.title === 'Network Fee');
     expect(networkFeeSection).toBeUndefined();
   });
