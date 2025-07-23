@@ -14,7 +14,7 @@ import type { ExplainTxParams } from './types';
 import { parseTransaction } from './parse-transaction';
 import { processBalanceChange } from './blockaid/process-balance-change';
 import { scanSolanaTransaction } from './blockaid/scan-solana-transaction';
-import { addressItem, currencyItem, dataItem } from '@internal/utils';
+import { addressItem, dataItem } from '@internal/utils';
 import { addressListItem } from '@internal/utils/src/utils/detail-item';
 
 export const explainTransaction = async ({
@@ -84,91 +84,6 @@ export const explainTransaction = async ({
       genericDetails.items.push(addressItem('Account', params.account));
     }
 
-    // Calculate network fee from SOL balance changes
-    // For both native SOL and SPL token transfers, the network fee is always paid in SOL
-    const accountAssetsDiff = simulation.account_summary.account_assets_diff;
-
-    if (accountAssetsDiff && accountAssetsDiff.length > 0) {
-      // Find the SOL asset in the account summary
-      const solAsset = accountAssetsDiff.find((asset) => asset.asset.type === 'SOL');
-
-      if (solAsset) {
-        let feeAmount = 0;
-
-        // Check transaction type based on asset movements
-        const tokenAssets = accountAssetsDiff.filter((asset) => asset.asset.type === 'TOKEN');
-        const outgoingAssets = accountAssetsDiff.filter((asset) => asset.out && asset.out.raw_value > 0);
-        const incomingAssets = accountAssetsDiff.filter((asset) => asset.in && asset.in.raw_value > 0);
-
-        // SOL transfers: only SOL involved, only SOL going out
-        const isSolTransfer = tokenAssets.length === 0 && solAsset && outgoingAssets.length === 1;
-
-        // SPL transfers: 1 token going out + SOL going out (for fee), no tokens coming in
-        const isSplTransfer =
-          tokenAssets.length === 1 && solAsset && outgoingAssets.length === 2 && incomingAssets.length === 0;
-
-        // Only calculate fees for transfers (not swaps)
-        if (isSolTransfer || isSplTransfer) {
-          if (isSolTransfer) {
-            // For SOL transfers, calculate fee by looking at the difference between sent and received amounts
-            const assetsDiff = simulation.assets_diff;
-            const accountAddress = params.account;
-
-            if (assetsDiff && assetsDiff[accountAddress]) {
-              const accountChanges = assetsDiff[accountAddress];
-              const solChange = accountChanges.find((change) => change.asset.type === 'SOL');
-
-              if (solChange && solChange.out) {
-                const sentAmount = solChange.out.raw_value;
-
-                // Look for the corresponding receiver to calculate the actual transfer amount
-                const allAddresses = Object.keys(assetsDiff);
-                let receivedAmount = 0;
-
-                for (const address of allAddresses) {
-                  if (address !== accountAddress) {
-                    const otherChanges = assetsDiff[address];
-                    if (otherChanges) {
-                      const otherSolChange = otherChanges.find((change) => change.asset.type === 'SOL');
-                      if (otherSolChange && otherSolChange.in) {
-                        receivedAmount = otherSolChange.in.raw_value;
-                        break;
-                      }
-                    }
-                  }
-                }
-
-                // Calculate fee as the difference
-                if (receivedAmount > 0) {
-                  feeAmount = sentAmount - receivedAmount;
-                }
-              }
-            }
-          } else if (isSplTransfer) {
-            // For SPL transfers, use standard Solana fee (no SOL recipient)
-            feeAmount = 5000; // Standard Solana network fee
-          }
-
-          // Validate that this looks like a reasonable fee
-          if (feeAmount > 0 && feeAmount <= 10000) {
-            // 0.00001 SOL max
-            // Fee is valid, keep it
-          } else {
-            feeAmount = 0;
-          }
-        }
-
-        // Only add fee section if there's an actual fee to display
-        if (feeAmount > 0) {
-          details.push({
-            title: 'Network Fee',
-            items: [
-              currencyItem('Fee Amount', BigInt(feeAmount), network.networkToken.decimals, network.networkToken.symbol),
-            ],
-          });
-        }
-      }
-    }
     isSimulationSuccessful = true;
   } else {
     // If Blockaid simulation fails, we fall back to parsing the transaction manually.
