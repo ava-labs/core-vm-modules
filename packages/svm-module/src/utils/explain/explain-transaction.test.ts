@@ -406,7 +406,6 @@ describe('explainTransaction', () => {
       provider: mockProvider,
     });
 
-    // Should show "From/To" for transfers
     const transactionDetails = result.details.find((detail) => detail.title === 'Transaction Details');
     expect(transactionDetails?.items).toContainEqual({
       label: 'From',
