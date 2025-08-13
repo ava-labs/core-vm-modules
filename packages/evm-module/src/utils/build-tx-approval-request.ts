@@ -64,6 +64,8 @@ export const buildTxApprovalRequest = (
       type: 2, // hardcoding to 2 for now as we only support EIP-1559
       nonce: Number(transaction.nonce),
       gasLimit: Number(transaction.gas),
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
       to: transaction.to,
       from: transaction.from,
       data: transaction.data,
