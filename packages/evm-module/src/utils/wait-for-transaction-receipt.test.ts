@@ -2,6 +2,13 @@ import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 import { waitForTransactionReceipt } from './wait-for-transaction-receipt';
 import type { RpcRequest } from '@avalabs/vm-module-types';
+import { retry } from '@internal/utils/src/utils/retry';
+
+jest.mock('@internal/utils/src/utils/retry', () => ({
+  retry: jest.fn(),
+}));
+
+const mockRetry = retry as jest.MockedFunction<typeof retry>;
 
 const explorerUrl = 'https://explorer.com';
 describe('waitForTransactionReceipt', () => {
@@ -14,7 +21,7 @@ describe('waitForTransactionReceipt', () => {
 
   beforeEach(() => {
     provider = {
-      waitForTransaction: jest.fn(),
+      getTransactionReceipt: jest.fn(),
     } as unknown as JsonRpcBatchInternal;
     txHash = '0x123';
     onTransactionPending = jest.fn();
@@ -29,7 +36,7 @@ describe('waitForTransactionReceipt', () => {
   });
 
   it('should call onTransactionPending when waiting for transaction receipt', async () => {
-    jest.mocked(provider.waitForTransaction).mockResolvedValue({ status: 1 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    jest.mocked(provider.getTransactionReceipt).mockResolvedValue({ status: 1 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     waitForTransactionReceipt({
       explorerUrl,
@@ -48,7 +55,7 @@ describe('waitForTransactionReceipt', () => {
   });
 
   it('should call onTransactionConfirmed when transaction is successful', async () => {
-    jest.mocked(provider.waitForTransaction).mockResolvedValue({ status: 1 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    mockRetry.mockResolvedValue({ status: 1 });
 
     const result = await waitForTransactionReceipt({
       explorerUrl,
@@ -70,7 +77,7 @@ describe('waitForTransactionReceipt', () => {
   });
 
   it('should call onTransactionReverted when transaction is reverted', async () => {
-    jest.mocked(provider.waitForTransaction).mockResolvedValue({ status: 0 } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+    mockRetry.mockResolvedValue({ status: 0 });
 
     const result = await waitForTransactionReceipt({
       explorerUrl,
@@ -88,7 +95,7 @@ describe('waitForTransactionReceipt', () => {
   });
 
   it('should call onTransactionReverted when an error occurs', async () => {
-    jest.mocked(provider.waitForTransaction).mockRejectedValue(new Error('Transaction error')); // eslint-disable-line @typescript-eslint/no-explicit-any
+    mockRetry.mockRejectedValue(new Error('Transaction error'));
 
     const result = await waitForTransactionReceipt({
       explorerUrl,
