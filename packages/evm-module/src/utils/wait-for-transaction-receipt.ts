@@ -1,8 +1,9 @@
 import type { Hex, RpcRequest } from '@avalabs/vm-module-types';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
-import { getExplorerAddressByNetwork } from '@src/handlers/get-transaction-history/utils/get-explorer-address-by-network';
+import { getExplorerAddressByNetwork } from '../handlers/get-transaction-history/utils/get-explorer-address-by-network';
 import type { TransactionReceipt } from 'ethers';
 import { retry } from '@internal/utils';
+import { RetryBackoffPolicy } from '@internal/utils/src/utils/retry';
 
 export const waitForTransactionReceipt = async ({
   explorerUrl,
@@ -35,6 +36,8 @@ export const waitForTransactionReceipt = async ({
     const receipt = await retry<TransactionReceipt | null>({
       operation: async () => provider.getTransactionReceipt(txHash),
       isSuccess: (r): r is TransactionReceipt => !!r, // success when receipt is present (>= 1 confirmation)
+      backoffPolicy: RetryBackoffPolicy.linearThenExponential(4, 1000),
+      maxRetries: 20,
     });
 
     const success = receipt?.status === 1; // 1 indicates success, 0 indicates revert
