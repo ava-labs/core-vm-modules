@@ -33,7 +33,10 @@ export const waitForTransactionReceipt = async ({
     onTransactionPending({ txHash, request });
 
     const receipt = await retry<TransactionReceipt | null>({
-      operation: async () => provider.getTransactionReceipt(txHash),
+      operation: async () => {
+        console.error(Date.now(), 'Checking transaction receipt for', txHash);
+        return provider.getTransactionReceipt(txHash);
+      },
       isSuccess: (r): r is TransactionReceipt => !!r, // success when receipt is present (>= 1 confirmation)
     });
 
