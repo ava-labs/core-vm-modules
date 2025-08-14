@@ -2,8 +2,7 @@ import type { Hex, RpcRequest } from '@avalabs/vm-module-types';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getExplorerAddressByNetwork } from '../handlers/get-transaction-history/utils/get-explorer-address-by-network';
 import type { TransactionReceipt } from 'ethers';
-import { retry } from '@internal/utils';
-import { RetryBackoffPolicy } from '@internal/utils/src/utils/retry';
+import { retry, RetryBackoffPolicy } from '@internal/utils';
 
 export const waitForTransactionReceipt = async ({
   explorerUrl,

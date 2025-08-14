@@ -2,11 +2,15 @@ import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 
 import { waitForTransactionReceipt } from './wait-for-transaction-receipt';
 import type { RpcRequest } from '@avalabs/vm-module-types';
-import { retry } from '@internal/utils/src/utils/retry';
+import { retry } from '@internal/utils';
 
-jest.mock('@internal/utils/src/utils/retry', () => ({
-  retry: jest.fn(),
-}));
+jest.mock('@internal/utils', () => {
+  const actual = jest.requireActual('@internal/utils');
+  return {
+    ...actual,
+    retry: jest.fn(),
+  };
+});
 
 const mockRetry = retry as jest.MockedFunction<typeof retry>;
 
