@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 1.9.10
+
+### Patch Changes
+
+- 9c19d70: Pass along the initial fee settings
+- 1179c83: use getTransactionReceipt for waiting tx confirmation
+  - @avalabs/vm-module-types@1.9.10
+
 ## 1.9.9
 
 ### Patch Changes
