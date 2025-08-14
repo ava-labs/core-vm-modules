@@ -15,6 +15,7 @@ import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import Blockaid from '@blockaid/client';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
+import waitForExpect from 'wait-for-expect';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -63,11 +64,11 @@ const mockParseRequestParams = parseRequestParams as jest.MockedFunction<typeof 
 const mockEstimateGasLimit = estimateGasLimit as jest.MockedFunction<typeof estimateGasLimit>;
 const mockGetNonce = getNonce as jest.MockedFunction<typeof getNonce>;
 const mockSend = jest.fn();
-const mockWaitForTransaction = jest.fn();
+const mockGetTransactionReceipt = jest.fn();
 
 const mockProvider = {
   send: mockSend,
-  waitForTransaction: mockWaitForTransaction,
+  getTransactionReceipt: mockGetTransactionReceipt,
 };
 
 // @ts-expect-error missing properties
@@ -580,7 +581,7 @@ describe('eth_sendTransaction handler', () => {
     });
 
     it('should notify when transaction is confirmed', async () => {
-      mockWaitForTransaction.mockResolvedValue({ status: 1 });
+      mockGetTransactionReceipt.mockResolvedValue({ status: 1 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransaction(requestParams);
@@ -595,17 +596,19 @@ describe('eth_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
+      expect(mockGetTransactionReceipt).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
-        txHash: testTxHash,
-        explorerLink: 'https://explorer.com/tx/' + testTxHash,
-        request: requestParams.request,
-      });
+      await waitForExpect(() =>
+        expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+          txHash: testTxHash,
+          explorerLink: 'https://explorer.com/tx/' + testTxHash,
+          request: requestParams.request,
+        }),
+      );
     });
 
     it('should notify when transaction is reverted', async () => {
-      mockWaitForTransaction.mockResolvedValue({ status: 0 });
+      mockGetTransactionReceipt.mockResolvedValue({ status: 0 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransaction(requestParams);
@@ -620,9 +623,11 @@ describe('eth_sendTransaction handler', () => {
 
       expect(response).toStrictEqual({ result: testTxHash });
 
-      expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
+      expect(mockGetTransactionReceipt).toHaveBeenCalledWith(testTxHash);
 
-      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
+      await waitForExpect(() =>
+        expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash }),
+      );
     });
   });
 

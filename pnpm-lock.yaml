@@ -351,6 +351,9 @@ importers:
       typechain:
         specifier: 8.3.1
         version: 8.3.1(typescript@5.8.2)
+      wait-for-expect:
+        specifier: 4.0.0
+        version: 4.0.0
 
   packages/hvm-module:
     dependencies:
@@ -6176,6 +6179,9 @@ packages:
   w3c-xmlserializer@4.0.0:
     resolution: {integrity: sha512-d+BFHzbiCx6zGfz0HyQ6Rg69w9k19nviJspaj4yNscGjrHu94sVP+aRm75yEbCh+r2/yR+7q6hux9LVtbuTGBw==}
     engines: {node: '>=14'}
+
+  wait-for-expect@4.0.0:
+    resolution: {integrity: sha512-mcH2HYUUHhdFGHVJkgwkBxRihZO4VSuPyh6xhYHz7LEnYkcaLbTAEEsTpYiFw4UY45XdTZYYIaquuMucw9wWMw==}
 
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
@@ -13877,6 +13883,8 @@ snapshots:
   w3c-xmlserializer@4.0.0:
     dependencies:
       xml-name-validator: 4.0.0
+
+  wait-for-expect@4.0.0: {}
 
   walker@1.0.8:
     dependencies:

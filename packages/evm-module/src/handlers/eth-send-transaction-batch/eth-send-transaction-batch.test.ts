@@ -66,11 +66,11 @@ const mockApprovalController: jest.Mocked<BatchApprovalController> = {
 const mockParseRequestParams = parseRequestParams as jest.MockedFunction<typeof parseRequestParams>;
 const mockGetNonce = getNonce as jest.MockedFunction<typeof getNonce>;
 const mockSend = jest.fn();
-const mockWaitForTransaction = jest.fn();
+const mockGetTransactionReceipt = jest.fn();
 
 const mockProvider = {
   send: mockSend,
-  waitForTransaction: mockWaitForTransaction,
+  getTransactionReceipt: mockGetTransactionReceipt,
 };
 
 // @ts-expect-error missing properties
@@ -303,6 +303,7 @@ describe('eth_sendTransactionBatch handler', () => {
   });
 
   it('should calculate gas limit if some transactions do not have it set', async () => {
+    mockGetTransactionReceipt.mockResolvedValueOnce({ status: 1 });
     const updateTx = jest.fn();
     jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
       updateTx,
@@ -367,6 +368,7 @@ describe('eth_sendTransactionBatch handler', () => {
   });
 
   it('should calculate nonce if not provided', async () => {
+    mockGetTransactionReceipt.mockResolvedValueOnce({ status: 1 });
     const updateTx = jest.fn();
     jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
       updateTx,
@@ -418,6 +420,7 @@ describe('eth_sendTransactionBatch handler', () => {
   });
 
   it('should aggregate balance changes and token approvals in the upper-level displayData', async () => {
+    mockGetTransactionReceipt.mockResolvedValueOnce({ status: 1 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (Blockaid as any).mockImplementation(() => ({
       evm: {
@@ -716,7 +719,7 @@ describe('eth_sendTransactionBatch handler', () => {
         result: [{ signedData: testSignedTxHash }, { signedData: testSignedTxHash2 }],
       });
 
-      mockWaitForTransaction.mockResolvedValueOnce({ status: 1 }).mockResolvedValueOnce({ status: 1 });
+      mockGetTransactionReceipt.mockResolvedValueOnce({ status: 1 }).mockResolvedValueOnce({ status: 1 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransactionBatch(requestParams);
@@ -764,7 +767,7 @@ describe('eth_sendTransactionBatch handler', () => {
         result: [{ signedData: testSignedTxHash }, { signedData: testSignedTxHash2 }],
       });
 
-      mockWaitForTransaction.mockResolvedValue({ status: 0 });
+      mockGetTransactionReceipt.mockResolvedValue({ status: 0 });
 
       const requestParams = testRequestParams();
       const response = await ethSendTransactionBatch(requestParams);
@@ -779,8 +782,8 @@ describe('eth_sendTransactionBatch handler', () => {
 
       expect(response).toStrictEqual({ error: rpcErrors.internal('Transaction 1 failed! Batch execution stopped') });
 
-      expect(mockWaitForTransaction).toHaveBeenCalledTimes(1);
-      expect(mockWaitForTransaction).toHaveBeenCalledWith(testTxHash);
+      expect(mockGetTransactionReceipt).toHaveBeenCalledTimes(1);
+      expect(mockGetTransactionReceipt).toHaveBeenCalledWith(testTxHash);
 
       expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
     });
@@ -801,6 +804,8 @@ describe('eth_sendTransactionBatch handler', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
+  mockGetTransactionReceipt.mockResolvedValue({ status: 1 });
+
   const updateTx = jest.fn();
   jest.mocked(getTxBatchUpdater).mockReturnValueOnce({
     updateTx,
