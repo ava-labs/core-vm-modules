@@ -23,9 +23,9 @@ import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
 import { transactionAlerts } from './transaction-alerts';
 
-type Erc20ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc20ExposureTrace;
-type Erc721ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc721ExposureTrace;
-type Erc1155ExposureTrace = Blockaid.Evm.TransactionSimulation.AccountSummary.Erc1155ExposureTrace;
+type Erc20ExposureTrace = Blockaid.Evm.AccountSummary.Erc20ExposureTrace;
+type Erc721ExposureTrace = Blockaid.Evm.AccountSummary.Erc721ExposureTrace;
+type Erc1155ExposureTrace = Blockaid.Evm.AccountSummary.Erc1155ExposureTrace;
 
 /*
  * Although in the type definition they don't specify it, but for traces they are returning the asset as well:
@@ -35,8 +35,8 @@ type ExposureTrace =
   | (Erc20ExposureTrace & { asset: Blockaid.Evm.Erc20TokenDetails })
   | (Erc721ExposureTrace & { asset: Blockaid.Evm.Erc721TokenDetails })
   | (Erc1155ExposureTrace & { asset: Blockaid.Evm.Erc1155TokenDetails });
-type Trace = Blockaid.Evm.TransactionSimulation.AccountSummary['traces']['0'];
-export type AssetDiffs = Blockaid.Evm.TransactionSimulation.AccountSummary['assets_diffs'];
+type Trace = Blockaid.Evm.AccountSummary['traces']['0'];
+export type AssetDiffs = Blockaid.Evm.AccountSummary['assets_diffs'];
 
 export const simulateTransaction = async ({
   rpcMethod,
@@ -145,7 +145,7 @@ const mapExposureTracesToSpenderAsset = (traces: Trace[]): Record<string, Exposu
 
 const processTokenApprovals = (
   rpcMethod: RpcMethod,
-  accountSummary: Blockaid.Evm.TransactionSimulation.AccountSummary,
+  accountSummary: Blockaid.Evm.AccountSummary,
 ): TokenApprovals | undefined => {
   const { traces } = accountSummary;
 

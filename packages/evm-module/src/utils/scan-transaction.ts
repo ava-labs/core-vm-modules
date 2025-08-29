@@ -33,7 +33,7 @@ export const scanTransactionBatch = async ({
     chain: chainId.toString(),
     options,
     data: params,
-    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
+    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
   });
 };
 
@@ -67,7 +67,7 @@ export const scanTransaction = async ({
       // TODO: provide accessList once Blockaid supports it
       // access_list: params.accessList
     },
-    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
+    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
   });
 };
 
@@ -94,6 +94,6 @@ export const scanJsonRpc = async ({
     options: ['validation', 'simulation'],
     account_address: accountAddress,
     data,
-    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.Metadata,
+    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
   });
 };
