@@ -1,3 +1,4 @@
+import http from 'http';
 import Blockaid from '@blockaid/client';
 import type { TransactionBulkScanParams } from '@blockaid/client/resources/evm/transaction-bulk';
 
@@ -72,7 +73,7 @@ export const scanTransaction = async ({
       },
       metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
     },
-    { httpAgent: dummyHttpAgent },
+    { httpAgent: new http.Agent({ keepAlive: false }) },
   );
 };
 
