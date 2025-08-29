@@ -22,7 +22,8 @@ export const scanTransactionBatch = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
-    httpAgent: {},
+    fetch: global.fetch,
+    httpAgent: new http.Agent({ keepAlive: false }),
   });
 
   const options: TransactionBulkScanParams['options'] = ['validation', 'simulation'];
@@ -53,7 +54,8 @@ export const scanTransaction = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
-    httpAgent: {},
+    fetch: global.fetch,
+    httpAgent: new http.Agent({ keepAlive: false }),
   });
 
   return blockaid.evm.transaction.scan(
@@ -93,6 +95,8 @@ export const scanJsonRpc = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
+    fetch: global.fetch,
+    httpAgent: new http.Agent({ keepAlive: false }),
   });
 
   return blockaid.evm.jsonRpc.scan({

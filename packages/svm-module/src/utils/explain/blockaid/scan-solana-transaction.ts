@@ -1,3 +1,4 @@
+import http from 'http';
 import Blockaid from '@blockaid/client';
 import { base58, base64 } from '@scure/base';
 
@@ -13,7 +14,8 @@ export const scanSolanaTransaction = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
-    httpAgent: {},
+    fetch: global.fetch,
+    httpAgent: new http.Agent({ keepAlive: false }),
   });
 
   try {
