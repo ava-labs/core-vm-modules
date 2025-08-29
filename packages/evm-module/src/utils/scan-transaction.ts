@@ -72,7 +72,7 @@ export const scanTransaction = async ({
       },
       metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
     },
-    { httpAgent: {} },
+    { httpAgent: dummyHttpAgent },
   );
 };
 
@@ -101,4 +101,17 @@ export const scanJsonRpc = async ({
     data,
     metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
   });
+};
+
+// dummyHttpAgent.ts
+export interface HttpAgentLike {
+  addRequest?: (req: unknown, opts: unknown) => void;
+  destroy?: () => void;
+  keepAlive?: boolean;
+}
+
+export const dummyHttpAgent: HttpAgentLike = {
+  addRequest: () => {},
+  destroy: () => {},
+  keepAlive: true,
 };
