@@ -30,13 +30,14 @@ import { getTransactionHistory } from './handlers/get-transaction-history';
 import { signAndSendTransaction } from './handlers/sign-and-send-transaction';
 import { signTransaction } from './handlers/sign-transaction';
 import { signMessage } from './handlers/sign-message';
+import { setBlockaid } from './utils/blockaid';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
 
-  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#appInfo = appInfo;
@@ -48,6 +49,10 @@ export class SvmModule implements Module {
     this.#proxyApiUrl;
     this.#approvalController;
     this.#appInfo;
+
+    if (blockaid) {
+      setBlockaid(blockaid);
+    }
   }
 
   async getProvider(network: Network): Promise<SolanaProvider> {

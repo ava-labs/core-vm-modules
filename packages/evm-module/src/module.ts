@@ -38,6 +38,7 @@ import { getCoreHeaders } from '@internal/utils';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { setBlockaid } from './utils/blockaid';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -45,7 +46,7 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
 
-  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
@@ -54,6 +55,10 @@ export class EvmModule implements Module {
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
+
+    if (blockaid) {
+      setBlockaid(blockaid);
+    }
   }
 
   getProvider(network: Network): Promise<JsonRpcBatchInternal> {

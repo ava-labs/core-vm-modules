@@ -491,6 +491,9 @@ importers:
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.58
         version: 3.1.0-alpha.58
+      '@blockaid/client':
+        specifier: 0.48.0
+        version: 0.48.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
