@@ -1,4 +1,3 @@
-import http from 'http';
 import Blockaid from '@blockaid/client';
 import type { TransactionBulkScanParams } from '@blockaid/client/resources/evm/transaction-bulk';
 
@@ -47,25 +46,22 @@ export const scanTransaction = async ({
 }): Promise<Blockaid.TransactionScanResponse> => {
   const blockaid = getBlockaid(proxyApiUrl);
 
-  return blockaid.evm.transaction.scan(
-    {
-      account_address: params.from,
-      chain: chainId.toString(),
-      options: ['validation', 'simulation'],
-      data: {
-        from: params.from,
-        to: params.to,
-        data: params.data,
-        value: params.value,
-        gas: params.gas,
-        gas_price: params.gasPrice,
-        // TODO: provide accessList once Blockaid supports it
-        // access_list: params.accessList
-      },
-      metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
+  return blockaid.evm.transaction.scan({
+    account_address: params.from,
+    chain: chainId.toString(),
+    options: ['validation', 'simulation'],
+    data: {
+      from: params.from,
+      to: params.to,
+      data: params.data,
+      value: params.value,
+      gas: params.gas,
+      gas_price: params.gasPrice,
+      // TODO: provide accessList once Blockaid supports it
+      // access_list: params.accessList
     },
-    { httpAgent: new http.Agent({ keepAlive: false }) },
-  );
+    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
+  });
 };
 
 export const scanJsonRpc = async ({
