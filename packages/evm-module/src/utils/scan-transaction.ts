@@ -55,22 +55,25 @@ export const scanTransaction = async ({
     httpAgent: {},
   });
 
-  return blockaid.evm.transaction.scan({
-    account_address: params.from,
-    chain: chainId.toString(),
-    options: ['validation', 'simulation'],
-    data: {
-      from: params.from,
-      to: params.to,
-      data: params.data,
-      value: params.value,
-      gas: params.gas,
-      gas_price: params.gasPrice,
-      // TODO: provide accessList once Blockaid supports it
-      // access_list: params.accessList
+  return blockaid.evm.transaction.scan(
+    {
+      account_address: params.from,
+      chain: chainId.toString(),
+      options: ['validation', 'simulation'],
+      data: {
+        from: params.from,
+        to: params.to,
+        data: params.data,
+        value: params.value,
+        gas: params.gas,
+        gas_price: params.gasPrice,
+        // TODO: provide accessList once Blockaid supports it
+        // access_list: params.accessList
+      },
+      metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
     },
-    metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
-  });
+    { httpAgent: {} },
+  );
 };
 
 export const scanJsonRpc = async ({
