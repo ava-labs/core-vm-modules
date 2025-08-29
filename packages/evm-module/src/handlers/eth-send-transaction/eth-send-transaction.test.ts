@@ -13,9 +13,9 @@ import {
 } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
-import Blockaid from '@blockaid/client';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
 import waitForExpect from 'wait-for-expect';
+import { getBlockaid } from '../../utils/blockaid';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -34,20 +34,19 @@ jest.mock('../../utils/evm-tx-updater', () => ({
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
-jest.mock('@blockaid/client', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      evm: {
-        transaction: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-        jsonRpc: {
-          scan: jest.fn(),
-        },
-      },
-    };
-  });
-});
+const mockBlockaid = {
+  evm: {
+    transaction: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+    jsonRpc: {
+      scan: jest.fn(),
+    },
+  },
+};
+jest.mock('../../utils/blockaid', () => ({
+  getBlockaid: jest.fn(() => mockBlockaid),
+}));
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
@@ -376,7 +375,7 @@ describe('eth_sendTransaction handler', () => {
 
   it('should process transaction and add token approvals and balance changes to displayData', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementation(() => ({
+    (getBlockaid as jest.Mock).mockImplementation(() => ({
       evm: {
         transaction: {
           scan: jest.fn().mockResolvedValue({
@@ -651,7 +650,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Blockaid as any).mockImplementation(() => ({
+  (getBlockaid as jest.Mock).mockImplementation(() => ({
     evm: {
       transaction: {
         scan: jest.fn().mockResolvedValue({

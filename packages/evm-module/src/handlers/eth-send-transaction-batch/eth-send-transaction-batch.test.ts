@@ -15,10 +15,10 @@ import {
 } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
-import Blockaid from '@blockaid/client';
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import type { TransactionParams } from '../../types';
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import { getBlockaid } from '../../utils/blockaid';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -37,19 +37,18 @@ jest.mock('../../utils/evm-tx-batch-updater', () => ({
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
-jest.mock('@blockaid/client', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      evm: {
-        transactionBulk: {
-          scan: jest
-            .fn()
-            .mockResolvedValue([{ validation: { result_type: 'Benign' } }, { validation: { result_type: 'Benign' } }]),
-        },
-      },
-    };
-  });
-});
+const mockBlockaid = {
+  evm: {
+    transactionBulk: {
+      scan: jest
+        .fn()
+        .mockResolvedValue([{ validation: { result_type: 'Benign' } }, { validation: { result_type: 'Benign' } }]),
+    },
+  },
+};
+jest.mock('../../utils/blockaid', () => ({
+  getBlockaid: jest.fn(() => mockBlockaid),
+}));
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
@@ -315,7 +314,7 @@ describe('eth_sendTransactionBatch handler', () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementationOnce(() => ({
+    (getBlockaid as jest.Mock).mockImplementationOnce(() => ({
       evm: {
         transactionBulk: {
           scan: jest.fn().mockResolvedValue([
@@ -422,7 +421,7 @@ describe('eth_sendTransactionBatch handler', () => {
   it('should aggregate balance changes and token approvals in the upper-level displayData', async () => {
     mockGetTransactionReceipt.mockResolvedValueOnce({ status: 1 });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementation(() => ({
+    (getBlockaid as jest.Mock).mockImplementation(() => ({
       evm: {
         transactionBulk: {
           scan: jest.fn().mockResolvedValue([
@@ -659,7 +658,7 @@ describe('eth_sendTransactionBatch handler', () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementationOnce(() => ({
+    (getBlockaid as jest.Mock).mockImplementationOnce(() => ({
       evm: {
         transactionBulk: {
           scan: jest.fn().mockResolvedValue([
@@ -813,7 +812,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Blockaid as any).mockImplementation(() => ({
+  (getBlockaid as jest.Mock).mockImplementation(() => ({
     evm: {
       transactionBulk: {
         scan: jest.fn().mockResolvedValue([

@@ -1,8 +1,7 @@
 import { scanSolanaTransaction } from './scan-solana-transaction';
-import Blockaid from '@blockaid/client';
 import { base58, base64 } from '@scure/base';
+import { getBlockaid } from '../../../utils/blockaid';
 
-jest.mock('@blockaid/client');
 jest.mock('@scure/base', () => ({
   base58: {
     decode: jest.fn(),
@@ -12,15 +11,18 @@ jest.mock('@scure/base', () => ({
   },
 }));
 
-describe('scanSolanaTransaction', () => {
-  const mockBlockaidInstance = {
-    solana: {
-      message: {
-        scan: jest.fn(),
-      },
+const mockBlockaidInstance = {
+  solana: {
+    message: {
+      scan: jest.fn(),
     },
-  } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+};
+jest.mock('../../../utils/blockaid', () => ({
+  getBlockaid: jest.fn(() => mockBlockaidInstance),
+}));
 
+describe('scanSolanaTransaction', () => {
   const proxyApiUrl = 'https://example.com';
   const params = {
     account: 'mockAccount',
@@ -30,7 +32,6 @@ describe('scanSolanaTransaction', () => {
   const dAppUrl = 'https://dapp.example.com';
 
   beforeEach(() => {
-    jest.mocked(Blockaid).mockImplementation(() => mockBlockaidInstance);
     jest.mocked(base58.decode).mockReturnValue(Buffer.from('decodedAccount'));
     jest.mocked(base64.encode).mockReturnValue('encodedAccount');
   });
@@ -44,11 +45,7 @@ describe('scanSolanaTransaction', () => {
 
     const result = await scanSolanaTransaction({ proxyApiUrl, params, dAppUrl });
 
-    expect(Blockaid).toHaveBeenCalledWith({
-      baseURL: `${proxyApiUrl}/proxy/blockaid/`,
-      apiKey: 'DUMMY_API_KEY',
-      httpAgent: {},
-    });
+    expect(getBlockaid).toHaveBeenCalledWith(proxyApiUrl);
     expect(base58.decode).toHaveBeenCalledWith(params.account);
     expect(base64.encode).toHaveBeenCalledWith(Buffer.from('decodedAccount'));
     expect(mockBlockaidInstance.solana.message.scan).toHaveBeenCalledWith({

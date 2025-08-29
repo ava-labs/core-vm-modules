@@ -1,27 +1,26 @@
 import { ethSign } from './eth-sign';
 import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import Blockaid from '@blockaid/client';
+import { getBlockaid } from '@src/utils/blockaid';
 
 const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
 
-jest.mock('@blockaid/client', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      evm: {
-        transaction: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-        jsonRpc: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-      },
-    };
-  });
-});
+const mockBlockaid = {
+  evm: {
+    transaction: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+    jsonRpc: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+  },
+};
+jest.mock('../../utils/blockaid', () => ({
+  getBlockaid: jest.fn(() => mockBlockaid),
+}));
 
 jest.mock('./schemas/parse-request-params/parse-request-params', () => ({
   parseRequestParams: jest.fn(),
@@ -223,7 +222,7 @@ describe('ethSign', () => {
 
   it('should add alert object with Warning type to displayData when schema validation error occurs in jsonRpc scan', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementation(() => ({
+    (getBlockaid as jest.Mock).mockImplementation(() => ({
       evm: {
         jsonRpc: {
           scan: jest.fn().mockRejectedValue({ message: 'schema validation error' }),
@@ -294,8 +293,7 @@ describe('ethSign', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Blockaid as any).mockImplementation(() => ({
+  (getBlockaid as jest.Mock).mockImplementation(() => ({
     evm: {
       jsonRpc: {
         scan: jest.fn().mockResolvedValue({
