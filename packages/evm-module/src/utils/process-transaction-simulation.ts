@@ -16,7 +16,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
-import { isHexString } from 'ethers';
+import { isHexString, MaxUint256 } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
@@ -174,12 +174,17 @@ const processTokenApprovals = (
       }
 
       if (trace.type === 'ERC721ExposureTrace') {
-        const {
-          exposed: { usd_price, amount },
-        } = trace as Erc721ExposureTrace;
+        // When dApp attempts to call setApprovalForAll(), the "exposed" field is not present.
+        // However, the result of such transaction is that the spender gets approval for all
+        // tokens in the NFT collection, so we treat it the same as "Unlimited" approval for ERC-20.
+        if (!trace.exposed) {
+          tokenApproval.value = `0x${MaxUint256.toString(16)}`;
+        } else {
+          const { usd_price, amount } = trace.exposed;
 
-        tokenApproval.value = `${amount}`;
-        tokenApproval.usdPrice = `${usd_price}`;
+          tokenApproval.value = `${amount}`;
+          tokenApproval.usdPrice = `${usd_price}`;
+        }
       }
 
       return tokenApproval;
