@@ -8,7 +8,6 @@ export function setBlockaid(instance: Blockaid) {
 
 export function getBlockaid(proxyApiUrl: string): Blockaid {
   if (!_instance) {
-    console.error('getBlockaid');
     _instance = new Blockaid({
       baseURL: proxyApiUrl + '/proxy/blockaid/',
       apiKey: DUMMY_API_KEY,
