@@ -47,6 +47,7 @@ describe('scanSolanaTransaction', () => {
     expect(Blockaid).toHaveBeenCalledWith({
       baseURL: `${proxyApiUrl}/proxy/blockaid/`,
       apiKey: 'DUMMY_API_KEY',
+      httpAgent: {},
     });
     expect(base58.decode).toHaveBeenCalledWith(params.account);
     expect(base64.encode).toHaveBeenCalledWith(Buffer.from('decodedAccount'));
