@@ -21,6 +21,7 @@ export const scanTransactionBatch = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
+    httpAgent: {},
   });
 
   const options: TransactionBulkScanParams['options'] = ['validation', 'simulation'];
@@ -51,6 +52,7 @@ export const scanTransaction = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
+    httpAgent: {},
   });
 
   return blockaid.evm.transaction.scan({

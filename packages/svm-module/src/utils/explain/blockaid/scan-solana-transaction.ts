@@ -13,6 +13,7 @@ export const scanSolanaTransaction = async ({
   const blockaid = new Blockaid({
     baseURL: proxyApiUrl + '/proxy/blockaid/',
     apiKey: DUMMY_API_KEY,
+    httpAgent: {},
   });
 
   try {
