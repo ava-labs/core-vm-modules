@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/svm-module",
-  "version": "1.9.10",
+  "version": "1.9.11",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
