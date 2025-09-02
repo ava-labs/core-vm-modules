@@ -1,27 +1,20 @@
 import { ethSign } from './eth-sign';
 import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import Blockaid from '@blockaid/client';
-
-const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
 
-jest.mock('@blockaid/client', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      evm: {
-        transaction: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-        jsonRpc: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-      },
-    };
-  });
-});
+const mockBlockaid = {
+  evm: {
+    transaction: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+    jsonRpc: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+  },
+};
 
 jest.mock('./schemas/parse-request-params/parse-request-params', () => ({
   parseRequestParams: jest.fn(),
@@ -100,7 +93,7 @@ describe('ethSign', () => {
       request: mockRequest,
       network: mockNetwork,
       approvalController: mockApprovalController,
-      proxyApiUrl: PROXY_API_URL,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -122,7 +115,7 @@ describe('ethSign', () => {
         request: { ...mockRequest, method },
         network: mockNetwork,
         approvalController: mockApprovalController,
-        proxyApiUrl: PROXY_API_URL,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
       });
 
       expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
@@ -165,7 +158,7 @@ describe('ethSign', () => {
       request: { ...mockRequest, method },
       network: mockNetwork,
       approvalController: mockApprovalController,
-      proxyApiUrl: PROXY_API_URL,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -222,14 +215,13 @@ describe('ethSign', () => {
   });
 
   it('should add alert object with Warning type to displayData when schema validation error occurs in jsonRpc scan', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementation(() => ({
+    const mockBlockaid = {
       evm: {
         jsonRpc: {
           scan: jest.fn().mockRejectedValue({ message: 'schema validation error' }),
         },
       },
-    }));
+    };
 
     mockParseRequestParams.mockReturnValueOnce({
       success: true,
@@ -240,7 +232,7 @@ describe('ethSign', () => {
       request: mockRequest,
       network: mockNetwork,
       approvalController: mockApprovalController,
-      proxyApiUrl: PROXY_API_URL,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({ result: '0x1234' });
@@ -269,7 +261,7 @@ describe('ethSign', () => {
       request: mockRequest,
       network: mockNetwork,
       approvalController: mockApprovalController,
-      proxyApiUrl: PROXY_API_URL,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({ result: '0x1234' });
@@ -286,7 +278,7 @@ describe('ethSign', () => {
       request: mockRequest,
       network: mockNetwork,
       approvalController: mockApprovalController,
-      proxyApiUrl: PROXY_API_URL,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({ error: 'User denied message signature' });
@@ -294,8 +286,7 @@ describe('ethSign', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Blockaid as any).mockImplementation(() => ({
+  const mockBlockaid = {
     evm: {
       jsonRpc: {
         scan: jest.fn().mockResolvedValue({
@@ -304,7 +295,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         }),
       },
     },
-  }));
+  };
 
   mockParseRequestParams.mockReturnValueOnce({
     success: true,
@@ -315,7 +306,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     request: mockRequest,
     network: mockNetwork,
     approvalController: mockApprovalController,
-    proxyApiUrl: PROXY_API_URL,
+    blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
   });
 
   expect(result).toEqual({ result: '0x1234' });

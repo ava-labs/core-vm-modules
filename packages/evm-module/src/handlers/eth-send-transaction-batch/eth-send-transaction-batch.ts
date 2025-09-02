@@ -17,17 +17,18 @@ import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-rece
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import { simulateTransactionBatch } from './utils/process-transaction-batch-simulation';
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import type Blockaid from '@blockaid/client';
 
 export const ethSendTransactionBatch = async ({
   request,
   network,
   approvalController,
-  proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: BatchApprovalController;
-  proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   const { params } = request;
   const { data: transactionRequests, success, error } = parseRequestParams(params);
@@ -65,12 +66,12 @@ export const ethSendTransactionBatch = async ({
   const allTransactionPayloadsHaveGas = transactionRequests.every((tx) => Number(tx.gas) > 0);
   const { alert, balanceChange, isSimulationSuccessful, tokenApprovals, scans } = await simulateTransactionBatch({
     rpcMethod: request.method,
-    proxyApiUrl,
     chainId: network.chainId,
     params: transactionRequests,
     dAppUrl: request.dappInfo.url,
     provider,
     populateMissingGas: !allTransactionPayloadsHaveGas,
+    blockaid,
   });
   const allTransactionsHaveGas = scans.every(({ transaction }) => Number(transaction.gas) > 0);
 

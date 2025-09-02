@@ -11,17 +11,18 @@ import { simulateTransaction } from '../../utils/process-transaction-simulation'
 import { parseRequestParams } from './schema';
 import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-receipt';
 import { getTxHash } from '../../utils/get-tx-hash';
+import type Blockaid from '@blockaid/client';
 
 export const ethSendTransaction = async ({
   request,
   network,
   approvalController,
-  proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
-  proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   const { params } = request;
 
@@ -84,11 +85,11 @@ export const ethSendTransaction = async ({
 
   const scan = await simulateTransaction({
     rpcMethod: request.method,
-    proxyApiUrl,
     chainId: network.chainId,
     params: transaction,
     dAppUrl: request.dappInfo.url,
     provider,
+    blockaid,
   });
 
   const { displayData, signingData } = buildTxApprovalRequest(request, network, transaction, scan);

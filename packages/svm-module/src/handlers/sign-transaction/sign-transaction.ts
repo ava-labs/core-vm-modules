@@ -14,17 +14,20 @@ import { getNetworkName } from '@src/utils/get-network-name';
 import { explainTransaction } from '@src/utils/explain/explain-transaction';
 
 import { parseRequestParams } from './schema';
+import type Blockaid from '@blockaid/client';
 
 export const signTransaction = async ({
   request,
   network,
   approvalController,
   proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   const { params } = request;
   const { data, success, error } = parseRequestParams(params);
@@ -51,7 +54,7 @@ export const signTransaction = async ({
         chain: getNetworkName(network),
         transactionBase64: serializedTx,
       },
-      proxyApiUrl,
+      blockaid,
     },
     network,
     provider,

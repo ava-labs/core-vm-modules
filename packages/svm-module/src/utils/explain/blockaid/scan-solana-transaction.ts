@@ -3,18 +3,11 @@ import { base58, base64 } from '@scure/base';
 
 import type { ExplainTxParams } from '../types';
 
-const DUMMY_API_KEY = 'DUMMY_API_KEY'; // since we're using our own proxy and api key is handled there, we can use a dummy key here
-
 export const scanSolanaTransaction = async ({
-  proxyApiUrl,
   params,
   dAppUrl,
+  blockaid,
 }: ExplainTxParams): Promise<Blockaid.Solana.Message.MessageScanResponse | null> => {
-  const blockaid = new Blockaid({
-    baseURL: proxyApiUrl + '/proxy/blockaid/',
-    apiKey: DUMMY_API_KEY,
-  });
-
   try {
     return await blockaid.solana.message.scan({
       chain: params.chain,

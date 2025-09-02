@@ -1,8 +1,6 @@
 import { scanSolanaTransaction } from './scan-solana-transaction';
-import Blockaid from '@blockaid/client';
 import { base58, base64 } from '@scure/base';
 
-jest.mock('@blockaid/client');
 jest.mock('@scure/base', () => ({
   base58: {
     decode: jest.fn(),
@@ -12,16 +10,15 @@ jest.mock('@scure/base', () => ({
   },
 }));
 
-describe('scanSolanaTransaction', () => {
-  const mockBlockaidInstance = {
-    solana: {
-      message: {
-        scan: jest.fn(),
-      },
+const mockBlockaid = {
+  solana: {
+    message: {
+      scan: jest.fn(),
     },
-  } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+};
 
-  const proxyApiUrl = 'https://example.com';
+describe('scanSolanaTransaction', () => {
   const params = {
     account: 'mockAccount',
     chain: 'mainnet-beta',
@@ -30,7 +27,6 @@ describe('scanSolanaTransaction', () => {
   const dAppUrl = 'https://dapp.example.com';
 
   beforeEach(() => {
-    jest.mocked(Blockaid).mockImplementation(() => mockBlockaidInstance);
     jest.mocked(base58.decode).mockReturnValue(Buffer.from('decodedAccount'));
     jest.mocked(base64.encode).mockReturnValue('encodedAccount');
   });
@@ -40,17 +36,17 @@ describe('scanSolanaTransaction', () => {
   });
 
   it('should call Blockaid.solana.message.scan with correct parameters', async () => {
-    mockBlockaidInstance.solana.message.scan.mockResolvedValueOnce({ result: 'mockResult' });
+    mockBlockaid.solana.message.scan.mockResolvedValueOnce({ result: 'mockResult' });
 
-    const result = await scanSolanaTransaction({ proxyApiUrl, params, dAppUrl });
-
-    expect(Blockaid).toHaveBeenCalledWith({
-      baseURL: `${proxyApiUrl}/proxy/blockaid/`,
-      apiKey: 'DUMMY_API_KEY',
+    const result = await scanSolanaTransaction({
+      params,
+      dAppUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
+
     expect(base58.decode).toHaveBeenCalledWith(params.account);
     expect(base64.encode).toHaveBeenCalledWith(Buffer.from('decodedAccount'));
-    expect(mockBlockaidInstance.solana.message.scan).toHaveBeenCalledWith({
+    expect(mockBlockaid.solana.message.scan).toHaveBeenCalledWith({
       chain: params.chain,
       options: ['simulation', 'validation'],
       encoding: 'base64',
@@ -65,9 +61,13 @@ describe('scanSolanaTransaction', () => {
 
   it('should return null and log an error if Blockaid.solana.message.scan throws an error', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    mockBlockaidInstance.solana.message.scan.mockRejectedValueOnce(new Error('Mock error'));
+    mockBlockaid.solana.message.scan.mockRejectedValueOnce(new Error('Mock error'));
 
-    const result = await scanSolanaTransaction({ proxyApiUrl, params, dAppUrl });
+    const result = await scanSolanaTransaction({
+      params,
+      dAppUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
 
     expect(consoleErrorSpy).toHaveBeenCalledWith('solana.message.scan() error', expect.any(Error));
     expect(result).toBeNull();

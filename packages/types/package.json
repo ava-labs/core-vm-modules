@@ -20,7 +20,8 @@
     "@metamask/rpc-errors": "6.3.0",
     "bitcoinjs-lib": "5.2.0",
     "zod": "3.23.8",
-    "hypersdk-client": "0.4.16"
+    "hypersdk-client": "0.4.16",
+    "@blockaid/client": "0.48.0"
   },
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",

@@ -11,6 +11,14 @@ import { scanSolanaTransaction } from './blockaid/scan-solana-transaction';
 jest.mock('./blockaid/scan-solana-transaction');
 jest.mock('./parse-transaction');
 
+const mockBlockaid = {
+  solana: {
+    message: {
+      scan: jest.fn(),
+    },
+  },
+};
+
 describe('explainTransaction', () => {
   const mockNetwork = {
     caipId: 'mockCaipId',
@@ -21,13 +29,13 @@ describe('explainTransaction', () => {
   const mockProvider = jest.fn() as unknown as ReturnType<typeof getProvider>;
 
   const mockSimulationParams: ExplainTxParams = {
-    proxyApiUrl: 'https://example.com',
     params: {
       account: 'mockAccount',
       chain: 'mainnet',
       transactionBase64: 'mockTransactionBase64',
     },
     dAppUrl: 'https://dapp.example.com',
+    blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
   };
 
   beforeEach(() => {

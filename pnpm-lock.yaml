@@ -291,8 +291,8 @@ importers:
         specifier: workspace:*
         version: link:../types
       '@blockaid/client':
-        specifier: 0.36.0
-        version: 0.36.0
+        specifier: 0.48.0
+        version: 0.48.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -491,6 +491,9 @@ importers:
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.58
         version: 3.1.0-alpha.58
+      '@blockaid/client':
+        specifier: 0.48.0
+        version: 0.48.0
       '@metamask/rpc-errors':
         specifier: 6.3.0
         version: 6.3.0
@@ -1244,9 +1247,6 @@ packages:
 
   '@bitcoinerlab/secp256k1@1.2.0':
     resolution: {integrity: sha512-jeujZSzb3JOZfmJYI0ph1PVpCRV5oaexCgy+RvCXV8XlY+XFB/2n3WOcvBsKLsOw78KYgnQrQWb2HrKE4be88Q==}
-
-  '@blockaid/client@0.36.0':
-    resolution: {integrity: sha512-38zdKJKGp8DhUzURRnnnIpi3prelKgMsPNhoY5hsyWcliE6ednG4wIvKIPmFZf1I1nMb3rzhtNN0hDQ0XvjEQg==}
 
   '@blockaid/client@0.48.0':
     resolution: {integrity: sha512-rKJcArxgp1yGUWfwzeNrvCvzhO/PV8aR2kkzMf10Q2ORoZpw+iijXN0D9vThlubhWMj1cUqStPGrMmAHUTZUPw==}
@@ -4886,6 +4886,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
@@ -7415,18 +7416,6 @@ snapshots:
   '@bitcoinerlab/secp256k1@1.2.0':
     dependencies:
       '@noble/curves': 1.8.1
-
-  '@blockaid/client@0.36.0':
-    dependencies:
-      '@types/node': 18.19.83
-      '@types/node-fetch': 2.6.12
-      abort-controller: 3.0.0
-      agentkeepalive: 4.6.0
-      form-data-encoder: 1.7.2
-      formdata-node: 4.4.1
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
 
   '@blockaid/client@0.48.0':
     dependencies:

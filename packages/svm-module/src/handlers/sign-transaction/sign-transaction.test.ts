@@ -22,6 +22,14 @@ jest.mock('@src/utils/get-provider');
 jest.mock('@src/utils/functional');
 jest.mock('./schema');
 
+const mockBlockaid = {
+  solana: {
+    message: {
+      scan: jest.fn(),
+    },
+  },
+};
+
 describe('src/handlers/sign-transaction', () => {
   const mockRequest: RpcRequest = {
     dappInfo: {
@@ -91,6 +99,7 @@ describe('src/handlers/sign-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -114,6 +123,7 @@ describe('src/handlers/sign-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -139,6 +149,7 @@ describe('src/handlers/sign-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({ result: 'test-signed-data' });

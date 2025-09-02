@@ -140,6 +140,7 @@ describe('SVM Module', () => {
         proxyApiUrl: expect.any(String),
         network,
         request: req,
+        blockaid: expect.any(Object),
       });
     });
   });

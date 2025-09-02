@@ -14,23 +14,24 @@ import { isEmpty, isNetworkToken } from '../../../utils/type-utils';
 import { processTransactionSimulation } from '../../../utils/process-transaction-simulation';
 import { scanTransactionBatch } from '../../../utils/scan-transaction';
 import { transactionAlerts } from '../../../utils/transaction-alerts';
+import type Blockaid from '@blockaid/client';
 
 export const simulateTransactionBatch = async ({
   rpcMethod,
   dAppUrl,
   params,
   chainId,
-  proxyApiUrl,
   provider,
   populateMissingGas,
+  blockaid,
 }: {
   rpcMethod: RpcMethod;
   dAppUrl?: string;
   params: TransactionBatchParams;
   chainId: number;
-  proxyApiUrl: string;
   provider: JsonRpcBatchInternal;
   populateMissingGas?: boolean;
+  blockaid: Blockaid;
 }): Promise<
   TransactionSimulationResult & { scans: (TransactionSimulationResult & { transaction: TransactionParams })[] }
 > => {
@@ -38,11 +39,11 @@ export const simulateTransactionBatch = async ({
 
   try {
     simulationResults = await scanTransactionBatch({
-      proxyApiUrl,
       chainId,
       params,
       domain: dAppUrl,
       withGasEstimation: populateMissingGas,
+      blockaid,
     });
   } catch (error) {
     console.error('simulateTransactionBatch error', error);

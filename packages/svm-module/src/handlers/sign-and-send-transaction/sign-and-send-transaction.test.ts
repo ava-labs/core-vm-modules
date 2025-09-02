@@ -17,6 +17,14 @@ import { parseRequestParams } from './schema';
 import { signAndSendTransaction } from './sign-and-send-transaction';
 import { ChainId, SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 
+const mockBlockaid = {
+  solana: {
+    message: {
+      scan: jest.fn(),
+    },
+  },
+};
+
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@src/utils/get-provider');
 jest.mock('./schema');
@@ -123,6 +131,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -147,6 +156,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -175,6 +185,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -205,6 +216,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({
@@ -244,6 +256,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(mockProvider.sendTransaction).toHaveBeenCalledWith('signed-data', {
@@ -277,6 +290,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(mockApprovalController.onTransactionPending).toHaveBeenCalledWith({
@@ -315,6 +329,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(result).toEqual({ result: base58TxHash });
@@ -342,6 +357,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
       network: mockNetwork,
       approvalController: mockApprovalController,
       proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({

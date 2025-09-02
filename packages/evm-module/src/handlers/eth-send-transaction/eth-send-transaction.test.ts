@@ -13,7 +13,6 @@ import {
 } from '@avalabs/vm-module-types';
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
-import Blockaid from '@blockaid/client';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
 import waitForExpect from 'wait-for-expect';
 
@@ -21,8 +20,6 @@ import waitForExpect from 'wait-for-expect';
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
 
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
-
-const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 jest.mock('./schema');
 jest.mock('../../utils/evm-tx-updater', () => ({
@@ -34,20 +31,16 @@ jest.mock('../../utils/evm-tx-updater', () => ({
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
-jest.mock('@blockaid/client', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      evm: {
-        transaction: {
-          scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
-        },
-        jsonRpc: {
-          scan: jest.fn(),
-        },
-      },
-    };
-  });
-});
+const mockBlockaid = {
+  evm: {
+    transaction: {
+      scan: jest.fn().mockResolvedValue({ validation: { result_type: 'Benign' } }),
+    },
+    jsonRpc: {
+      scan: jest.fn(),
+    },
+  },
+};
 
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
@@ -113,7 +106,7 @@ const testRequestParams = () => ({
   },
   network: testNetwork,
   approvalController: mockApprovalController,
-  proxyApiUrl: PROXY_API_URL,
+  blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 });
 
 const displayData = {
@@ -375,8 +368,7 @@ describe('eth_sendTransaction handler', () => {
   });
 
   it('should process transaction and add token approvals and balance changes to displayData', async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (Blockaid as any).mockImplementation(() => ({
+    const mockBlockaid = {
       evm: {
         transaction: {
           scan: jest.fn().mockResolvedValue({
@@ -422,7 +414,7 @@ describe('eth_sendTransaction handler', () => {
           }),
         },
       },
-    }));
+    };
 
     mockParseRequestParams.mockReturnValue({
       success: true,
@@ -445,7 +437,10 @@ describe('eth_sendTransaction handler', () => {
       cleanup: jest.fn(),
     });
 
-    const requestParams = testRequestParams();
+    const requestParams = {
+      ...testRequestParams(),
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    };
 
     await ethSendTransaction(requestParams);
 
@@ -650,8 +645,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     cleanup: jest.fn(),
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (Blockaid as any).mockImplementation(() => ({
+  const mockBlockaid = {
     evm: {
       transaction: {
         scan: jest.fn().mockResolvedValue({
@@ -660,7 +654,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         }),
       },
     },
-  }));
+  };
 
   mockParseRequestParams.mockReturnValue({
     success: true,
@@ -677,7 +671,10 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     ],
   });
 
-  const requestParams = testRequestParams();
+  const requestParams = {
+    ...testRequestParams(),
+    blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+  };
 
   await ethSendTransaction(requestParams);
 

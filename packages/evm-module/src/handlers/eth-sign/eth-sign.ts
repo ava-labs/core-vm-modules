@@ -16,17 +16,18 @@ import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
+import type Blockaid from '@blockaid/client';
 
 export const ethSign = async ({
   request,
   network,
   approvalController,
-  proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
-  proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   const result = parseRequestParams({ method: request.method, params: request.params });
 
@@ -107,11 +108,11 @@ export const ethSign = async ({
 
   const simulationResult = await processJsonRpcSimulation({
     request,
-    proxyApiUrl,
     accountAddress: address,
     chainId: network.chainId,
     data: { method, params: request.params },
     dAppUrl: request.dappInfo.url,
+    blockaid,
   });
 
   const displayData: DisplayData = {
