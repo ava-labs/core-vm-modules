@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.9.11
+
+### Patch Changes
+
+- 83fbc0c: change solana commitment to confirmed to speed up transaction time
+  - @avalabs/vm-module-types@1.9.11
+
 ## 1.9.10
 
 ### Patch Changes

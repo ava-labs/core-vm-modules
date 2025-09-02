@@ -1,5 +1,7 @@
 # @avalabs/vm-module-types
 
+## 1.9.11
+
 ## 1.9.10
 
 ## 1.9.9

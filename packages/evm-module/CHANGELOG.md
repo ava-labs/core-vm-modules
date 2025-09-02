@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.9.11
+
+### Patch Changes
+
+- edd84ae: fix setApprovalForAll() calls
+  - @avalabs/vm-module-types@1.9.11
+
 ## 1.9.10
 
 ### Patch Changes
