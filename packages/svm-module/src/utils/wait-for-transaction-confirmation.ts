@@ -3,8 +3,8 @@ import type { getProvider } from './get-provider';
 import { signature } from '@solana/kit';
 import { getExplorerAddressByNetwork } from './get-explorer-address-by-network';
 
-const POLLING_INTERVAL = 1000; // 1 second
-const MAX_RETRIES = 60; // 1 minute total
+const POLLING_INTERVAL = 400; // Match Solana's block time
+const MAX_RETRIES = 15; // ~6 seconds total - handle network congestion
 
 export type WaitForTransactionConfirmationParams = {
   provider: ReturnType<typeof getProvider>;
@@ -22,7 +22,7 @@ export const waitForTransactionConfirmation = async ({
   approvalController,
   request,
   network,
-  commitment = 'finalized',
+  commitment = 'confirmed',
   maxRetries = MAX_RETRIES,
 }: WaitForTransactionConfirmationParams): Promise<boolean> => {
   let retries = 0;
