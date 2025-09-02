@@ -48,7 +48,7 @@ export class EvmModule implements Module {
   #approvalController: ApprovalController;
   #blockaid: Blockaid;
 
-  constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
@@ -57,12 +57,12 @@ export class EvmModule implements Module {
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
-    this.#blockaid =
-      blockaid ??
-      new Blockaid({
-        baseURL: proxyApiUrl + '/proxy/blockaid/',
-        apiKey: BLOCKAID_API_KEY,
-      });
+    this.#blockaid = new Blockaid({
+      baseURL: proxyApiUrl + '/proxy/blockaid/',
+      apiKey: BLOCKAID_API_KEY,
+      httpAgent: runtime?.httpAgent,
+      fetch: runtime?.fetch,
+    });
   }
 
   getProvider(network: Network): Promise<JsonRpcBatchInternal> {

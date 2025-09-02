@@ -39,7 +39,7 @@ export class SvmModule implements Module {
   #appInfo: AppInfo;
   #blockaid: Blockaid;
 
-  constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#appInfo = appInfo;
@@ -51,12 +51,12 @@ export class SvmModule implements Module {
     this.#proxyApiUrl;
     this.#approvalController;
     this.#appInfo;
-    this.#blockaid =
-      blockaid ??
-      new Blockaid({
-        baseURL: proxyApiUrl + '/proxy/blockaid/',
-        apiKey: BLOCKAID_API_KEY,
-      });
+    this.#blockaid = new Blockaid({
+      baseURL: proxyApiUrl + '/proxy/blockaid/',
+      apiKey: BLOCKAID_API_KEY,
+      httpAgent: runtime?.httpAgent,
+      fetch: runtime?.fetch,
+    });
   }
 
   async getProvider(network: Network): Promise<SolanaProvider> {

@@ -16,7 +16,7 @@ import type { NetworkContractToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
 import type { HyperSDKClient } from 'hypersdk-client';
-import type Blockaid from '@blockaid/client';
+import type { Agent } from 'http';
 
 export type AppInfo = {
   name: AppName;
@@ -27,7 +27,12 @@ export type ConstructorParams = {
   approvalController: ApprovalController;
   environment: Environment;
   appInfo: AppInfo;
-  blockaid?: Blockaid;
+  runtime?: RuntimeParams;
+};
+
+export type RuntimeParams = {
+  fetch?: typeof fetch;
+  httpAgent?: Agent;
 };
 
 export type NetworkFeeParam = Network & { caipId?: string };
