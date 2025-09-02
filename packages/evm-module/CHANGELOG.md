@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.9.12
+
+### Patch Changes
+
+- 2515443: bump blockaid to 0.48.0
+  - @avalabs/vm-module-types@1.9.12
+
 ## 1.9.11
 
 ### Patch Changes
