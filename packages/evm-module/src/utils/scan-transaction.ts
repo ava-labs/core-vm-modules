@@ -2,23 +2,20 @@ import Blockaid from '@blockaid/client';
 import type { TransactionBulkScanParams } from '@blockaid/client/resources/evm/transaction-bulk';
 
 import type { TransactionBatchParams, TransactionParams } from '../types';
-import { getBlockaid } from './blockaid';
 
 export const scanTransactionBatch = async ({
-  proxyApiUrl,
   chainId,
   params,
   domain,
   withGasEstimation,
+  blockaid,
 }: {
-  proxyApiUrl: string;
   chainId: number;
   params: TransactionBatchParams;
   domain?: string;
   withGasEstimation?: boolean;
+  blockaid: Blockaid;
 }): Promise<Blockaid.TransactionScanResponse[]> => {
-  const blockaid = getBlockaid(proxyApiUrl);
-
   const options: TransactionBulkScanParams['options'] = ['validation', 'simulation'];
 
   if (withGasEstimation) {
@@ -34,18 +31,16 @@ export const scanTransactionBatch = async ({
 };
 
 export const scanTransaction = async ({
-  proxyApiUrl,
   chainId,
   params,
   domain,
+  blockaid,
 }: {
-  proxyApiUrl: string;
   chainId: number;
   params: TransactionParams;
   domain?: string;
+  blockaid: Blockaid;
 }): Promise<Blockaid.TransactionScanResponse> => {
-  const blockaid = getBlockaid(proxyApiUrl);
-
   return blockaid.evm.transaction.scan({
     account_address: params.from,
     chain: chainId.toString(),
@@ -65,20 +60,18 @@ export const scanTransaction = async ({
 };
 
 export const scanJsonRpc = async ({
-  proxyApiUrl,
   chainId,
   accountAddress,
   data,
   domain,
+  blockaid,
 }: {
-  proxyApiUrl: string;
   chainId: number;
   accountAddress: string;
   data: Blockaid.Evm.JsonRpcScanParams.Data;
   domain?: string;
+  blockaid: Blockaid;
 }): Promise<Blockaid.TransactionScanResponse> => {
-  const blockaid = getBlockaid(proxyApiUrl);
-
   return blockaid.evm.jsonRpc.scan({
     chain: chainId.toString(),
     options: ['validation', 'simulation'],

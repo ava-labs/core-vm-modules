@@ -2,15 +2,12 @@ import Blockaid from '@blockaid/client';
 import { base58, base64 } from '@scure/base';
 
 import type { ExplainTxParams } from '../types';
-import { getBlockaid } from '@src/utils/blockaid';
 
 export const scanSolanaTransaction = async ({
-  proxyApiUrl,
   params,
   dAppUrl,
+  blockaid,
 }: ExplainTxParams): Promise<Blockaid.Solana.Message.MessageScanResponse | null> => {
-  const blockaid = getBlockaid(proxyApiUrl);
-
   try {
     return await blockaid.solana.message.scan({
       chain: params.chain,

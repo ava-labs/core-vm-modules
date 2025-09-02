@@ -44,23 +44,23 @@ export const simulateTransaction = async ({
   params,
   chainId,
   provider,
-  proxyApiUrl,
+  blockaid,
 }: {
   rpcMethod: RpcMethod;
   dAppUrl?: string;
   params: TransactionParams;
   chainId: number;
   provider: JsonRpcBatchInternal;
-  proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   let simulationResult: Pick<Blockaid.TransactionScanResponse, 'simulation' | 'validation'> | undefined;
 
   try {
     simulationResult = await scanTransaction({
-      proxyApiUrl,
       chainId,
       params,
       domain: dAppUrl,
+      blockaid,
     });
   } catch (error) {
     console.error('simulateTransaction error', error);
@@ -314,14 +314,14 @@ export const processJsonRpcSimulation = async ({
   accountAddress,
   chainId,
   data,
-  proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   dAppUrl?: string;
   accountAddress: string;
   data: { method: string; params: unknown };
   chainId: number;
-  proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   let alert: Alert | undefined;
   let balanceChange: BalanceChange | undefined;
@@ -329,11 +329,11 @@ export const processJsonRpcSimulation = async ({
 
   try {
     const { validation, simulation } = await scanJsonRpc({
-      proxyApiUrl,
       chainId,
       accountAddress,
       data: data as Blockaid.Evm.JsonRpcScanParams.Data,
       domain: dAppUrl,
+      blockaid,
     });
 
     if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {

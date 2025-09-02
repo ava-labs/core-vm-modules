@@ -30,12 +30,14 @@ import { getTransactionHistory } from './handlers/get-transaction-history';
 import { signAndSendTransaction } from './handlers/sign-and-send-transaction';
 import { signTransaction } from './handlers/sign-transaction';
 import { signMessage } from './handlers/sign-message';
-import { setBlockaid } from './utils/blockaid';
+import Blockaid from '@blockaid/client';
+import { BLOCKAID_API_KEY } from './constants';
 
 export class SvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
+  #blockaid: Blockaid;
 
   constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
@@ -49,10 +51,12 @@ export class SvmModule implements Module {
     this.#proxyApiUrl;
     this.#approvalController;
     this.#appInfo;
-
-    if (blockaid) {
-      setBlockaid(blockaid);
-    }
+    this.#blockaid =
+      blockaid ??
+      new Blockaid({
+        baseURL: proxyApiUrl + '/proxy/blockaid/',
+        apiKey: BLOCKAID_API_KEY,
+      });
   }
 
   async getProvider(network: Network): Promise<SolanaProvider> {
@@ -119,6 +123,7 @@ export class SvmModule implements Module {
           proxyApiUrl: this.#proxyApiUrl,
           network,
           request,
+          blockaid: this.#blockaid,
         });
       }
       case RpcMethod.SOLANA_SIGN_AND_SEND_TRANSACTION: {
@@ -127,6 +132,7 @@ export class SvmModule implements Module {
           proxyApiUrl: this.#proxyApiUrl,
           network,
           request,
+          blockaid: this.#blockaid,
         });
       }
       case RpcMethod.SOLANA_SIGN_MESSAGE: {

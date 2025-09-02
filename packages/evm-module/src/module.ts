@@ -38,13 +38,15 @@ import { getCoreHeaders } from '@internal/utils';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
-import { setBlockaid } from './utils/blockaid';
+import Blockaid from '@blockaid/client';
+import { BLOCKAID_API_KEY } from './constants';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
   #deBankService: DeBankService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
+  #blockaid: Blockaid;
 
   constructor({ approvalController, environment, appInfo, blockaid }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
@@ -55,10 +57,12 @@ export class EvmModule implements Module {
     this.#deBankService = new DeBankService({ proxyApiUrl });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
-
-    if (blockaid) {
-      setBlockaid(blockaid);
-    }
+    this.#blockaid =
+      blockaid ??
+      new Blockaid({
+        baseURL: proxyApiUrl + '/proxy/blockaid/',
+        apiKey: BLOCKAID_API_KEY,
+      });
   }
 
   getProvider(network: Network): Promise<JsonRpcBatchInternal> {
@@ -151,7 +155,7 @@ export class EvmModule implements Module {
           request,
           network,
           approvalController: this.#approvalController,
-          proxyApiUrl: this.#proxyApiUrl,
+          blockaid: this.#blockaid,
         });
       case RpcMethod.ETH_SEND_TRANSACTION_BATCH: {
         if (!supportsBatchApprovals(this.#approvalController)) {
@@ -164,7 +168,7 @@ export class EvmModule implements Module {
           request,
           network,
           approvalController: this.#approvalController,
-          proxyApiUrl: this.#proxyApiUrl,
+          blockaid: this.#blockaid,
         });
       }
       case RpcMethod.PERSONAL_SIGN:
@@ -177,7 +181,7 @@ export class EvmModule implements Module {
           request,
           network,
           approvalController: this.#approvalController,
-          proxyApiUrl: this.#proxyApiUrl,
+          blockaid: this.#blockaid,
         });
       default:
         if (shouldForwardToRpcNode(request.method)) {

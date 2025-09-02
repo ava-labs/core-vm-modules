@@ -16,17 +16,20 @@ import { explainTransaction } from '@src/utils/explain/explain-transaction';
 import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-confirmation';
 
 import { parseRequestParams, type SendOptions } from './schema';
+import type Blockaid from '@blockaid/client';
 
 export const signAndSendTransaction = async ({
   request,
   network,
   approvalController,
   proxyApiUrl,
+  blockaid,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   proxyApiUrl: string;
+  blockaid: Blockaid;
 }) => {
   const { params } = request;
   const { data, success, error } = parseRequestParams(params);
@@ -53,7 +56,7 @@ export const signAndSendTransaction = async ({
         chain: getNetworkName(network),
         transactionBase64: serializedTx,
       },
-      proxyApiUrl,
+      blockaid,
     },
     network,
     provider,
