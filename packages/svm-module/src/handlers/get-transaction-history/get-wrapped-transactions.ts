@@ -32,20 +32,22 @@ export const getWrappedTransactions = async ({
     const moralisService = new MoralisService({ proxyApiUrl });
     const networkName = getNetworkName(network);
     const portfolioResult = await moralisService.getPortfolio({ address, network: networkName });
-    
+
     if ('portfolio' in portfolioResult) {
       // Extract ATA addresses from portfolio tokens and NFTs
-      const tokenATAs = portfolioResult.portfolio.tokens.map(token => token.associatedTokenAddress);
-      const nftATAs = portfolioResult.portfolio.nfts.map(nft => nft.associatedTokenAddress);
+      const tokenATAs = portfolioResult.portfolio.tokens.map((token) => token.associatedTokenAddress);
+      const nftATAs = portfolioResult.portfolio.nfts.map((nft) => nft.associatedTokenAddress);
       const ataAddresses = [...tokenATAs, ...nftATAs];
 
       // Get signatures for all ATA addresses
       const ataSignaturePromises = ataAddresses.map(async (ataAddress) => {
         try {
-          const signaturesResponse = await provider.getSignaturesForAddress(solAddress(ataAddress), { limit: 25 }).send();
+          const signaturesResponse = await provider
+            .getSignaturesForAddress(solAddress(ataAddress), { limit: 25 })
+            .send();
           return signaturesResponse.map((sig) => sig.signature);
         } catch (error) {
-          console.warn('Failed to get signatures for ATA:', ataAddress, error);
+          console.error('Failed to get signatures for ATA:', ataAddress, error);
           return [];
         }
       });
