@@ -141,7 +141,7 @@ export const extractTokenTranfers: ExtractTransferFn<'SPL'> = (addresses, accoun
     return acc;
   }, [] as TxToken[]);
 
-  const nativeTransfer = extractNativeTransfer(addresses, accountIndex, meta, network, transfers);
+  const nativeTransfer = extractNativeTransfer(addresses, accountIndex, meta, network, transfers, ourAddress);
 
   if (nativeTransfer) {
     transfers.push(nativeTransfer);
@@ -156,9 +156,65 @@ const extractNativeTransfer = (
   { paidFee, preBalances, postBalances }: { paidFee: number; preBalances: number[]; postBalances: number[] },
   network: Network,
   splTransfers: TxToken[] = [],
+  ourAddress?: string,
 ) => {
-  // For ATA transactions (accountIndex = -1), we don't have native transfers
+  // For ATA transactions (accountIndex = -1), check if this might be a SOL → SPL swap
   if (accountIndex === -1) {
+    // Only create SOL transfers for ATA transactions if:
+    // 1. We have SPL transfers (swap context)
+    // 2. We received SPL tokens (indicating we might have spent SOL)
+    // 3. There's significant SOL movement in the transaction
+    if (splTransfers.length > 0 && ourAddress) {
+      const receivedSPL = splTransfers.some((transfer) => transfer.to?.address === ourAddress);
+
+      if (receivedSPL) {
+        // Find our address in the addresses array to get balance changes
+        const ourAccountIndex = addresses.findIndex((addr) => addr === ourAddress);
+
+        if (ourAccountIndex !== -1) {
+          // We found our address - check if we spent SOL
+          const nativeBalancePre = preBalances[ourAccountIndex]!;
+          const nativeBalancePost = postBalances[ourAccountIndex]!;
+          const rawBalanceChange = nativeBalancePost - nativeBalancePre;
+
+          // If we spent SOL (including fees), create a SOL transfer for the swap
+          if (rawBalanceChange <= 0) {
+            const solSpent = Math.abs(rawBalanceChange) + paidFee;
+
+            // Only create transfer if we spent a meaningful amount
+            if (solSpent > paidFee) {
+              const unit = new TokenUnit(solSpent, network.networkToken.decimals, '');
+
+              // Find who received the most SOL (likely the program/pool)
+              const balanceDiffs = postBalances.map((b, i) => b - preBalances[i]!);
+              const largestSOLRecipient = balanceDiffs.reduce(
+                (max, diff, i) => {
+                  if (i !== ourAccountIndex && diff > max.amount && diff > 0) {
+                    return { index: i, amount: diff };
+                  }
+                  return max;
+                },
+                { index: 0, amount: 0 },
+              );
+
+              return {
+                amount: unit.toDisplay(),
+                from: {
+                  address: ourAddress,
+                },
+                to: {
+                  address: addresses[largestSOLRecipient.index]!,
+                },
+                name: network.networkToken.name,
+                symbol: network.networkToken.symbol,
+                type: TokenType.NATIVE,
+              };
+            }
+          }
+        }
+      }
+    }
+
     return null;
   }
 
@@ -175,6 +231,33 @@ const extractNativeTransfer = (
   let isIncoming = nativeTransferAmount > 0;
   let counterpartyIndex = 0;
 
+  // Special case: For SOL → SPL swaps, we need to flip the SOL transfer direction
+  // This happens when accountIndex=0 creates an incoming SOL transfer, but we actually spent SOL
+  let isSOLtoSPLSwap = false;
+  if (isSwapContext && accountIndex === 0 && ourAddress) {
+    const receivedSPL = splTransfers.some((transfer) => transfer.to?.address === ourAddress);
+    const sentSPL = splTransfers.some((transfer) => transfer.from?.address === ourAddress);
+
+    // If we received SPL tokens but didn't send any, this is likely a SOL → SPL swap
+    // The SOL transfer should be outgoing (we spent SOL to get SPL)
+    if (receivedSPL && !sentSPL) {
+      isIncoming = false; // Change from incoming to outgoing
+      isSOLtoSPLSwap = true; // Flag to prevent override later
+      // Find who received the most SOL (likely the program/pool)
+      const balanceDiffs = postBalances.map((b, i) => b - preBalances[i]!);
+      const largestSOLRecipient = balanceDiffs.reduce(
+        (max, diff, i) => {
+          if (i !== accountIndex && diff > max.amount && diff > 0) {
+            return { index: i, amount: diff };
+          }
+          return max;
+        },
+        { index: 0, amount: 0 },
+      );
+      counterpartyIndex = largestSOLRecipient.index;
+    }
+  }
+
   if (isSwapContext && rawBalanceChange < 0) {
     // In a swap, if our balance decreased, look for who gained the most SOL
     // This person likely sent us SOL in the swap
@@ -189,10 +272,35 @@ const extractNativeTransfer = (
     );
 
     // If someone gained significant SOL (more than just fees), we likely received SOL from them
-    if (largestGainer.amount > paidFee * 2) {
+    // BUT don't override if we already detected a SOL → SPL swap
+    if (largestGainer.amount > paidFee * 2 && !isSOLtoSPLSwap) {
       nativeTransferAmount = largestGainer.amount;
       isIncoming = true;
       counterpartyIndex = largestGainer.index;
+    }
+  } else if (isSwapContext && rawBalanceChange <= 0) {
+    // Handle SOL → SPL swaps where we spent SOL to get SPL tokens
+    // Check if we received SPL tokens (indicating a swap, not just a send)
+    const receivedSPL = splTransfers.some((transfer) => transfer.to?.address === address);
+
+    if (receivedSPL) {
+      // We spent SOL to get SPL tokens - this is a swap
+      // Show the SOL we spent (including fees for the total cost)
+      nativeTransferAmount = Math.abs(rawBalanceChange) + paidFee;
+      isIncoming = false;
+
+      // Find who received the most SOL (likely the program/pool)
+      const largestSOLRecipient = balanceDiffs.reduce(
+        (max, diff, i) => {
+          if (i !== accountIndex && diff > max.amount && diff > 0) {
+            return { index: i, amount: diff };
+          }
+          return max;
+        },
+        { index: 0, amount: 0 },
+      );
+
+      counterpartyIndex = largestSOLRecipient.index;
     }
   }
 
@@ -216,13 +324,19 @@ const extractNativeTransfer = (
     counterpartyIndex = isIncoming ? 0 : largestBeneficiary.index;
   }
 
+  // For SOL → SPL swaps, use ourAddress instead of addresses[accountIndex]
+  // Handle case where counterpartyIndex is out of bounds
+  const counterpartyAddress = addresses[counterpartyIndex];
+  const fromAddress = isIncoming ? counterpartyAddress || address : ourAddress || address;
+  const toAddress = isIncoming ? ourAddress || address : counterpartyAddress || ourAddress || address;
+
   return {
     amount: unit.toDisplay(),
     from: {
-      address: isIncoming ? addresses[counterpartyIndex]! : address,
+      address: fromAddress,
     },
     to: {
-      address: isIncoming ? address : addresses[counterpartyIndex]!,
+      address: toAddress,
     },
     name: network.networkToken.name,
     symbol: network.networkToken.symbol,

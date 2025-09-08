@@ -22,12 +22,10 @@ export async function getTransactionHistory({
     });
   }
 
-  
   const rawTransactions = await getWrappedTransactions({ network, address, proxyApiUrl });
-  
+
   const transactions = rawTransactions
     .map(({ txHash, tx }) => {
-      
       if (!tx.meta) {
         return null;
       }
@@ -36,8 +34,7 @@ export async function getTransactionHistory({
         meta,
         transaction: { message },
       } = tx;
-      
-      
+
       // Typings are wrong here, .toString() fixes it without unnecessary casting
       const addresses = message.accountKeys.map((acc) => acc.toString());
       let accountIndex = addresses.indexOf(address);
@@ -45,8 +42,9 @@ export async function getTransactionHistory({
 
       // If not in accountKeys, check if we're an owner in token balances (for ATA transactions)
       if (!isOurAddressInTransaction && meta.preTokenBalances) {
-        const isOwnerInTokenBalances = meta.preTokenBalances.some(balance => balance.owner === address) ||
-                                       (meta.postTokenBalances ?? []).some(balance => balance.owner === address);
+        const isOwnerInTokenBalances =
+          meta.preTokenBalances.some((balance) => balance.owner === address) ||
+          (meta.postTokenBalances ?? []).some((balance) => balance.owner === address);
         if (isOwnerInTokenBalances) {
           isOurAddressInTransaction = true;
           // Set accountIndex to -1 to indicate we're not directly in accountKeys but are involved via token balances
@@ -72,7 +70,6 @@ export async function getTransactionHistory({
         },
         network,
       );
-
 
       const txType = inferTxType(transfers, address);
 
@@ -101,7 +98,6 @@ export async function getTransactionHistory({
     })
     .filter(<T>(tx: T): tx is NonNullable<T> => tx !== null);
 
-  
   return {
     transactions,
   };
@@ -114,27 +110,31 @@ const inferTxType = (transfers: TxToken[], address: string) => {
   }
 
   // Check if we're the sender or receiver for each token transfer
-  const ourTransfers = transfers.filter(t => 
-    t.from?.address === address || t.to?.address === address
-  );
+  const ourTransfers = transfers.filter((t) => t.from?.address === address || t.to?.address === address);
 
   // If we have no transfers involving our address, it's unknown
   if (ourTransfers.length === 0) {
     return TransactionType.UNKNOWN;
   }
 
+  // Check if we have both sending and receiving transfers
+  const hasSending = ourTransfers.some((t) => t.from?.address === address);
+  const hasReceiving = ourTransfers.some((t) => t.to?.address === address);
+
+  // If we're both sending and receiving, it's a swap
+  if (hasSending && hasReceiving) {
+    return TransactionType.SWAP;
+  }
+
   // If we're only sending
-  const onlySending = ourTransfers.every(t => t.from?.address === address);
-  if (onlySending) {
+  if (hasSending) {
     return TransactionType.SEND;
   }
 
   // If we're only receiving
-  const onlyReceiving = ourTransfers.every(t => t.to?.address === address);
-  if (onlyReceiving) {
+  if (hasReceiving) {
     return TransactionType.RECEIVE;
   }
 
-  // If we're both sending and receiving, it's a swap
-  return TransactionType.SWAP;
+  return TransactionType.UNKNOWN;
 };
