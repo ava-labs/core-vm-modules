@@ -226,4 +226,201 @@ describe('src/handlers/get-transaction-history', () => {
       transactions: [],
     });
   });
+
+  describe('SOL → SPL Swap Transaction Type Detection', () => {
+    it('should correctly identify SOL → SPL swap as SWAP transaction', async () => {
+      const rawTransactions = [
+        {
+          txHash: 'sol-to-spl-swap',
+          tx: {
+            meta: {
+              fee: '5000',
+              preBalances: ['1000000000', '500000000'],
+              postBalances: ['995000000', '505000000'],
+              preTokenBalances: [
+                {
+                  accountIndex: 1,
+                  mint: 'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
+                  owner: 'program-address',
+                  programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                  uiTokenAmount: {
+                    amount: '1000000',
+                    decimals: 6,
+                    uiAmount: 1,
+                    uiAmountString: '1',
+                  },
+                },
+              ],
+              postTokenBalances: [
+                {
+                  accountIndex: 0,
+                  mint: 'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
+                  owner: 'test-address',
+                  programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                  uiTokenAmount: {
+                    amount: '457600',
+                    decimals: 6,
+                    uiAmount: 0.4576,
+                    uiAmountString: '0.4576',
+                  },
+                },
+                {
+                  accountIndex: 1,
+                  mint: 'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
+                  owner: 'program-address',
+                  programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+                  uiTokenAmount: {
+                    amount: '542400',
+                    decimals: 6,
+                    uiAmount: 0.5424,
+                    uiAmountString: '0.5424',
+                  },
+                },
+              ],
+              computeUnitsConsumed: '500',
+            },
+            transaction: {
+              message: {
+                accountKeys: ['test-address', 'program-address'],
+                header: {
+                  numRequiredSignatures: 1,
+                },
+              },
+            },
+            blockTime: '1633024800',
+          },
+        },
+      ];
+
+      (getWrappedTransactions as jest.Mock).mockResolvedValue(rawTransactions);
+      (extractTokenTranfers as jest.Mock).mockReturnValue([
+        {
+          // SPL token received
+          from: { address: 'program-address' },
+          to: { address: 'test-address' },
+          type: 'SPL',
+        },
+        {
+          // SOL sent (outgoing)
+          from: { address: 'test-address' },
+          to: { address: 'program-address' },
+          type: 'NATIVE',
+        },
+      ]);
+      (getExplorerLink as jest.Mock).mockReturnValue('https://explorer.solana.com/tx/sol-to-spl-swap');
+
+      const result = await getTransactionHistory({ network, address, proxyApiUrl });
+
+      expect(result.transactions[0]).toEqual(
+        expect.objectContaining({
+          hash: 'sol-to-spl-swap',
+          txType: TransactionType.SWAP, // Should be SWAP, not RECEIVE
+          isOutgoing: true,
+          isIncoming: false,
+          isSender: true,
+        }),
+      );
+    });
+
+    it('should correctly identify pure receive transaction', async () => {
+      const rawTransactions = [
+        {
+          txHash: 'pure-receive',
+          tx: {
+            meta: {
+              fee: '5000',
+              preBalances: ['1000000000', '500000000'],
+              postBalances: ['1005000000', '495000000'],
+              preTokenBalances: [],
+              postTokenBalances: [],
+              computeUnitsConsumed: '500',
+            },
+            transaction: {
+              message: {
+                accountKeys: ['test-address', 'sender-address'],
+                header: {
+                  numRequiredSignatures: 1,
+                },
+              },
+            },
+            blockTime: '1633024800',
+          },
+        },
+      ];
+
+      (getWrappedTransactions as jest.Mock).mockResolvedValue(rawTransactions);
+      (extractTokenTranfers as jest.Mock).mockReturnValue([
+        {
+          // Only receiving SOL
+          from: { address: 'sender-address' },
+          to: { address: 'test-address' },
+          type: 'NATIVE',
+        },
+      ]);
+      (getExplorerLink as jest.Mock).mockReturnValue('https://explorer.solana.com/tx/pure-receive');
+
+      const result = await getTransactionHistory({ network, address, proxyApiUrl });
+
+      expect(result.transactions[0]).toEqual(
+        expect.objectContaining({
+          hash: 'pure-receive',
+          txType: TransactionType.RECEIVE,
+          from: 'sender-address',
+          to: 'test-address',
+        }),
+      );
+    });
+
+    it('should correctly identify pure send transaction', async () => {
+      const rawTransactions = [
+        {
+          txHash: 'pure-send',
+          tx: {
+            meta: {
+              fee: '5000',
+              preBalances: ['1000000000', '500000000'],
+              postBalances: ['995000000', '505000000'],
+              preTokenBalances: [],
+              postTokenBalances: [],
+              computeUnitsConsumed: '500',
+            },
+            transaction: {
+              message: {
+                accountKeys: ['test-address', 'recipient-address'],
+                header: {
+                  numRequiredSignatures: 1,
+                },
+              },
+            },
+            blockTime: '1633024800',
+          },
+        },
+      ];
+
+      (getWrappedTransactions as jest.Mock).mockResolvedValue(rawTransactions);
+      (extractTokenTranfers as jest.Mock).mockReturnValue([
+        {
+          // Only sending SOL
+          from: { address: 'test-address' },
+          to: { address: 'recipient-address' },
+          type: 'NATIVE',
+        },
+      ]);
+      (getExplorerLink as jest.Mock).mockReturnValue('https://explorer.solana.com/tx/pure-send');
+
+      const result = await getTransactionHistory({ network, address, proxyApiUrl });
+
+      expect(result.transactions[0]).toEqual(
+        expect.objectContaining({
+          hash: 'pure-send',
+          txType: TransactionType.SEND,
+          from: 'test-address',
+          to: 'recipient-address',
+          isOutgoing: true,
+          isIncoming: false,
+          isSender: true,
+        }),
+      );
+    });
+  });
 });

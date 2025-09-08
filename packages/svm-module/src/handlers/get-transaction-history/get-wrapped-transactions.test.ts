@@ -1,3 +1,6 @@
+import type { Network } from '@avalabs/vm-module-types';
+import { NetworkVMType } from '@avalabs/vm-module-types';
+
 import { getProvider } from '@src/utils/get-provider';
 
 import { getWrappedTransactions } from './get-wrapped-transactions';
@@ -17,6 +20,27 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
 
   const address = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijk';
 
+  const mockNetwork: Network = {
+    chainId: 101,
+    chainName: 'Solana Mainnet',
+    rpcUrl: 'https://api.mainnet-beta.solana.com',
+    networkToken: {
+      name: 'Solana',
+      symbol: 'SOL',
+      decimals: 9,
+    },
+    vmName: NetworkVMType.SVM,
+    isTestnet: false,
+  };
+
+  const mockTestnetNetwork: Network = {
+    ...mockNetwork,
+    chainId: 103,
+    chainName: 'Solana Devnet',
+    rpcUrl: 'https://api.devnet.solana.com',
+    isTestnet: true,
+  };
+
   it('should return wrapped transactions', async () => {
     const proxyApiUrl = 'test-proxyApiUrl';
 
@@ -31,7 +55,7 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue(sig === 'sig1' ? transactionResponse1 : transactionResponse2),
     }));
 
-    const result = await getWrappedTransactions({ isTestnet: false, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ network: mockNetwork, address, proxyApiUrl });
 
     expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl });
     expect(mockProvider.getSignaturesForAddress).toHaveBeenCalledWith(expect.anything(), { limit: 25 });
@@ -56,7 +80,7 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue([]),
     });
 
-    const result = await getWrappedTransactions({ isTestnet: true, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ network: mockTestnetNetwork, address, proxyApiUrl });
 
     expect(result).toEqual([]);
   });
@@ -74,7 +98,7 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
       send: jest.fn().mockResolvedValue(sig === 'sig1' ? transactionResponse1 : Promise.reject('error')),
     }));
 
-    const result = await getWrappedTransactions({ isTestnet: false, address, proxyApiUrl });
+    const result = await getWrappedTransactions({ network: mockNetwork, address, proxyApiUrl });
 
     expect(result).toEqual([{ txHash: 'sig1', tx: transactionResponse1 }]);
   });

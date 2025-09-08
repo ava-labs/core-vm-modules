@@ -22,7 +22,8 @@ export async function getTransactionHistory({
     });
   }
 
-  const rawTransactions = await getWrappedTransactions({ isTestnet: Boolean(network.isTestnet), address, proxyApiUrl });
+  const rawTransactions = await getWrappedTransactions({ network, address, proxyApiUrl });
+
   const transactions = rawTransactions
     .map(({ txHash, tx }) => {
       if (!tx.meta) {
@@ -33,15 +34,29 @@ export async function getTransactionHistory({
         meta,
         transaction: { message },
       } = tx;
+
       // Typings are wrong here, .toString() fixes it without unnecessary casting
       const addresses = message.accountKeys.map((acc) => acc.toString());
-      const accountIndex = addresses.indexOf(address);
+      let accountIndex = addresses.indexOf(address);
+      let isOurAddressInTransaction = accountIndex !== -1;
+
+      // If not in accountKeys, check if we're an owner in token balances (for ATA transactions)
+      if (!isOurAddressInTransaction && meta.preTokenBalances) {
+        const isOwnerInTokenBalances =
+          meta.preTokenBalances.some((balance) => balance.owner === address) ||
+          (meta.postTokenBalances ?? []).some((balance) => balance.owner === address);
+        if (isOwnerInTokenBalances) {
+          isOurAddressInTransaction = true;
+          // Set accountIndex to -1 to indicate we're not directly in accountKeys but are involved via token balances
+          accountIndex = -1;
+        }
+      }
 
       // accountKeys property is sorted in Solana transactions. The signing keys
       // are always the first, and the header.numRequiredSignatures tells us how many
       // of the first keys are signers. If the lookup address is a signer, it has to be
-      // one of the first N keys.
-      const isSigner = accountIndex < message.header.numRequiredSignatures;
+      // one of the first N keys. For ATA transactions (accountIndex = -1), we're not a direct signer.
+      const isSigner = accountIndex !== -1 && accountIndex < message.header.numRequiredSignatures;
 
       const transfers = extractTokenTranfers(
         addresses,
@@ -56,10 +71,12 @@ export async function getTransactionHistory({
         network,
       );
 
+      const txType = inferTxType(transfers, address);
+
       return {
         hash: txHash,
         // We should probably be smarter about the tx type, but this should be enough for MVP
-        txType: inferTxType(transfers, address),
+        txType,
         gasUsed: String(tx.meta.computeUnitsConsumed ?? '0'),
         tokens: transfers,
 
@@ -87,23 +104,36 @@ export async function getTransactionHistory({
 }
 
 const inferTxType = (transfers: TxToken[], address: string) => {
-  const isSoleSender = transfers.every((t) => t.from?.address === address);
+  // No transfers = unknown
+  if (transfers.length === 0) {
+    return TransactionType.UNKNOWN;
+  }
 
-  if (isSoleSender) {
+  // Check if we're the sender or receiver for each token transfer
+  const ourTransfers = transfers.filter((t) => t.from?.address === address || t.to?.address === address);
+
+  // If we have no transfers involving our address, it's unknown
+  if (ourTransfers.length === 0) {
+    return TransactionType.UNKNOWN;
+  }
+
+  // Check if we have both sending and receiving transfers
+  const hasSending = ourTransfers.some((t) => t.from?.address === address);
+  const hasReceiving = ourTransfers.some((t) => t.to?.address === address);
+
+  // If we're both sending and receiving, it's a swap
+  if (hasSending && hasReceiving) {
+    return TransactionType.SWAP;
+  }
+
+  // If we're only sending
+  if (hasSending) {
     return TransactionType.SEND;
   }
 
-  const isSoleReceiver = transfers.every((t) => t.to?.address === address);
-
-  if (isSoleReceiver) {
+  // If we're only receiving
+  if (hasReceiving) {
     return TransactionType.RECEIVE;
-  }
-
-  const isBothSenderAndReceiver =
-    transfers.some((t) => t.from?.address === address) && transfers.some((t) => t.to?.address === address);
-
-  if (isBothSenderAndReceiver) {
-    return TransactionType.SWAP;
   }
 
   return TransactionType.UNKNOWN;
