@@ -1,5 +1,15 @@
 # @avalabs/svm-module
 
+## 2.0.0
+
+### Major Changes
+
+- 069dfb1: modifed svm module to handle ATA to better track SPL transaction activity
+
+### Patch Changes
+
+- @avalabs/vm-module-types@2.0.0
+
 ## 1.9.12
 
 ### Patch Changes
