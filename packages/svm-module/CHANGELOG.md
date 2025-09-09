@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.9.13
+
+### Patch Changes
+
+- fd8e8f5: modified svm module to handle ATA to better track SPL transction Activity
+  - @avalabs/vm-module-types@1.9.13
+
 ## 1.9.12
 
 ### Patch Changes
