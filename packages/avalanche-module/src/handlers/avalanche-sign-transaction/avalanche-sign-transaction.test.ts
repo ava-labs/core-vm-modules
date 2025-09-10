@@ -45,6 +45,11 @@ const createRequest = (params: { transactionHex?: string; chainAlias?: string; f
       url: 'url',
       icon: 'icon',
     },
+    context: {
+      currentAddress: '0x0',
+      currentEvmAddress: '0x0',
+      xpubXP: 'xpubXP',
+    },
   };
 };
 
