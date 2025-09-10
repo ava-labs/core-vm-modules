@@ -91,6 +91,7 @@ export const ethSendTransaction = async ({
     provider,
     blockaid,
   });
+  console.log('scan: ', scan);
 
   const { displayData, signingData } = buildTxApprovalRequest(request, network, transaction, scan);
 
