@@ -17,6 +17,7 @@ import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-det
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getCoreHeaders, getGlacierApiKey } from '@internal/utils';
 import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
+import { getProvidedUtxos } from '../avalanche-send-transaction/utils/get-provided-utxos';
 
 export const avalancheSignTransaction = async ({
   request,
@@ -40,19 +41,10 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidParams('Params are invalid'),
     };
   }
-  const { transactionHex, chainAlias, from } = result.data;
+  const { transactionHex, chainAlias, from, utxos: providedUtxoHexes } = result.data;
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const isTestnet = network.isTestnet ?? false;
   const provider = await getProvider({ isTestnet });
-
-  const utxos = await Avalanche.getUtxosByTxFromGlacier({
-    transactionHex,
-    chainAlias,
-    network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
-    url: glacierApiUrl,
-    token: getGlacierApiKey(),
-    headers: getCoreHeaders(appInfo),
-  });
 
   const currentAddress = request.context?.['currentAddress'];
   const currentEvmAddress = request.context?.['currentEvmAddress'] as string | undefined;
@@ -62,6 +54,22 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidRequest('No active account found'),
     };
   }
+
+  const providedUtxos = getProvidedUtxos({
+    utxoHexes: providedUtxoHexes,
+    vm,
+  });
+
+  const utxos = providedUtxos.length
+    ? providedUtxos
+    : await Avalanche.getUtxosByTxFromGlacier({
+        transactionHex,
+        chainAlias,
+        network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
+        url: glacierApiUrl,
+        token: getGlacierApiKey(),
+        headers: getCoreHeaders(appInfo),
+      });
 
   const unsignedOrPartiallySignedTx = await getUnsignedOrPartiallySignedTx({
     txBytes: utils.hexToBuffer(transactionHex),
