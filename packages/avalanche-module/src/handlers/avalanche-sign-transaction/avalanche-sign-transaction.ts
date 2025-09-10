@@ -11,11 +11,12 @@ import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { avaxSerial, utils, Credential } from '@avalabs/avalanchejs';
+import { utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getCoreHeaders, getGlacierApiKey } from '@internal/utils';
+import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
 
 export const avalancheSignTransaction = async ({
   request,
@@ -41,11 +42,8 @@ export const avalancheSignTransaction = async ({
   }
   const { transactionHex, chainAlias, from } = result.data;
   const vm = Avalanche.getVmByChainAlias(chainAlias);
-  const txBytes = utils.hexToBuffer(transactionHex);
   const isTestnet = network.isTestnet ?? false;
   const provider = await getProvider({ isTestnet });
-
-  const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
 
   const utxos = await Avalanche.getUtxosByTxFromGlacier({
     transactionHex,
@@ -56,40 +54,22 @@ export const avalancheSignTransaction = async ({
     headers: getCoreHeaders(appInfo),
   });
 
-  let credentials: Credential[] | undefined;
+  const currentAddress = request.context?.['currentAddress'];
+  const currentEvmAddress = request.context?.['currentEvmAddress'] as string | undefined;
 
-  try {
-    const codecManager = utils.getManagerForVM(vm);
-    const signedTx = codecManager.unpack(txBytes, avaxSerial.SignedTx);
-    const unsignedTx = await Avalanche.createAvalancheUnsignedTx({
-      tx,
-      utxos,
-      provider,
-      credentials: signedTx.getCredentials(),
-    });
-
-    // transaction has been already (partially) signed, but it may have gaps in its signatures arrays
-    // so we fill these gaps with placeholder signatures if needed
-    credentials = tx.getSigIndices().map(
-      (sigIndices, credentialIndex) =>
-        new Credential(
-          Avalanche.populateCredential(sigIndices, {
-            unsignedTx,
-            credentialIndex,
-          }),
-        ),
-    );
-  } catch (err) {
-    // transaction hasn't been signed yet thus we continue with a custom list of empty credentials
-    // to ensure it contains a signature slot for all signature indices from the inputs
-    credentials = tx.getSigIndices().map((indicies) => new Credential(Avalanche.populateCredential(indicies)));
+  if (!currentAddress || typeof currentAddress !== 'string') {
+    return {
+      error: rpcErrors.invalidRequest('No active account found'),
+    };
   }
 
-  const unsignedTx = await Avalanche.createAvalancheUnsignedTx({
-    tx,
-    provider,
-    credentials,
+  const unsignedOrPartiallySignedTx = await getUnsignedOrPartiallySignedTx({
+    txBytes: utils.hexToBuffer(transactionHex),
+    vm,
     utxos,
+    currentAddress,
+    currentEvmAddress,
+    provider,
   });
 
   // check if the current account's signature is needed
@@ -101,7 +81,7 @@ export const avalancheSignTransaction = async ({
     };
   }
 
-  const ownSignatureIndices = unsignedTx.getSigIndicesForAddress(signerAddress);
+  const ownSignatureIndices = unsignedOrPartiallySignedTx.getSigIndicesForAddress(signerAddress);
 
   if (!ownSignatureIndices) {
     return {
@@ -109,7 +89,7 @@ export const avalancheSignTransaction = async ({
     };
   }
 
-  const sigIndices = unsignedTx.getSigIndices();
+  const sigIndices = unsignedOrPartiallySignedTx.getSigIndices();
   const needsToSign = ownSignatureIndices.some(([inputIndex, sigIndex]) => sigIndices[inputIndex]?.includes(sigIndex));
 
   if (!needsToSign) {
@@ -119,7 +99,7 @@ export const avalancheSignTransaction = async ({
   }
 
   // get display data for the UI
-  const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, from);
+  const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from);
   const txDetails = parseTxDetails(txData);
 
   if (txData.type === 'unknown' || txDetails === undefined) {
@@ -132,7 +112,7 @@ export const avalancheSignTransaction = async ({
     type: RpcMethod.AVALANCHE_SIGN_TRANSACTION,
     data: txData,
     vm,
-    unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
+    unsignedTxJson: JSON.stringify(unsignedOrPartiallySignedTx.toJSON()),
     ownSignatureIndices,
   };
 
