@@ -1,7 +1,7 @@
 import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { parseTxDetails } from './parse-tx-details';
 import { TxType } from '@avalabs/vm-module-types';
-import { AVAX_NONEVM_DENOMINATION } from '../../../constants';
+import { AVAX_NONEVM_DENOMINATION } from '../constants';
 
 describe('parse-staking-details', () => {
   it('should return correct staking details for AddPermissionlessDelegatorTx', () => {

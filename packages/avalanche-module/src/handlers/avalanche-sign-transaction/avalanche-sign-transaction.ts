@@ -7,17 +7,20 @@ import {
   RpcMethod,
   type AppInfo,
 } from '@avalabs/vm-module-types';
-import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
-import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
+import { utils } from '@avalabs/avalanchejs';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { utils } from '@avalabs/avalanchejs';
-import { getProvider } from '../../utils/get-provider';
-import { parseTxDetails } from '../avalanche-send-transaction/utils/parse-tx-details';
-import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
+import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
+
 import { getCoreHeaders, getGlacierApiKey } from '@internal/utils';
+
+import { getProvider } from '../../utils/get-provider';
+import { parseTxDetails } from '../../utils/parse-tx-details';
+import { getProvidedUtxos } from '../../utils/get-provided-utxos';
+import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
+
+import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
-import { getProvidedUtxos } from '../avalanche-send-transaction/utils/get-provided-utxos';
 
 export const avalancheSignTransaction = async ({
   request,
