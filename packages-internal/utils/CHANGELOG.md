@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.5.2
+
+### Patch Changes
+
+- cc3811a: feat: support atomic txs on c-chain
+
 ## 0.5.1
 
 ### Patch Changes
