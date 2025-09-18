@@ -1,5 +1,13 @@
 # @avalabs/hvm-module
 
+## 1.10.0
+
+### Patch Changes
+
+- cc3811a: feat: support atomic txs on c-chain
+- Updated dependencies [cc3811a]
+  - @avalabs/vm-module-types@1.10.0
+
 ## 1.9.13
 
 ### Patch Changes

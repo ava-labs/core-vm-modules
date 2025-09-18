@@ -1,5 +1,16 @@
 # @avalabs/avalanche-module
 
+## 1.10.0
+
+### Minor Changes
+
+- cc3811a: feat: support atomic txs on c-chain
+
+### Patch Changes
+
+- Updated dependencies [cc3811a]
+  - @avalabs/vm-module-types@1.10.0
+
 ## 1.9.13
 
 ### Patch Changes

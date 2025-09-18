@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.10.0
+
+### Patch Changes
+
+- cc3811a: feat: support atomic txs on c-chain
+
 ## 1.9.13
 
 ## 1.9.12
