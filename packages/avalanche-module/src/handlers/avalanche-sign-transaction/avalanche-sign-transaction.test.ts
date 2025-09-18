@@ -45,6 +45,11 @@ const createRequest = (params: { transactionHex?: string; chainAlias?: string; f
       url: 'url',
       icon: 'icon',
     },
+    context: {
+      currentAddress: 'C-avax1234567890',
+      currentEvmAddress: '0x0',
+      xpubXP: 'xpubXP',
+    },
   };
 };
 
@@ -200,6 +205,19 @@ describe('avalanche-sign-transaction', () => {
 
   it('returns result if there is signedData in response', async () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+    const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+    });
+
+    expect(result).toEqual({
+      result: 'signedData',
+    });
+  });
+
+  it('works with EVM export transactions', async () => {
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'C', from: 'C-avax1234567890' });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
     const result = await avalancheSignTransaction({
       ...avalancheSignTransactionParams,
