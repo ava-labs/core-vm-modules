@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.5.3
+
+### Patch Changes
+
+- 67e5683: update avalanche sdks to latest
+
 ## 0.5.2
 
 ### Patch Changes

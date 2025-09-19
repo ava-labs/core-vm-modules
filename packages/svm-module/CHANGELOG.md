@@ -1,5 +1,13 @@
 # @avalabs/svm-module
 
+## 1.10.1
+
+### Patch Changes
+
+- 67e5683: update avalanche sdks to latest
+- Updated dependencies [67e5683]
+  - @avalabs/vm-module-types@1.10.1
+
 ## 1.10.0
 
 ### Patch Changes
