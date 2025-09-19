@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.10.1
+
+### Patch Changes
+
+- 67e5683: update avalanche sdks to latest
+
 ## 1.10.0
 
 ### Patch Changes
