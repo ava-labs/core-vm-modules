@@ -1,6 +1,6 @@
 import type { AggregatedAssetAmount, XChainBalances } from '@avalabs/glacier-sdk';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import { calculateTotalBalance } from './utils';
+import { calculateAvaxTotalBalance } from './utils';
 import { TokenType, type NetworkToken, type TokenWithBalanceAVM } from '@avalabs/vm-module-types';
 
 export const convertXChainBalance = ({
@@ -57,7 +57,11 @@ export const convertXChainBalance = ({
   const availableInCurrency = priceInCurrency
     ? available.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
     : undefined;
-  const totalBalance = new TokenUnit(calculateTotalBalance(balance), networkToken.decimals, networkToken.symbol);
+  const totalBalance = new TokenUnit(
+    calculateAvaxTotalBalance(balance, avaxAssetId),
+    networkToken.decimals,
+    networkToken.symbol,
+  );
   const balanceInCurrency = priceInCurrency !== undefined ? totalBalance.mul(priceInCurrency) : undefined;
 
   return {

@@ -8,9 +8,12 @@ export const isXchainBalance = (balanceResult: PChainBalance | XChainBalances): 
   return Object.keys(balanceResult).includes('locked');
 };
 
-export function calculateTotalBalance(uxtos: PChainBalance | XChainBalances): bigint {
+export function calculateAvaxTotalBalance(uxtos: PChainBalance | XChainBalances, avaxAssetId: string): bigint {
   const sum = Object.values(uxtos).reduce(function (totalAcc, utxoList) {
     const typeSum = utxoList.reduce(function (typeAcc, utxo) {
+      if (utxo.assetId !== avaxAssetId) {
+        return typeAcc;
+      }
       const balanceToAdd = Number(utxo.amount);
       return typeAcc + balanceToAdd;
     }, 0);
