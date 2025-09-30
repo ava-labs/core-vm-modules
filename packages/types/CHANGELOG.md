@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.10.2
+
+### Patch Changes
+
+- ec6c4ff: Fix X-chain total balance calculation
+
 ## 1.10.1
 
 ### Patch Changes
