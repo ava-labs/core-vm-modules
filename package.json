@@ -5,7 +5,7 @@
     "changeset": "changeset",
     "ci": "turbo ci",
     "clean": "turbo clean && rm -rf node_modules",
-    "dev": "turbo dev --no-cache --continue",
+    "dev": "turbo dev --no-cache --continue --concurrency=12",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo lint",
     "prepare": "husky install",
