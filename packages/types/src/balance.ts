@@ -1,4 +1,4 @@
-import type { Storage, Network } from './common';
+import type { Network } from './common';
 import type { Error } from './error';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
 import type { Erc20TokenBalance, PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
@@ -9,7 +9,6 @@ export type GetBalancesParams = {
   tokenTypes?: TokenType[];
   customTokens?: NetworkContractToken[];
   currency: string;
-  storage?: Storage;
 };
 
 export type TokenBalanceData = {
@@ -31,6 +30,7 @@ export type TokenMarketData = {
   marketCap?: number;
   change24?: number;
   vol24?: number;
+  tokenId?: string;
 };
 
 export type NetworkTokenWithBalance = TokenBalanceDataWithDecimals &

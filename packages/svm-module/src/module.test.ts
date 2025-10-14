@@ -6,7 +6,6 @@ import {
   type ApprovalController,
   type Network,
   type RpcRequest,
-  type Storage,
 } from '@avalabs/vm-module-types';
 
 import ManifestJson from '../manifest.json';
@@ -24,6 +23,11 @@ jest.mock('./handlers/get-tokens');
 jest.mock('./handlers/get-transaction-history');
 jest.mock('./handlers/sign-and-send-transaction');
 
+const MOCK_STORAGE = {
+  get: jest.fn(),
+  set: jest.fn(),
+};
+
 describe('SVM Module', () => {
   const svm = new SvmModule({
     approvalController: {} as ApprovalController,
@@ -32,6 +36,7 @@ describe('SVM Module', () => {
       name: 'tests' as AppName,
       version: '0.0.0',
     },
+    cacheStorage: MOCK_STORAGE,
   });
 
   describe('getProvider()', () => {
@@ -53,7 +58,6 @@ describe('SVM Module', () => {
         addresses: ['address-1'],
         currency: 'usd',
         network: { caipId: 'solana:xyz' } as Network,
-        storage: {} as Storage,
       };
       const mockedResult = {};
 

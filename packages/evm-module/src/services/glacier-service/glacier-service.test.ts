@@ -1,6 +1,7 @@
 import { EvmGlacierService } from '@src/services/glacier-service/glacier-service';
 import { type ChainInfo, EvmChainsService, Glacier } from '@avalabs/glacier-sdk';
 import { ChainId } from '@avalabs/core-chains-sdk';
+import type { TokenService } from '@internal/utils';
 
 jest.mock('@avalabs/glacier-sdk', () => {
   const actual = jest.requireActual('@avalabs/glacier-sdk');
@@ -9,6 +10,11 @@ jest.mock('@avalabs/glacier-sdk', () => {
     Glacier: jest.fn(),
   };
 });
+
+const mockTokenService = {
+  getSimplePrice: jest.fn(),
+  getPricesByAddresses: jest.fn(),
+} as unknown as jest.Mocked<TokenService>;
 
 describe('GlacierService', () => {
   let glacierService: EvmGlacierService;
@@ -25,7 +31,7 @@ describe('GlacierService', () => {
     };
     (Glacier as jest.Mock).mockReturnValue(mockGlacier);
 
-    glacierService = new EvmGlacierService({ glacierApiUrl: FAKE_URL });
+    glacierService = new EvmGlacierService({ glacierApiUrl: FAKE_URL, tokenService: mockTokenService });
   });
 
   afterEach(() => {

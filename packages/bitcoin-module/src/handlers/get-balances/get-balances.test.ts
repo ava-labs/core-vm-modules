@@ -48,6 +48,11 @@ describe('get-balances', () => {
     },
   };
 
+  const mockTokenService = {
+    getSimplePrice: jest.fn(),
+    getPricesByAddresses: jest.fn(),
+  } as unknown as jest.Mocked<TokenService>;
+
   beforeEach(() => {
     jest.mocked(provider.getUtxoBalance).mockResolvedValue(mockedBalance);
     jest.mocked(getProvider).mockResolvedValue(provider);
@@ -63,6 +68,7 @@ describe('get-balances', () => {
         isTestnet: true,
       },
       proxyApiUrl,
+      tokenService: mockTokenService,
     });
 
     expect(getProvider).toHaveBeenCalledWith({ isTestnet: true, proxyApiUrl });
@@ -74,6 +80,7 @@ describe('get-balances', () => {
         isTestnet: false,
       },
       proxyApiUrl: 'https://proxy-dev.api/',
+      tokenService: mockTokenService,
     });
 
     expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl: 'https://proxy-dev.api/' });
@@ -84,6 +91,7 @@ describe('get-balances', () => {
       addresses: ['first-address'],
       network,
       proxyApiUrl,
+      tokenService: mockTokenService,
     });
 
     expect(provider.getUtxoBalance).toHaveBeenCalledWith('first-address', false);
@@ -95,6 +103,7 @@ describe('get-balances', () => {
       network,
       proxyApiUrl,
       withScripts: true,
+      tokenService: mockTokenService,
     });
 
     expect(provider.getUtxoBalance).toHaveBeenCalledWith('first-address', true);
@@ -108,6 +117,7 @@ describe('get-balances', () => {
         addresses: ['first-address'],
         network,
         proxyApiUrl,
+        tokenService: mockTokenService,
       });
 
       expect(TokenService.prototype.getSimplePrice).not.toHaveBeenCalled();
@@ -119,6 +129,7 @@ describe('get-balances', () => {
           addresses: ['first-address'],
           network,
           proxyApiUrl,
+          tokenService: mockTokenService,
         }),
       ).toEqual({
         'first-address': {
@@ -147,12 +158,17 @@ describe('get-balances', () => {
   });
 
   it('maps returned balances to known model', async () => {
+    mockTokenService.getSimplePrice.mockResolvedValue({
+      'btc-id': { usd: { price: 50000, marketCap: 1500000000000, vol24: 500000000000, change24: 0.01 } },
+    });
+
     expect(
       await getBalances({
         addresses: ['first-address'],
         currency: 'USD',
         network,
         proxyApiUrl,
+        tokenService: mockTokenService,
       }),
     ).toEqual({
       'first-address': {

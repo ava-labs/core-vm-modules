@@ -4,6 +4,7 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
 import {
   type Error,
+  type Network,
   type NetworkTokenWithBalance,
   type NftTokenWithBalance,
   TokenType,
@@ -11,14 +12,22 @@ import {
 } from '@avalabs/vm-module-types';
 import { DeBank, type DeBankChainInfo, type DeBankNftToken } from './de-bank';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getExchangeRates } from '@internal/utils';
-import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
+import {
+  extractTokenMarketData,
+  fetchContractTokensMarketData,
+  getNativeTokenMarketData,
+  TokenService,
+} from '@internal/utils';
+import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
+  #tokenService: TokenService;
 
-  constructor({ proxyApiUrl }: { proxyApiUrl: string }) {
+  constructor({ proxyApiUrl, tokenService }: { proxyApiUrl: string; tokenService: TokenService }) {
     this.#deBank = new DeBank(`${proxyApiUrl}/proxy/debank`);
+    this.#tokenService = tokenService;
   }
 
   async isNetworkSupported(chainId: number): Promise<boolean> {
@@ -45,28 +54,34 @@ export class DeBankService implements BalanceServiceInterface {
   }
 
   async getNativeBalance({
-    chainId,
+    network,
     address,
     currency,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('getNativeBalance: not valid address: ' + address);
-    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
+    const { chainInfo, chainIdString } = await this.#getChainInfo(network.chainId);
 
-    const tokenId = chainInfo.native_token_id;
-    const nativeTokenBalance = await this.#deBank.getTokenBalance({ address, chainId: chainIdString, tokenId });
+    const nativeTokenBalance = await this.#deBank.getTokenBalance({
+      address,
+      chainId: chainIdString,
+      tokenId: chainInfo.native_token_id,
+    });
     const tokenUnit = new TokenUnit(
       nativeTokenBalance.raw_amount,
       nativeTokenBalance.decimals,
       nativeTokenBalance.symbol,
     );
     const balanceDisplayValue = tokenUnit.toDisplay();
-    const exchangeRates = await getExchangeRates();
-    const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
-    const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * nativeTokenBalance.price : undefined;
+    const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
+      network,
+      tokenService: this.#tokenService,
+      currency: currency.toLowerCase() as VsCurrencyType,
+    });
+
     const balanceCurrencyDisplayValue = priceInCurrency
       ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2 })
       : undefined;
@@ -85,25 +100,25 @@ export class DeBankService implements BalanceServiceInterface {
       balanceInCurrency,
       balanceCurrencyDisplayValue,
       priceInCurrency,
-    } as NetworkTokenWithBalance;
+      marketCap,
+      vol24,
+      change24,
+      coingeckoId: tokenId ?? '',
+    };
   }
 
   async listErc20Balances({
-    chainId,
+    network,
     address,
     currency,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
-    pageSize: number;
-    pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
-    const { chainInfo, chainIdString } = await this.#getChainInfo(chainId);
-
+    const { chainInfo, chainIdString } = await this.#getChainInfo(network.chainId);
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
-    const exchangeRates = await getExchangeRates();
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
     for (const tokenBalance of tokenBalances) {
@@ -114,8 +129,18 @@ export class DeBankService implements BalanceServiceInterface {
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
-      const usdToCurrencyRate = exchangeRates.usd[currency.toLowerCase()];
-      const priceInCurrency = usdToCurrencyRate ? usdToCurrencyRate * tokenBalance.price : undefined;
+      const lowercaseCurrency = currency.toLowerCase() as unknown as VsCurrencyType;
+      const simplePriceResponse = await fetchContractTokensMarketData({
+        tokenAddresses: [tokenBalance.id],
+        network,
+        tokenService: this.#tokenService,
+        currency: lowercaseCurrency,
+      });
+      const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
+        tokenBalance.id.toLowerCase() ?? '',
+        lowercaseCurrency,
+        simplePriceResponse,
+      );
       const balanceCurrencyDisplayValue = priceInCurrency
         ? tokenUnit.mul(priceInCurrency).toDisplay({ fixedDp: 2 })
         : undefined;
@@ -135,6 +160,9 @@ export class DeBankService implements BalanceServiceInterface {
         balanceDisplayValue,
         balanceInCurrency,
         priceInCurrency,
+        marketCap,
+        vol24,
+        change24,
         type: TokenType.ERC20,
         reputation: null,
       };
@@ -171,15 +199,16 @@ export class DeBankService implements BalanceServiceInterface {
   }
 
   async listNftBalances({
-    chainId,
+    network,
     address,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
   }): Promise<Record<string, NftTokenWithBalance | Error>> {
     if (!isHexString(address)) {
       throw rpcErrors.invalidParams('listNftBalances: not valid address');
     }
+    const chainId = network.chainId;
     const { chainIdString } = await this.#getChainInfo(chainId);
 
     const nftList = await this.#deBank.getNftList({ chainId: chainIdString, address });

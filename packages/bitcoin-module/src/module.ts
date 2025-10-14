@@ -28,16 +28,19 @@ import { getProvider } from './utils/get-provider';
 import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitcoin-sign-transaction';
 import { deriveAddress } from './handlers/derive-address/derive-address';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { TokenService } from '@internal/utils';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
+  #tokenService: TokenService;
 
-  constructor({ environment, approvalController }: ConstructorParams) {
+  constructor({ environment, approvalController, cacheStorage }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#approvalController = approvalController;
     this.#proxyApiUrl = proxyApiUrl;
+    this.#tokenService = new TokenService({ storage: cacheStorage, proxyApiUrl: this.#proxyApiUrl });
   }
 
   getProvider(network: Network): Promise<BitcoinProvider> {
@@ -62,13 +65,13 @@ export class BitcoinModule implements Module {
     });
   }
 
-  getBalances({ addresses, currency, network, storage }: GetBalancesParams) {
+  getBalances({ addresses, currency, network }: GetBalancesParams) {
     return getBalances({
       addresses,
       currency,
       network,
       proxyApiUrl: this.#proxyApiUrl,
-      storage,
+      tokenService: this.#tokenService,
     });
   }
 

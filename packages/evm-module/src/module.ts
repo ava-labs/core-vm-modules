@@ -34,7 +34,7 @@ import { deriveAddress } from './handlers/derive-address/derive-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
-import { getCoreHeaders } from '@internal/utils';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
@@ -47,14 +47,17 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
   #blockaid: Blockaid;
+  #tokenService: TokenService;
 
-  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, cacheStorage, runtime }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    this.#tokenService = new TokenService({ storage: cacheStorage, proxyApiUrl });
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
+      tokenService: this.#tokenService,
     });
-    this.#deBankService = new DeBankService({ proxyApiUrl });
+    this.#deBankService = new DeBankService({ proxyApiUrl, tokenService: this.#tokenService });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
     this.#blockaid = new Blockaid({
@@ -95,7 +98,6 @@ export class EvmModule implements Module {
     network,
     currency,
     customTokens,
-    storage,
     tokenTypes,
   }: GetBalancesParams): Promise<GetBalancesResponse> {
     return getBalances({
@@ -105,7 +107,7 @@ export class EvmModule implements Module {
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
       balanceServices: [this.#glacierService, this.#deBankService],
-      storage,
+      tokenService: this.#tokenService,
       tokenTypes,
     });
   }

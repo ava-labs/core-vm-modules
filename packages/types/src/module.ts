@@ -8,7 +8,7 @@ import type {
   GetAddressResponse,
 } from './account';
 import type { GetBalancesParams, GetBalancesResponse } from './balance';
-import { AppName, Environment, type Network } from './common';
+import { AppName, Environment, type Network, type Storage } from './common';
 import type { Manifest } from './manifest';
 import type { NetworkFees } from './network-fee';
 import type { RpcRequest, RpcResponse } from './rpc';
@@ -27,6 +27,7 @@ export type ConstructorParams = {
   approvalController: ApprovalController;
   environment: Environment;
   appInfo: AppInfo;
+  cacheStorage: Storage;
   runtime?: RuntimeParams;
 };
 

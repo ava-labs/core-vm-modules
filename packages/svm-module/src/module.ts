@@ -38,8 +38,9 @@ export class SvmModule implements Module {
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
   #blockaid: Blockaid;
+  #tokenService: TokenService;
 
-  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, cacheStorage, runtime }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#appInfo = appInfo;
@@ -57,6 +58,7 @@ export class SvmModule implements Module {
       httpAgent: runtime?.httpAgent,
       fetch: runtime?.fetch,
     });
+    this.#tokenService = new TokenService({ storage: cacheStorage, proxyApiUrl: this.#proxyApiUrl });
   }
 
   async getProvider(network: Network): Promise<SolanaProvider> {
@@ -80,11 +82,9 @@ export class SvmModule implements Module {
   }
 
   getBalances(params: GetBalancesParams) {
-    const tokenService = new TokenService({ storage: params.storage, proxyApiUrl: this.#proxyApiUrl });
-
     return getBalances({
       ...params,
-      tokenService,
+      tokenService: this.#tokenService,
       proxyApiUrl: this.#proxyApiUrl,
     });
   }

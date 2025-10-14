@@ -3,13 +3,12 @@ import {
   type TokenWithBalanceSVM,
   type TokenWithBalanceSPL,
   TokenType,
-  type SimplePriceResponse,
   type Error,
 } from '@avalabs/vm-module-types';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
-import type { TokenService } from '@internal/utils';
+import { extractTokenMarketData, type TokenService } from '@internal/utils';
 import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 import { SOL_DECIMALS } from '@src/constants';
@@ -34,7 +33,7 @@ export const getBalances = async ({
   const moralisService = new MoralisService({ proxyApiUrl });
   const coingeckoAssetId = network.pricingProviders?.coingecko.nativeTokenId ?? '';
   const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId ?? '';
-  const lowercaseCurrency = currency.toLowerCase();
+  const lowercaseCurrency = currency.toLowerCase() as VsCurrencyType;
   const solanaNetwork = getNetworkName(network);
 
   const portfolioResults = await Promise.all(
@@ -55,15 +54,11 @@ export const getBalances = async ({
     coingeckoAssetId
       ? await tokenService.getSimplePrice({
           coinIds: [coingeckoAssetId],
-          currencies: [lowercaseCurrency as VsCurrencyType],
+          currencies: [lowercaseCurrency],
         })
       : Promise.resolve(undefined),
     coingeckoPlatformId
-      ? await tokenService.getPricesByAddresses(
-          Array.from(mints),
-          coingeckoPlatformId,
-          lowercaseCurrency as VsCurrencyType,
-        )
+      ? await tokenService.getPricesByAddresses(Array.from(mints), coingeckoPlatformId, lowercaseCurrency)
       : Promise.resolve(undefined),
   ]);
   const [nativePrice, tokenPrices] = tokenPricesPromises.map((promise) =>
@@ -81,11 +76,12 @@ export const getBalances = async ({
     }
 
     const nativeBalanceUnit = new TokenUnit(result.portfolio.nativeBalance.lamports, SOL_DECIMALS, 'SOL');
-    const nativeMarketData = getMarketData(coingeckoAssetId, lowercaseCurrency, nativePrice);
-    const nativeBalanceInCurrency =
-      nativeMarketData.priceInCurrency !== undefined
-        ? nativeBalanceUnit.mul(nativeMarketData.priceInCurrency)
-        : undefined;
+    const { priceInCurrency, marketCap, vol24, change24, tokenId } = extractTokenMarketData(
+      coingeckoAssetId,
+      lowercaseCurrency,
+      nativePrice,
+    );
+    const nativeBalanceInCurrency = priceInCurrency !== undefined ? nativeBalanceUnit.mul(priceInCurrency) : undefined;
 
     const solanaBalance: TokenWithBalanceSVM = {
       type: TokenType.NATIVE,
@@ -97,16 +93,22 @@ export const getBalances = async ({
       balanceInCurrency: nativeBalanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
       balanceCurrencyDisplayValue: nativeBalanceInCurrency?.toDisplay({ fixedDp: 2 }),
       logoUri: network.networkToken.logoUri ?? '',
-      coingeckoId: coingeckoAssetId,
-      ...nativeMarketData,
+      coingeckoId: tokenId ?? '',
+      priceInCurrency,
+      marketCap,
+      vol24,
+      change24,
     };
 
     const tokenBalances = result.portfolio.tokens.reduce(
       (tokensAcc, { amountRaw, symbol, decimals, mint, name, logo }) => {
         const balanceUnit = new TokenUnit(amountRaw, decimals, symbol);
-        const marketData = getMarketData(mint, lowercaseCurrency, tokenPrices);
-        const balanceInCurrency =
-          marketData.priceInCurrency !== undefined ? balanceUnit.mul(marketData.priceInCurrency) : undefined;
+        const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
+          mint,
+          lowercaseCurrency,
+          tokenPrices,
+        );
+        const balanceInCurrency = priceInCurrency !== undefined ? balanceUnit.mul(priceInCurrency) : undefined;
 
         const token: TokenWithBalanceSPL = {
           type: TokenType.SPL,
@@ -120,7 +122,10 @@ export const getBalances = async ({
           balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
           logoUri: logo ?? undefined,
           reputation: null,
-          ...marketData,
+          priceInCurrency,
+          marketCap,
+          vol24,
+          change24,
         };
 
         return {
@@ -140,10 +145,3 @@ export const getBalances = async ({
     };
   }, {} as GetSolanaBalancesResponse);
 };
-
-const getMarketData = (coinIdOrAddress: string, currency: string, prices?: SimplePriceResponse) => ({
-  priceInCurrency: prices?.[coinIdOrAddress ?? '']?.[currency]?.price ?? undefined,
-  marketCap: prices?.[coinIdOrAddress ?? '']?.[currency]?.marketCap ?? undefined,
-  vol24: prices?.[coinIdOrAddress ?? '']?.[currency]?.vol24 ?? undefined,
-  change24: prices?.[coinIdOrAddress ?? '']?.[currency]?.change24 ?? undefined,
-});

@@ -1,7 +1,6 @@
 import {
   type GetBalancesParams,
   type NetworkTokenWithBalance,
-  type Storage,
   type Error,
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
@@ -13,6 +12,7 @@ import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { RpcService } from '../../services/rpc-service/rpc-service';
 import { isERC20Token } from '../../utils/type-utils';
+import { TokenService } from '@internal/utils';
 
 type AccountAddress = string;
 type TokenSymbol = string;
@@ -25,17 +25,16 @@ export const getBalances = async ({
   proxyApiUrl,
   tokenTypes = [TokenType.NATIVE, TokenType.ERC20, TokenType.ERC721, TokenType.ERC1155],
   customTokens = [],
-  storage,
+  tokenService,
   balanceServices = [],
 }: GetBalancesParams & {
   proxyApiUrl: string;
   balanceServices: BalanceServiceInterface[];
-  storage?: Storage;
+  tokenService: TokenService;
 }): Promise<GetEvmBalancesResponse> => {
-  const chainId = network.chainId;
   const services: BalanceServiceInterface[] = [
     ...balanceServices,
-    new RpcService({ network, storage, proxyApiUrl, customTokens }),
+    new RpcService({ network, proxyApiUrl, customTokens, tokenService }),
   ];
 
   const supportingService: BalanceServiceInterface | undefined = await findAsync(
@@ -55,7 +54,8 @@ export const getBalances = async ({
             supportingService.getNativeBalance({
               address,
               currency: currency.toUpperCase() as CurrencyCode,
-              chainId,
+              network,
+              tokenService,
             }),
             address,
           ),
@@ -68,9 +68,10 @@ export const getBalances = async ({
             supportingService.listErc20Balances({
               customTokens: customTokens.filter(isERC20Token),
               currency: currency.toUpperCase() as CurrencyCode,
-              chainId,
+              network,
               address,
               pageSize: 100,
+              tokenService,
             }),
             address,
           ),
@@ -81,7 +82,7 @@ export const getBalances = async ({
         nftTokenPromises.push(
           addIdToPromise(
             supportingService.listNftBalances({
-              chainId,
+              network,
               address,
             }),
             address,

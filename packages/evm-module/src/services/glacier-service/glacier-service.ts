@@ -16,13 +16,21 @@ import {
   type TokenWithBalanceERC20,
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
+  type Network,
 } from '@avalabs/vm-module-types';
 
 import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
-import { DEFAULT_DECIMALS } from '@src/constants';
+import { DEFAULT_DECIMALS } from '../../constants';
 import { ChainId } from '@avalabs/core-chains-sdk';
-import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
-import { GlacierFetchHttpRequest } from '@internal/utils';
+import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
+import {
+  extractTokenMarketData,
+  fetchContractTokensMarketData,
+  getNativeTokenMarketData,
+  GlacierFetchHttpRequest,
+  TokenService,
+} from '@internal/utils';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
@@ -34,9 +42,19 @@ export class EvmGlacierService implements BalanceServiceInterface {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
   supportedChainIds: string[] = [];
+  #tokenService: TokenService;
 
-  constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
+  constructor({
+    glacierApiUrl,
+    headers,
+    tokenService,
+  }: {
+    glacierApiUrl: string;
+    headers?: Record<string, string>;
+    tokenService: TokenService;
+  }) {
     this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
+    this.#tokenService = tokenService;
     /**
      * This is for performance, basically we just cache the health of glacier every 5 seconds and
      * go off of that instead of every request
@@ -130,26 +148,32 @@ export class EvmGlacierService implements BalanceServiceInterface {
   }
 
   async getNativeBalance({
-    chainId,
+    network,
     address,
     currency,
-    coingeckoId,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
-    coingeckoId?: string;
   }): Promise<NetworkTokenWithBalance> {
     try {
+      const chainId = network.chainId;
+      const lowercaseCurrency = currency.toLowerCase() as CurrencyCode;
       const nativeBalance = await this.glacierSdk.evmBalances.getNativeBalance({
         chainId: chainId.toString(),
         address,
-        currency: currency.toLocaleLowerCase() as CurrencyCode,
+        currency: lowercaseCurrency,
+      });
+
+      const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
+        network,
+        tokenService: this.#tokenService,
+        currency: lowercaseCurrency as unknown as VsCurrencyType,
       });
 
       const nativeTokenBalance = nativeBalance.nativeTokenBalance;
       const balance = new TokenUnit(nativeTokenBalance.balance, nativeTokenBalance.decimals, nativeTokenBalance.symbol);
-      const priceInCurrency = nativeTokenBalance.price?.value;
+      const glacierPriceInCurrency = nativeTokenBalance.price?.value;
       const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
 
       return {
@@ -162,8 +186,11 @@ export class EvmGlacierService implements BalanceServiceInterface {
         balanceDisplayValue: balance.toDisplay(),
         balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
         balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
-        priceInCurrency,
-        coingeckoId: coingeckoId ?? '',
+        priceInCurrency: priceInCurrency ?? glacierPriceInCurrency,
+        marketCap,
+        vol24,
+        change24,
+        coingeckoId: tokenId ?? '',
       };
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
@@ -238,12 +265,13 @@ export class EvmGlacierService implements BalanceServiceInterface {
   }
 
   async listNftBalances({
-    chainId,
+    network,
     address,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
   }): Promise<Record<string, NftTokenWithBalance | Error>> {
+    const chainId = network.chainId;
     const balances = await Promise.allSettled([
       this.listErc721Balances({ chainId: chainId.toString(), address }),
       this.listErc1155Balances({ chainId: chainId.toString(), address }),
@@ -289,12 +317,12 @@ export class EvmGlacierService implements BalanceServiceInterface {
   }
 
   async listErc20Balances({
-    chainId,
+    network,
     address,
     currency,
     customTokens,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
     customTokens: ERC20Token[];
@@ -306,16 +334,22 @@ export class EvmGlacierService implements BalanceServiceInterface {
        */
       let nextPageToken: string | undefined = undefined;
       do {
+        const lowercaseCurrency = currency.toLowerCase();
         const response = await this.glacierSdk.evmBalances.listErc20Balances({
-          chainId: chainId.toString(),
+          chainId: network.chainId.toString(),
           address,
-          currency: currency.toLocaleLowerCase() as CurrencyCode,
+          currency: lowercaseCurrency as CurrencyCode,
           pageSize: 100, // glacier has a cap on page size of 100
           pageToken: nextPageToken,
         });
 
         tokensWithBalance.push(
-          ...convertErc20TokenWithBalanceToTokenWithBalance(response.erc20TokenBalances, Number(chainId)),
+          ...(await convertErc20TokenWithBalanceToTokenWithBalance(
+            response.erc20TokenBalances,
+            network,
+            this.#tokenService,
+            lowercaseCurrency as VsCurrencyType,
+          )),
         );
         nextPageToken = response.nextPageToken;
       } while (nextPageToken);
@@ -390,32 +424,50 @@ const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBal
 
 const convertErc20TokenWithBalanceToTokenWithBalance = (
   tokenBalances: Erc20TokenBalance[],
-  chainId: number,
-): TokenWithBalanceERC20[] => {
-  return tokenBalances.map((token: Erc20TokenBalance): TokenWithBalanceERC20 => {
-    const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
-    const balanceDisplayValue = balance.toDisplay();
-    const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
-    const priceInCurrency = token.price?.value;
-    const balanceInCurrency =
-      priceInCurrency !== undefined
-        ? balance.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
-        : undefined;
+  network: Network,
+  tokenService: TokenService,
+  currency: VsCurrencyType,
+): Promise<TokenWithBalanceERC20[]> => {
+  return Promise.all(
+    tokenBalances.map(async (token: Erc20TokenBalance): Promise<TokenWithBalanceERC20> => {
+      const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
+      const balanceDisplayValue = balance.toDisplay();
+      const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
+      const tokenAddress = token.address.toLowerCase();
+      const simplePriceResponse = await fetchContractTokensMarketData({
+        tokenAddresses: [tokenAddress],
+        network,
+        tokenService,
+        currency,
+      });
+      const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
+        tokenAddress,
+        currency,
+        simplePriceResponse,
+      );
+      const balanceInCurrency =
+        priceInCurrency !== undefined
+          ? balance.mul(priceInCurrency).toDisplay({ fixedDp: 2, asNumber: true })
+          : undefined;
 
-    return {
-      chainId,
-      address: token.address,
-      name: token.name,
-      symbol: token.symbol,
-      decimals: token.decimals,
-      logoUri: token.logoUri,
-      balance: balance.toSubUnit(),
-      balanceCurrencyDisplayValue,
-      balanceDisplayValue,
-      balanceInCurrency,
-      priceInCurrency,
-      reputation: token.tokenReputation,
-      type: TokenType.ERC20,
-    };
-  });
+      return {
+        chainId: network.chainId,
+        address: token.address,
+        name: token.name,
+        symbol: token.symbol,
+        decimals: token.decimals,
+        logoUri: token.logoUri,
+        balance: balance.toSubUnit(),
+        balanceCurrencyDisplayValue,
+        balanceDisplayValue,
+        balanceInCurrency,
+        priceInCurrency,
+        marketCap,
+        vol24,
+        change24,
+        reputation: token.tokenReputation,
+        type: TokenType.ERC20,
+      };
+    }),
+  );
 };

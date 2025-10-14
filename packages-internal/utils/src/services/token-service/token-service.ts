@@ -32,7 +32,7 @@ export class TokenService {
   }: SimplePriceParams): Promise<SimplePriceResponse | undefined> {
     let data: SimplePriceResponse | undefined;
 
-    const key = coinIds ? `${arrayHash(coinIds)}-${currencies.toString()}` : `${currencies.toString()}`;
+    const key = coinIds.length > 0 ? `${arrayHash(coinIds)}-${currencies.toString()}` : `${currencies.toString()}`;
 
     const cacheId = `getSimplePrice-${key}`;
 

@@ -2,10 +2,9 @@ import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@av
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
-import { TokenService } from '@internal/utils';
+import { getNativeTokenMarketData, TokenService } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
-import { extractTokenMarketData } from '../../utils/extract-token-market-data';
 
 type GetBtcBalancesResponse = Record<string, Record<string, TokenWithBalanceBTC>>;
 
@@ -13,6 +12,7 @@ type GetBTCBalancesParams = Omit<GetBalancesParams, 'currency'> & {
   proxyApiUrl: string;
   withScripts?: boolean;
   currency?: string;
+  tokenService?: TokenService;
 };
 
 export const getBalances = async ({
@@ -21,27 +21,21 @@ export const getBalances = async ({
   network,
   withScripts = false,
   proxyApiUrl,
-  storage,
+  tokenService,
 }: GetBTCBalancesParams): Promise<GetBtcBalancesResponse> => {
   const provider = await getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });
 
-  const tokenService = new TokenService({ proxyApiUrl, storage });
-  const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
-  const withPrices = typeof currency === 'string' && typeof coingeckoTokenId === 'string';
-  const marketData = withPrices
-    ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoTokenId],
-        currencies: [currency] as VsCurrencyType[],
-      })
-    : undefined;
-  const { priceInCurrency, change24, marketCap, vol24 } = extractTokenMarketData(
-    coingeckoTokenId ?? '',
-    currency,
-    marketData,
-  );
+  const { priceInCurrency, change24, marketCap, vol24, tokenId } = tokenService
+    ? await getNativeTokenMarketData({ network, tokenService, currency: currency?.toLowerCase() as VsCurrencyType })
+    : {
+        priceInCurrency: undefined,
+        marketCap: undefined,
+        vol24: undefined,
+        change24: undefined,
+      };
 
   const balances = await Promise.allSettled(
     addresses.map(async (address) => {
@@ -72,7 +66,7 @@ export const getBalances = async ({
             ...network.networkToken,
             utxos,
             utxosUnconfirmed,
-            coingeckoId: coingeckoTokenId ?? '',
+            coingeckoId: tokenId ?? '',
             type: TokenType.NATIVE,
             balance: balance.toSubUnit(),
             balanceDisplayValue,

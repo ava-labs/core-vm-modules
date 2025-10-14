@@ -41,8 +41,9 @@ export class AvalancheModule implements Module {
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
+  #tokenService: TokenService;
 
-  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, cacheStorage }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#appInfo = appInfo;
     this.#glacierService = new AvalancheGlacierService({
@@ -52,6 +53,7 @@ export class AvalancheModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
     this.#approvalController = approvalController;
+    this.#tokenService = new TokenService({ storage: cacheStorage, proxyApiUrl: this.#proxyApiUrl });
   }
 
   getProvider(network: Network): Promise<Avalanche.JsonRpcProvider> {
@@ -67,9 +69,14 @@ export class AvalancheModule implements Module {
     });
   }
 
-  getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
-    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
-    return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
+  getBalances({ addresses, network, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
+    return getBalances({
+      addresses,
+      currency,
+      network,
+      glacierService: this.#glacierService,
+      tokenService: this.#tokenService,
+    });
   }
 
   getManifest(): Manifest | undefined {

@@ -5,7 +5,6 @@ import {
   type Network,
   type NetworkContractToken,
   type NetworkTokenWithBalance,
-  type Storage,
   type Error,
   TokenType,
   type TokenWithBalanceEVM,
@@ -17,29 +16,34 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { ethers } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import { getProvider } from '../../utils/get-provider';
-import { TokenService } from '@internal/utils';
 import { getTokens } from '../../handlers/get-tokens/get-tokens';
 import { isERC20Token } from '../../utils/type-utils';
+import {
+  extractTokenMarketData,
+  fetchContractTokensMarketData,
+  getNativeTokenMarketData,
+  type TokenService,
+} from '@internal/utils';
 
 export class RpcService implements BalanceServiceInterface {
   #network: Network;
-  #storage: Storage | undefined;
+  #tokenService: TokenService;
   #proxyApiUrl: string;
   #customTokens: NetworkContractToken[];
 
   constructor({
     network,
-    storage,
+    tokenService,
     proxyApiUrl,
     customTokens,
   }: {
     network: Network;
-    storage?: Storage;
+    tokenService: TokenService;
     proxyApiUrl: string;
     customTokens: NetworkContractToken[];
   }) {
     this.#network = network;
-    this.#storage = storage;
+    this.#tokenService = tokenService;
     this.#proxyApiUrl = proxyApiUrl;
     this.#customTokens = customTokens;
   }
@@ -49,35 +53,28 @@ export class RpcService implements BalanceServiceInterface {
   }
 
   async getNativeBalance({
-    chainId,
+    network,
     address,
     currency,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
   }): Promise<NetworkTokenWithBalance> {
     const provider = await getProvider({
-      chainId,
+      chainId: network.chainId,
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
     });
 
-    const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
     const networkToken = this.#network.networkToken;
-    const tokenService = new TokenService({ storage: this.#storage, proxyApiUrl: this.#proxyApiUrl });
-    const simplePriceResponse = coingeckoTokenId
-      ? await tokenService.getSimplePrice({
-          coinIds: [coingeckoTokenId],
-          currencies: [currency] as unknown as VsCurrencyType[],
-        })
-      : {};
 
-    const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? undefined;
-    const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? undefined;
-    const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? undefined;
-    const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
+    const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
+      network,
+      tokenService: this.#tokenService,
+      currency: currency.toLowerCase() as VsCurrencyType,
+    });
 
     const balance = await provider.getBalance(address);
     const balanceUnit = new TokenUnit(balance, networkToken.decimals, networkToken.symbol);
@@ -85,7 +82,7 @@ export class RpcService implements BalanceServiceInterface {
 
     return {
       ...networkToken,
-      coingeckoId: coingeckoTokenId ?? '',
+      coingeckoId: tokenId ?? '',
       type: TokenType.NATIVE,
       balance,
       balanceDisplayValue: balanceUnit.toDisplay(),
@@ -99,26 +96,22 @@ export class RpcService implements BalanceServiceInterface {
   }
 
   async listErc20Balances({
-    chainId,
+    network,
     address,
     currency,
   }: {
-    chainId: number;
+    network: Network;
     address: string;
     currency: CurrencyCode;
-    pageSize: number;
-    pageToken?: string;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     const provider = await getProvider({
-      chainId,
+      chainId: network.chainId,
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
     });
 
-    const coingeckoPlatformId = this.#network.pricingProviders?.coingecko.assetPlatformId;
-    const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
-    const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl: this.#proxyApiUrl });
+    const tokens = await getTokens({ chainId: Number(network.chainId), proxyApiUrl: this.#proxyApiUrl });
     const tokenAddresses = tokens.map((token) => token.address);
     const erc20TokenList = [...tokens, ...this.#customTokens].filter(isERC20Token);
 
@@ -137,15 +130,12 @@ export class RpcService implements BalanceServiceInterface {
       return addIdToPromise(getTokenWithBalance(token), token.address);
     });
     const tokenBalancesResults = await settleAllIdPromises(tokenBalancePromises);
-    const tokenService = new TokenService({ storage: this.#storage, proxyApiUrl: this.#proxyApiUrl });
-    const simplePriceResponse =
-      (coingeckoPlatformId &&
-        (await tokenService.getPricesByAddresses(
-          tokenAddresses,
-          coingeckoPlatformId,
-          currency as unknown as VsCurrencyType,
-        ))) ||
-      {};
+    const simplePriceResponse = await fetchContractTokensMarketData({
+      tokenAddresses,
+      network,
+      tokenService: this.#tokenService,
+      currency: currency as unknown as VsCurrencyType,
+    });
 
     const tokenIds = Object.keys(tokenBalancesResults);
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
@@ -160,10 +150,11 @@ export class RpcService implements BalanceServiceInterface {
         continue;
       }
 
-      const priceInCurrency = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.price ?? undefined;
-      const marketCap = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.marketCap ?? undefined;
-      const vol24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.vol24 ?? undefined;
-      const change24 = simplePriceResponse?.[coingeckoTokenId ?? '']?.[currency]?.change24 ?? undefined;
+      const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
+        tokenBalance.address,
+        currency as unknown as VsCurrencyType,
+        simplePriceResponse,
+      );
 
       const balance = new TokenUnit(tokenBalance.balance, tokenBalance.decimals, tokenBalance.symbol);
       const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;

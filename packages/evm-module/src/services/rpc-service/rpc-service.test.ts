@@ -13,9 +13,13 @@ import { getTokens } from '../../handlers/get-tokens/get-tokens';
 import { ethers } from 'ethers';
 
 jest.mock('../../utils/get-provider');
-jest.mock('@internal/utils/');
 jest.mock('../../handlers/get-tokens/get-tokens');
 jest.mock('ethers');
+
+const mockTokenService = {
+  getSimplePrice: jest.fn(),
+  getPricesByAddresses: jest.fn(),
+} as unknown as jest.Mocked<TokenService>;
 
 describe('RpcService', () => {
   let rpcService: RpcService;
@@ -47,6 +51,7 @@ describe('RpcService', () => {
       network: mockNetwork,
       proxyApiUrl: mockProxyApiUrl,
       customTokens: mockCustomTokens,
+      tokenService: mockTokenService,
     });
   });
 
@@ -60,7 +65,6 @@ describe('RpcService', () => {
   describe('getNativeBalance', () => {
     it('should return the correct native balance', async () => {
       const mockAddress = '0xMockAddress';
-      const mockChainId = 1;
       const mockCurrency = 'usd' as CurrencyCode;
       const mockBalance = 1000000000000000000n;
 
@@ -69,29 +73,25 @@ describe('RpcService', () => {
       };
 
       (getProvider as jest.Mock).mockReturnValue(mockProvider);
-      const mockTokenService = {
-        getSimplePrice: jest.fn().mockResolvedValue({
-          'mock-token-id': {
-            usd: {
-              price: 1000,
-              marketCap: 1000000,
-              vol24: 50000,
-              change24: 2.5,
-            },
+      mockTokenService.getSimplePrice.mockResolvedValue({
+        'mock-token-id': {
+          usd: {
+            price: 1000,
+            marketCap: 1000000,
+            vol24: 50000,
+            change24: 2.5,
           },
-        }),
-      };
-
-      (TokenService as jest.Mock).mockReturnValue(mockTokenService);
+        },
+      });
 
       const result = await rpcService.getNativeBalance({
-        chainId: mockChainId,
+        network: mockNetwork,
         address: mockAddress,
         currency: mockCurrency,
       });
 
       expect(getProvider).toHaveBeenCalledWith({
-        chainId: mockChainId,
+        chainId: mockNetwork.chainId,
         chainName: mockNetwork.chainName,
         rpcUrl: mockNetwork.rpcUrl,
         multiContractAddress: mockNetwork.utilityAddresses?.multicall,
@@ -131,26 +131,21 @@ describe('RpcService', () => {
       };
       (ethers.Contract as jest.Mock).mockReturnValue(mockContract);
 
-      const mockTokenService = {
-        getPricesByAddresses: jest.fn().mockResolvedValue({
-          'mock-token-id': {
-            usd: {
-              price: 10,
-              marketCap: 100000,
-              vol24: 5000,
-              change24: 1.5,
-            },
+      mockTokenService.getPricesByAddresses.mockResolvedValue({
+        '0xMockTokenAddress': {
+          usd: {
+            price: 10,
+            marketCap: 100000,
+            vol24: 5000,
+            change24: 1.5,
           },
-        }),
-      };
-
-      (TokenService as jest.Mock).mockReturnValue(mockTokenService);
+        },
+      });
 
       const result = await rpcService.listErc20Balances({
-        chainId: mockChainId,
+        network: mockNetwork,
         address: mockAddress,
         currency: mockCurrency,
-        pageSize: 10,
       });
 
       expect(getProvider).toHaveBeenCalledWith({

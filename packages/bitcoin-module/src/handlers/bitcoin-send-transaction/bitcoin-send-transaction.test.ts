@@ -14,6 +14,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
+import type { TokenService } from '@internal/utils';
 
 jest.mock('./schema');
 jest.mock('../../utils/get-provider');
@@ -123,6 +124,11 @@ const PROXY_API_URL = 'https://proxy-api.avax.network';
 
 const testParams = { from: 'from', to: 'to', amount: 1, feeRate: 1 };
 
+const mockTokenService = {
+  getSimplePrice: jest.fn(),
+  getPricesByAddresses: jest.fn(),
+} as unknown as jest.Mocked<TokenService>;
+
 const testRequestParams = () => ({
   request: {
     requestId: '1',
@@ -135,6 +141,7 @@ const testRequestParams = () => ({
   network: testNetwork,
   approvalController: mockApprovalController,
   proxyApiUrl: PROXY_API_URL,
+  tokenService: mockTokenService,
 });
 
 const testInputs = [

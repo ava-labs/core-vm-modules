@@ -28,9 +28,19 @@ jest.mock('../get-tokens/get-tokens');
 jest.mock('@internal/utils');
 
 describe('getBalances', () => {
+  const mockTokenService = {
+    getSimplePrice: jest.fn(),
+    getPricesByAddresses: jest.fn(),
+  } as unknown as jest.Mocked<TokenService>;
   const { proxyApiUrl } = getEnv(Environment.DEV);
-  const glacierService = new EvmGlacierService({ glacierApiUrl: proxyApiUrl }) as jest.Mocked<EvmGlacierService>;
-  const deBankService = new DeBankService({ proxyApiUrl }) as jest.Mocked<DeBankService>;
+  const glacierService = new EvmGlacierService({
+    glacierApiUrl: proxyApiUrl,
+    tokenService: mockTokenService,
+  }) as jest.Mocked<EvmGlacierService>;
+  const deBankService = new DeBankService({
+    proxyApiUrl,
+    tokenService: mockTokenService,
+  }) as jest.Mocked<DeBankService>;
   const network = {
     chainId: 1,
     chainName: 'Ethereum',
@@ -65,6 +75,7 @@ describe('getBalances', () => {
       proxyApiUrl,
       customTokens,
       balanceServices: [glacierService, deBankService],
+      tokenService: mockTokenService,
     });
 
     expect(result).toEqual({
@@ -86,6 +97,7 @@ describe('getBalances', () => {
       customTokens: [],
       network: {} as Network,
       proxyApiUrl: '',
+      tokenService: mockTokenService,
     }) as jest.Mocked<RpcService>;
     const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
     mockFindAsync.mockResolvedValue(mockedRpcService);
@@ -110,6 +122,7 @@ describe('getBalances', () => {
       network,
       proxyApiUrl,
       customTokens,
+      tokenService: mockTokenService,
       balanceServices: [glacierService, deBankService],
     });
 
@@ -134,6 +147,7 @@ describe('getBalances', () => {
       proxyApiUrl,
       customTokens,
       balanceServices: [glacierService, deBankService],
+      tokenService: mockTokenService,
     });
 
     expect(result).toEqual({
@@ -166,6 +180,7 @@ describe('getBalances', () => {
         proxyApiUrl,
         customTokens,
         balanceServices: [glacierService, deBankService],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -197,6 +212,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.NATIVE, TokenType.ERC20],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -213,6 +229,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.NATIVE],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -229,6 +246,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.ERC20],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).not.toHaveBeenCalled();

@@ -11,7 +11,7 @@ import {
   type ListPChainBalancesResponse,
   type ListXChainBalancesResponse,
 } from '@avalabs/glacier-sdk';
-import type { TokenService } from '@internal/utils';
+import { getNativeTokenMarketData, type TokenService } from '@internal/utils';
 import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { isPchainBalance, isXchainBalance } from './utils';
 import { convertPChainBalance } from './convert-p-chain-balance';
@@ -36,11 +36,8 @@ export const getBalances = async ({
     return Promise.reject('Glacier is unhealthy. Try again later.');
   }
 
-  const lowercaseCurrency = currency.toLowerCase();
   const address = addresses[0] ?? '';
   const networkToken = network.networkToken;
-  const coingeckoId = network.pricingProviders?.coingecko.nativeTokenId;
-
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
   const glacierNetwork = network.isTestnet ? Network.FUJI : Network.MAINNET;
 
@@ -52,17 +49,11 @@ export const getBalances = async ({
     })
     .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances);
 
-  const simplePriceResponse = coingeckoId
-    ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoId],
-        currencies: [lowercaseCurrency] as VsCurrencyType[],
-      })
-    : {};
-
-  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.price ?? undefined;
-  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.marketCap ?? undefined;
-  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.vol24 ?? undefined;
-  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.change24 ?? undefined;
+  const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
+    network,
+    tokenService,
+    currency: currency.toLowerCase() as VsCurrencyType,
+  });
 
   let balance: TokenWithBalanceAVM | TokenWithBalancePVM;
   if (isPchainBalance(chainBalances)) {
@@ -73,7 +64,7 @@ export const getBalances = async ({
       marketCap,
       vol24,
       change24,
-      coingeckoId: coingeckoId ?? '',
+      coingeckoId: tokenId ?? '',
       avaxAssetId: provider.getContext().avaxAssetID,
     });
 
@@ -92,7 +83,7 @@ export const getBalances = async ({
       marketCap,
       vol24,
       change24,
-      coingeckoId: coingeckoId ?? '',
+      coingeckoId: tokenId ?? '',
       avaxAssetId: provider.getContext().avaxAssetID,
     });
     return {

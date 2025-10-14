@@ -8,6 +8,11 @@ import { devEnv, prodEnv } from './env';
 jest.mock('./handlers/get-network-fee/get-network-fee');
 jest.mock('./handlers/get-balances/get-balances');
 
+const MOCK_STORAGE = {
+  get: jest.fn(),
+  set: jest.fn(),
+};
+
 describe('bitcoin-module', () => {
   describe('getNetworkFee()', () => {
     it('uses the get-network-fee handler', async () => {
@@ -15,6 +20,7 @@ describe('bitcoin-module', () => {
         environment: Environment.DEV,
         approvalController: {} as any, // eslint-disable-line
         appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
+        cacheStorage: MOCK_STORAGE,
       });
       await devModule.getNetworkFee({ isTestnet: true } as Network);
 
@@ -27,6 +33,7 @@ describe('bitcoin-module', () => {
         environment: Environment.PRODUCTION,
         approvalController: {} as any, // eslint-disable-line
         appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
+        cacheStorage: MOCK_STORAGE,
       });
       await prodModule.getNetworkFee({ isTestnet: false } as Network);
 
@@ -49,24 +56,32 @@ describe('bitcoin-module', () => {
         environment: Environment.DEV,
         approvalController: {} as any, // eslint-disable-line
         appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
+        cacheStorage: MOCK_STORAGE,
       });
       await devModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({
         ...params,
         proxyApiUrl: devEnv.proxyApiUrl,
+        tokenService: expect.objectContaining({
+          transformSimplePriceResponse: expect.any(Function),
+        }),
       });
 
       const prodModule = new BitcoinModule({
         environment: Environment.PRODUCTION,
         approvalController: {} as any, // eslint-disable-line
         appInfo: { name: AppName.CORE_MOBILE_IOS, version: '1.0' },
+        cacheStorage: MOCK_STORAGE,
       });
       await prodModule.getBalances(params);
 
       expect(getBalances).toHaveBeenCalledWith({
         ...params,
         proxyApiUrl: prodEnv.proxyApiUrl,
+        tokenService: expect.objectContaining({
+          transformSimplePriceResponse: expect.any(Function),
+        }),
       });
     });
   });

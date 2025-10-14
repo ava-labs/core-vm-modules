@@ -1,19 +1,24 @@
 import { DeBankService } from './debank-service';
 import { DeBank, type DeBankChainInfo, type DeBankToken } from './de-bank';
 import { CurrencyCode } from '@avalabs/glacier-sdk';
-import { TokenType } from '@avalabs/vm-module-types';
+import { TokenType, type Network } from '@avalabs/vm-module-types';
+import type { TokenService } from '@internal/utils';
 
 jest.mock('./de-bank');
 
 describe('DeBankService', () => {
   let deBankService: DeBankService;
   let mockDeBank: jest.Mocked<DeBank>;
+  const mockTokenService = {
+    getSimplePrice: jest.fn(),
+    getPricesByAddresses: jest.fn(),
+  } as unknown as jest.Mocked<TokenService>;
 
   beforeEach(() => {
     mockDeBank = new DeBank('http://fake-url') as jest.Mocked<DeBank>;
     (DeBank as jest.Mock).mockReturnValue(mockDeBank);
 
-    deBankService = new DeBankService({ proxyApiUrl: 'http://fake-url' });
+    deBankService = new DeBankService({ proxyApiUrl: 'http://fake-url', tokenService: mockTokenService });
   });
 
   afterEach(() => {
@@ -42,7 +47,7 @@ describe('DeBankService', () => {
     it('should throw an error if the address is not valid', async () => {
       await expect(
         deBankService.getNativeBalance({
-          chainId: 1,
+          network: { chainId: 1 } as Network,
           address: 'invalidAddress',
           currency: CurrencyCode.USD,
         }),
@@ -53,7 +58,7 @@ describe('DeBankService', () => {
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
       await expect(
         deBankService.getNativeBalance({
-          chainId: 999,
+          network: { chainId: 999 } as Network,
           address: '0x1234567890abcdef1234567890abcdef12345678',
           currency: CurrencyCode.USD,
         }),
@@ -70,13 +75,16 @@ describe('DeBankService', () => {
         logo_url: 'http://logo.url',
         price: 2000,
       } as unknown as DeBankToken;
+      mockTokenService.getSimplePrice.mockResolvedValue({
+        ethereum: { usd: { price: 2000, marketCap: 1000000, vol24: 10000, change24: 1 } },
+      });
 
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 42161, id: 'arb' } as unknown as DeBankChainInfo]);
       mockDeBank.getChainInfo.mockResolvedValue(mockChainInfo);
       mockDeBank.getTokenBalance.mockResolvedValue(mockTokenBalance);
 
       const result = await deBankService.getNativeBalance({
-        chainId: 42161,
+        network: { chainId: 42161, pricingProviders: { coingecko: { nativeTokenId: 'ethereum' } } } as Network,
         address: '0x1234567890abcdef1234567890abcdef12345678',
         currency: CurrencyCode.USD,
       });
@@ -92,6 +100,10 @@ describe('DeBankService', () => {
         balanceInCurrency: 2000,
         balanceCurrencyDisplayValue: '2,000.00',
         priceInCurrency: 2000,
+        marketCap: 1000000,
+        vol24: 10000,
+        change24: 1,
+        coingeckoId: 'ethereum',
       });
     });
   });
@@ -100,10 +112,9 @@ describe('DeBankService', () => {
     it('should throw an error if the address is not valid', async () => {
       await expect(
         deBankService.listErc20Balances({
-          chainId: 1,
+          network: { chainId: 1 } as Network,
           address: 'invalidAddress',
           currency: CurrencyCode.USD,
-          pageSize: 10,
         }),
       ).rejects.toThrow('listErc20Balances: not valid address');
     });
@@ -112,10 +123,9 @@ describe('DeBankService', () => {
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
       await expect(
         deBankService.listErc20Balances({
-          chainId: 999,
+          network: { chainId: 999 } as Network,
           address: '0x1234567890abcdef1234567890abcdef12345678',
           currency: CurrencyCode.USD,
-          pageSize: 10,
         }),
       ).rejects.toThrow('getNativeBalance: not valid chainId: 999');
     });
@@ -196,12 +206,15 @@ describe('DeBankService', () => {
         mockTokenBalance2,
         mockTokenBalance3,
       ]);
+      mockTokenService.getPricesByAddresses.mockResolvedValue({
+        '0x1': { usd: { price: 1, marketCap: 1000000, vol24: 10000, change24: 1 } },
+        '0x2': { usd: { price: 1, marketCap: 1000000, vol24: 10000, change24: 1 } },
+      });
 
       const result = await deBankService.listErc20Balances({
-        chainId: 42161,
+        network: { chainId: 42161, pricingProviders: { coingecko: { assetPlatformId: 'ethereum' } } } as Network,
         address: '0x1234567890abcdef1234567890abcdef12345678',
         currency: CurrencyCode.USD,
-        pageSize: 10,
       });
 
       expect(result).toEqual({
@@ -219,6 +232,9 @@ describe('DeBankService', () => {
           priceInCurrency: 1,
           type: TokenType.ERC20,
           reputation: null,
+          change24: 1,
+          marketCap: 1000000,
+          vol24: 10000,
         },
         '0x2': {
           chainId: 1,
@@ -234,6 +250,9 @@ describe('DeBankService', () => {
           priceInCurrency: 1,
           type: TokenType.ERC20,
           reputation: null,
+          change24: 1,
+          marketCap: 1000000,
+          vol24: 10000,
         },
       });
     });
@@ -243,7 +262,7 @@ describe('DeBankService', () => {
     it('should throw an error if the address is not valid', async () => {
       await expect(
         deBankService.listNftBalances({
-          chainId: 1,
+          network: { chainId: 1 } as Network,
           address: 'invalidAddress',
         }),
       ).rejects.toThrow('listNftBalances: not valid address');
@@ -253,7 +272,7 @@ describe('DeBankService', () => {
       mockDeBank.getChainList.mockResolvedValue([{ community_id: 1 } as unknown as DeBankChainInfo]);
       await expect(
         deBankService.listNftBalances({
-          chainId: 888,
+          network: { chainId: 888 } as Network,
           address: '0x1234567890abcdef1234567890abcdef12345678',
         }),
       ).rejects.toThrow('getNativeBalance: not valid chainId: 888');
@@ -285,7 +304,10 @@ describe('DeBankService', () => {
         },
       ]);
 
-      const result = await deBankService.listNftBalances({ chainId: 1, address: '0x1223456789' });
+      const result = await deBankService.listNftBalances({
+        network: { chainId: 1 } as Network,
+        address: '0x1223456789',
+      });
 
       expect(result).toEqual({
         '0x9876-someid': {
