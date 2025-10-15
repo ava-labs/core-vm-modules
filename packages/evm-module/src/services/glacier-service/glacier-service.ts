@@ -158,17 +158,17 @@ export class EvmGlacierService implements BalanceServiceInterface {
   }): Promise<NetworkTokenWithBalance> {
     try {
       const chainId = network.chainId;
-      const lowercaseCurrency = currency.toLowerCase() as CurrencyCode;
+      const lowercaseCurrency = currency.toLowerCase();
       const nativeBalance = await this.glacierSdk.evmBalances.getNativeBalance({
         chainId: chainId.toString(),
         address,
-        currency: lowercaseCurrency,
+        currency: lowercaseCurrency as CurrencyCode,
       });
 
       const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
         network,
         tokenService: this.#tokenService,
-        currency: lowercaseCurrency as unknown as VsCurrencyType,
+        currency: lowercaseCurrency as VsCurrencyType,
       });
 
       const nativeTokenBalance = nativeBalance.nativeTokenBalance;
