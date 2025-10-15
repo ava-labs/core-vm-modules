@@ -422,24 +422,25 @@ const convertErc20TokenToTokenWithBalance = (tokens: ERC20Token[]): TokenWithBal
   });
 };
 
-const convertErc20TokenWithBalanceToTokenWithBalance = (
+const convertErc20TokenWithBalanceToTokenWithBalance = async (
   tokenBalances: Erc20TokenBalance[],
   network: Network,
   tokenService: TokenService,
   currency: VsCurrencyType,
 ): Promise<TokenWithBalanceERC20[]> => {
+  const simplePriceResponse = await fetchContractTokensMarketData({
+    tokenAddresses: tokenBalances.map((token) => token.address.toLowerCase()),
+    network,
+    tokenService,
+    currency,
+  });
+
   return Promise.all(
     tokenBalances.map(async (token: Erc20TokenBalance): Promise<TokenWithBalanceERC20> => {
       const balance = new TokenUnit(token.balance, token.decimals, token.symbol);
       const balanceDisplayValue = balance.toDisplay();
       const balanceCurrencyDisplayValue = token.balanceValue?.value.toString();
       const tokenAddress = token.address.toLowerCase();
-      const simplePriceResponse = await fetchContractTokensMarketData({
-        tokenAddresses: [tokenAddress],
-        network,
-        tokenService,
-        currency,
-      });
       const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
         tokenAddress,
         currency,

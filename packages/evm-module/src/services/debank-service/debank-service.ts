@@ -121,6 +121,13 @@ export class DeBankService implements BalanceServiceInterface {
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
+    const lowercaseCurrency = currency.toLowerCase() as unknown as VsCurrencyType;
+    const simplePriceResponse = await fetchContractTokensMarketData({
+      tokenAddresses: tokenBalances.map((token) => token.id.toLowerCase()),
+      network,
+      tokenService: this.#tokenService,
+      currency: lowercaseCurrency,
+    });
     for (const tokenBalance of tokenBalances) {
       // skip native token or tokens which are not core tokens
       if (tokenBalance.id === chainInfo.native_token_id || tokenBalance.is_core === false) {
@@ -129,13 +136,7 @@ export class DeBankService implements BalanceServiceInterface {
 
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
-      const lowercaseCurrency = currency.toLowerCase() as unknown as VsCurrencyType;
-      const simplePriceResponse = await fetchContractTokensMarketData({
-        tokenAddresses: [tokenBalance.id],
-        network,
-        tokenService: this.#tokenService,
-        currency: lowercaseCurrency,
-      });
+
       const { priceInCurrency, marketCap, vol24, change24 } = extractTokenMarketData(
         tokenBalance.id.toLowerCase() ?? '',
         lowercaseCurrency,
