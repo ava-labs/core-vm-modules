@@ -119,21 +119,20 @@ export class DeBankService implements BalanceServiceInterface {
     if (!isHexString(address)) throw rpcErrors.invalidParams('listErc20Balances: not valid address');
     const { chainInfo, chainIdString } = await this.#getChainInfo(network.chainId);
     const tokenBalances = await this.#deBank.getTokensBalanceOnChain({ chainId: chainIdString, address });
+    // skip native token or tokens which are not core tokens
+    const filteredTokenBalances = tokenBalances.filter(
+      (token) => token.id !== chainInfo.native_token_id && token.is_core === true,
+    );
 
     const erc20TokenBalances: Record<TokenId, TokenWithBalanceEVM | Error> = {};
     const lowercaseCurrency = currency.toLowerCase() as unknown as VsCurrencyType;
     const simplePriceResponse = await fetchContractTokensMarketData({
-      tokenAddresses: tokenBalances.map((token) => token.id.toLowerCase()),
+      tokenAddresses: filteredTokenBalances.map((token) => token.id.toLowerCase()),
       network,
       tokenService: this.#tokenService,
       currency: lowercaseCurrency,
     });
-    for (const tokenBalance of tokenBalances) {
-      // skip native token or tokens which are not core tokens
-      if (tokenBalance.id === chainInfo.native_token_id || tokenBalance.is_core === false) {
-        continue;
-      }
-
+    for (const tokenBalance of filteredTokenBalances) {
       const tokenUnit = new TokenUnit(tokenBalance.raw_amount, tokenBalance.decimals, tokenBalance.symbol);
       const balanceDisplayValue = tokenUnit.toDisplay();
 
