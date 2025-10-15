@@ -165,7 +165,13 @@ export class EvmGlacierService implements BalanceServiceInterface {
         currency: lowercaseCurrency as CurrencyCode,
       });
 
-      const { priceInCurrency, marketCap, vol24, change24, tokenId } = await getNativeTokenMarketData({
+      const {
+        priceInCurrency: tokenServicePriceInCurrency,
+        marketCap,
+        vol24,
+        change24,
+        tokenId,
+      } = await getNativeTokenMarketData({
         network,
         tokenService: this.#tokenService,
         currency: lowercaseCurrency as VsCurrencyType,
@@ -173,7 +179,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
 
       const nativeTokenBalance = nativeBalance.nativeTokenBalance;
       const balance = new TokenUnit(nativeTokenBalance.balance, nativeTokenBalance.decimals, nativeTokenBalance.symbol);
-      const glacierPriceInCurrency = nativeTokenBalance.price?.value;
+      const priceInCurrency = tokenServicePriceInCurrency ?? nativeTokenBalance.price?.value;
       const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
 
       return {
@@ -186,7 +192,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
         balanceDisplayValue: balance.toDisplay(),
         balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
         balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
-        priceInCurrency: priceInCurrency ?? glacierPriceInCurrency,
+        priceInCurrency,
         marketCap,
         vol24,
         change24,

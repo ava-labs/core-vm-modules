@@ -69,7 +69,6 @@ export const getBalances = async ({
               currency: currency.toUpperCase() as CurrencyCode,
               network,
               address,
-              pageSize: 100,
             }),
             address,
           ),

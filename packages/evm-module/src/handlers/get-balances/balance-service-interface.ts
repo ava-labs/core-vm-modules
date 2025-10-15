@@ -24,8 +24,6 @@ export interface BalanceServiceInterface {
     network: Network;
     address: string;
     currency: CurrencyCode;
-    pageSize: number;
-    pageToken?: string;
     customTokens: ERC20Token[];
   }): Promise<Record<string, TokenWithBalanceEVM | Error>>;
 
