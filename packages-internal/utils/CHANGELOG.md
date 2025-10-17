@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.5.4
+
+### Patch Changes
+
+- ba3878e: Use prices from the watchlist for native tokens
+
 ## 0.5.3
 
 ### Patch Changes
