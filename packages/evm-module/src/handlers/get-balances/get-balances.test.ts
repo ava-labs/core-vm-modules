@@ -27,7 +27,7 @@ jest.mock('../../services/rpc-service/rpc-service');
 jest.mock('../get-tokens/get-tokens');
 jest.mock('@internal/utils');
 
-describe.skip('getBalances', () => {
+describe('getBalances', () => {
   const { proxyApiUrl } = getEnv(Environment.DEV);
   const glacierService = new EvmGlacierService({ glacierApiUrl: proxyApiUrl }) as jest.Mocked<EvmGlacierService>;
   const deBankService = new DeBankService({ proxyApiUrl }) as jest.Mocked<DeBankService>;
@@ -146,6 +146,47 @@ describe.skip('getBalances', () => {
       },
       '0xAddress2': {
         error: 'listErc20Balances failed: unknown error',
+      },
+    });
+  });
+
+  it('should retrieve AVAX price from the watchlist', async () => {
+    const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+    mockFindAsync.mockResolvedValue(glacierService);
+    mockTokenService.getWatchlistDataForToken.mockResolvedValue({
+      priceInCurrency: 100,
+      marketCap: 1000000,
+      vol24: 100000,
+      change24: 10,
+    });
+    glacierService.isNetworkSupported.mockResolvedValue(true);
+    glacierService.getNativeBalance.mockResolvedValue({
+      symbol: 'AVAX',
+      priceInCurrency: 1,
+      balance: 1n,
+    } as NetworkTokenWithBalance);
+
+    const result = await getBalances({
+      addresses: ['0xAddress1'],
+      currency,
+      network: { ...network, networkToken: { symbol: 'AVAX', decimals: 18, name: 'AVAX' } },
+      proxyApiUrl,
+      tokenTypes: [TokenType.NATIVE],
+      customTokens: [],
+      balanceServices: [glacierService],
+      tokenService: mockTokenService,
+    });
+
+    expect(result).toEqual({
+      '0xAddress1': {
+        AVAX: {
+          symbol: 'AVAX',
+          balance: 1n,
+          change24: 10,
+          marketCap: 1000000,
+          priceInCurrency: 100,
+          vol24: 100000,
+        },
       },
     });
   });

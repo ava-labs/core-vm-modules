@@ -10,7 +10,7 @@ jest.mock('../../utils/get-provider');
 
 const proxyApiUrl = 'https://proxy.api/';
 
-describe.skip('get-balances', () => {
+describe('get-balances', () => {
   const provider = { getUtxoBalance: jest.fn() } as unknown as BitcoinProvider;
   const nativeTokenId = 'btc-id';
   const network = {
@@ -38,21 +38,17 @@ describe.skip('get-balances', () => {
   };
 
   const marketData = {
-    [nativeTokenId]: {
-      USD: {
-        price: 50_000,
-        marketCap: 1_500_000_000_000,
-        vol24: 500_000_000_000,
-        change24: 0.01,
-      },
-    },
+    priceInCurrency: 50_000,
+    marketCap: 1_500_000_000_000,
+    vol24: 500_000_000_000,
+    change24: 0.01,
   };
 
   beforeEach(() => {
     jest.mocked(provider.getUtxoBalance).mockResolvedValue(mockedBalance);
     jest.mocked(getProvider).mockResolvedValue(provider);
 
-    jest.spyOn(TokenService.prototype, 'getSimplePrice').mockResolvedValue(marketData);
+    jest.spyOn(TokenService.prototype, 'getWatchlistDataForToken').mockResolvedValue(marketData);
   });
 
   it('should build the provider and use it', async () => {

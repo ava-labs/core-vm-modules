@@ -10,13 +10,13 @@ import type { TokenService } from '@internal/utils';
 jest.mock('@src/utils/moralis-service');
 jest.mock('@src/utils/get-network-name');
 
-describe.skip('src/handlers/get-balances', () => {
+describe('src/handlers/get-balances', () => {
   const mockMoralisService = {
     getPortfolio: jest.fn(),
   };
   const mockTokenService = {
-    getSimplePrice: jest.fn(),
     getPricesByAddresses: jest.fn(),
+    getWatchlistDataForToken: jest.fn(),
   } as unknown as jest.Mocked<TokenService>;
   const network = {
     pricingProviders: {
@@ -66,8 +66,11 @@ describe.skip('src/handlers/get-balances', () => {
 
     mockMoralisService.getPortfolio.mockResolvedValueOnce(portfolioResults[0]);
     mockMoralisService.getPortfolio.mockResolvedValueOnce(portfolioResults[1]);
-    mockTokenService.getSimplePrice.mockResolvedValue({
-      solana: { usd: { price: 100, marketCap: 1000000, vol24: 10000, change24: 1 } },
+    mockTokenService.getWatchlistDataForToken.mockResolvedValue({
+      priceInCurrency: 100,
+      marketCap: 1000000,
+      vol24: 10000,
+      change24: 1,
     });
     mockTokenService.getPricesByAddresses.mockResolvedValue({
       mint1: { usd: { price: 1, marketCap: 100000, vol24: 1000, change24: 0.5 } },
