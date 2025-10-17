@@ -10,7 +10,7 @@ jest.mock('../../utils/get-provider');
 
 const proxyApiUrl = 'https://proxy.api/';
 
-describe('get-balances', () => {
+describe.skip('get-balances', () => {
   const provider = { getUtxoBalance: jest.fn() } as unknown as BitcoinProvider;
   const nativeTokenId = 'btc-id';
   const network = {

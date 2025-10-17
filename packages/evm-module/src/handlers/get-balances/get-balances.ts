@@ -7,12 +7,14 @@ import {
   type NftTokenWithBalance,
   TokenType,
 } from '@avalabs/vm-module-types';
+import type { TokenService } from '@internal/utils';
 import { findAsync } from '../../utils/find-async';
 import type { BalanceServiceInterface } from './balance-service-interface';
 import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { RpcService } from '../../services/rpc-service/rpc-service';
 import { isERC20Token } from '../../utils/type-utils';
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 type AccountAddress = string;
 type TokenSymbol = string;
@@ -27,10 +29,12 @@ export const getBalances = async ({
   customTokens = [],
   storage,
   balanceServices = [],
+  tokenService,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   balanceServices: BalanceServiceInterface[];
   storage?: Storage;
+  tokenService: TokenService;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
   const services: BalanceServiceInterface[] = [
@@ -52,11 +56,35 @@ export const getBalances = async ({
       if (tokenTypes.includes(TokenType.NATIVE)) {
         nativeTokenPromises.push(
           addIdToPromise(
-            supportingService.getNativeBalance({
-              address,
-              currency: currency.toUpperCase() as CurrencyCode,
-              chainId,
-            }),
+            supportingService
+              .getNativeBalance({
+                address,
+                currency: currency.toUpperCase() as CurrencyCode,
+                chainId,
+              })
+              .then(async (nativeBalance) => {
+                if (nativeBalance.symbol === 'AVAX') {
+                  // we want to standardise AVAX price across the chains
+                  const avaxMarketData = await tokenService.getWatchlistDataForToken({
+                    tokenDetails: {
+                      symbol: network.networkToken.symbol,
+                      isNative: true,
+                      caip2Id: network.caipId ?? '',
+                    },
+                    currency: currency.toUpperCase() as VsCurrencyType,
+                  });
+
+                  return {
+                    ...nativeBalance,
+                    priceInCurrency: avaxMarketData.priceInCurrency,
+                    marketCap: avaxMarketData.marketCap,
+                    vol24: avaxMarketData.vol24,
+                    change24: avaxMarketData.change24,
+                  };
+                }
+
+                return nativeBalance;
+              }),
             address,
           ),
         );

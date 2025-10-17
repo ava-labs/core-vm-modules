@@ -5,7 +5,6 @@ import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { TokenService } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
-import { extractTokenMarketData } from '../../utils/extract-token-market-data';
 
 type GetBtcBalancesResponse = Record<string, Record<string, TokenWithBalanceBTC>>;
 
@@ -32,16 +31,15 @@ export const getBalances = async ({
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const withPrices = typeof currency === 'string' && typeof coingeckoTokenId === 'string';
   const marketData = withPrices
-    ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoTokenId],
-        currencies: [currency] as VsCurrencyType[],
+    ? await tokenService.getWatchlistDataForToken({
+        tokenDetails: {
+          symbol: network.networkToken.symbol,
+          isNative: true,
+          caip2Id: network.caipId ?? '',
+        },
+        currency: currency as VsCurrencyType,
       })
     : undefined;
-  const { priceInCurrency, change24, marketCap, vol24 } = extractTokenMarketData(
-    coingeckoTokenId ?? '',
-    currency,
-    marketData,
-  );
 
   const balances = await Promise.allSettled(
     addresses.map(async (address) => {
@@ -53,7 +51,8 @@ export const getBalances = async ({
       } = await provider.getUtxoBalance(address, withScripts);
 
       const balance = new TokenUnit(balanceInSatoshis, network.networkToken.decimals, network.networkToken.symbol);
-      const balanceInCurrency = priceInCurrency !== undefined ? balance.mul(priceInCurrency) : undefined;
+      const balanceInCurrency =
+        marketData?.priceInCurrency !== undefined ? balance.mul(marketData.priceInCurrency) : undefined;
       const balanceDisplayValue = balance.toDisplay();
 
       const unconfirmedBalance = new TokenUnit(
@@ -62,7 +61,7 @@ export const getBalances = async ({
         network.networkToken.symbol,
       );
       const unconfirmedBalanceInCurrency =
-        priceInCurrency !== undefined ? unconfirmedBalance.mul(priceInCurrency) : undefined;
+        marketData?.priceInCurrency !== undefined ? unconfirmedBalance.mul(marketData.priceInCurrency) : undefined;
 
       const symbol = network.networkToken.symbol;
 
@@ -78,10 +77,10 @@ export const getBalances = async ({
             balanceDisplayValue,
             balanceInCurrency: balanceInCurrency?.toDisplay({ fixedDp: 2, asNumber: true }),
             balanceCurrencyDisplayValue: balanceInCurrency?.toDisplay({ fixedDp: 2 }),
-            priceInCurrency,
-            marketCap,
-            vol24,
-            change24,
+            priceInCurrency: marketData?.priceInCurrency,
+            marketCap: marketData?.marketCap,
+            vol24: marketData?.vol24,
+            change24: marketData?.change24,
             unconfirmedBalance: unconfirmedBalance.toSubUnit(),
             unconfirmedBalanceDisplayValue: unconfirmedBalance.toDisplay(),
             unconfirmedBalanceInCurrency: unconfirmedBalanceInCurrency?.toDisplay({

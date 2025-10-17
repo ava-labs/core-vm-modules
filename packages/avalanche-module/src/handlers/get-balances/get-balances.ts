@@ -52,27 +52,24 @@ export const getBalances = async ({
     })
     .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances);
 
-  const simplePriceResponse = coingeckoId
-    ? await tokenService.getSimplePrice({
-        coinIds: [coingeckoId],
-        currencies: [lowercaseCurrency] as VsCurrencyType[],
-      })
-    : {};
-
-  const priceInCurrency = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.price ?? undefined;
-  const marketCap = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.marketCap ?? undefined;
-  const vol24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.vol24 ?? undefined;
-  const change24 = simplePriceResponse?.[coingeckoId ?? '']?.[lowercaseCurrency]?.change24 ?? undefined;
+  const priceData = await tokenService.getWatchlistDataForToken({
+    tokenDetails: {
+      symbol: network.networkToken.symbol,
+      isNative: true,
+      caip2Id: network.caipId ?? '',
+    },
+    currency: lowercaseCurrency as VsCurrencyType,
+  });
 
   let balance: TokenWithBalanceAVM | TokenWithBalancePVM;
   if (isPchainBalance(chainBalances)) {
     balance = convertPChainBalance({
       balance: chainBalances,
       networkToken,
-      priceInCurrency,
-      marketCap,
-      vol24,
-      change24,
+      priceInCurrency: priceData.priceInCurrency ?? undefined,
+      marketCap: priceData.marketCap ?? undefined,
+      vol24: priceData.vol24 ?? undefined,
+      change24: priceData.change24 ?? undefined,
       coingeckoId: coingeckoId ?? '',
       avaxAssetId: provider.getContext().avaxAssetID,
     });
@@ -88,10 +85,10 @@ export const getBalances = async ({
     balance = convertXChainBalance({
       balance: chainBalances,
       networkToken,
-      priceInCurrency,
-      marketCap,
-      vol24,
-      change24,
+      priceInCurrency: priceData.priceInCurrency ?? undefined,
+      marketCap: priceData.marketCap ?? undefined,
+      vol24: priceData.vol24 ?? undefined,
+      change24: priceData.change24 ?? undefined,
       coingeckoId: coingeckoId ?? '',
       avaxAssetId: provider.getContext().avaxAssetID,
     });
