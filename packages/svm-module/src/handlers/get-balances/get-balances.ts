@@ -10,7 +10,6 @@ import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 
 import type { TokenService } from '@internal/utils';
-import { isFulfilled } from '@internal/utils/src/utils/is-promise-fulfilled';
 
 import { SOL_DECIMALS } from '@src/constants';
 import { MoralisService } from '@src/utils/moralis-service';
@@ -51,24 +50,18 @@ export const getBalances = async ({
     }),
   );
 
-  const tokenPricesPromises = await Promise.allSettled([
-    coingeckoAssetId
-      ? await tokenService.getSimplePrice({
-          coinIds: [coingeckoAssetId],
-          currencies: [lowercaseCurrency as VsCurrencyType],
-        })
-      : Promise.resolve(undefined),
-    coingeckoPlatformId
-      ? await tokenService.getPricesByAddresses(
-          Array.from(mints),
-          coingeckoPlatformId,
-          lowercaseCurrency as VsCurrencyType,
-        )
-      : Promise.resolve(undefined),
-  ]);
-  const [nativePrice, tokenPrices] = tokenPricesPromises.map((promise) =>
-    isFulfilled(promise) ? promise.value : undefined,
-  );
+  const tokenPrices = await (coingeckoPlatformId
+    ? tokenService.getPricesByAddresses(Array.from(mints), coingeckoPlatformId, lowercaseCurrency as VsCurrencyType)
+    : Promise.resolve(undefined));
+
+  const nativeMarketData = await tokenService.getWatchlistDataForToken({
+    tokenDetails: {
+      symbol: network.networkToken.symbol,
+      isNative: true,
+      caip2Id: network.caipId ?? '',
+    },
+    currency: lowercaseCurrency as VsCurrencyType,
+  });
 
   return portfolioResults.reduce((portfolioAcc, result) => {
     if ('error' in result) {
@@ -81,7 +74,7 @@ export const getBalances = async ({
     }
 
     const nativeBalanceUnit = new TokenUnit(result.portfolio.nativeBalance.lamports, SOL_DECIMALS, 'SOL');
-    const nativeMarketData = getMarketData(coingeckoAssetId, lowercaseCurrency, nativePrice);
+
     const nativeBalanceInCurrency =
       nativeMarketData.priceInCurrency !== undefined
         ? nativeBalanceUnit.mul(nativeMarketData.priceInCurrency)

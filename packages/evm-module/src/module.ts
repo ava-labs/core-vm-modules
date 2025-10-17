@@ -34,7 +34,7 @@ import { deriveAddress } from './handlers/derive-address/derive-address';
 import { DeBankService } from './services/debank-service/debank-service';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
-import { getCoreHeaders } from '@internal/utils';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
@@ -98,6 +98,7 @@ export class EvmModule implements Module {
     storage,
     tokenTypes,
   }: GetBalancesParams): Promise<GetBalancesResponse> {
+    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
     return getBalances({
       addresses,
       currency,
@@ -107,6 +108,7 @@ export class EvmModule implements Module {
       balanceServices: [this.#glacierService, this.#deBankService],
       storage,
       tokenTypes,
+      tokenService,
     });
   }
 

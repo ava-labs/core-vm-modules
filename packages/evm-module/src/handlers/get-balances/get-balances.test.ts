@@ -41,6 +41,7 @@ describe('getBalances', () => {
   const addresses = ['0xAddress1', '0xAddress2'];
   const currency = 'usd';
   const customTokens = [{ address: '0xToken1', symbol: 'TOKEN1' } as NetworkContractToken];
+  const mockTokenService = new TokenService({ proxyApiUrl }) as jest.Mocked<TokenService>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -65,6 +66,7 @@ describe('getBalances', () => {
       proxyApiUrl,
       customTokens,
       balanceServices: [glacierService, deBankService],
+      tokenService: mockTokenService,
     });
 
     expect(result).toEqual({
@@ -111,6 +113,7 @@ describe('getBalances', () => {
       proxyApiUrl,
       customTokens,
       balanceServices: [glacierService, deBankService],
+      tokenService: mockTokenService,
     });
 
     expect(result).toEqual({
@@ -134,6 +137,7 @@ describe('getBalances', () => {
       proxyApiUrl,
       customTokens,
       balanceServices: [glacierService, deBankService],
+      tokenService: mockTokenService,
     });
 
     expect(result).toEqual({
@@ -142,6 +146,47 @@ describe('getBalances', () => {
       },
       '0xAddress2': {
         error: 'listErc20Balances failed: unknown error',
+      },
+    });
+  });
+
+  it('should retrieve AVAX price from the watchlist', async () => {
+    const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+    mockFindAsync.mockResolvedValue(glacierService);
+    mockTokenService.getWatchlistDataForToken.mockResolvedValue({
+      priceInCurrency: 100,
+      marketCap: 1000000,
+      vol24: 100000,
+      change24: 10,
+    });
+    glacierService.isNetworkSupported.mockResolvedValue(true);
+    glacierService.getNativeBalance.mockResolvedValue({
+      symbol: 'AVAX',
+      priceInCurrency: 1,
+      balance: 1n,
+    } as NetworkTokenWithBalance);
+
+    const result = await getBalances({
+      addresses: ['0xAddress1'],
+      currency,
+      network: { ...network, networkToken: { symbol: 'AVAX', decimals: 18, name: 'AVAX' } },
+      proxyApiUrl,
+      tokenTypes: [TokenType.NATIVE],
+      customTokens: [],
+      balanceServices: [glacierService],
+      tokenService: mockTokenService,
+    });
+
+    expect(result).toEqual({
+      '0xAddress1': {
+        AVAX: {
+          symbol: 'AVAX',
+          balance: 1n,
+          change24: 10,
+          marketCap: 1000000,
+          priceInCurrency: 100,
+          vol24: 100000,
+        },
       },
     });
   });
@@ -166,6 +211,7 @@ describe('getBalances', () => {
         proxyApiUrl,
         customTokens,
         balanceServices: [glacierService, deBankService],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -197,6 +243,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.NATIVE, TokenType.ERC20],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -213,6 +260,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.NATIVE],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).toHaveBeenCalled();
@@ -229,6 +277,7 @@ describe('getBalances', () => {
         customTokens,
         balanceServices: [glacierService, deBankService],
         tokenTypes: [TokenType.ERC20],
+        tokenService: mockTokenService,
       });
 
       expect(glacierService.getNativeBalance).not.toHaveBeenCalled();

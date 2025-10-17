@@ -9,6 +9,7 @@ import type { Storage, RawSimplePriceResponse, SimplePriceResponse } from '@aval
 import { coingeckoRetry } from '../../utils/coingecko-retry';
 import { arrayHash } from '../../utils/array-hash';
 import { CoingeckoProxyClient } from './coingecko-proxy-client';
+import { WatchlistProxyClient } from './watchlist-proxy-client';
 
 const coingeckoBasicClient = getBasicCoingeckoHttp();
 
@@ -19,6 +20,53 @@ export class TokenService {
   constructor({ storage, proxyApiUrl }: { proxyApiUrl: string; storage?: Storage }) {
     this.#storage = storage;
     this.#proxyApiUrl = proxyApiUrl;
+  }
+
+  async getWatchlistDataForToken({
+    tokenDetails,
+    currency = VsCurrencyType.USD,
+  }: {
+    tokenDetails: {
+      symbol: string;
+      isNative: boolean;
+      caip2Id: string;
+      address?: string;
+    };
+    currency: VsCurrencyType;
+  }): Promise<{
+    priceInCurrency: number;
+    change24: number;
+    marketCap: number;
+    vol24: number;
+  }> {
+    const data = (
+      await new WatchlistProxyClient(this.#proxyApiUrl).watchlistToken({
+        tokens: tokenDetails.symbol,
+        currency: currency,
+      })
+    ).filter((token) => {
+      return tokenDetails.isNative
+        ? token.internalId === `NATIVE-${tokenDetails.symbol.toLowerCase()}`
+        : token.platforms[tokenDetails.caip2Id] === tokenDetails.address;
+    });
+
+    const tokenInfo = data[0];
+
+    if (!tokenInfo) {
+      return {
+        priceInCurrency: 0,
+        change24: 0,
+        marketCap: 0,
+        vol24: 0,
+      };
+    }
+
+    return {
+      priceInCurrency: tokenInfo.current_price ?? 0,
+      change24: tokenInfo.price_change_percentage_24h ?? 0,
+      marketCap: tokenInfo.market_cap ?? 0,
+      vol24: tokenInfo.total_volume ?? 0,
+    };
   }
 
   /**
