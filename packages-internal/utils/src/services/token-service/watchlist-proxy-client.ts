@@ -27,7 +27,7 @@ export class WatchlistProxyClient {
     const queryParams = new URLSearchParams(params as any);
     return fetchAndVerify(
       [
-        `${this.proxyApiUrl}/proxy/watchlist/tokens?${queryParams}`,
+        `${this.proxyApiUrl}/watchlist/tokens?${queryParams}`,
         {
           method: 'GET',
           headers: {
