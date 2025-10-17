@@ -1,5 +1,7 @@
 # @avalabs/vm-module-types
 
+## 1.10.3
+
 ## 1.10.2
 
 ### Patch Changes

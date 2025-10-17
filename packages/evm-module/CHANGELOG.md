@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 1.10.3
+
+### Patch Changes
+
+- ba3878e: Use prices from the watchlist for native tokens
+  - @avalabs/vm-module-types@1.10.3
+
 ## 1.10.2
 
 ### Patch Changes
