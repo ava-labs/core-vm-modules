@@ -59,6 +59,22 @@ describe('evm-tx-updater', () => {
     });
   });
 
+  it('updates the gas limit', () => {
+    const { updateTx } = getTxUpdater('abcd-1234', signingData, displayData);
+
+    expect(updateTx({ gasLimit: 10000 })).toEqual({
+      signingData: {
+        type: RpcMethod.ETH_SEND_TRANSACTION,
+        account: 'from',
+        data: {
+          ...signingData.data,
+          gasLimit: 10000,
+        },
+      },
+      displayData,
+    });
+  });
+
   it('prevents from changing the invoked function', () => {
     const { updateTx } = getTxUpdater(
       'abcd-1234',

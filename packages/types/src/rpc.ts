@@ -330,6 +330,7 @@ export type EvmTxBatchUpdateFn = (
 export type EvmTxUpdateFn = (data: {
   maxFeeRate?: bigint;
   maxTipRate?: bigint;
+  gasLimit?: number;
   approvalLimit?: Hex; // as hexadecimal, 0x-prefixed
 }) => { displayData: DisplayData; signingData: SigningData_EthSendTx };
 
