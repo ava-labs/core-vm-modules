@@ -15,7 +15,7 @@ export const getTxUpdater = (
   requests.set(requestId, { signingData, displayData });
 
   return {
-    updateTx: ({ maxFeeRate, maxTipRate, approvalLimit }) => {
+    updateTx: ({ maxFeeRate, maxTipRate, approvalLimit, gasLimit }) => {
       const request = requests.get(requestId);
 
       if (!request) {
@@ -28,6 +28,7 @@ export const getTxUpdater = (
         ...signingData,
         data: {
           ...signingData.data,
+          gasLimit: gasLimit ?? signingData.data.gasLimit,
           maxFeePerGas: maxFeeRate ?? signingData.data.maxFeePerGas,
           maxPriorityFeePerGas: maxTipRate ?? signingData.data.maxPriorityFeePerGas,
         },
