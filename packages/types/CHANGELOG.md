@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 1.11.0
+
+### Minor Changes
+
+- f3f11ec: Allow updating gas limit
+
 ## 1.10.3
 
 ## 1.10.2

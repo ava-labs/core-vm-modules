@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 1.11.0
+
+### Minor Changes
+
+- f3f11ec: Allow updating gas limit
+
+### Patch Changes
+
+- Updated dependencies [f3f11ec]
+  - @avalabs/vm-module-types@1.11.0
+
 ## 1.10.3
 
 ### Patch Changes
