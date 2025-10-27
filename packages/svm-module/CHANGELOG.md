@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 1.11.0
+
+### Patch Changes
+
+- Updated dependencies [f3f11ec]
+  - @avalabs/vm-module-types@1.11.0
+
 ## 1.10.3
 
 ### Patch Changes
