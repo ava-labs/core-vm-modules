@@ -275,6 +275,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
               balanceDisplayValue: token.ercType === Erc1155Token.ercType.ERC_1155 ? token.balance : '1',
               type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
               metadata: {
+                indexStatus: token.metadata.indexStatus,
                 description: token.metadata.description,
                 lastUpdatedTimestamp: token.metadata.metadataLastUpdatedTimestamp,
                 properties:

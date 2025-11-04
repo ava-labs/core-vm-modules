@@ -1,4 +1,4 @@
-import { CurrencyCode } from '@avalabs/glacier-sdk';
+import { CurrencyCode, NftTokenMetadataStatus } from '@avalabs/glacier-sdk';
 import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
@@ -161,6 +161,7 @@ export class DeBankService implements BalanceServiceInterface {
           balanceDisplayValue: `${token.amount}`,
           type: token.is_erc721 ? TokenType.ERC721 : TokenType.ERC1155,
           metadata: {
+            indexStatus: NftTokenMetadataStatus.UNINDEXED,
             description: token.description ?? '',
             properties: '',
           },
