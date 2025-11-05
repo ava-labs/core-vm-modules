@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 2.0.1
+
+### Patch Changes
+
+- 332c6f6: bump release
+
 ## 2.0.0
 
 ## 1.11.0

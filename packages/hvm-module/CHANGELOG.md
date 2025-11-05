@@ -1,5 +1,13 @@
 # @avalabs/hvm-module
 
+## 2.0.1
+
+### Patch Changes
+
+- 332c6f6: bump release
+- Updated dependencies [332c6f6]
+  - @avalabs/vm-module-types@2.0.1
+
 ## 2.0.0
 
 ### Patch Changes
