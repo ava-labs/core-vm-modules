@@ -2,43 +2,106 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
+    branches-ignore:
+      - changeset-release/main
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Select release type to run'
+        required: true
+        type: choice
+        options:
+          - main
+          - canary
+
+permissions:
+  contents: read
+  id-token: write # Required for OIDC authentication when publishing to NPM
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+    runs-on: ubuntu-latest # OIDC publishing currently requires GitHub-hosted runners
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Create .npmrc
+      # Determine and print which type of run this is
+      - name: Release Type
+        id: release-type
         run: |
-          echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ github.event.inputs.release }}" in
+              main|canary)
+                echo "release=${{ github.event.inputs.release }}" >> "$GITHUB_OUTPUT"
+                echo "Release Type (manual): ${{ github.event.inputs.release }}"
+                ;;
+              *)
+                echo "Invalid release input: ${{ github.event.inputs.release }}" >&2
+                exit 1
+                ;;
+            esac
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "release=main" >> "$GITHUB_OUTPUT"
+            echo "Release Type: main (pnpm release)"
+          else
+            echo "release=canary" >> "$GITHUB_OUTPUT"
+            echo "Release Type: canary publish"
+          fi
 
       - name: Setup Node.js 20.11.0
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v6
         with:
+          cache: 'pnpm'
           node-version: 20.11.0
 
       - name: enable corepack
         run: |
           corepack enable
 
+      # This is needed for now until we use Node 24+.
+      # NPM version 11.5.1+ is required for OIDC publishing to work correctly.
+      - name: Ensure Updated NPM
+        run: npm install -g npm@latest
+
+      # For debugging purposes to ensure we're on the right npm version
+      - name: NPM Version
+        run: npm --version
+
       - name: Install Dependencies
-        run: pnpm i
+        run: pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # This will run all build, test, and lint scripts in parallel for all packages
       - name: Build, Test, & Lint all packages
         run: pnpm run ci
 
-      - name: Create Release Pull Request or Publish to npm
+      # ------------------------------------------------
+      # Canary-only steps for non-main branch pushes
+      # ------------------------------------------------
+      - name: Setup Local Github Actions
+        if: steps.release-type.outputs.release == 'canary'
+        run: pnpm run build --filter=github-actions --force
+
+      - name: Extract Canary Subject From Branch Name
+        if: steps.release-type.outputs.release == 'canary'
+        id: get-canary-subject
+        uses: ./packages-internal/github-actions/src/get-canary-subject
+
+      - name: Publish to NPM (Canary)
+        if: steps.release-type.outputs.release == 'canary'
+        run: |
+          pnpm changeset version --snapshot ${{ steps.get-canary-subject.outputs.canary-subject }}
+          pnpm changeset publish --tag ${{ steps.get-canary-subject.outputs.canary-subject }}
+
+      # ------------------------------------------------
+      # "Release" steps.
+      # ------------------------------------------------
+      - name: Publish to NPM (Main)
+        if: steps.release-type.outputs.release == 'main'
         id: changesets
         uses: changesets/action@v1
         with:
@@ -47,19 +110,3 @@ jobs:
           title: 'Changesets: Versioning & Publishing'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-
-      - name: Get current branch
-        id: get_branch
-        run: echo "CURRENT_BRANCH=$(git branch --show-current)" >> $GITHUB_ENV
-
-      - name: Update lock file
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        run: pnpm install --lockfile-only
-
-      - name: Commit lock file
-        if: env.CURRENT_BRANCH == 'changeset-release/main'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: update lock file'
-          branch: changeset-release/main
