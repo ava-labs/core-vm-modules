@@ -15,6 +15,7 @@ on:
 permissions:
   contents: read
   id-token: write # Required for OIDC authentication when publishing to NPM
+  pull-requests: write
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
