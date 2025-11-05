@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 2.0.0
+
+### Major Changes
+
+- ac90804: add index status and chain id to nft object
+
+### Patch Changes
+
+- @avalabs/vm-module-types@2.0.0
+
 ## 1.11.0
 
 ### Minor Changes
