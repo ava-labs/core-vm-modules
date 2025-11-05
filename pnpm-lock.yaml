@@ -79,6 +79,9 @@ importers:
       '@actions/github':
         specifier: 5.1.1
         version: 5.1.1
+      '@changesets/read':
+        specifier: 0.6.5
+        version: 0.6.5
       '@internal/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
