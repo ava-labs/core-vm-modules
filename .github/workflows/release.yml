@@ -1,7 +1,7 @@
 # NPM OIDC publishing requires publishing to happen from a single
 # workflow file that we set in the "Trusted Publishing" settings in NPM
 # per package. This workflow will handle publishing the packages for both
-# main releases and canary releases.
+# latest releases and canary releases.
 #
 # See: https://docs.npmjs.com/trusted-publishers
 name: Release
@@ -11,14 +11,6 @@ on:
     branches-ignore:
       - changeset-release/main
   workflow_dispatch:
-    inputs:
-      release:
-        description: 'Select release type to run'
-        required: true
-        type: choice
-        options:
-          - main
-          - canary
 
 permissions:
   contents: read
@@ -38,20 +30,9 @@ jobs:
       - name: Release Type
         id: release-type
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            case "${{ github.event.inputs.release }}" in
-              main|canary)
-                echo "release=${{ github.event.inputs.release }}" >> "$GITHUB_OUTPUT"
-                echo "Release Type (manual): ${{ github.event.inputs.release }}"
-                ;;
-              *)
-                echo "Invalid release input: ${{ github.event.inputs.release }}" >&2
-                exit 1
-                ;;
-            esac
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "release=main" >> "$GITHUB_OUTPUT"
-            echo "Release Type: main (pnpm release)"
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "release=latest" >> "$GITHUB_OUTPUT"
+            echo "Release Type: latest (pnpm release)"
           else
             echo "release=canary" >> "$GITHUB_OUTPUT"
             echo "Release Type: canary publish"
@@ -79,20 +60,20 @@ jobs:
       - name: Build, Test, & Lint all packages
         run: pnpm run ci
 
-      # ------------------------------------------------
-      # Canary-only steps for non-main branch pushes
-      # ------------------------------------------------
-      - name: Setup Local Github Actions
-        if: steps.release-type.outputs.release == 'canary'
-        run: pnpm run build --filter=github-actions --force
+      - name: Has Changesets
+        id: changesets-check
+        uses: ./packages-internal/github-actions/src/get-changesets
 
+      # ------------------------------------------------
+      # Canary-only steps for non-latest branch pushes
+      # ------------------------------------------------
       - name: Extract Canary Subject From Branch Name
-        if: steps.release-type.outputs.release == 'canary'
+        if: steps.release-type.outputs.release == 'canary' && steps.changesets-check.outputs.hasChangesets == 'true'
         id: get-canary-subject
         uses: ./packages-internal/github-actions/src/get-canary-subject
 
       - name: Publish to NPM (Canary)
-        if: steps.release-type.outputs.release == 'canary'
+        if: steps.release-type.outputs.release == 'canary' && steps.changesets-check.outputs.hasChangesets == 'true'
         run: |
           pnpm changeset version --snapshot ${{ steps.get-canary-subject.outputs.canary-subject }}
           pnpm changeset publish --tag ${{ steps.get-canary-subject.outputs.canary-subject }}
@@ -100,13 +81,14 @@ jobs:
       # ------------------------------------------------
       # "Release" steps.
       # ------------------------------------------------
-      - name: Publish to NPM (Main)
-        if: steps.release-type.outputs.release == 'main'
+      - name: Create PR or Publish to NPM (Latest)
+        if: steps.release-type.outputs.release == 'latest'
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm release
           title: 'Changesets: Versioning & Publishing'
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

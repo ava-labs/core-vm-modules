@@ -1,0 +1,8 @@
+name: 'Get Changesets'
+description: 'Identifies if there are any changesets.'
+outputs:
+  hasChangesets:
+    description: 'Whether or not there are any changesets.'
+runs:
+  using: 'node16'
+  main: '../../dist/get-changesets/index.js'
