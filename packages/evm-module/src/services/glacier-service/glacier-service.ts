@@ -16,7 +16,6 @@ import {
   type TokenWithBalanceERC20,
   type TokenWithBalanceEVM,
   type NftTokenWithBalance,
-  type Network,
 } from '@avalabs/vm-module-types';
 
 import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
@@ -239,15 +238,15 @@ export class EvmGlacierService implements BalanceServiceInterface {
   }
 
   async listNftBalances({
-    network,
+    chainId,
     address,
   }: {
-    network: Network;
+    chainId: number;
     address: string;
   }): Promise<Record<string, NftTokenWithBalance | Error>> {
     const balances = await Promise.allSettled([
-      this.listErc721Balances({ chainId: network.chainId.toString(), address }),
-      this.listErc1155Balances({ chainId: network.chainId.toString(), address }),
+      this.listErc721Balances({ chainId: chainId.toString(), address }),
+      this.listErc1155Balances({ chainId: chainId.toString(), address }),
     ]);
 
     const entries = balances
@@ -263,7 +262,6 @@ export class EvmGlacierService implements BalanceServiceInterface {
             `${token.address}-${token.tokenId}`,
             {
               address: token.address,
-              chainInfo: network,
               description: token.metadata.description ?? '',
               logoUri: token.metadata.imageUri ?? '',
               logoSmall: getSmallImageForNFT(token.metadata.imageUri ?? ''),
@@ -271,6 +269,7 @@ export class EvmGlacierService implements BalanceServiceInterface {
               symbol: token.metadata.symbol ?? '',
               tokenId: token.tokenId,
               tokenUri: token.tokenUri,
+              chainId,
               // glacier does not provide the collection name information
               collectionName: 'Unknown',
               balance: token.ercType === Erc1155Token.ercType.ERC_1155 ? BigInt(token.balance) : 1,

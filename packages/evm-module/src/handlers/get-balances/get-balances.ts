@@ -109,7 +109,7 @@ export const getBalances = async ({
         nftTokenPromises.push(
           addIdToPromise(
             supportingService.listNftBalances({
-              network,
+              chainId,
               address,
             }),
             address,

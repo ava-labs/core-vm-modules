@@ -3,7 +3,6 @@ import type {
   ERC20Token,
   Error,
   Hex,
-  Network,
   NetworkTokenWithBalance,
   NftTokenWithBalance,
   TokenWithBalanceEVM,
@@ -30,5 +29,5 @@ export interface BalanceServiceInterface {
     customTokens: ERC20Token[];
   }): Promise<Record<string, TokenWithBalanceEVM | Error>>;
 
-  listNftBalances(params: { network: Network; address: string }): Promise<Record<string, NftTokenWithBalance | Error>>;
+  listNftBalances(params: { chainId: number; address: string }): Promise<Record<string, NftTokenWithBalance | Error>>;
 }
