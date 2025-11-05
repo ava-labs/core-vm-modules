@@ -1,6 +1,6 @@
 import { DeBankService } from './debank-service';
 import { DeBank, type DeBankChainInfo, type DeBankToken } from './de-bank';
-import { CurrencyCode } from '@avalabs/glacier-sdk';
+import { CurrencyCode, NftTokenMetadataStatus } from '@avalabs/glacier-sdk';
 import { TokenType } from '@avalabs/vm-module-types';
 
 jest.mock('./de-bank');
@@ -297,9 +297,11 @@ describe('DeBankService', () => {
           logoSmall: 'https://image-proxy.svc.prod.covalenthq.com/cdn-cgi/image/width=256,fit/https://image.png',
           logoUri: 'https://thumbnail.png',
           metadata: {
+            indexStatus: NftTokenMetadataStatus.UNINDEXED,
             description: 'Some description',
             properties: '',
           },
+          chainId: 1,
           name: 'Gemesis',
           symbol: '',
           tokenId: '30276',
