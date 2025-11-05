@@ -1,4 +1,4 @@
-import { CurrencyCode } from '@avalabs/glacier-sdk';
+import { CurrencyCode, NftTokenMetadataStatus } from '@avalabs/glacier-sdk';
 import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { isHexString } from 'ethers';
@@ -143,11 +143,12 @@ export class DeBankService implements BalanceServiceInterface {
     return erc20TokenBalances;
   }
 
-  #mapNftList(deBankNftList: DeBankNftToken[]): Record<string, NftTokenWithBalance | Error> {
+  #mapNftList(deBankNftList: DeBankNftToken[], chainId: number): Record<string, NftTokenWithBalance | Error> {
     return deBankNftList.reduce(
       (accumulator, token) => ({
         ...accumulator,
         [`${token.contract_id}-${token.id}`]: {
+          chainId,
           address: token.contract_id,
           description: token.description ?? '',
           logoUri: token.thumbnail_url,
@@ -161,6 +162,7 @@ export class DeBankService implements BalanceServiceInterface {
           balanceDisplayValue: `${token.amount}`,
           type: token.is_erc721 ? TokenType.ERC721 : TokenType.ERC1155,
           metadata: {
+            indexStatus: NftTokenMetadataStatus.UNINDEXED,
             description: token.description ?? '',
             properties: '',
           },
@@ -183,6 +185,6 @@ export class DeBankService implements BalanceServiceInterface {
     const { chainIdString } = await this.#getChainInfo(chainId);
 
     const nftList = await this.#deBank.getNftList({ chainId: chainIdString, address });
-    return this.#mapNftList(nftList);
+    return this.#mapNftList(nftList, chainId);
   }
 }
