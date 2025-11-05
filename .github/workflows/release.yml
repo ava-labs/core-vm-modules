@@ -52,10 +52,10 @@ jobs:
           fi
 
       - name: Setup Node.js 20.11.0
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
-          cache: 'pnpm'
-          node-version: 20.11.0
+          cache: pnpm
+          node-version-file: '.nvmrc'
 
       - name: enable corepack
         run: |
