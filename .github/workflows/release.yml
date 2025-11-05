@@ -1,3 +1,9 @@
+# NPM OIDC publishing requires publishing to happen from a single
+# workflow file that we set in the "Trusted Publishing" settings in NPM
+# per package. This workflow will handle publishing the packages for both
+# main releases and canary releases.
+#
+# See: https://docs.npmjs.com/trusted-publishers
 name: Release
 
 on:
@@ -63,14 +69,6 @@ jobs:
       - name: enable corepack
         run: |
           corepack enable
-
-      # This is needed for now until we use Node 24+.
-      # NPM version 11.5.1+ is required for OIDC publishing to work correctly.
-      - name: Ensure Updated NPM
-        run: |
-          npm --version
-          npm install -g npm@latest
-          npm --version
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --ignore-scripts
