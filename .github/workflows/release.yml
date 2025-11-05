@@ -13,9 +13,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # Needed for changesets/action
   id-token: write # Required for OIDC authentication when publishing to NPM
-  pull-requests: write
+  pull-requests: write # Needed for changesets/action
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
