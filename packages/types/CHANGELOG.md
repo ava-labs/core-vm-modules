@@ -1,5 +1,7 @@
 # @avalabs/vm-module-types
 
+## 2.0.0
+
 ## 1.11.0
 
 ### Minor Changes
