@@ -1,7 +1,7 @@
 import type { Storage, Network } from './common';
 import type { Error } from './error';
 import type { NetworkContractToken, NetworkToken, TokenType } from './token';
-import type { Erc20TokenBalance, PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
+import type { Erc20TokenBalance, NftTokenMetadataStatus, PChainBalance, XChainBalances } from '@avalabs/glacier-sdk';
 
 export type GetBalancesParams = {
   addresses: string[];
@@ -149,12 +149,14 @@ export interface NftTokenWithBalance extends Omit<NetworkTokenWithBalance, 'type
   name: string;
   symbol: string;
   tokenId: string;
+  chainId: number;
   // URL holding the metadata of the NFT, modules are not expected to fetch all metadata
   // to avoid increased loading times when dealing with ipfs and 3rd party services
   tokenUri: string;
   collectionName: string;
   updatedAt?: number;
   metadata?: {
+    indexStatus?: NftTokenMetadataStatus;
     description?: string;
     lastUpdatedTimestamp?: number;
     properties?: string;
