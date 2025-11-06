@@ -90,6 +90,7 @@ jobs:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: pnpm release
           title: 'Changesets: Versioning & Publishing'
+          commitMode: 'github-api' # signed commits
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
