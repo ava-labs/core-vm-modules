@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 2.1.0
+
+### Minor Changes
+
+- 3a5223f: update collectibles type
+
 ## 2.0.1
 
 ### Patch Changes

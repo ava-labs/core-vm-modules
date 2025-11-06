@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 2.1.0
+
+### Patch Changes
+
+- Updated dependencies [3a5223f]
+  - @avalabs/vm-module-types@2.1.0
+
 ## 2.0.1
 
 ### Patch Changes
