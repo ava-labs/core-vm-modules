@@ -23,6 +23,8 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest # OIDC publishing currently requires GitHub-hosted runners
+    env:
+      HUSKY: 0 # Do not run Husky git hooks
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
