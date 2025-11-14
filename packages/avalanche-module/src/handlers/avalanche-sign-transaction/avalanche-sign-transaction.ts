@@ -54,7 +54,7 @@ export const avalancheSignTransaction = async ({
 
   if (!contextParserResult.success) {
     return {
-      error: contextParserResult.error,
+      error: rpcErrors.invalidParams(contextParserResult.error),
     };
   }
 
