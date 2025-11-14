@@ -21,6 +21,7 @@ import { getTransactionDetailSections } from '../../utils/get-transaction-detail
 
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
+import { getAccountFromContext } from '../../utils/get-account-from-context';
 
 export const avalancheSignTransaction = async ({
   request,
@@ -49,14 +50,15 @@ export const avalancheSignTransaction = async ({
   const isTestnet = network.isTestnet ?? false;
   const provider = await getProvider({ isTestnet });
 
-  const currentAddress = request.context?.['currentAddress'];
-  const currentEvmAddress = request.context?.['currentEvmAddress'] as string | undefined;
+  const contextParserResult = getAccountFromContext(request.context);
 
-  if (!currentAddress || typeof currentAddress !== 'string') {
+  if (!contextParserResult.success) {
     return {
-      error: rpcErrors.invalidRequest('No active account found'),
+      error: contextParserResult.error,
     };
   }
+
+  const { xpAddress: currentAddress, evmAddress: currentEvmAddress } = contextParserResult.data;
 
   const providedUtxos = getProvidedUtxos({
     utxoHexes: providedUtxoHexes,
