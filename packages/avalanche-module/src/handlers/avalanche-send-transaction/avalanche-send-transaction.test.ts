@@ -88,31 +88,47 @@ const testNetwork: Network = {
 
 const testRequestParams = { transactionHex: '0x00001', chainAlias: 'X' as const };
 
-const testRequest = (requestParams: {
-  transactionHex: string;
-  chainAlias: 'C' | 'X' | 'P';
-  externalIndices?: number[];
-  internalIndices?: number[];
-}) => ({
+const legacyContext = {
+  currentAddress: '0x0',
+  xpubXP: 'xpubXP',
+};
+
+const accountContext = {
+  account: {
+    xpAddress: '0x0',
+    xpubXP: 'xpubXP',
+    xpAddresses: [],
+  },
+};
+
+const testRequest = (
+  requestParams: {
+    transactionHex: string;
+    chainAlias: 'C' | 'X' | 'P';
+    externalIndices?: number[];
+    internalIndices?: number[];
+  },
+  context: Record<string, unknown> = accountContext,
+) => ({
   requestId: '1',
   sessionId: '2',
   method: RpcMethod.AVALANCHE_SEND_TRANSACTION,
   chainId: 'avax:testnet',
   dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
   params: requestParams,
-  context: {
-    currentAddress: '0x0',
-    xpubXP: 'xpubXP',
-  },
+  context,
 });
 
-const testParams = (requestParams: {
-  transactionHex: string;
-  chainAlias: 'C' | 'X' | 'P';
-  externalIndices?: number[];
-  internalIndices?: number[];
-}) => ({
-  request: testRequest(requestParams),
+const testParams = (
+  requestParams: {
+    transactionHex: string;
+    chainAlias: 'C' | 'X' | 'P';
+    externalIndices?: number[];
+    internalIndices?: number[];
+  },
+  context: Record<string, unknown> = accountContext,
+) => ({
+  request: testRequest(requestParams, context),
   network: testNetwork,
   approvalController: mockApprovalController,
   glacierApiUrl: GLACIER_API_URL,
@@ -162,40 +178,19 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('should return error if currentAddress is not provided in context', async () => {
-    const params = testParams(testRequestParams);
-    const paramsWithoutCurrentAddress = {
-      ...params,
-      request: {
-        ...params.request,
-        context: {
-          ...params.request.context,
-          currentAddress: undefined,
-        },
-      },
-    };
-
-    const result = await avalancheSendTransaction(paramsWithoutCurrentAddress);
+  it('should return error if xpAddress is not provided in context', async () => {
+    const params = testParams(testRequestParams, { account: { ...accountContext.account, xpAddress: undefined } });
+    const result = await avalancheSendTransaction(params);
 
     expect(result).toEqual({
-      error: rpcErrors.invalidParams('No active account found'),
+      error: rpcErrors.invalidParams('XP address is required'),
     });
   });
 
   it('should return error if provided xpubXP is not a string', async () => {
-    const params = testParams(testRequestParams);
-    const paramsWithoutCurrentAddress = {
-      ...params,
-      request: {
-        ...params.request,
-        context: {
-          ...params.request.context,
-          xpubXP: {},
-        },
-      },
-    };
+    const params = testParams(testRequestParams, { account: { ...accountContext.account, xpubXP: {} } });
 
-    const result = await avalancheSendTransaction(paramsWithoutCurrentAddress);
+    const result = await avalancheSendTransaction(params);
 
     expect(result).toEqual({
       error: rpcErrors.invalidParams('xpubXP must be a string'),
@@ -217,8 +212,11 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('X/P: should process transaction with proper displayData', async () => {
-    const params = testParams(testRequestParams);
+  it.each([
+    ['legacy', legacyContext],
+    ['account', accountContext],
+  ])('(%s): X/P: should process transaction with proper displayData', async (_, context) => {
+    const params = testParams(testRequestParams, context);
     const tx = { vm: AVM };
 
     (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
@@ -256,7 +254,7 @@ describe('avalanche_sendTransaction handler', () => {
         chainId: 'avax:testnet',
         dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
         params: { transactionHex: '0x00001', chainAlias: 'X' },
-        context: { currentAddress: '0x0', xpubXP: 'xpubXP' },
+        context,
       },
       displayData: {
         title: 'Do you approve this import?',
@@ -304,10 +302,13 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
-  it('C: should process transaction with proper displayData', async () => {
+  it.each([
+    ['legacy', legacyContext],
+    ['account', accountContext],
+  ])('(%s): C: should process transaction with proper displayData', async (_, context) => {
     const transactionHex = '0x00001';
     const chainAlias = 'C';
-    const params = testParams({ transactionHex, chainAlias });
+    const params = testParams({ transactionHex, chainAlias }, context);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(EVM);
     (utils.hexToBuffer as jest.Mock).mockReturnValueOnce(new Uint8Array([0, 1, 2]));
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -327,7 +328,7 @@ describe('avalanche_sendTransaction handler', () => {
         chainId: 'avax:testnet',
         dappInfo: { url: 'https://example.com', name: 'dapp', icon: 'icon' },
         params: { transactionHex: '0x00001', chainAlias: 'C' },
-        context: { currentAddress: '0x0', xpubXP: 'xpubXP' },
+        context,
       },
       displayData: {
         title: 'Do you approve this import?',
