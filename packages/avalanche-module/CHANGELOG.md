@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 2.2.1
+
+### Patch Changes
+
+- 09b31d8: chore(avalanche): rename xpAddresses to externalXPAddresses
+  - @avalabs/vm-module-types@2.2.1
+
 ## 2.2.0
 
 ### Minor Changes
