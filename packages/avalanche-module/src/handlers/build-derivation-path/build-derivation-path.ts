@@ -14,6 +14,6 @@ export const buildDerivationPath = ({
 
   return {
     [NetworkVMType.AVM]: `m/44'/9000'/${accountIndex}'/0/0`,
-    [NetworkVMType.CoreEth]: `m/44'/60'/${accountIndex}'/0/0`,
+    [NetworkVMType.CoreEth]: `m/44'/60'/0'/0/${accountIndex}`,
   };
 };
