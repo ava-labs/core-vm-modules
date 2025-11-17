@@ -7,14 +7,14 @@ export const getAddressesByIndices = async ({
   isChange,
   isTestnet,
   xpubXP,
-  xpAddresses,
+  externalXPAddresses,
 }: {
   indices: number[];
   chainAlias: 'X' | 'P';
   isChange: boolean;
   isTestnet: boolean;
   xpubXP?: string;
-  xpAddresses?: { index: number; address: string }[];
+  externalXPAddresses?: { index: number; address: string }[];
 }): Promise<string[]> => {
   if (isChange && chainAlias !== 'X') {
     return [];
@@ -26,9 +26,9 @@ export const getAddressesByIndices = async ({
     return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
   }
 
-  if (xpAddresses && Array.isArray(xpAddresses)) {
+  if (externalXPAddresses && Array.isArray(externalXPAddresses)) {
     const accounts = indices
-      .map((index) => xpAddresses.find((address) => address.index === index))
+      .map((index) => externalXPAddresses.find((address) => address.index === index))
       .filter((acc) => acc !== undefined);
 
     return accounts.map((account) => account.address);

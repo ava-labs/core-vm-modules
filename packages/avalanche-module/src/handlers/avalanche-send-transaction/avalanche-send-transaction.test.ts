@@ -97,7 +97,7 @@ const accountContext = {
   account: {
     xpAddress: '0x0',
     xpubXP: 'xpubXP',
-    xpAddresses: [],
+    externalXPAddresses: [],
   },
 };
 

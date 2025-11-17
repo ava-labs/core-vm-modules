@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 import type { RpcRequest } from '@avalabs/vm-module-types';
 
-type CurrentAvalancheAccount = {
+export type CurrentAvalancheAccount = {
   xpAddress: string;
   evmAddress?: string;
   xpubXP?: string;
-  xpAddresses: {
+  externalXPAddresses: {
     index: number;
     address: string;
   }[];
@@ -26,7 +26,7 @@ const NewAvalancheTxContextSchema = z.object({
     }),
     evmAddress: z.string().optional(),
     xpubXP: z.string({ invalid_type_error: 'xpubXP must be a string' }).optional(),
-    xpAddresses: z.array(
+    externalXPAddresses: z.array(
       z.object({
         index: z.number(),
         address: z.string(),
@@ -43,7 +43,7 @@ const getAccountFromLegacyContext = (context: LegacyAvalancheTxContextType): Cur
     xpAddress: context.currentAddress,
     evmAddress: context.currentEvmAddress,
     xpubXP: context.xpubXP,
-    xpAddresses: [],
+    externalXPAddresses: [],
   };
 };
 
