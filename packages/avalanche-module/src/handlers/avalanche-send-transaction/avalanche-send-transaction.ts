@@ -59,7 +59,7 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    const { xpAddress: currentAddress, xpubXP, xpAddresses } = contextResult.data;
+    const { xpAddress: currentAddress, xpubXP, externalXPAddresses } = contextResult.data;
 
     const providedUtxos = getProvidedUtxos({
       utxoHexes: providedUtxoHexes,
@@ -100,7 +100,7 @@ export const avalancheSendTransaction = async ({
         isChange: false,
         isTestnet,
         xpubXP,
-        xpAddresses,
+        externalXPAddresses,
       });
 
       const internalAddresses = await getAddressesByIndices({
@@ -109,7 +109,7 @@ export const avalancheSendTransaction = async ({
         isChange: true,
         isTestnet,
         xpubXP,
-        xpAddresses,
+        externalXPAddresses,
       });
 
       const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
