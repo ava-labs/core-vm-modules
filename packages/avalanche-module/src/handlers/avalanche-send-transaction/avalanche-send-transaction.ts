@@ -22,6 +22,7 @@ import { getCoreHeaders, getGlacierApiKey, retry } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
+import { getAccountFromContext } from '../../utils/get-account-from-context';
 
 export const avalancheSendTransaction = async ({
   request,
@@ -50,13 +51,15 @@ export const avalancheSendTransaction = async ({
     const txBytes = utils.hexToBuffer(transactionHex);
     const isTestnet = network.isTestnet ?? false;
     const provider = await getProvider({ isTestnet });
-    const currentAddress = request.context?.['currentAddress'];
+    const contextResult = getAccountFromContext(request.context);
 
-    if (!currentAddress || typeof currentAddress !== 'string') {
+    if (!contextResult.success) {
       return {
-        error: rpcErrors.invalidRequest('No active account found'),
+        error: rpcErrors.invalidParams(contextResult.error),
       };
     }
+
+    const { xpAddress: currentAddress, xpubXP, externalXPAddresses } = contextResult.data;
 
     const providedUtxos = getProvidedUtxos({
       utxoHexes: providedUtxoHexes,
@@ -84,7 +87,6 @@ export const avalancheSendTransaction = async ({
       });
     } else {
       const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;
-      const xpubXP = request.context?.['xpubXP'];
 
       if (xpubXP !== undefined && typeof xpubXP !== 'string') {
         return {
@@ -98,6 +100,7 @@ export const avalancheSendTransaction = async ({
         isChange: false,
         isTestnet,
         xpubXP,
+        externalXPAddresses,
       });
 
       const internalAddresses = await getAddressesByIndices({
@@ -106,6 +109,7 @@ export const avalancheSendTransaction = async ({
         isChange: true,
         isTestnet,
         xpubXP,
+        externalXPAddresses,
       });
 
       const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
