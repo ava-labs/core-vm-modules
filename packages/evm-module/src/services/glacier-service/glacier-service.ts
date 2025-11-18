@@ -257,34 +257,41 @@ export class EvmGlacierService implements BalanceServiceInterface {
           tokenlist.status === 'fulfilled',
       )
       .flatMap((tokenlist) => {
-        return tokenlist.value.map((token) => {
-          return [
-            `${token.address}-${token.tokenId}`,
-            {
-              address: token.address,
-              description: token.metadata.description ?? '',
-              logoUri: token.metadata.imageUri ?? '',
-              logoSmall: getSmallImageForNFT(token.metadata.imageUri ?? ''),
-              name: token.metadata.name ?? '',
-              symbol: token.metadata.symbol ?? '',
-              tokenId: token.tokenId,
-              tokenUri: token.tokenUri,
-              chainId,
-              // glacier does not provide the collection name information
-              collectionName: 'Unknown',
-              balance: token.ercType === Erc1155Token.ercType.ERC_1155 ? BigInt(token.balance) : 1,
-              balanceDisplayValue: token.ercType === Erc1155Token.ercType.ERC_1155 ? token.balance : '1',
-              type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
-              metadata: {
-                indexStatus: token.metadata.indexStatus,
-                description: token.metadata.description,
-                lastUpdatedTimestamp: token.metadata.metadataLastUpdatedTimestamp,
-                properties:
-                  token.ercType === Erc721Token.ercType.ERC_721 ? token.metadata.attributes : token.metadata.properties,
-              },
-            },
-          ];
-        });
+        return (
+          tokenlist.value
+            // We filter out erc1155s with 0 balance, which Glacier returns for some reason
+            .filter((token) => token.ercType === Erc721Token.ercType.ERC_721 || BigInt(token.balance) > 0n)
+            .map((token) => {
+              return [
+                `${token.address}-${token.tokenId}`,
+                {
+                  address: token.address,
+                  description: token.metadata.description ?? '',
+                  logoUri: token.metadata.imageUri ?? '',
+                  logoSmall: getSmallImageForNFT(token.metadata.imageUri ?? ''),
+                  name: token.metadata.name ?? '',
+                  symbol: token.metadata.symbol ?? '',
+                  tokenId: token.tokenId,
+                  tokenUri: token.tokenUri,
+                  chainId,
+                  // glacier does not provide the collection name information
+                  collectionName: 'Unknown',
+                  balance: token.ercType === Erc1155Token.ercType.ERC_1155 ? BigInt(token.balance) : 1,
+                  balanceDisplayValue: token.ercType === Erc1155Token.ercType.ERC_1155 ? token.balance : '1',
+                  type: token.ercType === Erc721Token.ercType.ERC_721 ? TokenType.ERC721 : TokenType.ERC1155,
+                  metadata: {
+                    indexStatus: token.metadata.indexStatus,
+                    description: token.metadata.description,
+                    lastUpdatedTimestamp: token.metadata.metadataLastUpdatedTimestamp,
+                    properties:
+                      token.ercType === Erc721Token.ercType.ERC_721
+                        ? token.metadata.attributes
+                        : token.metadata.properties,
+                  },
+                },
+              ];
+            })
+        );
       });
 
     return Object.fromEntries(entries);
