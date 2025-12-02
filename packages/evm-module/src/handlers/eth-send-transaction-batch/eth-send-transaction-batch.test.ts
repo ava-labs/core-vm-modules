@@ -273,7 +273,7 @@ describe('eth_sendTransactionBatch handler', () => {
 
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: testParams,
+      data: { transactions: testParams },
     });
 
     mockApprovalController.requestBatchApproval.mockResolvedValue({
@@ -304,7 +304,7 @@ describe('eth_sendTransactionBatch handler', () => {
     });
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: testParams.map(({ gas, ...rest }) => rest) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      data: { transactions: testParams.map(({ gas, ...rest }) => rest) as any }, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
     const mockBlockaid = {
@@ -371,7 +371,7 @@ describe('eth_sendTransactionBatch handler', () => {
     });
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: testParams.map(({ nonce, ...rest }) => rest) as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      data: { transactions: testParams.map(({ nonce, ...rest }) => rest) as any }, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
     mockGetNonce.mockResolvedValue(12);
 
@@ -517,26 +517,28 @@ describe('eth_sendTransactionBatch handler', () => {
 
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [
-        {
-          from: tx1.from,
-          to: tx1.to,
-          data: tx1.data,
-          value: tx1.value,
-          nonce: tx1.nonce,
-          gas: tx1.gas,
-          chainId: '0x1',
-        },
-        {
-          from: tx2.from,
-          to: tx2.to,
-          data: tx2.data,
-          value: tx2.value,
-          nonce: tx2.nonce,
-          gas: tx2.gas,
-          chainId: '0x1',
-        },
-      ],
+      data: {
+        transactions: [
+          {
+            from: tx1.from,
+            to: tx1.to,
+            data: tx1.data,
+            value: tx1.value,
+            nonce: tx1.nonce,
+            gas: tx1.gas,
+            chainId: '0x1',
+          },
+          {
+            from: tx2.from,
+            to: tx2.to,
+            data: tx2.data,
+            value: tx2.value,
+            nonce: tx2.nonce,
+            gas: tx2.gas,
+            chainId: '0x1',
+          },
+        ],
+      },
     });
 
     const updateTx = jest.fn();
@@ -650,10 +652,12 @@ describe('eth_sendTransactionBatch handler', () => {
   it('should return error if some transactions end up without gas limits', async () => {
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [
-        { from: '0xfrom', to: '0xto', value: '0xvalue', nonce: '12' },
-        { from: '0xfrom', to: '0xto', value: '0xvalue', nonce: '13' },
-      ],
+      data: {
+        transactions: [
+          { from: '0xfrom', to: '0xto', value: '0xvalue', nonce: '12' },
+          { from: '0xfrom', to: '0xto', value: '0xvalue', nonce: '13' },
+        ],
+      },
     });
 
     const mockBlockaid = {
@@ -692,10 +696,12 @@ describe('eth_sendTransactionBatch handler', () => {
   it('should return error if nonce calculation fails', async () => {
     mockParseRequestParams.mockReturnValue({
       success: true,
-      data: [
-        { from: '0xfrom', to: '0xto', value: '0xvalue', gas: '0x5208' },
-        { from: '0xfrom', to: '0xto', value: '0xvalue', gas: '0x5208' },
-      ],
+      data: {
+        transactions: [
+          { from: '0xfrom', to: '0xto', value: '0xvalue', gas: '0x5208' },
+          { from: '0xfrom', to: '0xto', value: '0xvalue', gas: '0x5208' },
+        ],
+      },
     });
     mockGetNonce.mockRejectedValue(new Error('Nonce calculation error'));
 
@@ -787,6 +793,50 @@ describe('eth_sendTransactionBatch handler', () => {
 
       expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
     });
+
+    it('should NOT wait for intermediate receipts when onlyWaitForLastTx is true', async () => {
+      mockParseRequestParams.mockReturnValue({
+        success: true,
+        data: { transactions: testParams, options: { onlyWaitForLastTx: true } },
+      });
+
+      mockApprovalController.requestBatchApproval.mockResolvedValueOnce({
+        result: [{ signedData: testSignedTxHash }, { signedData: testSignedTxHash2 }],
+      });
+
+      // Use mockImplementation to return correct tx hash based on input
+      mockSend.mockReset();
+      mockSend.mockImplementation((method: string, params: string[]) => {
+        if (method === 'eth_sendRawTransaction') {
+          if (params[0] === testSignedTxHash) return Promise.resolve(testTxHash);
+          if (params[0] === testSignedTxHash2) return Promise.resolve(testTxHash2);
+        }
+        return Promise.resolve(null);
+      });
+
+      // Even if receipt returns failure, it should NOT stop execution
+      // because we're not waiting for intermediate receipts
+      mockGetTransactionReceipt.mockResolvedValue({ status: 0 });
+
+      const requestParams = testRequestParams();
+      const response = await ethSendTransactionBatch(requestParams);
+
+      expect(mockGetProvider).toHaveBeenCalledWith({
+        chainId: 1,
+        chainName: 'chainName',
+        rpcUrl: 'rpcUrl',
+        multiContractAddress: 'multiContractAddress',
+        pollingInterval: 1000,
+      });
+
+      // Should return success with both tx hashes, not stop on first failure
+      expect(response).toStrictEqual({ result: [testTxHash, testTxHash2] });
+
+      // Should broadcast both transactions
+      expect(mockSend).toHaveBeenCalledTimes(2);
+      expect(mockSend).toHaveBeenNthCalledWith(1, 'eth_sendRawTransaction', [testSignedTxHash]);
+      expect(mockSend).toHaveBeenNthCalledWith(2, 'eth_sendRawTransaction', [testSignedTxHash2]);
+    });
   });
 
   describe('approval fails', () => {
@@ -831,10 +881,28 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
 
   mockParseRequestParams.mockReturnValue({
     success: true,
-    data: [
-      { from: tx1.from, to: tx1.to, data: tx1.data, value: tx1.value, nonce: tx1.nonce, gas: tx1.gas, chainId: '0x1' },
-      { from: tx2.from, to: tx2.to, data: tx2.data, value: tx2.value, nonce: tx2.nonce, gas: tx2.gas, chainId: '0x1' },
-    ],
+    data: {
+      transactions: [
+        {
+          from: tx1.from,
+          to: tx1.to,
+          data: tx1.data,
+          value: tx1.value,
+          nonce: tx1.nonce,
+          gas: tx1.gas,
+          chainId: '0x1',
+        },
+        {
+          from: tx2.from,
+          to: tx2.to,
+          data: tx2.data,
+          value: tx2.value,
+          nonce: tx2.nonce,
+          gas: tx2.gas,
+          chainId: '0x1',
+        },
+      ],
+    },
   });
 
   const requestParams = {

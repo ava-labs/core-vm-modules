@@ -31,7 +31,7 @@ export const ethSendTransactionBatch = async ({
   blockaid: Blockaid;
 }) => {
   const { params } = request;
-  const { data: transactionRequests, success, error } = parseRequestParams(params);
+  const { data: parsedParams, success, error } = parseRequestParams(params);
 
   if (!success) {
     console.error('invalid params', error);
@@ -39,6 +39,9 @@ export const ethSendTransactionBatch = async ({
       error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
     };
   }
+
+  const { transactions: transactionRequests, options = {} } = parsedParams;
+  const { onlyWaitForLastTx = false } = options;
 
   const provider = await getProvider({
     chainId: network.chainId,
@@ -144,13 +147,18 @@ export const ethSendTransactionBatch = async ({
       request,
     });
 
-    // If it's the last transaction, we don't need to await the receipt, as there
-    // are no more transactions in the batch that would rely on it.
+    // When onlyWaitForLastTx is true:
+    // - Broadcast all transactions immediately without waiting for intermediate receipts
+    // - This is useful when the ApprovalController handles sequential broadcasting
+    //   and we want to return tx hashes quickly
     //
-    // Also, for most of our use cases, batches will only have 2 transactions,
-    // so skipping the receipt for the last one will let us send the response
-    // to the client significantly faster, making the UX better.
-    if (!isLast) {
+    // When onlyWaitForLastTx is false (default):
+    // - Wait for each transaction's receipt before broadcasting the next
+    // - Skip waiting for the last transaction since there are no more transactions
+    //   that would rely on it
+    const shouldWaitForReceipt = onlyWaitForLastTx ? false : !isLast;
+
+    if (shouldWaitForReceipt) {
       const isSuccess = await receiptPromise;
 
       if (!isSuccess) {
