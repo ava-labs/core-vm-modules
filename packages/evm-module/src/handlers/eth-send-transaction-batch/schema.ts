@@ -56,12 +56,16 @@ function areAllEqualByProp<T>(elements: T[], prop: keyof T) {
   return uniqValues.size === 1;
 }
 
-type ParsedParams = {
+/** Input type for batch transaction params - either array or object format */
+export type TransactionBatchInput = z.input<typeof transactionBatchSchema>;
+
+/** Normalized output after parsing - always has transactions, options is optional */
+export type ParsedParams = {
   transactions: z.infer<typeof transactionArraySchema>;
   options?: BatchOptions;
 };
 
-export const parseRequestParams = (params: unknown): z.SafeParseReturnType<unknown, ParsedParams> => {
+export const parseRequestParams = (params: unknown): z.SafeParseReturnType<TransactionBatchInput, ParsedParams> => {
   const result = transactionBatchSchema.safeParse(params);
 
   if (!result.success) {
