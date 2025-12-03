@@ -37,6 +37,12 @@ export type DetailedDeriveAddressParams = SimpleDeriveAddressParams & {
    * Useful when working with Ledger devices, which support BIP44 and Ledger Live derivation paths.
    */
   derivationPathType: DerivationPathType;
+
+  /**
+   * Address index for which the public key will be requested.
+   * This is NOT the same as {accountIndex}. Applicable mostly to X/P chain addresses.
+   */
+  addressIndex?: number;
 };
 
 export type DeriveAddressParams = SimpleDeriveAddressParams | DetailedDeriveAddressParams;
@@ -44,7 +50,11 @@ export type DeriveAddressParams = SimpleDeriveAddressParams | DetailedDeriveAddr
 export type DeriveAddressResponse = Partial<Record<NetworkVMType, string>>;
 
 export type DerivationPathType = 'bip44' | 'ledger_live';
-export type BuildDerivationPathParams = { accountIndex: number; derivationPathType: DerivationPathType };
+export type BuildDerivationPathParams = {
+  accountIndex: number;
+  derivationPathType: DerivationPathType;
+  addressIndex?: number;
+};
 export type BuildDerivationPathResponse = Partial<Record<NetworkVMType, string>>;
 
 export type PubKeyType = {
