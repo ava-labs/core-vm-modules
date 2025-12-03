@@ -1,5 +1,15 @@
 # @avalabs/avalanche-module
 
+## 3.0.0
+
+### Major Changes
+
+- 12873c0: refactor: change X/P derivation paths [BREAKING]
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.0.0
+
 ## 2.2.1
 
 ### Patch Changes
