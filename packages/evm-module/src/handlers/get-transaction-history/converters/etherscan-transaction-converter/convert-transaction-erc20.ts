@@ -18,7 +18,7 @@ export function convertTransactionERC20({
   const timestamp = parseInt(tx.timeStamp) * 1000;
   const amount = new TokenUnit(tx.value, Number(tx.tokenDecimal), tx.tokenSymbol);
   const amountDisplayValue = amount.toDisplay();
-  const { from, to, gasPrice, gasUsed, hash, tokenDecimal, tokenName, tokenSymbol } = tx;
+  const { from, to, gasPrice, gasUsed, hash, tokenDecimal, tokenName, tokenSymbol, contractAddress } = tx;
   const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, hash);
 
@@ -38,6 +38,7 @@ export function convertTransactionERC20({
         symbol: tokenSymbol,
         type: TokenType.ERC20,
         amount: amountDisplayValue,
+        address: contractAddress,
       },
     ],
     gasUsed,

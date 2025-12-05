@@ -157,7 +157,7 @@ const extractNativeTransfer = (
   network: Network,
   splTransfers: TxToken[] = [],
   ourAddress?: string,
-) => {
+): TxToken | null => {
   // For ATA transactions (accountIndex = -1), check if this might be a SOL → SPL swap
   if (accountIndex === -1) {
     // Only create SOL transfers for ATA transactions if:
