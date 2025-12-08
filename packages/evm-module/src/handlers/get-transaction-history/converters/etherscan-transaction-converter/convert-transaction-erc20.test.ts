@@ -15,6 +15,7 @@ describe('convertTransactionERC20 ', () => {
       tokenDecimal: '18',
       tokenName: 'MyToken',
       tokenSymbol: 'MTK',
+      contractAddress: '0xContractAddress',
     } as Erc20Tx;
 
     const address = '0xSenderAddress';
@@ -37,6 +38,7 @@ describe('convertTransactionERC20 ', () => {
           symbol: 'MTK',
           type: TokenType.ERC20,
           amount: '1',
+          address: '0xContractAddress',
         },
       ],
       gasUsed: '21000',

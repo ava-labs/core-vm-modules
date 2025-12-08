@@ -35,6 +35,7 @@ export const getTokens = async (
 
     result.push({
       decimal: decimals.toString(),
+      address: erc20Transfer.erc20Token.address,
       name: erc20Transfer.erc20Token.name,
       symbol: erc20Transfer.erc20Token.symbol,
       amount: amountDisplayValue,
@@ -54,6 +55,7 @@ export const getTokens = async (
         result.push({
           name: erc721Transfer.erc721Token.name,
           symbol: erc721Transfer.erc721Token.symbol,
+          address: erc721Transfer.erc721Token.address,
           amount: '1',
           imageUri,
           from: erc721Transfer.from,
@@ -74,6 +76,7 @@ export const getTokens = async (
         result.push({
           name: erc1155Transfer.erc1155Token.metadata.name ?? '',
           symbol: erc1155Transfer.erc1155Token.metadata.symbol ?? '',
+          address: erc1155Transfer.erc1155Token.address,
           amount: erc1155Transfer.value,
           imageUri,
           from: erc1155Transfer.from,

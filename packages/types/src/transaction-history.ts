@@ -31,7 +31,7 @@ export type Transaction = {
   explorerLink: string;
 };
 
-export interface TxToken {
+export type TxToken = {
   decimal?: string;
   name: string;
   symbol: string;
@@ -41,7 +41,15 @@ export interface TxToken {
   to?: TokenWithAddress;
   collectableTokenId?: string;
   type: TokenType;
-}
+} & (
+  | {
+      address: string;
+      type: TokenType.ERC20 | TokenType.ERC721 | TokenType.ERC1155 | TokenType.NONERC | TokenType.SPL;
+    }
+  | {
+      type: TokenType.NATIVE;
+    }
+);
 
 // this is RichAddress from @avalabs/glacier-sdk,
 // rename it to TokenWithAddress for better understanding
