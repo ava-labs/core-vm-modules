@@ -1,5 +1,13 @@
 # @avalabs/svm-module
 
+## 3.0.1
+
+### Patch Changes
+
+- cf99e2c: return contract address property for tx history items
+- Updated dependencies [cf99e2c]
+  - @avalabs/vm-module-types@3.0.1
+
 ## 3.0.0
 
 ### Patch Changes
