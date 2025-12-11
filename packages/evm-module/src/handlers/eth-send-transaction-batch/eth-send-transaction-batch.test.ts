@@ -125,12 +125,12 @@ const displayData = {
     {
       title: 'Transaction Details',
       items: [
-        linkItem('Website', testDapp),
         addressItem('Account', tx1.from),
         networkItem('Network', {
           name: testNetwork.chainName,
           logoUri: testNetwork.logoUri,
         }),
+        linkItem('Website', testDapp),
       ],
     },
   ],
@@ -166,6 +166,19 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         {
           items: [
             {
+              label: 'Account',
+              type: DetailItemType.ADDRESS,
+              value: tx1.from,
+            },
+            {
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
+            },
+            {
               label: 'Website',
               type: DetailItemType.LINK,
               value: {
@@ -175,22 +188,9 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'Account',
-              type: DetailItemType.ADDRESS,
-              value: tx1.from,
-            },
-            {
               label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx1.to,
-            },
-            {
-              label: 'Network',
-              type: DetailItemType.NETWORK,
-              value: {
-                name: testNetwork.chainName,
-                logoUri: testNetwork.logoUri,
-              },
             },
           ],
           title: 'Transaction Details',
@@ -225,6 +225,19 @@ const signingRequests: [SigningRequest, SigningRequest] = [
         {
           items: [
             {
+              label: 'Account',
+              type: DetailItemType.ADDRESS,
+              value: tx2.from,
+            },
+            {
+              label: 'Network',
+              type: DetailItemType.NETWORK,
+              value: {
+                name: testNetwork.chainName,
+                logoUri: testNetwork.logoUri,
+              },
+            },
+            {
               label: 'Website',
               type: DetailItemType.LINK,
               value: {
@@ -234,22 +247,9 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               },
             },
             {
-              label: 'Account',
-              type: DetailItemType.ADDRESS,
-              value: tx2.from,
-            },
-            {
               label: 'Contract',
               type: DetailItemType.ADDRESS,
               value: tx2.to,
-            },
-            {
-              label: 'Network',
-              type: DetailItemType.NETWORK,
-              value: {
-                name: testNetwork.chainName,
-                logoUri: testNetwork.logoUri,
-              },
             },
           ],
           title: 'Transaction Details',

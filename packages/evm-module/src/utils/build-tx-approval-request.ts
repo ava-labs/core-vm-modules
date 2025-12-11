@@ -42,13 +42,6 @@ export const buildTxApprovalRequest = (
     transactionDetails.push(addressItem('Contract', transaction.to));
   }
 
-  transactionDetails.push(
-    networkItem('Network', {
-      name: network.chainName,
-      logoUri: network.logoUri,
-    }),
-  );
-
   const displayData: DisplayData = {
     title,
     details: [

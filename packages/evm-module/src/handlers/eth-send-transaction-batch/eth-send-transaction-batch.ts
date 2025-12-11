@@ -90,12 +90,12 @@ export const ethSendTransactionBatch = async ({
       {
         title: 'Transaction Details',
         items: [
-          linkItem('Website', request.dappInfo),
           addressItem('Account', transactionRequests[0].from),
           networkItem('Network', {
             name: network.chainName,
             logoUri: network.logoUri,
           }),
+          linkItem('Website', request.dappInfo),
         ],
       },
     ],
