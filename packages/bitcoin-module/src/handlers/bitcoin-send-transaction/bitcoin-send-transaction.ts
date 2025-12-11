@@ -86,8 +86,8 @@ export const bitcoinSendTransaction = async ({
       {
         title: 'Transaction Details',
         items: [
-          linkItem('Website', dappInfo),
           addressItem('From', from),
+          linkItem('Website', dappInfo),
           addressItem('To', to),
           currencyItem('Amount', BigInt(amount), network.networkToken.decimals, network.networkToken.symbol),
         ],
