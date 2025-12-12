@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 3.0.2
+
+### Patch Changes
+
+- e0ca7cc: change tx details order after parsing
+- Updated dependencies [e0ca7cc]
+  - @avalabs/vm-module-types@3.0.2
+
 ## 3.0.1
 
 ### Patch Changes
