@@ -116,18 +116,8 @@ const displayData = {
       title: 'Transaction Details',
       items: [
         {
-          label: 'Website',
-          value: testDapp,
-          type: 'link',
-        },
-        {
           label: 'Account',
           value: '0xfrom',
-          type: 'address',
-        },
-        {
-          label: 'Contract',
-          value: '0xto',
           type: 'address',
         },
         {
@@ -137,6 +127,16 @@ const displayData = {
             name: testNetwork.chainName,
             logoUri: testNetwork.logoUri,
           },
+        },
+        {
+          label: 'Website',
+          value: testDapp,
+          type: 'link',
+        },
+        {
+          label: 'Contract',
+          value: '0xto',
+          type: 'address',
         },
       ],
     },

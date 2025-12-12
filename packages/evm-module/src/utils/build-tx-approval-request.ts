@@ -29,18 +29,18 @@ export const buildTxApprovalRequest = (
     title = 'Do you approve this spend limit?';
   }
 
-  const transactionDetails: DetailItem[] = [linkItem('Website', dappInfo), addressItem('Account', transaction.from)];
-
-  if (transaction.to) {
-    transactionDetails.push(addressItem('Contract', transaction.to));
-  }
-
-  transactionDetails.push(
+  const transactionDetails: DetailItem[] = [
+    addressItem('Account', transaction.from),
     networkItem('Network', {
       name: network.chainName,
       logoUri: network.logoUri,
     }),
-  );
+    linkItem('Website', dappInfo),
+  ];
+
+  if (transaction.to) {
+    transactionDetails.push(addressItem('Contract', transaction.to));
+  }
 
   const displayData: DisplayData = {
     title,

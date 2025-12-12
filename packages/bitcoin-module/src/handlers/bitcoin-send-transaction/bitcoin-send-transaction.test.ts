@@ -253,14 +253,14 @@ describe('bitcoinSendTransaction', () => {
             title: 'Transaction Details',
             items: [
               {
-                label: 'Website',
-                value: testDappInfo,
-                type: 'link',
-              },
-              {
                 label: 'From',
                 value: 'from',
                 type: 'address',
+              },
+              {
+                label: 'Website',
+                value: testDappInfo,
+                type: 'link',
               },
               {
                 label: 'To',
