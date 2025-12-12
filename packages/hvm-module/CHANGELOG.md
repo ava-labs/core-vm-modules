@@ -1,5 +1,13 @@
 # @avalabs/hvm-module
 
+## 3.0.4
+
+### Patch Changes
+
+- 89bac4e: add onlyWaitForLastTx for batch transactions on EVM
+- Updated dependencies [89bac4e]
+  - @avalabs/vm-module-types@3.0.4
+
 ## 3.0.3
 
 ### Patch Changes
