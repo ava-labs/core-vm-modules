@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { transactionSchema } from '../../utils/transaction-schema';
 
-export const transactionBatchSchema = z
+export const transactionArraySchema = z
   .tuple([transactionSchema, transactionSchema])
   .rest(transactionSchema)
   .refine((transactions) => areAllEqualByProp(transactions, 'chainId'), {
@@ -13,6 +13,34 @@ export const transactionBatchSchema = z
   .refine((transactions) => areAllEmptyByProp(transactions, 'nonce') || areAllDifferentByProp(transactions, 'nonce'), {
     message: `Each transaction needs a different "nonce". Make them different, or leave them empty for all transactions.`,
   });
+
+export const batchOptionsSchema = z.object({
+  /**
+   * When true, broadcasts all transactions immediately without waiting for
+   * intermediate receipts. Only the last transaction's receipt will be awaited.
+   *
+   * This is useful when the ApprovalController handles the sequential broadcasting
+   * and we want the vm-module to just return the transaction hashes quickly.
+   *
+   * Default: false (wait for each transaction's receipt before broadcasting the next)
+   */
+  onlyWaitForLastTx: z.boolean().optional(),
+});
+
+export type BatchOptions = z.infer<typeof batchOptionsSchema>;
+
+/**
+ * Support both legacy array format and new object format with options:
+ * - Legacy: [tx1, tx2, ...]
+ * - New: { transactions: [tx1, tx2, ...], options?: { onlyWaitForLastTx?: boolean } }
+ */
+export const transactionBatchSchema = z.union([
+  transactionArraySchema,
+  z.object({
+    transactions: transactionArraySchema,
+    options: batchOptionsSchema.optional(),
+  }),
+]);
 
 function areAllDifferentByProp<T>(elements: T[], prop: keyof T) {
   return !areAllEqualByProp(elements, prop);
@@ -28,6 +56,38 @@ function areAllEqualByProp<T>(elements: T[], prop: keyof T) {
   return uniqValues.size === 1;
 }
 
-export const parseRequestParams = (params: unknown) => {
-  return transactionBatchSchema.safeParse(params);
+/** Input type for batch transaction params - either array or object format */
+export type TransactionBatchInput = z.input<typeof transactionBatchSchema>;
+
+/** Normalized output after parsing - always has transactions, options is optional */
+export type ParsedParams = {
+  transactions: z.infer<typeof transactionArraySchema>;
+  options?: BatchOptions;
+};
+
+export const parseRequestParams = (params: unknown): z.SafeParseReturnType<TransactionBatchInput, ParsedParams> => {
+  const result = transactionBatchSchema.safeParse(params);
+
+  if (!result.success) {
+    return result;
+  }
+
+  // Normalize to the new format
+  if (Array.isArray(result.data)) {
+    return {
+      success: true,
+      data: {
+        transactions: result.data,
+        options: {},
+      },
+    };
+  }
+
+  return {
+    success: true,
+    data: {
+      transactions: result.data.transactions,
+      options: result.data.options ?? {},
+    },
+  };
 };
