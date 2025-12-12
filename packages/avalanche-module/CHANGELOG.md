@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 3.0.3
+
+### Patch Changes
+
+- 71e39fe: fix: resolve CoreEth address independent of X/P
+  - @avalabs/vm-module-types@3.0.3
+
 ## 3.0.2
 
 ### Patch Changes
