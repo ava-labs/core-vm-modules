@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.0.2
+
+### Patch Changes
+
+- e0ca7cc: change tx details order after parsing
+
 ## 3.0.1
 
 ### Patch Changes
