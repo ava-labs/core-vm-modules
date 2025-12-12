@@ -16,23 +16,37 @@ export const deriveAddress = async (
   const coreEthDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).CoreEth : undefined;
   const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet) });
 
-  const xpPublicKeyHex = await approvalController.requestPublicKey({
-    curve: 'secp256k1',
-    secretId,
-    derivationPath: xpDerivationPath,
-  });
-  const coreEthPublicKeyHex = await approvalController.requestPublicKey({
-    curve: 'secp256k1',
-    secretId,
-    derivationPath: coreEthDerivationPath,
-  });
+  const xpPublicKeyHex = await approvalController
+    .requestPublicKey({
+      curve: 'secp256k1',
+      secretId,
+      derivationPath: xpDerivationPath,
+    })
+    .catch(() => null);
+  const coreEthPublicKeyHex = await approvalController
+    .requestPublicKey({
+      curve: 'secp256k1',
+      secretId,
+      derivationPath: coreEthDerivationPath,
+    })
+    .catch(() => null);
 
-  const publicKeyXP = Buffer.from(xpPublicKeyHex, 'hex');
-  const publicKeyCoreEth = Buffer.from(coreEthPublicKeyHex, 'hex');
+  // Resolve CoreEth address even if X/P public keys are not available
+  const coreEthAddress = coreEthPublicKeyHex
+    ? {
+        [NetworkVMType.CoreEth]: provXP.getAddress(Buffer.from(coreEthPublicKeyHex, 'hex'), 'C'),
+      }
+    : {};
+
+  const xpAddresses = xpPublicKeyHex
+    ? {
+        [NetworkVMType.AVM]: provXP.getAddress(Buffer.from(xpPublicKeyHex, 'hex'), 'X'),
+        [NetworkVMType.PVM]: provXP.getAddress(Buffer.from(xpPublicKeyHex, 'hex'), 'P'),
+      }
+    : {};
 
   return {
-    [NetworkVMType.CoreEth]: provXP.getAddress(publicKeyCoreEth, 'C'),
-    [NetworkVMType.AVM]: provXP.getAddress(publicKeyXP, 'X'),
-    [NetworkVMType.PVM]: provXP.getAddress(publicKeyXP, 'P'),
+    ...coreEthAddress,
+    ...xpAddresses,
   };
 };
