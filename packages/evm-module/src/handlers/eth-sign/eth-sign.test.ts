@@ -242,8 +242,8 @@ describe('ethSign', () => {
           alert: {
             type: AlertType.WARNING,
             details: {
-              title: 'Suspicious Transaction',
-              description: 'Use caution, this transaction may be malicious.',
+              title: 'Suspicious transaction',
+              description: 'Use caution, this transaction might be malicious.',
             },
           },
         }),
@@ -318,8 +318,9 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           alert: {
             type: AlertType.DANGER,
             details: {
-              title: 'Scam Transaction',
+              title: 'Scam transaction',
               description: 'This transaction has been flagged as malicious, I understand the risk.',
+              body: ['This transaction is malicious', 'do not proceed'],
               actionTitles: {
                 reject: 'Reject Transaction',
                 proceed: 'Proceed Anyway',
@@ -336,8 +337,8 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           alert: {
             type: AlertType.WARNING,
             details: {
-              title: 'Suspicious Transaction',
-              description: 'Use caution, this transaction may be malicious.',
+              title: 'Suspicious transaction',
+              description: 'Use caution, this transaction might be malicious.',
             },
           },
         }),

@@ -213,6 +213,7 @@ export type AlertDetails = {
   title: string;
   description: string;
   detailedDescription?: string;
+  body?: string[];
   actionTitles?: {
     proceed: string;
     reject: string;
