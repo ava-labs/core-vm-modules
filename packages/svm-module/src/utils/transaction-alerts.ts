@@ -28,15 +28,16 @@ export const transactionAlerts = {
   [AlertType.WARNING]: {
     type: AlertType.WARNING,
     details: {
-      title: 'Suspicious Transaction',
-      description: 'Use caution, this transaction may be malicious.',
+      title: 'Suspicious transaction',
+      description: 'Use caution, this transaction might be malicious.',
     },
   },
   [AlertType.DANGER]: {
     type: AlertType.DANGER,
     details: {
-      title: 'Scam Transaction',
+      title: 'Scam transaction',
       description: 'This transaction is malicious, do not proceed.',
+      body: ['This transaction is malicious', 'do not proceed'],
       actionTitles: {
         reject: 'Reject Transaction',
         proceed: 'Proceed Anyway',
