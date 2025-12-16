@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.0.5
+
+### Patch Changes
+
+- 48393c1: Added new body property to Alert type, keeping it backwards compatible
+
 ## 3.0.4
 
 ### Patch Changes
