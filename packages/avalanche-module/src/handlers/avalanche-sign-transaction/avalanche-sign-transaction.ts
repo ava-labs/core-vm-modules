@@ -112,7 +112,7 @@ export const avalancheSignTransaction = async ({
   }
 
   // get display data for the UI
-  const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from);
+  const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, currentAddress);
   const txDetails = parseTxDetails(txData);
 
   if (txData.type === 'unknown' || txDetails === undefined) {
