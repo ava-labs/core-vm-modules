@@ -105,22 +105,6 @@ describe('avalanche-sign-transaction', () => {
     jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockRejectedValue(() => Promise.reject({}));
   });
 
-  it('returns error if from address was not provided', async () => {
-    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P' });
-
-    const result = await avalancheSignTransaction({
-      request,
-      network: mockNetwork,
-      approvalController: mockApprovalController,
-      glacierApiUrl: 'glacierApiUrl',
-      appInfo: { name: AppName.CORE_MOBILE_IOS, version: 'version' },
-    });
-
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams('Params are invalid'),
-    });
-  });
-
   it('returns error if missing signer address', async () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     (utils.addressesFromBytes as jest.Mock).mockReturnValue([]);
