@@ -105,6 +105,20 @@ describe('avalanche-sign-transaction', () => {
     jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockRejectedValue(() => Promise.reject({}));
   });
 
+  it('fallbacks to current address if from address was not provided', async () => {
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P' });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+    const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+    });
+    expect(utils.parse).toHaveBeenCalledWith('C-avax1234567890');
+
+    expect(result).toEqual({
+      result: 'signedData',
+    });
+  });
+
   it('returns error if missing signer address', async () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     (utils.addressesFromBytes as jest.Mock).mockReturnValue([]);
