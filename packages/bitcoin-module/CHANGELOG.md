@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 3.0.6
+
+### Patch Changes
+
+- e29ce69: remove from address param for avalanche_signTransaction
+- Updated dependencies [e29ce69]
+  - @avalabs/vm-module-types@3.0.6
+
 ## 3.0.5
 
 ### Patch Changes
