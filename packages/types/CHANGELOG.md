@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.0.7
+
+### Patch Changes
+
+- e29ce69: remove from address param for avalanche_signTransaction
+
 ## 3.0.6
 
 ### Patch Changes
