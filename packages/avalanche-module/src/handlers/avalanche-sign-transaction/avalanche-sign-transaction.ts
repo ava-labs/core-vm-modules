@@ -86,7 +86,7 @@ export const avalancheSignTransaction = async ({
   });
 
   // check if the current account's signature is needed
-  const signerAddress = utils.addressesFromBytes([utils.parse(from)[2]])[0];
+  const signerAddress = utils.addressesFromBytes([utils.parse(from ?? currentAddress)[2]])[0];
 
   if (!signerAddress) {
     return {
@@ -112,7 +112,7 @@ export const avalancheSignTransaction = async ({
   }
 
   // get display data for the UI
-  const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from);
+  const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from ?? currentAddress);
   const txDetails = parseTxDetails(txData);
 
   if (txData.type === 'unknown' || txDetails === undefined) {
