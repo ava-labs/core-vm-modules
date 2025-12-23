@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 3.1.0
+
+### Minor Changes
+
+- 18ad6d5: Add skipIntermediateTxs option to eth_sendTransactionBatch
+
+### Patch Changes
+
+- Updated dependencies [18ad6d5]
+  - @avalabs/vm-module-types@3.1.0
+
 ## 3.0.7
 
 ### Patch Changes

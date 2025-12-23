@@ -1,13 +1,7 @@
-# @internal/tsup-config
+# @internal/tsconfig
 
 ## 0.1.0
 
 ### Minor Changes
 
 - 18ad6d5: Add skipIntermediateTxs option to eth_sendTransactionBatch
-
-## 0.0.2
-
-### Patch Changes
-
-- 00f59fe: Solana signing RPC calls
