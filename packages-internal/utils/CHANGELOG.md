@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.6.0
+
+### Minor Changes
+
+- 18ad6d5: Add skipIntermediateTxs option to eth_sendTransactionBatch
+
 ## 0.5.4
 
 ### Patch Changes
