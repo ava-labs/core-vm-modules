@@ -41,7 +41,7 @@ export const ethSendTransactionBatch = async ({
   }
 
   const { transactions: transactionRequests, options = {} } = parsedParams;
-  const { onlyWaitForLastTx = false } = options;
+  const { skipIntermediateTxs = false } = options;
 
   const provider = await getProvider({
     chainId: network.chainId,
@@ -134,32 +134,32 @@ export const ethSendTransactionBatch = async ({
 
   for (const [index, result] of response.result.entries()) {
     const isLast = index === response.result.length - 1;
-    // Execute transactions one-by-one, as they may depend on one another
     const txHash = await getTxHash(provider, result);
 
-    const receiptPromise = waitForTransactionReceipt({
-      explorerUrl: network.explorerUrl ?? '',
-      provider,
-      txHash,
-      onTransactionPending: approvalController.onTransactionPending,
-      onTransactionConfirmed: approvalController.onTransactionConfirmed,
-      onTransactionReverted: approvalController.onTransactionReverted,
-      request,
-    });
+    // For the last tx: fire-and-forget receipt tracking (for UI callbacks)
+    if (isLast) {
+      waitForTransactionReceipt({
+        explorerUrl: network.explorerUrl ?? '',
+        provider,
+        txHash,
+        onTransactionPending: approvalController.onTransactionPending,
+        onTransactionConfirmed: approvalController.onTransactionConfirmed,
+        onTransactionReverted: approvalController.onTransactionReverted,
+        request,
+      });
+    }
 
-    // When onlyWaitForLastTx is true:
-    // - Broadcast all transactions immediately without waiting for intermediate receipts
-    // - This is useful when the ApprovalController handles sequential broadcasting
-    //   and we want to return tx hashes quickly
-    //
-    // When onlyWaitForLastTx is false (default):
-    // - Wait for each transaction's receipt before broadcasting the next
-    // - Skip waiting for the last transaction since there are no more transactions
-    //   that would rely on it
-    const shouldWaitForReceipt = onlyWaitForLastTx ? false : !isLast;
-
-    if (shouldWaitForReceipt) {
-      const isSuccess = await receiptPromise;
+    // For intermediate txs: wait for receipt before broadcasting next (unless skipIntermediateTxs)
+    if (!isLast && !skipIntermediateTxs) {
+      const isSuccess = await waitForTransactionReceipt({
+        explorerUrl: network.explorerUrl ?? '',
+        provider,
+        txHash,
+        onTransactionPending: approvalController.onTransactionPending,
+        onTransactionConfirmed: approvalController.onTransactionConfirmed,
+        onTransactionReverted: approvalController.onTransactionReverted,
+        request,
+      });
 
       if (!isSuccess) {
         return {

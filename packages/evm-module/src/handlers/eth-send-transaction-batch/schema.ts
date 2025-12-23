@@ -16,15 +16,15 @@ export const transactionArraySchema = z
 
 export const batchOptionsSchema = z.object({
   /**
-   * When true, broadcasts all transactions immediately without waiting for
-   * intermediate receipts. Only the last transaction's receipt will be awaited.
+   * When true, skips waiting for intermediate transaction receipts.
+   * All transactions are broadcasted immediately without waiting for each to confirm.
    *
-   * This is useful when the ApprovalController handles the sequential broadcasting
-   * and we want the vm-module to just return the transaction hashes quickly.
+   * This is useful for one-click swaps (approve + swap) where we want fast response.
+   * The network guarantees ordering via sequential nonces.
    *
    * Default: false (wait for each transaction's receipt before broadcasting the next)
    */
-  onlyWaitForLastTx: z.boolean().optional(),
+  skipIntermediateTxs: z.boolean().optional(),
 });
 
 export type BatchOptions = z.infer<typeof batchOptionsSchema>;

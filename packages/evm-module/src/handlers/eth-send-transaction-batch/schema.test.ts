@@ -119,7 +119,7 @@ describe('parseRequestParams', () => {
       expect(result.data).toEqual({ transactions, options: {} });
     });
 
-    it('should return success for valid params with onlyWaitForLastTx: true', () => {
+    it('should return success for valid params with skipIntermediateTxs: true', () => {
       const transactions = [
         {
           from: '0x1234567890123456789012345678901234567890',
@@ -139,17 +139,17 @@ describe('parseRequestParams', () => {
 
       const result = parseRequestParams({
         transactions,
-        options: { onlyWaitForLastTx: true },
+        options: { skipIntermediateTxs: true },
       });
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual({
         transactions,
-        options: { onlyWaitForLastTx: true },
+        options: { skipIntermediateTxs: true },
       });
     });
 
-    it('should return success for valid params with onlyWaitForLastTx: false', () => {
+    it('should return success for valid params with skipIntermediateTxs: false', () => {
       const transactions = [
         {
           from: '0x1234567890123456789012345678901234567890',
@@ -169,13 +169,13 @@ describe('parseRequestParams', () => {
 
       const result = parseRequestParams({
         transactions,
-        options: { onlyWaitForLastTx: false },
+        options: { skipIntermediateTxs: false },
       });
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual({
         transactions,
-        options: { onlyWaitForLastTx: false },
+        options: { skipIntermediateTxs: false },
       });
     });
   });

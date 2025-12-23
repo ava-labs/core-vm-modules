@@ -794,10 +794,10 @@ describe('eth_sendTransactionBatch handler', () => {
       expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: requestParams.request, txHash: testTxHash });
     });
 
-    it('should NOT wait for intermediate receipts when onlyWaitForLastTx is true', async () => {
+    it('should NOT wait for intermediate receipts when skipIntermediateTxs is true', async () => {
       mockParseRequestParams.mockReturnValue({
         success: true,
-        data: { transactions: testParams, options: { onlyWaitForLastTx: true } },
+        data: { transactions: testParams, options: { skipIntermediateTxs: true } },
       });
 
       mockApprovalController.requestBatchApproval.mockResolvedValueOnce({
