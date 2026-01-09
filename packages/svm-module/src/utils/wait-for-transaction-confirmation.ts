@@ -53,7 +53,7 @@ export const waitForTransactionConfirmation = async ({
         lastStatus = confirmationStatus;
 
         if (confirmationStatus === 'processed') {
-          approvalController.onTransactionPending({ txHash, request });
+          approvalController.onTransactionPending({ txHash, request, explorerLink });
         }
 
         const isConfirmed =

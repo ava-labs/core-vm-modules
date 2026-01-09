@@ -296,6 +296,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
     expect(mockApprovalController.onTransactionPending).toHaveBeenCalledWith({
       txHash: base58TxHash,
       request: mockRequest,
+      explorerLink: 'https://explorer.solana.com/tx/' + base58TxHash,
     });
     expect(waitForTransactionConfirmation).toHaveBeenCalledWith({
       provider: mockProvider,

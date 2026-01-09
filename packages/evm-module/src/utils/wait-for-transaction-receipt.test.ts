@@ -55,6 +55,7 @@ describe('waitForTransactionReceipt', () => {
     expect(onTransactionPending).toHaveBeenCalledWith({
       txHash,
       request,
+      explorerLink: 'https://explorer.com/tx/' + txHash,
     });
   });
 
