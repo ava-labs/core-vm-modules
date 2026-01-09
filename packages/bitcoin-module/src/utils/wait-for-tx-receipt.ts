@@ -13,7 +13,15 @@ export const waitForTransactionReceipt = async ({
   explorerUrl: string;
   provider: BitcoinProvider;
   txHash: Hex;
-  onTransactionPending: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
+  onTransactionPending: ({
+    txHash,
+    request,
+    explorerLink,
+  }: {
+    txHash: Hex;
+    request: RpcRequest;
+    explorerLink: string;
+  }) => void;
   onTransactionConfirmed: ({
     txHash,
     explorerLink,
@@ -27,9 +35,9 @@ export const waitForTransactionReceipt = async ({
   request: RpcRequest;
 }) => {
   try {
-    onTransactionPending({ txHash, request });
-    await provider.waitForTx(txHash);
     const explorerLink = `${explorerUrl}/tx/${txHash}`;
+    onTransactionPending({ txHash, request, explorerLink });
+    await provider.waitForTx(txHash);
     onTransactionConfirmed({ txHash, explorerLink, request });
   } catch (err) {
     console.error(err);
