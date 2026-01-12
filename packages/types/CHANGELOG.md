@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 3.1.1
+
+### Patch Changes
+
+- 2e0c5f7: changed exponential backoff params to try 10 times at a 500ms increment
+- d311fe6: fix(evm-module): filter out spam transactions from history"
+
 ## 3.1.0
 
 ### Minor Changes
