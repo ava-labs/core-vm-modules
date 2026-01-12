@@ -17,6 +17,7 @@ import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-
 
 import { parseRequestParams, type SendOptions } from './schema';
 import type Blockaid from '@blockaid/client';
+import { getExplorerAddressByNetwork } from '@src/utils/get-explorer-address-by-network';
 
 export const signAndSendTransaction = async ({
   request,
@@ -94,7 +95,8 @@ export const signAndSendTransaction = async ({
 
   try {
     txHash = await getTxHash(provider, response, sendOptions);
-    await approvalController.onTransactionPending({ txHash, request });
+    const explorerLink = getExplorerAddressByNetwork(network, txHash);
+    await approvalController.onTransactionPending({ txHash, request, explorerLink });
 
     waitForTransactionConfirmation({
       provider,

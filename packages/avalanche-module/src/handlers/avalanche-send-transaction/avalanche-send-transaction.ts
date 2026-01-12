@@ -220,7 +220,15 @@ const waitForTransactionReceipt = async ({
   provider: Avalanche.JsonRpcProvider;
   txHash: Hex;
   vm: 'EVM' | 'AVM' | 'PVM';
-  onTransactionPending: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
+  onTransactionPending: ({
+    txHash,
+    request,
+    explorerLink,
+  }: {
+    txHash: Hex;
+    request: RpcRequest;
+    explorerLink: string;
+  }) => void;
   onTransactionConfirmed: ({
     txHash,
     explorerLink,
@@ -238,7 +246,7 @@ const waitForTransactionReceipt = async ({
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, txHash);
 
   try {
-    onTransactionPending({ txHash, request });
+    onTransactionPending({ txHash, request, explorerLink });
 
     if (vm === PVM) {
       // https://docs.avax.network/api-reference/p-chain/api#platformgettxstatus
