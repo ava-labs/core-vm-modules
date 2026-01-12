@@ -44,7 +44,7 @@ export const waitForTransactionReceipt = async ({
     const receipt = await retry<TransactionReceipt | null>({
       operation: async () => provider.getTransactionReceipt(txHash),
       isSuccess: (r): r is TransactionReceipt => !!r, // success when receipt is present (>= 1 confirmation)
-      backoffPolicy: RetryBackoffPolicy.linearThenExponential(10, 500),
+      backoffPolicy: RetryBackoffPolicy.linearThenExponential(15, 750),
       maxRetries: 20,
     });
 
