@@ -363,11 +363,12 @@ export class EvmGlacierService implements BalanceServiceInterface {
     pageSize?: number;
   }) {
     try {
-      return this.glacierSdk.evmTransactions.listTransactions({
+      return this.glacierSdk.evmTransactions.listTransactionsV2({
         chainId,
         address,
         pageToken,
         pageSize,
+        filterSpamTokens: true,
       });
     } catch (error) {
       if (error instanceof GlacierUnhealthyError) {
