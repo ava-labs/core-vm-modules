@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.1.2
+
+### Patch Changes
+
+- 81892a7: added retry tx logic to evm send tx via get tx hash and passing isGassless param in options
+  - @avalabs/vm-module-types@3.1.2
+
 ## 3.1.1
 
 ### Patch Changes
