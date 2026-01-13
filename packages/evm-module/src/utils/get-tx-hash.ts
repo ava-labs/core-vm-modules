@@ -1,11 +1,6 @@
 import type { SigningResult } from '@avalabs/vm-module-types';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
-
-const isInvalidInputRpcError = (error: unknown) => {
-  return typeof error === 'object' && error !== null && (error as { name?: string }).name === 'InvalidInputRpcError';
-};
-
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+import { retry, RetryBackoffPolicy } from '@internal/utils';
 
 export const getTxHash = async (
   provider: JsonRpcBatchInternal,
@@ -22,20 +17,10 @@ export const getTxHash = async (
     return broadcast();
   }
 
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      return await broadcast();
-    } catch (error) {
-      if (!isInvalidInputRpcError(error) || attempt === 2) {
-        throw error;
-      }
-
-      lastError = error;
-      await wait(1000);
-    }
-  }
-
-  throw lastError ?? new Error('Unable to broadcast transaction');
+  return retry({
+    operation: () => broadcast(),
+    isSuccess: () => true,
+    maxRetries: 3,
+    backoffPolicy: RetryBackoffPolicy.constantMs(1000),
+  });
 };
