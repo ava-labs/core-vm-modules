@@ -36,7 +36,7 @@ export const ethSendTransaction = async ({
     };
   }
 
-  const [transaction] = data;
+  const [{ isGasless = false, ...transaction }] = data;
 
   const provider = await getProvider({
     chainId: network.chainId,
@@ -109,7 +109,7 @@ export const ethSendTransaction = async ({
   let txHash;
 
   try {
-    txHash = await getTxHash(provider, response);
+    txHash = await getTxHash(provider, response, { chainId: network.chainId, isGasless });
   } catch (error) {
     return {
       error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
