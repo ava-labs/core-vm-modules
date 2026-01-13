@@ -19,7 +19,7 @@ export const transactionSchema = z.object({
       }),
     )
     .optional(),
-  isGasless: z.boolean().optional(),
+  shouldRetry: z.boolean().optional(),
 });
 
 export type TransactionParams = z.infer<typeof transactionSchema>;

@@ -30,14 +30,14 @@ describe('getTxHash', () => {
     expect(result).toBe('0x789');
   });
 
-  it('retries InvalidInputRpcError on Avalanche C-chain for gasless tx', async () => {
+  it('retries InvalidInputRpcError on Avalanche C-chain when retry is enabled', async () => {
     jest.useFakeTimers();
 
     const response: SigningResult = { signedData: '0x456' };
     const invalidInputError = Object.assign(new Error('invalid input'), { name: 'InvalidInputRpcError' });
     (provider.send as jest.Mock).mockRejectedValueOnce(invalidInputError).mockResolvedValueOnce('0x789');
 
-    const resultPromise = getTxHash(provider, response, { chainId: 43114, isGasless: true });
+    const resultPromise = getTxHash(provider, response, { chainId: 43114, shouldRetry: true });
 
     await jest.runOnlyPendingTimersAsync();
     const result = await resultPromise;
@@ -48,14 +48,14 @@ describe('getTxHash', () => {
     jest.useRealTimers();
   });
 
-  it('stops after 3 InvalidInputRpcError retries on Avalanche C-chain for gasless tx', async () => {
+  it('stops after 3 InvalidInputRpcError retries on Avalanche C-chain when retry is enabled', async () => {
     jest.useFakeTimers();
 
     const response: SigningResult = { signedData: '0x456' };
     const invalidInputError = Object.assign(new Error('still invalid'), { name: 'InvalidInputRpcError' });
     (provider.send as jest.Mock).mockRejectedValue(invalidInputError);
 
-    const resultPromise = getTxHash(provider, response, { chainId: 43113, isGasless: true });
+    const resultPromise = getTxHash(provider, response, { chainId: 43113, shouldRetry: true });
     // prevent unhandled rejection noise while timers advance
     resultPromise.catch(() => undefined);
 
@@ -76,12 +76,14 @@ describe('getTxHash', () => {
     expect(provider.send).toHaveBeenCalledTimes(1);
   });
 
-  it('does not retry on Avalanche C-chain when not gasless', async () => {
+  it('does not retry on Avalanche C-chain when retry is disabled', async () => {
     const response: SigningResult = { signedData: '0x456' };
     const invalidInputError = Object.assign(new Error('invalid input'), { name: 'InvalidInputRpcError' });
     (provider.send as jest.Mock).mockRejectedValue(invalidInputError);
 
-    await expect(getTxHash(provider, response, { chainId: 43114, isGasless: false })).rejects.toThrow('invalid input');
+    await expect(getTxHash(provider, response, { chainId: 43114, shouldRetry: false })).rejects.toThrow(
+      'invalid input',
+    );
     expect(provider.send).toHaveBeenCalledTimes(1);
   });
 });

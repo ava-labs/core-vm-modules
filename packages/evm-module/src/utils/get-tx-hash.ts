@@ -16,7 +16,7 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const getTxHash = async (
   provider: JsonRpcBatchInternal,
   response: SigningResult,
-  options?: { chainId?: number | string; isGasless?: boolean },
+  options?: { chainId?: number | string; shouldRetry?: boolean },
 ) => {
   if ('txHash' in response) {
     return response.txHash;
@@ -24,9 +24,9 @@ export const getTxHash = async (
 
   const broadcast = () => provider.send('eth_sendRawTransaction', [response.signedData]);
 
-  const shouldRetry = options?.isGasless && isAvalancheCChain(options?.chainId);
+  const retryEnabled = options?.shouldRetry && isAvalancheCChain(options?.chainId);
 
-  if (!shouldRetry) {
+  if (!retryEnabled) {
     return broadcast();
   }
 
