@@ -1,5 +1,11 @@
 # @avalabs/hvm-module
 
+## 3.1.2
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.1.2
+
 ## 3.1.1
 
 ### Patch Changes
