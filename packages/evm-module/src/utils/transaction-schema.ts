@@ -19,7 +19,6 @@ export const transactionSchema = z.object({
       }),
     )
     .optional(),
-  shouldRetry: z.boolean().optional(),
 });
 
 export type TransactionParams = z.infer<typeof transactionSchema>;

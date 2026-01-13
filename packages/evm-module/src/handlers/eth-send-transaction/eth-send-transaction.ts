@@ -36,7 +36,8 @@ export const ethSendTransaction = async ({
     };
   }
 
-  const [{ shouldRetry = false, ...transaction }] = data;
+  const [transaction] = data;
+  const shouldRetry = request.context?.shouldRetry === true;
 
   const provider = await getProvider({
     chainId: network.chainId,
