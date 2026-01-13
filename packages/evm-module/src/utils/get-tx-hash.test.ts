@@ -29,4 +29,50 @@ describe('getTxHash', () => {
     expect(provider.send).toHaveBeenCalledWith('eth_sendRawTransaction', ['0x456']);
     expect(result).toBe('0x789');
   });
+
+  it('retries InvalidInputRpcError when retry is enabled', async () => {
+    jest.useFakeTimers();
+
+    const response: SigningResult = { signedData: '0x456' };
+    const invalidInputError = Object.assign(new Error('invalid input'), { name: 'InvalidInputRpcError' });
+    (provider.send as jest.Mock).mockRejectedValueOnce(invalidInputError).mockResolvedValueOnce('0x789');
+
+    const resultPromise = getTxHash(provider, response, { shouldRetry: true });
+
+    await jest.runOnlyPendingTimersAsync();
+    const result = await resultPromise;
+
+    expect(provider.send).toHaveBeenCalledTimes(2);
+    expect(result).toBe('0x789');
+
+    jest.useRealTimers();
+  });
+
+  it('stops after 3 InvalidInputRpcError retries when retry is enabled', async () => {
+    jest.useFakeTimers();
+
+    const response: SigningResult = { signedData: '0x456' };
+    const invalidInputError = Object.assign(new Error('still invalid'), { name: 'InvalidInputRpcError' });
+    (provider.send as jest.Mock).mockRejectedValue(invalidInputError);
+
+    const resultPromise = getTxHash(provider, response, { shouldRetry: true });
+    // prevent unhandled rejection noise while timers advance
+    resultPromise.catch(() => undefined);
+
+    await jest.runAllTimersAsync();
+
+    await expect(resultPromise).rejects.toThrow('still invalid');
+    expect(provider.send).toHaveBeenCalledTimes(3);
+
+    jest.useRealTimers();
+  });
+
+  it('does not retry when retry is disabled', async () => {
+    const response: SigningResult = { signedData: '0x456' };
+    const invalidInputError = Object.assign(new Error('invalid input'), { name: 'InvalidInputRpcError' });
+    (provider.send as jest.Mock).mockRejectedValue(invalidInputError);
+
+    await expect(getTxHash(provider, response, { shouldRetry: false })).rejects.toThrow('invalid input');
+    expect(provider.send).toHaveBeenCalledTimes(1);
+  });
 });

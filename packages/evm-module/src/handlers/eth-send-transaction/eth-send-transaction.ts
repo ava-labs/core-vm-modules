@@ -37,6 +37,7 @@ export const ethSendTransaction = async ({
   }
 
   const [transaction] = data;
+  const shouldRetry = request.context?.shouldRetry === true;
 
   const provider = await getProvider({
     chainId: network.chainId,
@@ -109,7 +110,7 @@ export const ethSendTransaction = async ({
   let txHash;
 
   try {
-    txHash = await getTxHash(provider, response);
+    txHash = await getTxHash(provider, response, { shouldRetry });
   } catch (error) {
     return {
       error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
