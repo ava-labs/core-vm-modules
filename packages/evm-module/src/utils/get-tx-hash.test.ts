@@ -48,7 +48,7 @@ describe('getTxHash', () => {
     jest.useRealTimers();
   });
 
-  it('stops after 3 InvalidInputRpcError retries when retry is enabled', async () => {
+  it('stops after 6 retries when retry is enabled', async () => {
     jest.useFakeTimers();
 
     const response: SigningResult = { signedData: '0x456' };
@@ -62,7 +62,7 @@ describe('getTxHash', () => {
     await jest.runAllTimersAsync();
 
     await expect(resultPromise).rejects.toThrow('still invalid');
-    expect(provider.send).toHaveBeenCalledTimes(3);
+    expect(provider.send).toHaveBeenCalledTimes(6);
 
     jest.useRealTimers();
   });
