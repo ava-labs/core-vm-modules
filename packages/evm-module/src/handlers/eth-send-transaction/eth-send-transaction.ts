@@ -37,7 +37,6 @@ export const ethSendTransaction = async ({
   }
 
   const [transaction] = data;
-  const shouldRetry = request.context?.shouldRetry === true;
 
   const provider = await getProvider({
     chainId: network.chainId,
@@ -108,6 +107,9 @@ export const ethSendTransaction = async ({
   }
 
   let txHash;
+
+  // Read shouldRetry AFTER approval, so mutations during approval flow are respected
+  const shouldRetry = request.context?.shouldRetry === true;
 
   try {
     txHash = await getTxHash(provider, response, { shouldRetry });
