@@ -20,7 +20,7 @@ export const getTxHash = async (
   return retry({
     operation: () => broadcast(),
     isSuccess: () => true,
-    maxRetries: 3,
-    backoffPolicy: RetryBackoffPolicy.constantMs(1000),
+    maxRetries: 6,
+    backoffPolicy: RetryBackoffPolicy.linearThenExponential(4, 1000),
   });
 };
