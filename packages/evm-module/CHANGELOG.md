@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.1.3
+
+### Patch Changes
+
+- ed5a98e: bumped the backoff policy up on get tx hash broadcast
+  - @avalabs/vm-module-types@3.1.3
+
 ## 3.1.2
 
 ### Patch Changes
