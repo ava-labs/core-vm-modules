@@ -465,13 +465,30 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
-  it('should handle blockchain details', () => {
+  it('should handle blockchain details with formatted genesis data', () => {
+    // Create a realistic genesis JSON object
+    const genesisJson = {
+      config: {
+        chainId: 43114,
+        homesteadBlock: 0,
+      },
+      alloc: {
+        '0x1234567890abcdef': { balance: '0x1000000' },
+      },
+      timestamp: '0x0',
+      gasLimit: '0x1312D00',
+    };
+
+    // Genesis data comes as a JSON string (not hex-encoded)
+    const genesisDataString = JSON.stringify(genesisJson);
+    const expectedFormattedGenesis = JSON.stringify(genesisJson, null, 2);
+
     const txDetails: TxDetails = {
       type: TxType.CreateChain,
       chainID: 'chainID',
       chainName: 'chainName',
       vmID: 'vmID',
-      genesisData: 'genesisData',
+      genesisData: genesisDataString,
       txFee: 1n,
     };
 
@@ -500,9 +517,67 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           },
           {
             label: 'Genesis Data',
-            value: 'genesisData',
+            value: expectedFormattedGenesis,
+            type: 'data',
+          },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [
+          {
+            label: 'Fee Amount',
+            value: 1n,
+            type: 'currency',
+            maxDecimals: 9,
+            symbol: 'AVAX',
+          },
+        ],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it('should handle blockchain details with invalid genesis data (error fallback)', () => {
+    // Use invalid JSON that cannot be parsed
+    const invalidGenesisData = 'invalid-json-string';
+
+    const txDetails: TxDetails = {
+      type: TxType.CreateChain,
+      chainID: 'chainID',
+      chainName: 'chainName',
+      vmID: 'vmID',
+      genesisData: invalidGenesisData,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'Blockchain Details',
+        items: [
+          {
+            label: 'Blockchain name',
+            value: 'chainName',
             alignment: 'vertical',
             type: 'text',
+          },
+          {
+            label: 'Blockchain ID',
+            value: 'chainID',
+            alignment: 'vertical',
+            type: 'text',
+          },
+          {
+            label: 'Virtual Machine ID',
+            value: 'vmID',
+            alignment: 'vertical',
+            type: 'text',
+          },
+          {
+            label: 'Genesis Data',
+            value: invalidGenesisData,
+            type: 'data',
           },
         ],
       },
