@@ -174,7 +174,15 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    const txHash = (await getTxHash(provider, response, vm)) as Hex;
+    let txHash: Hex;
+
+    try {
+      txHash = (await getTxHash(provider, response, vm)) as Hex;
+    } catch (error) {
+      return {
+        error: rpcErrors.internal({ message: 'Unable to broadcast transaction', data: { cause: error } }),
+      };
+    }
 
     waitForTransactionReceipt({
       explorerUrl: network.explorerUrl ?? '',
