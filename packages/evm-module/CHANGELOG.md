@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 3.1.4
+
+### Patch Changes
+
+- efce0b3: fix: format genesis data
+- Updated dependencies [efce0b3]
+  - @avalabs/vm-module-types@3.1.4
+
 ## 3.1.3
 
 ### Patch Changes
