@@ -203,9 +203,9 @@ const processTokenApprovals = (
   return { isEditable, approvals };
 };
 
-export const processBalanceChange = (assetDiffs: AssetDiffs): BalanceChange | undefined => {
-  const ins = processAssetDiffs(assetDiffs, 'in');
-  const outs = processAssetDiffs(assetDiffs, 'out');
+export const processBalanceChange = (accountSummaryAssetsDiffs: AssetDiffs): BalanceChange | undefined => {
+  const ins = processAssetDiffs(accountSummaryAssetsDiffs, 'in');
+  const outs = processAssetDiffs(accountSummaryAssetsDiffs, 'out');
 
   if (ins.length === 0 && outs.length === 0) {
     return undefined;
@@ -214,9 +214,9 @@ export const processBalanceChange = (assetDiffs: AssetDiffs): BalanceChange | un
   return { ins, outs };
 };
 
-const processAssetDiffs = (assetDiffs: AssetDiffs, type: 'in' | 'out'): TokenDiff[] => {
+const processAssetDiffs = (accountSummaryAssetsDiffs: AssetDiffs, type: 'in' | 'out'): TokenDiff[] => {
   return (
-    assetDiffs
+    accountSummaryAssetsDiffs
       .filter((assetDiff) => assetDiff[type].length > 0)
       // sort asset diffs by length of in/out array
       // this is done to ensure that the token with multiple in/out values are displayed last,
@@ -247,7 +247,20 @@ const processAssetDiffs = (assetDiffs: AssetDiffs, type: 'in' | 'out'): TokenDif
               displayValue = '1';
             }
 
-            return displayValue ? { displayValue, usdPrice: diff.usd_price } : undefined;
+            if (!displayValue) {
+              return undefined;
+            }
+
+            const logoUri = 'logo_url' in diff ? diff.logo_url : undefined;
+            const tokenId = 'token_id' in diff ? diff.token_id : undefined;
+
+            const item: TokenDiffItem = {
+              displayValue,
+              usdPrice: diff.usd_price,
+              ...(logoUri !== undefined && { logoUri }),
+              ...(tokenId !== undefined && { tokenId }),
+            };
+            return item;
           })
           .filter((x): x is TokenDiffItem => x !== undefined);
 
