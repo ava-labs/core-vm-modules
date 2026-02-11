@@ -6,6 +6,7 @@ import {
   type RpcRequest,
   RpcMethod,
   type AppInfo,
+  TxType,
 } from '@avalabs/vm-module-types';
 import { utils } from '@avalabs/avalanchejs';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -121,6 +122,12 @@ export const avalancheSignTransaction = async ({
     };
   }
 
+  const signerAccount = from ?? currentAddress;
+  const detailsTx =
+    txDetails.type === TxType.AddPermissionlessValidator || txDetails.type === TxType.AddPermissionlessDelegator
+      ? { ...txDetails, account: signerAccount, network }
+      : txDetails;
+
   const signingData: SigningData = {
     type: RpcMethod.AVALANCHE_SIGN_TRANSACTION,
     data: txData,
@@ -129,7 +136,7 @@ export const avalancheSignTransaction = async ({
     ownSignatureIndices,
   };
 
-  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+  const details = getTransactionDetailSections(detailsTx, network.networkToken.symbol);
 
   // Throw an error if we can't parse the transaction details
   if (details === undefined) {

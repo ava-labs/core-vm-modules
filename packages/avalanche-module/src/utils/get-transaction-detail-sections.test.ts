@@ -1,4 +1,4 @@
-import { NetworkVMType, TxType, type NetworkToken, type TxDetails } from '@avalabs/vm-module-types';
+import { NetworkVMType, TxType, type Network, type NetworkToken, type TxDetails } from '@avalabs/vm-module-types';
 import { getTransactionDetailSections } from './get-transaction-detail-sections';
 
 const networkToken: NetworkToken = {
@@ -7,6 +7,17 @@ const networkToken: NetworkToken = {
   name: 'Avalanche',
   logoUri: '',
 };
+
+const mockNetwork: Network = {
+  chainId: 1,
+  chainName: 'Test Network',
+  rpcUrl: 'https://example.com',
+  networkToken,
+  vmName: NetworkVMType.PVM,
+  logoUri: '',
+};
+
+const mockAccount = 'P-avax1mockaccount';
 
 describe('getTransactionDetailSections - Detailed Tests', () => {
   it('should handle chain details', () => {
@@ -238,15 +249,24 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       stake: 50n,
       subnetID: 'SubnetID',
       txFee: 1n,
+      account: mockAccount,
+      network: mockNetwork,
     };
 
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
+        title: 'Basic Information',
+        items: [
+          { label: 'Account', type: 'address', value: mockAccount },
+          { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
+        ],
+      },
+      {
         title: 'Staking Details',
         items: [
           {
-            label: 'Node ID',
+            label: 'Node',
             value: 'NodeID',
             type: 'nodeID',
           },
@@ -263,12 +283,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             symbol: 'AVAX',
           },
           {
-            label: 'Start Date',
+            label: 'Start',
             value: '1691234567',
             type: 'date',
           },
           {
-            label: 'End Date',
+            label: 'End',
             value: '1692234567',
             type: 'date',
           },
@@ -302,15 +322,24 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       signature: 'Signature',
       publicKey: 'PublicKey',
       txFee: 1n,
+      account: mockAccount,
+      network: mockNetwork,
     };
 
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
+        title: 'Basic Information',
+        items: [
+          { label: 'Account', type: 'address', value: mockAccount },
+          { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
+        ],
+      },
+      {
         title: 'Staking Details',
         items: [
           {
-            label: 'Node ID',
+            label: 'Node',
             value: 'NodeID',
             type: 'nodeID',
           },
@@ -343,12 +372,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             type: 'text',
           },
           {
-            label: 'Start Date',
+            label: 'Start',
             value: '1691234567',
             type: 'date',
           },
           {
-            label: 'End Date',
+            label: 'End',
             value: '1692234567',
             type: 'date',
           },

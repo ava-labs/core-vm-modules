@@ -8,6 +8,7 @@ import {
   type SigningResult,
   type Hex,
   type AppInfo,
+  TxType,
 } from '@avalabs/vm-module-types';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schema';
@@ -136,6 +137,12 @@ export const avalancheSendTransaction = async ({
       };
     }
 
+    // Permissionless staking tx types need account and network for display
+    const detailsTx =
+      txDetails.type === TxType.AddPermissionlessValidator || txDetails.type === TxType.AddPermissionlessDelegator
+        ? { ...txDetails, account: currentAddress, network }
+        : txDetails;
+
     const signingData: SigningData = {
       type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
       unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
@@ -145,7 +152,7 @@ export const avalancheSendTransaction = async ({
       internalIndices,
     };
 
-    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+    const details = getTransactionDetailSections(detailsTx, network.networkToken.symbol);
 
     // Throw an error if we can't parse the transaction details
     if (details === undefined) {
