@@ -1,12 +1,11 @@
 import type { AddPermissionlessDelegatorTx, DetailItem, DetailSection } from '@avalabs/vm-module-types';
-import { addressItem, currencyItem, dateItem, nodeIDItem, textItem } from '@internal/utils';
+import { addressItem, currencyItem, dateItem, nodeIDItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
-import { isPrimarySubnet } from '../../handlers/avalanche-send-transaction/utils/is-primary-subnet';
 import { networkItem } from '@internal/utils/src/utils/detail-item';
 
 export const addPermissionlessDelegatorDetailSection = (tx: AddPermissionlessDelegatorTx, symbol: string) => {
   const details: DetailSection[] = [];
-  const { txFee, nodeID, start, end, stake, subnetID } = tx;
+  const { txFee, nodeID, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
     title: 'Basic Information',
@@ -23,7 +22,6 @@ export const addPermissionlessDelegatorDetailSection = (tx: AddPermissionlessDel
 
   const items: DetailItem[] = [
     nodeIDItem('Node', nodeID),
-    isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
     dateItem('Start', start),
     dateItem('End', end),

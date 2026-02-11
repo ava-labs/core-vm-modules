@@ -29,7 +29,6 @@ export type VM = NetworkVMType.AVM | NetworkVMType.EVM | NetworkVMType.PVM;
 export type AddPermissionlessDelegatorTx = {
   type: TxType.AddPermissionlessDelegator;
   nodeID: string;
-  subnetID: string;
   stake: bigint;
   start: string;
   end: string;
@@ -41,14 +40,11 @@ export type AddPermissionlessDelegatorTx = {
 export type AddPermissionlessValidatorTx = {
   type: TxType.AddPermissionlessValidator;
   nodeID: string;
-  subnetID: string;
   stake: bigint;
   delegationFee: number;
   start: string;
   end: string;
   txFee: bigint;
-  publicKey?: string;
-  signature?: string;
   account: string;
   network: Network;
 };

@@ -247,7 +247,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       start: '1691234567',
       end: '1692234567',
       stake: 50n,
-      subnetID: 'SubnetID',
       txFee: 1n,
       account: mockAccount,
       network: mockNetwork,
@@ -268,11 +267,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           {
             label: 'Node',
             value: 'NodeID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Subnet ID',
-            value: 'SubnetID',
             type: 'nodeID',
           },
           {
@@ -318,9 +312,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       start: '1691234567',
       end: '1692234567',
       stake: 50n,
-      subnetID: 'SubnetID',
-      signature: 'Signature',
-      publicKey: 'PublicKey',
       txFee: 1n,
       account: mockAccount,
       network: mockNetwork,
@@ -341,21 +332,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           {
             label: 'Node',
             value: 'NodeID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Subnet ID',
-            value: 'SubnetID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Public Key',
-            value: 'PublicKey',
-            type: 'nodeID',
-          },
-          {
-            label: 'Proof',
-            value: 'Signature',
             type: 'nodeID',
           },
           {
