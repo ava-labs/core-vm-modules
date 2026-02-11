@@ -1,4 +1,4 @@
-import type { NetworkVMType } from './common';
+import type { Network, NetworkVMType } from './common';
 
 export type TxDetails =
   | StakingDetails
@@ -34,6 +34,8 @@ export type AddPermissionlessDelegatorTx = {
   start: string;
   end: string;
   txFee: bigint;
+  account: string;
+  network: Network;
 };
 
 export type AddPermissionlessValidatorTx = {
@@ -47,6 +49,8 @@ export type AddPermissionlessValidatorTx = {
   txFee: bigint;
   publicKey?: string;
   signature?: string;
+  account: string;
+  network: Network;
 };
 
 export interface ExportTx {
