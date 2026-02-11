@@ -14,6 +14,8 @@ export type TokenDiff = {
 export type TokenDiffItem = {
   displayValue: string;
   usdPrice: string | undefined;
+  logoUri?: string;
+  tokenId?: string;
 };
 
 export type TokenApproval = {
