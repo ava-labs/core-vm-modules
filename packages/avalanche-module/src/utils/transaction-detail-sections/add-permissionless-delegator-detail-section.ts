@@ -8,7 +8,7 @@ export const addPermissionlessDelegatorDetailSection = (tx: AddPermissionlessDel
   const { txFee, nodeID, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
-    title: 'Basic Information',
+    title: '',
     items: [
       addressItem('Account', tx.account),
       networkItem('Network', {

@@ -8,7 +8,6 @@ import {
   type SigningResult,
   type Hex,
   type AppInfo,
-  TxType,
 } from '@avalabs/vm-module-types';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schema';
@@ -127,7 +126,7 @@ export const avalancheSendTransaction = async ({
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
 
-    const txDetails = parseTxDetails(txData);
+    const txDetails = parseTxDetails(txData, currentAddress, network);
     const title = parseTxDisplayTitle(txData);
 
     // Throw an error if we can't parse the transaction
@@ -136,12 +135,6 @@ export const avalancheSendTransaction = async ({
         error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
       };
     }
-
-    // Permissionless staking tx types need account and network for display
-    const detailsTx =
-      txDetails.type === TxType.AddPermissionlessValidator || txDetails.type === TxType.AddPermissionlessDelegator
-        ? { ...txDetails, account: currentAddress, network }
-        : txDetails;
 
     const signingData: SigningData = {
       type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
@@ -152,7 +145,7 @@ export const avalancheSendTransaction = async ({
       internalIndices,
     };
 
-    const details = getTransactionDetailSections(detailsTx, network.networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
 
     // Throw an error if we can't parse the transaction details
     if (details === undefined) {
