@@ -244,6 +244,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const txDetails: TxDetails = {
       type: TxType.AddPermissionlessDelegator,
       nodeID: 'NodeID',
+      subnetID: 'SubnetID',
       start: '1691234567',
       end: '1692234567',
       stake: 50n,
@@ -255,7 +256,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: '',
         items: [
           { label: 'Account', type: 'address', value: mockAccount },
           { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
@@ -308,6 +308,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const txDetails: TxDetails = {
       type: TxType.AddPermissionlessValidator,
       nodeID: 'NodeID',
+      subnetID: 'SubnetID',
       delegationFee: 1000,
       start: '1691234567',
       end: '1692234567',
@@ -320,7 +321,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: '',
         items: [
           { label: 'Account', type: 'address', value: mockAccount },
           { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },

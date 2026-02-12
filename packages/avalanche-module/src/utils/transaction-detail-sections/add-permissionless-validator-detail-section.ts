@@ -8,7 +8,6 @@ export const addPermissionlessValidatorDetailSection = (tx: AddPermissionlessVal
   const { txFee, nodeID, delegationFee, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
-    title: '',
     items: [
       addressItem('Account', tx.account),
       networkItem('Network', {
