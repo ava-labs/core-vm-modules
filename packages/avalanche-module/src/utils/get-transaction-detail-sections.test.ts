@@ -255,7 +255,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Basic Information',
+        title: '',
         items: [
           { label: 'Account', type: 'address', value: mockAccount },
           { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
@@ -320,7 +320,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Basic Information',
+        title: '',
         items: [
           { label: 'Account', type: 'address', value: mockAccount },
           { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
@@ -544,6 +544,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
   });
 
   it('should handle blockchain details with invalid genesis data (error fallback)', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     // Use invalid JSON that cannot be parsed
     const invalidGenesisData = 'invalid-json-string';
 
@@ -600,6 +601,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       },
     ];
     expect(details).toEqual(expectedDetails);
+    consoleErrorSpy.mockRestore();
   });
 
   it('should handle convert subnet l1 validator details', () => {
