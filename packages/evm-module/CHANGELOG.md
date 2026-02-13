@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 3.2.0
+
+### Minor Changes
+
+- a28c835: return token id and logo url in transaction simulation for an item
+
+### Patch Changes
+
+- Updated dependencies [a28c835]
+  - @avalabs/vm-module-types@3.2.0
+
 ## 3.1.4
 
 ### Patch Changes

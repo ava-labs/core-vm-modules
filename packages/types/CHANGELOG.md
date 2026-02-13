@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.2.0
+
+### Minor Changes
+
+- a28c835: return token id and logo url in transaction simulation for an item
+
 ## 3.1.4
 
 ### Patch Changes
