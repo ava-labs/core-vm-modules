@@ -1,18 +1,30 @@
-import type { AddPermissionlessDelegatorTx, DetailItem, DetailSection } from '@avalabs/vm-module-types';
+import type { AddPermissionlessDelegatorTx, DetailItem, DetailSection, Network } from '@avalabs/vm-module-types';
 import { addressItem, currencyItem, dateItem, nodeIDItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
 import { networkItem } from '@internal/utils/src/utils/detail-item';
 
-export const addPermissionlessDelegatorDetailSection = (tx: AddPermissionlessDelegatorTx, symbol: string) => {
+type AddPermissionlessDelegatorDetailSectionProps = {
+  tx: AddPermissionlessDelegatorTx;
+  symbol: string;
+  network: Network;
+  signerAccount: string;
+};
+
+export const addPermissionlessDelegatorDetailSection = ({
+  tx,
+  symbol,
+  network,
+  signerAccount,
+}: AddPermissionlessDelegatorDetailSectionProps) => {
   const details: DetailSection[] = [];
   const { txFee, nodeID, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
     items: [
-      addressItem('Account', tx.account),
+      addressItem('Account', signerAccount),
       networkItem('Network', {
-        name: tx.network.chainName,
-        logoUri: tx.network.logoUri,
+        name: network.chainName,
+        logoUri: network.logoUri,
       }),
     ],
   };

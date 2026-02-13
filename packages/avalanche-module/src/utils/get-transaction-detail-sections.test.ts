@@ -249,11 +249,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       end: '1692234567',
       stake: 50n,
       txFee: 1n,
-      account: mockAccount,
-      network: mockNetwork,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
     const expectedDetails = [
       {
         items: [
@@ -314,11 +315,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       end: '1692234567',
       stake: 50n,
       txFee: 1n,
-      account: mockAccount,
-      network: mockNetwork,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
     const expectedDetails = [
       {
         items: [

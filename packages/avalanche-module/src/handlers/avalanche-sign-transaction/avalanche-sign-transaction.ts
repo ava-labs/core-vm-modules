@@ -46,6 +46,7 @@ export const avalancheSignTransaction = async ({
     };
   }
   const { transactionHex, chainAlias, from, utxos: providedUtxoHexes } = result.data;
+
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const isTestnet = network.isTestnet ?? false;
   const provider = await getProvider({ isTestnet });
@@ -114,7 +115,7 @@ export const avalancheSignTransaction = async ({
 
   // get display data for the UI
   const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from ?? currentAddress);
-  const txDetails = parseTxDetails(txData, signerAccount, network);
+  const txDetails = parseTxDetails(txData);
 
   if (txData.type === 'unknown' || txDetails === undefined) {
     return {
@@ -130,7 +131,10 @@ export const avalancheSignTransaction = async ({
     ownSignatureIndices,
   };
 
-  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol, {
+    network,
+    signerAccount,
+  });
 
   // Throw an error if we can't parse the transaction details
   if (details === undefined) {

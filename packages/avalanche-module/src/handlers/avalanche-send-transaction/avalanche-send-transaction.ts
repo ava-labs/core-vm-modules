@@ -126,7 +126,7 @@ export const avalancheSendTransaction = async ({
 
     const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
 
-    const txDetails = parseTxDetails(txData, currentAddress, network);
+    const txDetails = parseTxDetails(txData);
     const title = parseTxDisplayTitle(txData);
 
     // Throw an error if we can't parse the transaction
@@ -145,7 +145,10 @@ export const avalancheSendTransaction = async ({
       internalIndices,
     };
 
-    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol, {
+      network,
+      signerAccount: currentAddress,
+    });
 
     // Throw an error if we can't parse the transaction details
     if (details === undefined) {

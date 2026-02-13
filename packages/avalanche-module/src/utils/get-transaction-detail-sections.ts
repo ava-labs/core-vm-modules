@@ -1,4 +1,4 @@
-import { type TxDetails } from '@avalabs/vm-module-types';
+import { type Network, type TxDetails } from '@avalabs/vm-module-types';
 import {
   isAddPermissionlessDelegatorTx,
   isAddPermissionlessValidatorTx,
@@ -32,7 +32,16 @@ import {
   setL1ValidatorWeightDetailSection,
 } from './transaction-detail-sections';
 
-export const getTransactionDetailSections = (txDetails: TxDetails, symbol: string) => {
+export type GetTransactionDetailSectionsContext = {
+  network: Network;
+  signerAccount: string;
+};
+
+export const getTransactionDetailSections = (
+  txDetails: TxDetails,
+  symbol: string,
+  context?: GetTransactionDetailSectionsContext,
+) => {
   if (isChainDetails(txDetails)) {
     return chainDetailSection(txDetails, symbol);
   } else if (isExportTx(txDetails)) {
@@ -42,9 +51,21 @@ export const getTransactionDetailSections = (txDetails: TxDetails, symbol: strin
   } else if (isSubnetDetails(txDetails)) {
     return subnetDetailSection(txDetails, symbol);
   } else if (isAddPermissionlessDelegatorTx(txDetails)) {
-    return addPermissionlessDelegatorDetailSection(txDetails, symbol);
+    if (!context) throw new Error('context (network, signerAccount) is required for AddPermissionlessDelegator');
+    return addPermissionlessDelegatorDetailSection({
+      tx: txDetails,
+      symbol,
+      network: context.network,
+      signerAccount: context.signerAccount,
+    });
   } else if (isAddPermissionlessValidatorTx(txDetails)) {
-    return addPermissionlessValidatorDetailSection(txDetails, symbol);
+    if (!context) throw new Error('context (network, signerAccount) is required for AddPermissionlessValidator');
+    return addPermissionlessValidatorDetailSection({
+      tx: txDetails,
+      symbol,
+      network: context.network,
+      signerAccount: context.signerAccount,
+    });
   } else if (isBlockchainDetails(txDetails)) {
     return blockChainDetailSection(txDetails, symbol);
   } else if (isAddSubnetValidatorTx(txDetails)) {
