@@ -1,5 +1,18 @@
 # @avalabs/avalanche-module
 
+## 3.3.0
+
+### Minor Changes
+
+- e0878b4: desplay info update for validator and delegator
+- e0878b4: desplay info update for validator and delegator
+
+### Patch Changes
+
+- Updated dependencies [e0878b4]
+- Updated dependencies [e0878b4]
+  - @avalabs/vm-module-types@3.3.0
+
 ## 3.2.0
 
 ### Patch Changes
