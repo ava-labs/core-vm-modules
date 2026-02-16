@@ -9,7 +9,7 @@ export const parseTxDetails = (tx: Avalanche.Tx): TxDetails | undefined => {
     case TxType.CreateChain:
     case TxType.CreateSubnet:
     case TxType.RemoveSubnetValidator:
-      return tx as TxDetails;
+      return tx;
     case TxType.ConvertSubnetToL1:
     case TxType.SetL1ValidatorWeight:
     case TxType.DisableL1Validator:
