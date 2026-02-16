@@ -1,26 +1,43 @@
-import type { AddPermissionlessValidatorTx, DetailItem, DetailSection } from '@avalabs/vm-module-types';
-import { currencyItem, dateItem, nodeIDItem, textItem } from '@internal/utils';
+import type { AddPermissionlessValidatorTx, DetailItem, DetailSection, Network } from '@avalabs/vm-module-types';
+import { addressItem, currencyItem, dateItem, nodeIDItem, textItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
-import { isPrimarySubnet } from '../../handlers/avalanche-send-transaction/utils/is-primary-subnet';
+import { networkItem } from '@internal/utils/src/utils/detail-item';
 
-export const addPermissionlessValidatorDetailSection = (tx: AddPermissionlessValidatorTx, symbol: string) => {
+type AddPermissionlessValidatorDetailSectionProps = {
+  tx: AddPermissionlessValidatorTx;
+  symbol: string;
+  network: Network;
+  signerAccount: string;
+};
+
+export const addPermissionlessValidatorDetailSection = ({
+  tx,
+  symbol,
+  network,
+  signerAccount,
+}: AddPermissionlessValidatorDetailSectionProps) => {
   const details: DetailSection[] = [];
-  const { txFee, nodeID, delegationFee, start, end, stake, subnetID, signature, publicKey } = tx;
+  const { txFee, nodeID, delegationFee, start, end, stake } = tx;
 
-  const items: DetailItem[] = [
-    nodeIDItem('Node ID', nodeID),
-    isPrimarySubnet(subnetID) ? textItem('Subnet ID', 'Primary Network') : nodeIDItem('Subnet ID', subnetID),
-  ];
+  const basicInfo: DetailSection = {
+    items: [
+      addressItem('Account', signerAccount),
+      networkItem('Network', {
+        name: network.chainName,
+        logoUri: network.logoUri,
+      }),
+    ],
+  };
 
-  if (publicKey && signature) {
-    items.push(nodeIDItem('Public Key', publicKey), nodeIDItem('Proof', signature));
-  }
+  details.push(basicInfo);
+
+  const items: DetailItem[] = [nodeIDItem('Node', nodeID)];
 
   items.push(
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
     textItem('Delegation Fee', `${delegationFee / 10000} %`),
-    dateItem('Start Date', start),
-    dateItem('End Date', end),
+    dateItem('Start', start),
+    dateItem('End', end),
   );
 
   details.push({

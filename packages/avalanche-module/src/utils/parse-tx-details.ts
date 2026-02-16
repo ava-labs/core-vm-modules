@@ -4,11 +4,11 @@ import { type VM, TxType, type TxDetails } from '@avalabs/vm-module-types';
 export const parseTxDetails = (tx: Avalanche.Tx): TxDetails | undefined => {
   switch (tx.type) {
     case TxType.AddPermissionlessDelegator:
+    case TxType.AddPermissionlessValidator:
     case TxType.AddSubnetValidator:
     case TxType.CreateChain:
     case TxType.CreateSubnet:
     case TxType.RemoveSubnetValidator:
-    case TxType.AddPermissionlessValidator:
       return tx;
     case TxType.ConvertSubnetToL1:
     case TxType.SetL1ValidatorWeight:

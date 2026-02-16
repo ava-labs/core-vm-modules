@@ -1,4 +1,4 @@
-import { NetworkVMType, TxType, type NetworkToken, type TxDetails } from '@avalabs/vm-module-types';
+import { NetworkVMType, TxType, type Network, type NetworkToken, type TxDetails } from '@avalabs/vm-module-types';
 import { getTransactionDetailSections } from './get-transaction-detail-sections';
 
 const networkToken: NetworkToken = {
@@ -7,6 +7,17 @@ const networkToken: NetworkToken = {
   name: 'Avalanche',
   logoUri: '',
 };
+
+const mockNetwork: Network = {
+  chainId: 1,
+  chainName: 'Test Network',
+  rpcUrl: 'https://example.com',
+  networkToken,
+  vmName: NetworkVMType.PVM,
+  logoUri: '',
+};
+
+const mockAccount = 'P-avax1mockaccount';
 
 describe('getTransactionDetailSections - Detailed Tests', () => {
   it('should handle chain details', () => {
@@ -233,26 +244,30 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const txDetails: TxDetails = {
       type: TxType.AddPermissionlessDelegator,
       nodeID: 'NodeID',
+      subnetID: 'SubnetID',
       start: '1691234567',
       end: '1692234567',
       stake: 50n,
-      subnetID: 'SubnetID',
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
     const expectedDetails = [
+      {
+        items: [
+          { label: 'Account', type: 'address', value: mockAccount },
+          { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
+        ],
+      },
       {
         title: 'Staking Details',
         items: [
           {
-            label: 'Node ID',
+            label: 'Node',
             value: 'NodeID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Subnet ID',
-            value: 'SubnetID',
             type: 'nodeID',
           },
           {
@@ -263,12 +278,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             symbol: 'AVAX',
           },
           {
-            label: 'Start Date',
+            label: 'Start',
             value: '1691234567',
             type: 'date',
           },
           {
-            label: 'End Date',
+            label: 'End',
             value: '1692234567',
             type: 'date',
           },
@@ -294,39 +309,31 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const txDetails: TxDetails = {
       type: TxType.AddPermissionlessValidator,
       nodeID: 'NodeID',
+      subnetID: 'SubnetID',
       delegationFee: 1000,
       start: '1691234567',
       end: '1692234567',
       stake: 50n,
-      subnetID: 'SubnetID',
-      signature: 'Signature',
-      publicKey: 'PublicKey',
       txFee: 1n,
     };
 
-    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
     const expectedDetails = [
+      {
+        items: [
+          { label: 'Account', type: 'address', value: mockAccount },
+          { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
+        ],
+      },
       {
         title: 'Staking Details',
         items: [
           {
-            label: 'Node ID',
+            label: 'Node',
             value: 'NodeID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Subnet ID',
-            value: 'SubnetID',
-            type: 'nodeID',
-          },
-          {
-            label: 'Public Key',
-            value: 'PublicKey',
-            type: 'nodeID',
-          },
-          {
-            label: 'Proof',
-            value: 'Signature',
             type: 'nodeID',
           },
           {
@@ -343,12 +350,12 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             type: 'text',
           },
           {
-            label: 'Start Date',
+            label: 'Start',
             value: '1691234567',
             type: 'date',
           },
           {
-            label: 'End Date',
+            label: 'End',
             value: '1692234567',
             type: 'date',
           },
@@ -539,6 +546,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
   });
 
   it('should handle blockchain details with invalid genesis data (error fallback)', () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     // Use invalid JSON that cannot be parsed
     const invalidGenesisData = 'invalid-json-string';
 
@@ -595,6 +603,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       },
     ];
     expect(details).toEqual(expectedDetails);
+    consoleErrorSpy.mockRestore();
   });
 
   it('should handle convert subnet l1 validator details', () => {

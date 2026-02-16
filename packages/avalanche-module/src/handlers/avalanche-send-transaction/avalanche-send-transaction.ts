@@ -145,7 +145,10 @@ export const avalancheSendTransaction = async ({
       internalIndices,
     };
 
-    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+    const details = getTransactionDetailSections(txDetails, network.networkToken.symbol, {
+      network,
+      signerAccount: currentAddress,
+    });
 
     // Throw an error if we can't parse the transaction details
     if (details === undefined) {

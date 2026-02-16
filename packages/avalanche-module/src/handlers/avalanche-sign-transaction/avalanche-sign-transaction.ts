@@ -46,6 +46,7 @@ export const avalancheSignTransaction = async ({
     };
   }
   const { transactionHex, chainAlias, from, utxos: providedUtxoHexes } = result.data;
+
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const isTestnet = network.isTestnet ?? false;
   const provider = await getProvider({ isTestnet });
@@ -110,6 +111,7 @@ export const avalancheSignTransaction = async ({
       error: rpcErrors.invalidRequest('This account has nothing to sign'),
     };
   }
+  const signerAccount = from ?? currentAddress;
 
   // get display data for the UI
   const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from ?? currentAddress);
@@ -129,7 +131,10 @@ export const avalancheSignTransaction = async ({
     ownSignatureIndices,
   };
 
-  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol);
+  const details = getTransactionDetailSections(txDetails, network.networkToken.symbol, {
+    network,
+    signerAccount,
+  });
 
   // Throw an error if we can't parse the transaction details
   if (details === undefined) {
