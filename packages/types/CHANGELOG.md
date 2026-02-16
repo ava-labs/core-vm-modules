@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 3.3.0
+
+### Minor Changes
+
+- e0878b4: desplay info update for validator and delegator
+- e0878b4: desplay info update for validator and delegator
+
 ## 3.2.0
 
 ### Minor Changes
