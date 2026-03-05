@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest # OIDC publishing currently requires GitHub-hosted runners
     env:
       HUSKY: 0 # Do not run Husky git hooks
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_REF: ${{ github.ref }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -33,7 +35,7 @@ jobs:
       - name: Release Type
         id: release-type
         run: |
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF" = "refs/heads/main" ]; then
             echo "release=latest" >> "$GITHUB_OUTPUT"
             echo "Release Type: latest (pnpm release)"
           else
