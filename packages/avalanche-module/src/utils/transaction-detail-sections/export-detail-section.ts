@@ -7,10 +7,14 @@ export const exportDetailSection = (tx: ExportTx, symbol: string) => {
   const { txFee, amount, chain, destination, type } = tx;
 
   details.push({
-    title: 'Transaction Details',
     items: [
       textItem('Source Chain', `Avalanche ${AvalancheChainStrings[chain]}`),
       textItem('Target Chain', `Avalanche ${AvalancheChainStrings[destination]}`),
+    ],
+  });
+
+  details.push({
+    items: [
       textItem('Transaction Type', type ? (type[0] || '').toUpperCase() + type.slice(1) : ''),
       currencyItem('Amount', amount, AVAX_NONEVM_DENOMINATION, symbol),
     ],
