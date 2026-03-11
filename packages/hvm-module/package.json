@@ -10,6 +10,11 @@
     "manifest.json"
   ],
   "license": "Limited Ecosystem License",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ava-labs/core-vm-modules",
+    "directory": "packages/hvm-module"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
