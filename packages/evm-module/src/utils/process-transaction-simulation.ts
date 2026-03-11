@@ -115,6 +115,16 @@ export const processTransactionSimulation = async ({
     tokenApprovals = erc20ParseResult.tokenApprovals;
   }
 
+  // When simulation succeeds but reports a zero-value ERC-20 approval
+  // (e.g. retry where allowance was already granted), use the actual
+  // approval amount from the transaction data.
+  if (isSimulationSuccessful && hasToField(params) && hasZeroValueApproval(tokenApprovals)) {
+    const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
+    if (erc20ParseResult.tokenApprovals) {
+      tokenApprovals = erc20ParseResult.tokenApprovals;
+    }
+  }
+
   return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
@@ -371,3 +381,21 @@ export const processJsonRpcSimulation = async ({
 
   return { alert, balanceChange, tokenApprovals };
 };
+
+function hasZeroValueApproval(approvals?: TokenApprovals): boolean {
+  if (!approvals) {
+    return false;
+  }
+
+  return approvals.approvals.some((a) => {
+    if (!a.value) {
+      return true;
+    }
+
+    try {
+      return BigInt(a.value) === 0n;
+    } catch {
+      return false;
+    }
+  });
+}
