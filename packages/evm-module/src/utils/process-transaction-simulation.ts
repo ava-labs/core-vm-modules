@@ -16,7 +16,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
-import { isHexString, MaxUint256 } from 'ethers';
+import { ethers, isHexString, MaxUint256 } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
@@ -117,11 +117,19 @@ export const processTransactionSimulation = async ({
 
   // When simulation succeeds but reports a zero-value ERC-20 approval
   // (e.g. retry where allowance was already granted), use the actual
-  // approval amount from the transaction data.
+  // approval amount from the transaction data. Handles both approve()
+  // and increaseAllowance() calls.
   if (isSimulationSuccessful && hasToField(params) && hasZeroValueApproval(tokenApprovals)) {
-    const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
-    if (erc20ParseResult.tokenApprovals) {
-      tokenApprovals = erc20ParseResult.tokenApprovals;
+    const parsedAmount = parseApprovalAmountFromCalldata(params.data);
+
+    if (parsedAmount !== undefined && tokenApprovals) {
+      tokenApprovals = {
+        ...tokenApprovals,
+        approvals: tokenApprovals.approvals.map((approval) => ({
+          ...approval,
+          value: parsedAmount,
+        })),
+      };
     }
   }
 
@@ -398,4 +406,28 @@ function hasZeroValueApproval(approvals?: TokenApprovals): boolean {
       return false;
     }
   });
+}
+
+const APPROVAL_ABI = [
+  'function approve(address spender, uint256 amount)',
+  'function increaseAllowance(address spender, uint256 addedValue)',
+];
+
+function parseApprovalAmountFromCalldata(data?: string): string | undefined {
+  if (!data || data.length < 10) {
+    return undefined;
+  }
+
+  try {
+    const iface = new ethers.Interface(APPROVAL_ABI);
+    const parsed = iface.parseTransaction({ data });
+
+    if (parsed && (parsed.name === 'approve' || parsed.name === 'increaseAllowance')) {
+      return `0x${(parsed.args[1] as bigint).toString(16)}`;
+    }
+  } catch {
+    // Not an approve/increaseAllowance call
+  }
+
+  return undefined;
 }

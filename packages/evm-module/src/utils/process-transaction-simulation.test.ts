@@ -1,5 +1,5 @@
 import { type AssetDiffs, processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
-import { RpcMethod, TokenType, type TokenApprovals } from '@avalabs/vm-module-types';
+import { RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
 import simulationResult from './__mocks__/simulation-result';
 import Blockaid from '@blockaid/client';
 
@@ -75,7 +75,7 @@ describe('processTransactionSimulation', () => {
     );
   });
 
-  it('should use ABI-parsed approval value when simulation reports zero-value approval (retry scenario)', async () => {
+  it('should use calldata-parsed approval value when simulation reports zero-value approval (increaseAllowance retry)', async () => {
     const zeroExposureSimulation = structuredClone(simulationResult);
     zeroExposureSimulation.simulation.account_summary.traces = [
       {
@@ -99,34 +99,17 @@ describe('processTransactionSimulation', () => {
       },
     ];
 
-    const expectedApprovalAmount = BigInt('0x0f4240');
-
-    mockParseWithErc20Abi.mockResolvedValue({
-      balanceChange: undefined,
-      tokenApprovals: {
-        isEditable: true,
-        approvals: [
-          {
-            token: {
-              type: TokenType.ERC20,
-              name: 'USD Coin',
-              chainId: 43112,
-              symbol: 'USDC',
-              decimals: 6,
-              address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
-            },
-            spenderAddress: '0xSpenderAddress',
-            value: expectedApprovalAmount,
-          },
-        ],
-      },
-    });
+    const spender = '0xa078e31894a51b2f8c6adcb70be73b1e62c24705';
+    const approvalAmount = '0x0f4240';
+    // increaseAllowance(address,uint256) selector: 0x39509351
+    const increaseAllowanceData =
+      '0x39509351' + spender.slice(2).padStart(64, '0') + approvalAmount.slice(2).padStart(64, '0');
 
     const params = {
       from: '0xFromAddress',
       to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
       value: '0x0',
-      data: '0x095ea7b3',
+      data: increaseAllowanceData,
     };
     const chainId = 43112;
     const provider = {} as any; // eslint-disable-line
@@ -139,9 +122,58 @@ describe('processTransactionSimulation', () => {
       simulationResult: zeroExposureSimulation as unknown as Blockaid.TransactionScanResponse,
     });
 
-    expect(mockParseWithErc20Abi).toHaveBeenCalledWith(params, chainId, provider);
     expect(tokenApprovals).toBeDefined();
-    expect(tokenApprovals!.approvals[0]!.value).toBe(expectedApprovalAmount);
+    expect(tokenApprovals!.approvals[0]!.value).toBe(`0x${BigInt(approvalAmount).toString(16)}`);
+  });
+
+  it('should use calldata-parsed approval value when simulation reports zero-value approval (approve retry)', async () => {
+    const zeroExposureSimulation = structuredClone(simulationResult);
+    zeroExposureSimulation.simulation.account_summary.traces = [
+      {
+        type: 'ERC20ExposureTrace',
+        exposed: {
+          raw_value: '0x0',
+          value: 0,
+          usd_price: 0,
+        },
+        trace_type: 'ExposureTrace',
+        owner: '0xOwnerAddress',
+        spender: '0xSpenderAddress',
+        asset: {
+          type: 'ERC20',
+          address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+          logo_url: 'https://example.com/logo.png',
+          decimals: 6,
+          name: 'USD Coin',
+          symbol: 'USDC',
+        },
+      },
+    ];
+
+    const spender = '0xa078e31894a51b2f8c6adcb70be73b1e62c24705';
+    const approvalAmount = '0x0f4240';
+    // approve(address,uint256) selector: 0x095ea7b3
+    const approveData = '0x095ea7b3' + spender.slice(2).padStart(64, '0') + approvalAmount.slice(2).padStart(64, '0');
+
+    const params = {
+      from: '0xFromAddress',
+      to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+      value: '0x0',
+      data: approveData,
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: zeroExposureSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(tokenApprovals).toBeDefined();
+    expect(tokenApprovals!.approvals[0]!.value).toBe(`0x${BigInt(approvalAmount).toString(16)}`);
   });
 
   it('should not call ABI parser when simulation reports non-zero approval value', async () => {
