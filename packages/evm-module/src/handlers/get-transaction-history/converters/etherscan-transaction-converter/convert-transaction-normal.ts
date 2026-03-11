@@ -21,7 +21,13 @@ export const convertTransactionNormal = ({
   const decimals = networkToken.decimals;
   const amount = new TokenUnit(tx.value, networkToken.decimals, networkToken.symbol);
   const amountDisplayValue = amount.toDisplay();
-  const txType = isSender ? TransactionType.SEND : TransactionType.RECEIVE;
+
+  const txType =
+    isContractCall(tx) && isApprovalTx(tx)
+      ? TransactionType.APPROVE
+      : isSender
+      ? TransactionType.SEND
+      : TransactionType.RECEIVE;
 
   const { from, to, gasPrice, gasUsed, hash } = tx;
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, hash);
@@ -54,4 +60,15 @@ export const convertTransactionNormal = ({
 
 function isContractCall(tx: NormalTx): boolean {
   return tx.input !== '0x';
+}
+
+// EVM function selectors — first 4 bytes of keccak256(functionSignature).
+// These identify which function was called in tx.input calldata.
+const APPROVE_SELECTOR = '0x095ea7b3'; // keccak256("approve(address,uint256)")
+const INCREASE_ALLOWANCE_SELECTOR = '0x39509351'; // keccak256("increaseAllowance(address,uint256)")
+
+function isApprovalTx(tx: NormalTx): boolean {
+  // tx.input starts with "0x" + 8 hex chars (4 bytes) for the function selector
+  const selector = tx.input?.slice(0, 10)?.toLowerCase();
+  return selector === APPROVE_SELECTOR || selector === INCREASE_ALLOWANCE_SELECTOR;
 }
