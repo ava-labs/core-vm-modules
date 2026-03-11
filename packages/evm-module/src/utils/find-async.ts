@@ -29,11 +29,7 @@ export async function findAsync<T>(array: T[], asyncCallback: (item: T) => Promi
 
   const results = await Promise.allSettled(promises);
 
-  const found = results
-    .filter((item) => item.status === 'fulfilled')
-    .map((item) => item as PromiseFulfilledResult<{ index: number; result: boolean }>)
-    .find((item) => {
-      return item.value.result;
-    });
+  const found = results.filter((item) => item.status === 'fulfilled').find((item) => item.value.result);
+
   return found ? array[found.value.index] : undefined;
 }

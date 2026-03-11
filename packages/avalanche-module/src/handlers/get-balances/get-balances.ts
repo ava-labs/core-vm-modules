@@ -1,22 +1,22 @@
-import {
-  NetworkVMType,
-  type GetBalancesParams,
-  type TokenWithBalanceAVM,
-  type TokenWithBalancePVM,
-} from '@avalabs/vm-module-types';
-import { type AvalancheGlacierService } from '../../services/glacier-service/glacier-service';
+import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import {
   BlockchainId,
   Network,
   type ListPChainBalancesResponse,
   type ListXChainBalancesResponse,
 } from '@avalabs/glacier-sdk';
-import type { TokenService } from '@internal/utils';
-import { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
-import { isPchainBalance, isXchainBalance } from './utils';
+import {
+  NetworkVMType,
+  type GetBalancesParams,
+  type TokenWithBalanceAVM,
+  type TokenWithBalancePVM,
+} from '@avalabs/vm-module-types';
+import { retry, RetryBackoffPolicy, type TokenService } from '@internal/utils';
+import { type AvalancheGlacierService } from '../../services/glacier-service/glacier-service';
+import { getProvider } from '../../utils/get-provider';
 import { convertPChainBalance } from './convert-p-chain-balance';
 import { convertXChainBalance } from './covnert-x-chain-balance';
-import { getProvider } from '../../utils/get-provider';
+import { isPchainBalance, isXchainBalance } from './utils';
 
 type GetAvalancheBalancesResponse = Record<string, Record<string, TokenWithBalanceAVM | TokenWithBalancePVM>>;
 
@@ -44,13 +44,18 @@ export const getBalances = async ({
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
   const glacierNetwork = network.isTestnet ? Network.FUJI : Network.MAINNET;
 
-  const chainBalances = await glacierService
-    .getChainBalance({
-      blockchainId,
-      network: glacierNetwork,
-      addresses: addresses.join(','),
-    })
-    .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances);
+  const chainBalances = await retry({
+    operation: () =>
+      glacierService
+        .getChainBalance({
+          blockchainId,
+          network: glacierNetwork,
+          addresses: addresses.join(','),
+        })
+        .then((value) => (value as ListPChainBalancesResponse | ListXChainBalancesResponse).balances),
+    isSuccess: () => true,
+    backoffPolicy: RetryBackoffPolicy.exponential(),
+  });
 
   const priceData = await tokenService.getWatchlistDataForToken({
     tokenDetails: {

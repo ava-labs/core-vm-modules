@@ -1,24 +1,31 @@
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import {
+  type Error,
   type GetBalancesParams,
   type NetworkTokenWithBalance,
-  type Storage,
-  type Error,
-  type TokenWithBalanceEVM,
   type NftTokenWithBalance,
+  type Storage,
   TokenType,
+  type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import type { TokenService } from '@internal/utils';
-import { findAsync } from '../../utils/find-async';
-import type { BalanceServiceInterface } from './balance-service-interface';
-import type { CurrencyCode } from '@avalabs/glacier-sdk';
-import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
+import { retry, RetryBackoffPolicy, type TokenService } from '@internal/utils';
 import { RpcService } from '../../services/rpc-service/rpc-service';
+import { findAsync } from '../../utils/find-async';
+import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { isERC20Token } from '../../utils/type-utils';
-import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import type { BalanceServiceInterface } from './balance-service-interface';
 
 type AccountAddress = string;
 type TokenSymbol = string;
 type GetEvmBalancesResponse = Record<AccountAddress, Record<TokenSymbol, TokenWithBalanceEVM | Error> | Error>;
+
+const retryBalanceLoad = <T>(operation: () => Promise<T>) =>
+  retry({
+    operation,
+    isSuccess: () => true,
+    backoffPolicy: RetryBackoffPolicy.exponential(),
+  });
 
 export const getBalances = async ({
   addresses,
@@ -56,35 +63,37 @@ export const getBalances = async ({
       if (tokenTypes.includes(TokenType.NATIVE)) {
         nativeTokenPromises.push(
           addIdToPromise(
-            supportingService
-              .getNativeBalance({
-                address,
-                currency: currency.toUpperCase() as CurrencyCode,
-                chainId,
-              })
-              .then(async (nativeBalance) => {
-                if (nativeBalance.symbol === 'AVAX') {
-                  // we want to standardise AVAX price across the chains
-                  const avaxMarketData = await tokenService.getWatchlistDataForToken({
-                    tokenDetails: {
-                      symbol: network.networkToken.symbol,
-                      isNative: true,
-                      caip2Id: network.caipId ?? '',
-                    },
-                    currency: currency.toUpperCase() as VsCurrencyType,
-                  });
+            retryBalanceLoad(() =>
+              supportingService
+                .getNativeBalance({
+                  address,
+                  currency: currency.toUpperCase() as CurrencyCode,
+                  chainId,
+                })
+                .then(async (nativeBalance) => {
+                  if (nativeBalance.symbol === 'AVAX') {
+                    // we want to standardise AVAX price across the chains
+                    const avaxMarketData = await tokenService.getWatchlistDataForToken({
+                      tokenDetails: {
+                        symbol: network.networkToken.symbol,
+                        isNative: true,
+                        caip2Id: network.caipId ?? '',
+                      },
+                      currency: currency.toUpperCase() as VsCurrencyType,
+                    });
 
-                  return {
-                    ...nativeBalance,
-                    priceInCurrency: avaxMarketData.priceInCurrency,
-                    marketCap: avaxMarketData.marketCap,
-                    vol24: avaxMarketData.vol24,
-                    change24: avaxMarketData.change24,
-                  };
-                }
+                    return {
+                      ...nativeBalance,
+                      priceInCurrency: avaxMarketData.priceInCurrency,
+                      marketCap: avaxMarketData.marketCap,
+                      vol24: avaxMarketData.vol24,
+                      change24: avaxMarketData.change24,
+                    };
+                  }
 
-                return nativeBalance;
-              }),
+                  return nativeBalance;
+                }),
+            ),
             address,
           ),
         );
@@ -93,13 +102,15 @@ export const getBalances = async ({
       if (tokenTypes.includes(TokenType.ERC20)) {
         erc20TokenPromises.push(
           addIdToPromise(
-            supportingService.listErc20Balances({
-              customTokens: customTokens.filter(isERC20Token),
-              currency: currency.toUpperCase() as CurrencyCode,
-              chainId,
-              address,
-              pageSize: 100,
-            }),
+            retryBalanceLoad(() =>
+              supportingService.listErc20Balances({
+                customTokens: customTokens.filter(isERC20Token),
+                currency: currency.toUpperCase() as CurrencyCode,
+                chainId,
+                address,
+                pageSize: 100,
+              }),
+            ),
             address,
           ),
         );
@@ -108,10 +119,12 @@ export const getBalances = async ({
       if (tokenTypes.includes(TokenType.ERC721) || tokenTypes.includes(TokenType.ERC1155)) {
         nftTokenPromises.push(
           addIdToPromise(
-            supportingService.listNftBalances({
-              chainId,
-              address,
-            }),
+            retryBalanceLoad(() =>
+              supportingService.listNftBalances({
+                chainId,
+                address,
+              }),
+            ),
             address,
           ),
         );

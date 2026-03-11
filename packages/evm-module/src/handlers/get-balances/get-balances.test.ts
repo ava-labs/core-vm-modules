@@ -1,6 +1,4 @@
-import { EvmGlacierService } from '../../services/glacier-service/glacier-service';
-import { findAsync } from '../../utils/find-async';
-import { getBalances } from './get-balances';
+import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import {
   Environment,
   type Network,
@@ -11,13 +9,15 @@ import {
   TokenType,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import { getTokens } from '../get-tokens/get-tokens';
-import { TokenService } from '@internal/utils';
+import { retry, TokenService } from '@internal/utils';
 import { getEnv } from '../../env';
-import { getProvider } from '../../utils/get-provider';
-import { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
-import { RpcService } from '../../services/rpc-service/rpc-service';
 import { DeBankService } from '../../services/debank-service/debank-service';
+import { EvmGlacierService } from '../../services/glacier-service/glacier-service';
+import { RpcService } from '../../services/rpc-service/rpc-service';
+import { findAsync } from '../../utils/find-async';
+import { getProvider } from '../../utils/get-provider';
+import { getTokens } from '../get-tokens/get-tokens';
+import { getBalances } from './get-balances';
 
 jest.mock('../../utils/find-async');
 jest.mock('../../utils/get-provider');
@@ -45,6 +45,7 @@ describe('getBalances', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.mocked(retry).mockImplementation(({ operation }) => operation(0));
   });
 
   it('should retrieve balances successfully when a supporting service is found', async () => {
@@ -283,6 +284,45 @@ describe('getBalances', () => {
       expect(glacierService.getNativeBalance).not.toHaveBeenCalled();
       expect(glacierService.listErc20Balances).toHaveBeenCalled();
       expect(glacierService.listNftBalances).not.toHaveBeenCalled();
+    });
+  });
+
+  it('retries native-balance failures and succeeds', async () => {
+    const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+    mockFindAsync.mockResolvedValue(glacierService);
+    glacierService.isNetworkSupported.mockResolvedValue(true);
+    glacierService.getNativeBalance.mockRejectedValueOnce(new Error('fetch failed'));
+    glacierService.getNativeBalance.mockResolvedValue({
+      symbol: 'ETH',
+    } as NetworkTokenWithBalance);
+    jest.mocked(retry).mockImplementation(async ({ operation, maxRetries = 10 }) => {
+      let lastError: unknown;
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          return await operation(i);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw lastError;
+    });
+
+    const result = await getBalances({
+      addresses: ['0xAddress1'],
+      currency,
+      network,
+      proxyApiUrl,
+      customTokens: [],
+      tokenTypes: [TokenType.NATIVE],
+      balanceServices: [glacierService],
+      tokenService: mockTokenService,
+    });
+
+    expect(glacierService.getNativeBalance).toHaveBeenCalledTimes(2);
+    expect(result).toEqual({
+      '0xAddress1': {
+        ETH: { symbol: 'ETH' },
+      },
     });
   });
 });

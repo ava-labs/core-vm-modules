@@ -1,3 +1,4 @@
+import { retry, RetryBackoffPolicy } from '@internal/utils';
 import { fetchAndVerify } from '@internal/utils/src/utils/fetch-and-verify';
 
 import type { SolanaNetworkName } from '@src/types';
@@ -6,7 +7,6 @@ import { PORTFOLIO_SCHEMA, type PortfolioResponse } from './moralis-schemas';
 
 export class MoralisService {
   #baseUrl: string;
-
   constructor({ proxyApiUrl }: { proxyApiUrl: string }) {
     this.#baseUrl = `${proxyApiUrl}/proxy/moralis`;
   }
@@ -20,7 +20,11 @@ export class MoralisService {
   }): Promise<{ address: string; portfolio: PortfolioResponse } | { address: string; error: string }> {
     try {
       const url = this.#buildUrl(`/account/${network}/${address}/portfolio`);
-      const portfolio = await fetchAndVerify([url], PORTFOLIO_SCHEMA);
+      const portfolio = await retry({
+        operation: () => fetchAndVerify([url], PORTFOLIO_SCHEMA),
+        isSuccess: () => true,
+        backoffPolicy: RetryBackoffPolicy.exponential(),
+      });
 
       return {
         address,

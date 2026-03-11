@@ -1,6 +1,7 @@
 import { NetworkVMType, type Network } from '@avalabs/vm-module-types';
-import { getProvider } from '../utils/get-provider';
+import { RetryBackoffPolicy } from '@internal/utils';
 import type { HyperSDKClient } from 'hypersdk-client';
+import { getProvider } from '../utils/get-provider';
 import { hvmGetBalances } from './get-balances';
 
 jest.mock('../utils/get-provider');
@@ -25,6 +26,7 @@ const providerMock = {
 describe('packages/hvm-module/src/handlers/get-balances', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.spyOn(RetryBackoffPolicy, 'exponential').mockReturnValue((_) => 0);
   });
 
   it('returns balances for all addresses', async () => {
@@ -61,7 +63,7 @@ describe('packages/hvm-module/src/handlers/get-balances', () => {
         },
       },
       address2: {
-        error: 'Error: failed to fetch balances',
+        error: 'Error: Max retry exceeded. Error: failed to fetch balances',
       },
       address3: {
         COIN: {
@@ -86,5 +88,32 @@ describe('packages/hvm-module/src/handlers/get-balances', () => {
         },
       },
     });
+  }, 12_000);
+
+  it('retries getBalance errors and returns successful balance', async () => {
+    jest.mocked(getProvider).mockReturnValue(providerMock);
+    jest.mocked(providerMock.getBalance).mockRejectedValueOnce(new Error('network timeout')).mockResolvedValueOnce(11n);
+
+    await expect(
+      hvmGetBalances({
+        addresses: ['address1'],
+        network: mockNetwork,
+        currency: 'usd',
+      }),
+    ).resolves.toEqual({
+      address1: {
+        COIN: {
+          balance: 11n,
+          balanceDisplayValue: '0.00000001',
+          coingeckoId: '',
+          decimals: 9,
+          name: 'COIN',
+          symbol: 'COIN',
+          type: 'NATIVE',
+        },
+      },
+    });
+
+    expect(providerMock.getBalance).toHaveBeenCalledTimes(2);
   });
 });

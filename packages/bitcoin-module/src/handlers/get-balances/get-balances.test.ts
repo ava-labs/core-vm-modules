@@ -1,10 +1,10 @@
 import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 
-import { getProvider } from '../../utils/get-provider';
-import { getBalances } from './get-balances';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { TokenType, type Network } from '@avalabs/vm-module-types';
 import { TokenService } from '@internal/utils';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { getProvider } from '../../utils/get-provider';
+import { getBalances } from './get-balances';
 
 jest.mock('../../utils/get-provider');
 
@@ -173,5 +173,21 @@ describe('get-balances', () => {
         },
       },
     });
+  });
+
+  it('retries provider failures when loading balances', async () => {
+    jest
+      .mocked(provider.getUtxoBalance)
+      .mockRejectedValueOnce(new Error('fetch failed'))
+      .mockResolvedValueOnce(mockedBalance);
+
+    const result = await getBalances({
+      addresses: ['first-address'],
+      network,
+      proxyApiUrl,
+    });
+
+    expect(provider.getUtxoBalance).toHaveBeenCalledTimes(2);
+    expect(result['first-address']).toBeDefined();
   });
 });

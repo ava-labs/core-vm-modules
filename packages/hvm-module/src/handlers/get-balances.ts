@@ -1,10 +1,11 @@
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
   type GetBalancesParams,
   type GetBalancesResponse,
   type NetworkTokenWithBalance,
   TokenType,
 } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { retry, RetryBackoffPolicy } from '@internal/utils';
 import { getProvider } from '../utils/get-provider';
 
 export const hvmGetBalances = async (params: GetBalancesParams): Promise<GetBalancesResponse> => {
@@ -14,7 +15,11 @@ export const hvmGetBalances = async (params: GetBalancesParams): Promise<GetBala
 
   const requests = addresses.map(async (address) => {
     try {
-      const balanceResult = await provider.getBalance(address);
+      const balanceResult = await retry({
+        operation: () => provider.getBalance(address),
+        isSuccess: () => true,
+        backoffPolicy: RetryBackoffPolicy.exponential(),
+      });
       const networkToken = network.networkToken;
       const totalBalance = new TokenUnit(balanceResult, networkToken.decimals, networkToken.symbol);
 

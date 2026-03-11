@@ -1,4 +1,4 @@
-import { RetryBackoffPolicy } from './retry';
+import { retry, RetryBackoffPolicy } from './retry';
 
 describe('RetryBackoffPolicy', () => {
   describe('exponential()', () => {
@@ -90,5 +90,21 @@ describe('RetryBackoffPolicy', () => {
         expect(seq[i]).toBeGreaterThan(seq[i - 1]!);
       }
     });
+  });
+});
+
+describe('retry()', () => {
+  it('retries thrown errors until success', async () => {
+    const operation = jest.fn().mockRejectedValueOnce(new Error('temporary')).mockResolvedValueOnce('ok');
+
+    const result = await retry({
+      operation,
+      isSuccess: (value) => value === 'ok',
+      maxRetries: 4,
+      backoffPolicy: RetryBackoffPolicy.constantMs(0),
+    });
+
+    expect(result).toBe('ok');
+    expect(operation).toHaveBeenCalledTimes(2);
   });
 });

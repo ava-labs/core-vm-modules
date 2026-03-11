@@ -1,8 +1,8 @@
-import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
 
-import { TokenService } from '@internal/utils';
+import { retry, RetryBackoffPolicy, TokenService } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
 
@@ -48,7 +48,11 @@ export const getBalances = async ({
         utxos,
         balanceUnconfirmed: unconfirmedBalanceInSatoshis,
         utxosUnconfirmed,
-      } = await provider.getUtxoBalance(address, withScripts);
+      } = await retry({
+        operation: () => provider.getUtxoBalance(address, withScripts),
+        isSuccess: () => true,
+        backoffPolicy: RetryBackoffPolicy.exponential(),
+      });
 
       const balance = new TokenUnit(balanceInSatoshis, network.networkToken.decimals, network.networkToken.symbol);
       const balanceInCurrency =
