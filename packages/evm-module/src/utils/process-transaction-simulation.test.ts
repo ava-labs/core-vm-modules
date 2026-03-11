@@ -75,8 +75,7 @@ describe('processTransactionSimulation', () => {
     );
   });
 
-  it('should use approval value from exposures when trace reports zero (retry scenario)', async () => {
-    const expectedApproval = '0x0f4240';
+  it('should exclude zero-value ERC20 approvals from tokenApprovals (retry scenario)', async () => {
     const zeroTraceSimulation = structuredClone(simulationResult);
 
     zeroTraceSimulation.simulation.account_summary.traces = [
@@ -101,27 +100,6 @@ describe('processTransactionSimulation', () => {
       },
     ];
 
-    zeroTraceSimulation.simulation.account_summary.exposures = [
-      {
-        asset_type: 'ERC20',
-        asset: {
-          type: 'ERC20',
-          address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
-          logo_url: 'https://example.com/logo.png',
-          decimals: 6,
-          name: 'USD Coin',
-          symbol: 'USDC',
-        },
-        spenders: {
-          '0xSpenderAddress': {
-            approval: expectedApproval,
-            exposure: [],
-            summary: `Approved ${expectedApproval} USDC`,
-          },
-        },
-      },
-    ];
-
     const params = {
       from: '0xFromAddress',
       to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
@@ -138,8 +116,7 @@ describe('processTransactionSimulation', () => {
       simulationResult: zeroTraceSimulation as unknown as Blockaid.TransactionScanResponse,
     });
 
-    expect(tokenApprovals).toBeDefined();
-    expect(tokenApprovals!.approvals[0]!.value).toBe(expectedApproval);
+    expect(tokenApprovals).toBeUndefined();
   });
 
   it('should disregard asset traces in the traces array', async () => {

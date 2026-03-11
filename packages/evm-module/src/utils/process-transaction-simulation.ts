@@ -147,7 +147,7 @@ const processTokenApprovals = (
   rpcMethod: RpcMethod,
   accountSummary: Blockaid.Evm.AccountSummary,
 ): TokenApprovals | undefined => {
-  const { traces, exposures } = accountSummary;
+  const { traces } = accountSummary;
 
   const mappedExposureTraces = mapExposureTracesToSpenderAsset(traces);
 
@@ -169,10 +169,11 @@ const processTokenApprovals = (
           exposed: { raw_value, usd_price },
         } = trace as Erc20ExposureTrace;
 
-        // Prefer the actual approval amount from exposures over the trace's
-        // raw_value (net exposure change), which can be 0 on retry when the
-        // allowance was already granted.
-        tokenApproval.value = getApprovalFromExposures(exposures, trace.spender, trace.asset.address) ?? raw_value;
+        if (isZeroValue(raw_value)) {
+          return;
+        }
+
+        tokenApproval.value = raw_value;
         tokenApproval.usdPrice = `${usd_price}`;
       }
 
@@ -375,28 +376,14 @@ export const processJsonRpcSimulation = async ({
   return { alert, balanceChange, tokenApprovals };
 };
 
-function getApprovalFromExposures(
-  exposures: Blockaid.Evm.AccountSummary['exposures'],
-  spender: string,
-  assetAddress: string,
-): string | undefined {
-  if (!exposures?.length) {
-    return undefined;
+function isZeroValue(value: string | number | bigint | undefined): boolean {
+  if (!value) {
+    return true;
   }
 
-  for (const exposure of exposures) {
-    if ('address' in exposure.asset && exposure.asset.address.toLowerCase() !== assetAddress.toLowerCase()) {
-      continue;
-    }
-
-    const spenderData = Object.entries(exposure.spenders ?? {}).find(
-      ([addr]) => addr.toLowerCase() === spender.toLowerCase(),
-    )?.[1];
-
-    if (spenderData && 'approval' in spenderData) {
-      return spenderData.approval;
-    }
+  try {
+    return BigInt(value) === 0n;
+  } catch {
+    return false;
   }
-
-  return undefined;
 }
