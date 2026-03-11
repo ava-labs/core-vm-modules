@@ -166,10 +166,12 @@ const processTokenApprovals = (
 
       if (trace.type === 'ERC20ExposureTrace') {
         const {
-          exposed: { raw_value, usd_price },
+          exposed: { raw_value, value, usd_price },
         } = trace as Erc20ExposureTrace;
 
-        if (isZeroValue(raw_value)) {
+        // Only show approval when the spender's exposure increases.
+        // Skips retries (0 change) and reduced allowances (negative change).
+        if (!value || value <= 0) {
           return;
         }
 
@@ -375,15 +377,3 @@ export const processJsonRpcSimulation = async ({
 
   return { alert, balanceChange, tokenApprovals };
 };
-
-function isZeroValue(value: string | number | bigint | undefined): boolean {
-  if (!value) {
-    return true;
-  }
-
-  try {
-    return BigInt(value) === 0n;
-  } catch {
-    return false;
-  }
-}
