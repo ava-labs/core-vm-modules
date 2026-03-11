@@ -16,7 +16,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 import { balanceToDisplayValue, numberToBN } from '@avalabs/core-utils-sdk';
-import { ethers, isHexString, MaxUint256 } from 'ethers';
+import { isHexString, MaxUint256 } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
@@ -115,24 +115,6 @@ export const processTransactionSimulation = async ({
     tokenApprovals = erc20ParseResult.tokenApprovals;
   }
 
-  // When simulation succeeds but reports a zero-value ERC-20 approval
-  // (e.g. retry where allowance was already granted), use the actual
-  // approval amount from the transaction data. Handles both approve()
-  // and increaseAllowance() calls.
-  if (isSimulationSuccessful && hasToField(params) && hasZeroValueApproval(tokenApprovals)) {
-    const parsedAmount = parseApprovalAmountFromCalldata(params.data);
-
-    if (parsedAmount !== undefined && tokenApprovals) {
-      tokenApprovals = {
-        ...tokenApprovals,
-        approvals: tokenApprovals.approvals.map((approval) => ({
-          ...approval,
-          value: parsedAmount,
-        })),
-      };
-    }
-  }
-
   return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
 };
 
@@ -165,7 +147,7 @@ const processTokenApprovals = (
   rpcMethod: RpcMethod,
   accountSummary: Blockaid.Evm.AccountSummary,
 ): TokenApprovals | undefined => {
-  const { traces } = accountSummary;
+  const { traces, exposures } = accountSummary;
 
   const mappedExposureTraces = mapExposureTracesToSpenderAsset(traces);
 
@@ -187,7 +169,10 @@ const processTokenApprovals = (
           exposed: { raw_value, usd_price },
         } = trace as Erc20ExposureTrace;
 
-        tokenApproval.value = raw_value;
+        // Prefer the actual approval amount from exposures over the trace's
+        // raw_value (net exposure change), which can be 0 on retry when the
+        // allowance was already granted.
+        tokenApproval.value = getApprovalFromExposures(exposures, trace.spender, trace.asset.address) ?? raw_value;
         tokenApproval.usdPrice = `${usd_price}`;
       }
 
@@ -390,43 +375,27 @@ export const processJsonRpcSimulation = async ({
   return { alert, balanceChange, tokenApprovals };
 };
 
-function hasZeroValueApproval(approvals?: TokenApprovals): boolean {
-  if (!approvals) {
-    return false;
-  }
-
-  return approvals.approvals.some((a) => {
-    if (!a.value) {
-      return true;
-    }
-
-    try {
-      return BigInt(a.value) === 0n;
-    } catch {
-      return false;
-    }
-  });
-}
-
-const APPROVAL_ABI = [
-  'function approve(address spender, uint256 amount)',
-  'function increaseAllowance(address spender, uint256 addedValue)',
-];
-
-function parseApprovalAmountFromCalldata(data?: string): string | undefined {
-  if (!data || data.length < 10) {
+function getApprovalFromExposures(
+  exposures: Blockaid.Evm.AccountSummary['exposures'],
+  spender: string,
+  assetAddress: string,
+): string | undefined {
+  if (!exposures?.length) {
     return undefined;
   }
 
-  try {
-    const iface = new ethers.Interface(APPROVAL_ABI);
-    const parsed = iface.parseTransaction({ data });
-
-    if (parsed && (parsed.name === 'approve' || parsed.name === 'increaseAllowance')) {
-      return `0x${(parsed.args[1] as bigint).toString(16)}`;
+  for (const exposure of exposures) {
+    if ('address' in exposure.asset && exposure.asset.address.toLowerCase() !== assetAddress.toLowerCase()) {
+      continue;
     }
-  } catch {
-    // Not an approve/increaseAllowance call
+
+    const spenderData = Object.entries(exposure.spenders ?? {}).find(
+      ([addr]) => addr.toLowerCase() === spender.toLowerCase(),
+    )?.[1];
+
+    if (spenderData && 'approval' in spenderData) {
+      return spenderData.approval;
+    }
   }
 
   return undefined;

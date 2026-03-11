@@ -75,9 +75,11 @@ describe('processTransactionSimulation', () => {
     );
   });
 
-  it('should use calldata-parsed approval value when simulation reports zero-value approval (increaseAllowance retry)', async () => {
-    const zeroExposureSimulation = structuredClone(simulationResult);
-    zeroExposureSimulation.simulation.account_summary.traces = [
+  it('should use approval value from exposures when trace reports zero (retry scenario)', async () => {
+    const expectedApproval = '0x0f4240';
+    const zeroTraceSimulation = structuredClone(simulationResult);
+
+    zeroTraceSimulation.simulation.account_summary.traces = [
       {
         type: 'ERC20ExposureTrace',
         exposed: {
@@ -99,46 +101,9 @@ describe('processTransactionSimulation', () => {
       },
     ];
 
-    const spender = '0xa078e31894a51b2f8c6adcb70be73b1e62c24705';
-    const approvalAmount = '0x0f4240';
-    // increaseAllowance(address,uint256) selector: 0x39509351
-    const increaseAllowanceData =
-      '0x39509351' + spender.slice(2).padStart(64, '0') + approvalAmount.slice(2).padStart(64, '0');
-
-    const params = {
-      from: '0xFromAddress',
-      to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
-      value: '0x0',
-      data: increaseAllowanceData,
-    };
-    const chainId = 43112;
-    const provider = {} as any; // eslint-disable-line
-
-    const { tokenApprovals } = await processTransactionSimulation({
-      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
-      params,
-      chainId,
-      provider,
-      simulationResult: zeroExposureSimulation as unknown as Blockaid.TransactionScanResponse,
-    });
-
-    expect(tokenApprovals).toBeDefined();
-    expect(tokenApprovals!.approvals[0]!.value).toBe(`0x${BigInt(approvalAmount).toString(16)}`);
-  });
-
-  it('should use calldata-parsed approval value when simulation reports zero-value approval (approve retry)', async () => {
-    const zeroExposureSimulation = structuredClone(simulationResult);
-    zeroExposureSimulation.simulation.account_summary.traces = [
+    zeroTraceSimulation.simulation.account_summary.exposures = [
       {
-        type: 'ERC20ExposureTrace',
-        exposed: {
-          raw_value: '0x0',
-          value: 0,
-          usd_price: 0,
-        },
-        trace_type: 'ExposureTrace',
-        owner: '0xOwnerAddress',
-        spender: '0xSpenderAddress',
+        asset_type: 'ERC20',
         asset: {
           type: 'ERC20',
           address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
@@ -147,19 +112,20 @@ describe('processTransactionSimulation', () => {
           name: 'USD Coin',
           symbol: 'USDC',
         },
+        spenders: {
+          '0xSpenderAddress': {
+            approval: expectedApproval,
+            exposure: [],
+            summary: `Approved ${expectedApproval} USDC`,
+          },
+        },
       },
     ];
-
-    const spender = '0xa078e31894a51b2f8c6adcb70be73b1e62c24705';
-    const approvalAmount = '0x0f4240';
-    // approve(address,uint256) selector: 0x095ea7b3
-    const approveData = '0x095ea7b3' + spender.slice(2).padStart(64, '0') + approvalAmount.slice(2).padStart(64, '0');
 
     const params = {
       from: '0xFromAddress',
       to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
       value: '0x0',
-      data: approveData,
     };
     const chainId = 43112;
     const provider = {} as any; // eslint-disable-line
@@ -169,31 +135,11 @@ describe('processTransactionSimulation', () => {
       params,
       chainId,
       provider,
-      simulationResult: zeroExposureSimulation as unknown as Blockaid.TransactionScanResponse,
+      simulationResult: zeroTraceSimulation as unknown as Blockaid.TransactionScanResponse,
     });
 
     expect(tokenApprovals).toBeDefined();
-    expect(tokenApprovals!.approvals[0]!.value).toBe(`0x${BigInt(approvalAmount).toString(16)}`);
-  });
-
-  it('should not call ABI parser when simulation reports non-zero approval value', async () => {
-    const params = {
-      from: '0xFromAddress',
-      to: '0xToAddress',
-      value: '0xValue',
-    };
-    const chainId = 43112;
-    const provider = {} as any; // eslint-disable-line
-
-    await processTransactionSimulation({
-      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
-      params,
-      chainId,
-      provider,
-      simulationResult: simulationResult as unknown as Blockaid.TransactionScanResponse,
-    });
-
-    expect(mockParseWithErc20Abi).not.toHaveBeenCalled();
+    expect(tokenApprovals!.approvals[0]!.value).toBe(expectedApproval);
   });
 
   it('should disregard asset traces in the traces array', async () => {
