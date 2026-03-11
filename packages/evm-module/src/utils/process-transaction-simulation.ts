@@ -169,6 +169,10 @@ const processTokenApprovals = (
           exposed: { raw_value, usd_price },
         } = trace as Erc20ExposureTrace;
 
+        if (isZeroValue(raw_value)) {
+          return;
+        }
+
         tokenApproval.value = raw_value;
         tokenApproval.usdPrice = `${usd_price}`;
       }
@@ -371,3 +375,15 @@ export const processJsonRpcSimulation = async ({
 
   return { alert, balanceChange, tokenApprovals };
 };
+
+function isZeroValue(value: string | number | bigint | undefined): boolean {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    return BigInt(value) === 0n;
+  } catch {
+    return false;
+  }
+}

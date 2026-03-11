@@ -9,7 +9,22 @@ jest.mock('@blockaid/client', () => {
   });
 });
 
+const mockParseWithErc20Abi = jest.fn().mockResolvedValue({
+  tokenApprovals: undefined,
+  balanceChange: undefined,
+});
+jest.mock('./parse-erc20-tx', () => ({
+  parseWithErc20Abi: (...args: unknown[]) => mockParseWithErc20Abi(...args),
+}));
+
 describe('processTransactionSimulation', () => {
+  beforeEach(() => {
+    mockParseWithErc20Abi.mockReset().mockResolvedValue({
+      tokenApprovals: undefined,
+      balanceChange: undefined,
+    });
+  });
+
   it('should not mark transactions as suspicious if the simulation result is not present at all', async () => {
     const params = {
       from: '0xFromAddress',
@@ -58,6 +73,50 @@ describe('processTransactionSimulation', () => {
         value: '0x650e124ef1c7',
       }),
     );
+  });
+
+  it('should exclude zero-value ERC20 approvals from tokenApprovals (retry scenario)', async () => {
+    const zeroTraceSimulation = structuredClone(simulationResult);
+
+    zeroTraceSimulation.simulation.account_summary.traces = [
+      {
+        type: 'ERC20ExposureTrace',
+        exposed: {
+          raw_value: '0x0',
+          value: 0,
+          usd_price: 0,
+        },
+        trace_type: 'ExposureTrace',
+        owner: '0xOwnerAddress',
+        spender: '0xSpenderAddress',
+        asset: {
+          type: 'ERC20',
+          address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+          logo_url: 'https://example.com/logo.png',
+          decimals: 6,
+          name: 'USD Coin',
+          symbol: 'USDC',
+        },
+      },
+    ];
+
+    const params = {
+      from: '0xFromAddress',
+      to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+      value: '0x0',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: zeroTraceSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(tokenApprovals).toBeUndefined();
   });
 
   it('should disregard asset traces in the traces array', async () => {
