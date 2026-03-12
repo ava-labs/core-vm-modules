@@ -391,6 +391,7 @@ describe('eth_sendTransaction handler', () => {
                     spender: '0xSpenderAddress',
                     exposed: {
                       raw_value: '1',
+                      value: 1,
                       usd_price: 1,
                     },
                   },

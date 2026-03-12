@@ -119,6 +119,50 @@ describe('processTransactionSimulation', () => {
     expect(tokenApprovals).toBeUndefined();
   });
 
+  it('should exclude non-increasing ERC20 approvals (reduced allowance scenario)', async () => {
+    const reducedTraceSimulation = structuredClone(simulationResult);
+
+    reducedTraceSimulation.simulation.account_summary.traces = [
+      {
+        type: 'ERC20ExposureTrace',
+        exposed: {
+          raw_value: '0x2540be400',
+          value: -50,
+          usd_price: -50,
+        },
+        trace_type: 'ExposureTrace',
+        owner: '0xOwnerAddress',
+        spender: '0xSpenderAddress',
+        asset: {
+          type: 'ERC20',
+          address: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+          logo_url: 'https://example.com/logo.png',
+          decimals: 6,
+          name: 'USD Coin',
+          symbol: 'USDC',
+        },
+      },
+    ];
+
+    const params = {
+      from: '0xFromAddress',
+      to: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+      value: '0x0',
+    };
+    const chainId = 43112;
+    const provider = {} as any; // eslint-disable-line
+
+    const { tokenApprovals } = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params,
+      chainId,
+      provider,
+      simulationResult: reducedTraceSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(tokenApprovals).toBeUndefined();
+  });
+
   it('should disregard asset traces in the traces array', async () => {
     const clonedSimulation = structuredClone(simulationResult);
     clonedSimulation.simulation.account_summary.traces = clonedSimulation.simulation.account_summary.traces.map(
