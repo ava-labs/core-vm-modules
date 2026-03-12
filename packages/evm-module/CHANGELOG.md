@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 3.3.1
+
+### Patch Changes
+
+- 01ac012: Fix zero-value ERC-20 approval display on swap retry when Blockaid simulation reports 0 net exposure change
+- 609b694: Hide ERC-20 approval section when allowance is not increasing (covers retry and reduced-allowance scenarios)
+  - @avalabs/vm-module-types@3.3.1
+
 ## 3.3.0
 
 ### Patch Changes
