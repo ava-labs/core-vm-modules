@@ -1,5 +1,12 @@
 # @avalabs/avalanche-module
 
+## 3.3.1
+
+### Patch Changes
+
+- 8bac968: Split import/export transaction detail sections into separate cards for chain info and transaction details
+  - @avalabs/vm-module-types@3.3.1
+
 ## 3.3.0
 
 ### Minor Changes

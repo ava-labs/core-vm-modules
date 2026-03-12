@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/bitcoin-module",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -15,11 +15,6 @@
     "manifest.json"
   ],
   "license": "Limited Ecosystem License",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ava-labs/core-vm-modules",
-    "directory": "packages/bitcoin-module"
-  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
