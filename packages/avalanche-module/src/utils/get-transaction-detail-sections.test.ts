@@ -95,7 +95,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Transaction Details',
         items: [
           {
             label: 'Source Chain',
@@ -109,6 +108,10 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             alignment: 'horizontal',
             type: 'text',
           },
+        ],
+      },
+      {
+        items: [
           {
             label: 'Transaction Type',
             value: 'Export',
@@ -152,7 +155,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Transaction Details',
         items: [
           {
             label: 'Source Chain',
@@ -166,6 +168,10 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             alignment: 'horizontal',
             type: 'text',
           },
+        ],
+      },
+      {
+        items: [
           {
             label: 'Transaction Type',
             value: 'Import',

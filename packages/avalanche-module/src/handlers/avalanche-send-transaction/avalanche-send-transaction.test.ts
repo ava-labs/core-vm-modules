@@ -261,7 +261,6 @@ describe('avalanche_sendTransaction handler', () => {
         network: { chainId: 1, name: 'chainName', logoUri: 'logoUri' },
         details: [
           {
-            title: 'Transaction Details',
             items: [
               {
                 label: 'Source Chain',
@@ -275,6 +274,10 @@ describe('avalanche_sendTransaction handler', () => {
                 type: 'text',
                 value: 'Avalanche undefined',
               },
+            ],
+          },
+          {
+            items: [
               {
                 label: 'Transaction Type',
                 alignment: 'horizontal',
@@ -335,7 +338,6 @@ describe('avalanche_sendTransaction handler', () => {
         network: { chainId: 1, name: 'chainName', logoUri: 'logoUri' },
         details: [
           {
-            title: 'Transaction Details',
             items: [
               {
                 label: 'Source Chain',
@@ -349,6 +351,10 @@ describe('avalanche_sendTransaction handler', () => {
                 type: 'text',
                 value: 'Avalanche undefined',
               },
+            ],
+          },
+          {
+            items: [
               {
                 label: 'Transaction Type',
                 alignment: 'horizontal',
