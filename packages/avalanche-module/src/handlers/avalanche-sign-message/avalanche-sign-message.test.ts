@@ -1,5 +1,4 @@
 import { NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
-import { rpcErrors } from '@metamask/rpc-errors';
 import { avalancheSignMessage } from './avalanche-sign-message';
 
 const message = 'message to sign';
