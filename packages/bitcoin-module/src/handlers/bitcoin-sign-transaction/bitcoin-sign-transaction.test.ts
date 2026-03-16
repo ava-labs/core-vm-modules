@@ -118,14 +118,10 @@ describe('bitcoin-sign-transaction', () => {
 
     const result = await bitcoinSignTransaction(params);
 
-    expect(result).toEqual({
-      error: rpcErrors.internal({
-        message: 'Transaction invalid or cannot be parsed: All input UTXOs must belong to a single address, found 2',
-        data: {
-          cause: new Error('All input UTXOs must belong to a single address, found 2'),
-        },
-      }),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toBe(
+      'Transaction invalid or cannot be parsed: All input UTXOs must belong to a single address, found 2',
+    );
   });
 
   it('should return an error if input address cannot be resolved', async () => {

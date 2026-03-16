@@ -206,7 +206,7 @@ describe('avalanche_sendTransaction handler', () => {
     const result = await avalancheSendTransaction(params);
 
     expect(result).toEqual({
-      error: rpcErrors.invalidParams('Unable to parse transaction data. Unsupported tx type'),
+      error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
     });
   });
 

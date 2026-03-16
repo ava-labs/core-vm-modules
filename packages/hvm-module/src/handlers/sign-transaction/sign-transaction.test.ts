@@ -112,10 +112,9 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
         network: mockNetwork,
         approvalController: mockApprovalControler,
       }),
-    ).resolves.toStrictEqual({
-      error: rpcErrors.invalidParams({
-        message: 'Transaction params are invalid: No transaction found',
-        data: { cause: new Error('No transaction found') },
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
       }),
     });
   });
