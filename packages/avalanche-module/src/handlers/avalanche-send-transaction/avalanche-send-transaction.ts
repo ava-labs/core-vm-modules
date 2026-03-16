@@ -183,7 +183,10 @@ export const avalancheSendTransaction = async ({
       txHash = (await getTxHash(provider, response, vm)) as Hex;
     } catch (error) {
       return {
-        error: rpcErrors.internal({ message: 'Unable to broadcast transaction', data: { cause: error } }),
+        error: rpcErrors.internal({
+          message: `Unable to broadcast transaction${error instanceof Error ? `: ${error.message}` : ''}`,
+          data: { cause: error },
+        }),
       };
     }
 
