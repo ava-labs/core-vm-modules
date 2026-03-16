@@ -8,6 +8,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { rpcErrorOpts } from '@internal/utils';
 
 export const avalancheSignMessage = async ({
   request,
@@ -24,7 +25,7 @@ export const avalancheSignMessage = async ({
     console.error('invalid params', result.error);
 
     return {
-      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Params are invalid', result.error)),
     };
   }
   const [message, accountIndex] = result.data;

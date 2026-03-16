@@ -14,7 +14,7 @@ import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
 import { createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
-import { addressItem, currencyItem } from '@internal/utils';
+import { addressItem, currencyItem, rpcErrorOpts } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
 import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
 import { waitForTransactionReceipt } from '../../utils/wait-for-tx-receipt';
@@ -40,7 +40,7 @@ export const bitcoinSendTransaction = async ({
   if (!success) {
     console.error('invalid params', parseError);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: parseError } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', parseError)),
     };
   }
 
@@ -128,7 +128,7 @@ export const bitcoinSendTransaction = async ({
     txHash = await getTxHash(provider, response);
   } catch (error) {
     return {
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+      error: rpcErrors.internal(rpcErrorOpts('Unable to get transaction hash', error)),
     };
   }
 

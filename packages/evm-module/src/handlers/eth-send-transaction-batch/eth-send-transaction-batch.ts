@@ -17,6 +17,7 @@ import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-rece
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import { simulateTransactionBatch } from './utils/process-transaction-batch-simulation';
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
 
 export const ethSendTransactionBatch = async ({
@@ -36,7 +37,7 @@ export const ethSendTransactionBatch = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', error)),
     };
   }
 
@@ -57,12 +58,7 @@ export const ethSendTransactionBatch = async ({
   } catch (error) {
     console.error('Unable to calculate nonce', error);
     return {
-      error: rpcErrors.internal({
-        message: 'Unable to calculate nonce',
-        data: {
-          originalError: error,
-        },
-      }),
+      error: rpcErrors.internal(rpcErrorOpts('Unable to calculate nonce', error)),
     };
   }
 

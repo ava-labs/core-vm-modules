@@ -10,7 +10,7 @@ import {
 import { rpcErrors } from '@metamask/rpc-errors';
 import type { BitcoinProvider, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 
-import { addressItem, currencyItem } from '@internal/utils';
+import { addressItem, currencyItem, rpcErrorOpts } from '@internal/utils';
 import { fundsRecipientItem, linkItem } from '@internal/utils/src/utils/detail-item';
 
 import { getProvider } from '../../utils/get-provider';
@@ -37,7 +37,7 @@ export const bitcoinSignTransaction = async ({
   if (!success) {
     console.error('invalid params', parseError);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: parseError } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', parseError)),
     };
   }
 
@@ -49,7 +49,7 @@ export const bitcoinSignTransaction = async ({
   const { details, error: detailsError } = await parseTxDetails(params, provider);
   if (detailsError) {
     return {
-      error: rpcErrors.internal({ message: 'Transaction invalid or cannot be parsed', data: { cause: detailsError } }),
+      error: rpcErrors.internal(rpcErrorOpts('Transaction invalid or cannot be parsed', detailsError)),
     };
   }
 
@@ -104,7 +104,7 @@ export const bitcoinSignTransaction = async ({
     txHash = await getTxHash(provider, response);
   } catch (error) {
     return {
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+      error: rpcErrors.internal(rpcErrorOpts('Unable to get transaction hash', error)),
     };
   }
 

@@ -7,6 +7,7 @@ import { getTxUpdater } from '../../utils/evm-tx-updater';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { buildTxApprovalRequest } from '../../utils/build-tx-approval-request';
 import { simulateTransaction } from '../../utils/process-transaction-simulation';
+import { rpcErrorOpts } from '@internal/utils';
 
 import { parseRequestParams } from './schema';
 import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-receipt';
@@ -32,7 +33,7 @@ export const ethSendTransaction = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', error)),
     };
   }
 
@@ -63,7 +64,7 @@ export const ethSendTransaction = async ({
       transaction.gas = '0x' + gasLimit.toString(16);
     } catch (error) {
       return {
-        error: rpcErrors.internal('Unable to calculate gas limit'),
+        error: rpcErrors.internal(rpcErrorOpts('Unable to calculate gas limit', error)),
       };
     }
   }
@@ -78,7 +79,7 @@ export const ethSendTransaction = async ({
       transaction.nonce = String(nonce);
     } catch (error) {
       return {
-        error: rpcErrors.internal('Unable to calculate nonce'),
+        error: rpcErrors.internal(rpcErrorOpts('Unable to calculate nonce', error)),
       };
     }
   }
@@ -115,7 +116,7 @@ export const ethSendTransaction = async ({
     txHash = await getTxHash(provider, response, { shouldRetry });
   } catch (error) {
     return {
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: error } }),
+      error: rpcErrors.internal(rpcErrorOpts('Unable to get transaction hash', error)),
     };
   }
 

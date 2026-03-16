@@ -15,6 +15,7 @@ import { explainTransaction } from '@src/utils/explain/explain-transaction';
 
 import { parseRequestParams } from './schema';
 import type Blockaid from '@blockaid/client';
+import { rpcErrorOpts } from '@internal/utils';
 
 export const signTransaction = async ({
   request,
@@ -35,7 +36,7 @@ export const signTransaction = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', error)),
     };
   }
 

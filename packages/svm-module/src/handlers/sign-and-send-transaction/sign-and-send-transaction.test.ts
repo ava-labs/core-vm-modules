@@ -190,7 +190,7 @@ describe('src/handlers/sign-and-send-transaction', () => {
 
     expect(result).toEqual({
       error: rpcErrors.internal({
-        message: 'Transaction failed',
+        message: 'Transaction failed: Transaction error',
         data: { cause: new Error('Transaction error') },
       }),
     });

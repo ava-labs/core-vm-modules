@@ -18,6 +18,7 @@ import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-
 import { parseRequestParams, type SendOptions } from './schema';
 import type Blockaid from '@blockaid/client';
 import { getExplorerAddressByNetwork } from '@src/utils/get-explorer-address-by-network';
+import { rpcErrorOpts } from '@internal/utils';
 
 export const signAndSendTransaction = async ({
   request,
@@ -38,7 +39,7 @@ export const signAndSendTransaction = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', error)),
     };
   }
 
@@ -114,7 +115,7 @@ export const signAndSendTransaction = async ({
     console.error(error);
     // Note: we don't need to call onTransactionReverted here as waitForTransactionConfirmation handles that
     return {
-      error: rpcErrors.internal({ message: 'Transaction failed', data: { cause: error } }),
+      error: rpcErrors.internal(rpcErrorOpts('Transaction failed', error)),
     };
   }
 };

@@ -9,7 +9,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { base64 } from '@scure/base';
 
-import { addressItem, dataItem, textItem } from '@internal/utils';
+import { addressItem, dataItem, textItem, rpcErrorOpts } from '@internal/utils';
 
 import { parseRequestParams } from './schema';
 
@@ -28,7 +28,7 @@ export const signMessage = async ({
   if (!success) {
     console.error('invalid params', error);
     return {
-      error: rpcErrors.invalidParams({ message: 'Message signing params are invalid', data: { cause: error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Message signing params are invalid', error)),
     };
   }
 
