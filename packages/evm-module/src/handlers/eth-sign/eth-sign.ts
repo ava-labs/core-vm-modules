@@ -16,6 +16,7 @@ import { isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid } from './utils/is-typed-data-valid';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
+import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
 
 export const ethSign = async ({
@@ -36,7 +37,7 @@ export const ethSign = async ({
 
     return {
       success: false,
-      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Params are invalid', result.error)),
     };
   }
   const { method, data, address } = result.data;

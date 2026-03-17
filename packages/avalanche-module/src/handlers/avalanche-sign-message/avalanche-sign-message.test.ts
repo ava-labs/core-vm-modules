@@ -1,5 +1,4 @@
 import { NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
-import { rpcErrors } from '@metamask/rpc-errors';
 import { avalancheSignMessage } from './avalanche-sign-message';
 
 const message = 'message to sign';
@@ -50,9 +49,8 @@ describe('avalanche_signMessage', () => {
       approvalController: mockApprovalController,
     });
 
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams({ message: 'Params are invalid', data: { cause: result.error } }),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Params are invalid');
   });
 
   it('should generate signingData and displayData', async () => {

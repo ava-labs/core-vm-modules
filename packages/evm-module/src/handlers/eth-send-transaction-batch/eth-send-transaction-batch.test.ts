@@ -291,7 +291,7 @@ describe('eth_sendTransactionBatch handler', () => {
     const response = await ethSendTransactionBatch(testRequestParams());
 
     expect(response).toEqual({
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: testError } }),
+      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid: Invalid params', data: { cause: testError } }),
     });
   });
 
@@ -709,7 +709,7 @@ describe('eth_sendTransactionBatch handler', () => {
     const response = await ethSendTransactionBatch(requestParams);
 
     expect(response).toEqual({
-      error: rpcErrors.internal('Unable to calculate nonce'),
+      error: rpcErrors.internal({ message: 'Unable to calculate nonce: Nonce calculation error', data: { cause: new Error('Nonce calculation error') } }),
     });
   });
 

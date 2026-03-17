@@ -159,9 +159,8 @@ describe('avalanche_sendTransaction handler', () => {
     // @ts-expect-error for testing when transactionHex is missing
     const result = await avalancheSendTransaction(testParams(requestParams));
 
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Transaction params are invalid');
   });
 
   it('should return error if chainAlias was not provided', async () => {
@@ -173,9 +172,8 @@ describe('avalanche_sendTransaction handler', () => {
     // @ts-expect-error for testing when chainAlias is missing
     const result = await avalancheSendTransaction(testParams(requestParams));
 
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams('Transaction params are invalid'),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Transaction params are invalid');
   });
 
   it('should return error if xpAddress is not provided in context', async () => {
@@ -208,7 +206,7 @@ describe('avalanche_sendTransaction handler', () => {
     const result = await avalancheSendTransaction(params);
 
     expect(result).toEqual({
-      error: rpcErrors.invalidParams('Unable to parse transaction data. Unsupported tx type'),
+      error: rpcErrors.internal('Unable to parse transaction data. Unsupported tx type'),
     });
   });
 

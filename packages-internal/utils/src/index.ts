@@ -6,3 +6,4 @@ export { fetchAndVerify } from './utils/fetch-and-verify';
 export { getCoreHeaders } from './utils/get-core-headers';
 export { getGlacierApiKey } from './utils/get-glacier-api-key';
 export { GlacierFetchHttpRequest } from './utils/glacier-fetch-http-request';
+export { rpcErrorOpts } from './utils/rpc-error-opts';

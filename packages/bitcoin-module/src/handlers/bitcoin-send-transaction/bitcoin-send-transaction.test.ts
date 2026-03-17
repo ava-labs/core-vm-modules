@@ -224,7 +224,7 @@ describe('bitcoinSendTransaction', () => {
     const result = await bitcoinSendTransaction(testRequestParams());
 
     expect(result).toEqual({
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: testError } }),
+      error: rpcErrors.internal({ message: 'Unable to get transaction hash: test error', data: { cause: testError } }),
     });
   });
 

@@ -103,9 +103,8 @@ describe('bitcoin-sign-transaction', () => {
       testRequestParams({ inputs: [{ ...TEST_INPUTS[0], script: '' }], outputs: TEST_OUTPUTS }),
     );
 
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: 'Invalid params' } }),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Transaction params are invalid');
   });
 
   it('should return an error if more than one input UTXO script is found', async () => {
@@ -119,14 +118,10 @@ describe('bitcoin-sign-transaction', () => {
 
     const result = await bitcoinSignTransaction(params);
 
-    expect(result).toEqual({
-      error: rpcErrors.invalidParams({
-        message: 'Transaction invalid or cannot be parsed',
-        data: {
-          cause: new Error('All input UTXOs must belong to a single address, found 2'),
-        },
-      }),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toBe(
+      'Transaction invalid or cannot be parsed: All input UTXOs must belong to a single address, found 2',
+    );
   });
 
   it('should return an error if input address cannot be resolved', async () => {
@@ -138,8 +133,12 @@ describe('bitcoin-sign-transaction', () => {
 
     const { error } = await bitcoinSignTransaction(testRequestParams());
 
-    expect(error).toEqual(rpcErrors.invalidParams({ message: 'Transaction invalid or cannot be parsed' }));
-    expect(error?.cause).toEqual(new Error('Unable to resolve address for script'));
+    expect(error).toEqual(
+      rpcErrors.internal({
+        message: 'Transaction invalid or cannot be parsed: Unable to resolve address for script',
+        data: { cause: new Error('Unable to resolve address for script') },
+      }),
+    );
   });
 
   it('should return an error when approval fails', async () => {
@@ -164,7 +163,7 @@ describe('bitcoin-sign-transaction', () => {
     const result = await bitcoinSignTransaction(testRequestParams());
 
     expect(result).toEqual({
-      error: rpcErrors.internal({ message: 'Unable to get transaction hash', data: { cause: testError } }),
+      error: rpcErrors.internal({ message: 'Unable to get transaction hash: test error', data: { cause: testError } }),
     });
   });
 

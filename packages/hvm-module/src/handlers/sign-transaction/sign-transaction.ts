@@ -10,6 +10,7 @@ import {
   type SigningData,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { rpcErrorOpts } from '@internal/utils';
 import { parseRequestParams } from './schema';
 import type { ActionData } from 'hypersdk-client';
 
@@ -60,20 +61,14 @@ export const hvmSign = async ({
   const result = parseRequestParams(params);
   if (!result.success) {
     return {
-      error: rpcErrors.invalidParams({
-        message: 'Transaction params are invalid',
-        data: { cause: result.error.format() },
-      }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', result.error)),
     };
   }
 
   const transaction = result.data[0];
   if (!transaction) {
     return {
-      error: rpcErrors.invalidParams({
-        message: 'Transaction params are invalid',
-        data: { cause: 'No transaction found' },
-      }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', new Error('No transaction found'))),
     };
   }
 

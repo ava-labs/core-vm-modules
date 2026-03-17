@@ -18,7 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from '../../utils/get-provided-utxos';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { getCoreHeaders, getGlacierApiKey, retry } from '@internal/utils';
+import { getCoreHeaders, getGlacierApiKey, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
@@ -41,7 +41,7 @@ export const avalancheSendTransaction = async ({
 
   if (!result.success) {
     return {
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: result.error } }),
+      error: rpcErrors.invalidParams(rpcErrorOpts('Transaction params are invalid', result.error)),
     };
   }
 
@@ -183,7 +183,7 @@ export const avalancheSendTransaction = async ({
       txHash = (await getTxHash(provider, response, vm)) as Hex;
     } catch (error) {
       return {
-        error: rpcErrors.internal({ message: 'Unable to broadcast transaction', data: { cause: error } }),
+        error: rpcErrors.internal(rpcErrorOpts('Unable to broadcast transaction', error)),
       };
     }
 
@@ -202,7 +202,7 @@ export const avalancheSendTransaction = async ({
   } catch (error) {
     console.error(error);
     return {
-      error: rpcErrors.internal({ message: 'Unable to create transaction', data: { cause: error } }),
+      error: rpcErrors.internal(rpcErrorOpts('Unable to create transaction', error)),
     };
   }
 };

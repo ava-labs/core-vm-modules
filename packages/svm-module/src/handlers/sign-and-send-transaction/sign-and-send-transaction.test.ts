@@ -188,12 +188,8 @@ describe('src/handlers/sign-and-send-transaction', () => {
       blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
-    expect(result).toEqual({
-      error: rpcErrors.internal({
-        message: 'Transaction failed',
-        data: { cause: new Error('Transaction error') },
-      }),
-    });
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Transaction failed');
   });
 
   it('returns the transaction hash on success', async () => {

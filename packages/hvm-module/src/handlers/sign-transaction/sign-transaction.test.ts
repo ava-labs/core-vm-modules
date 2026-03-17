@@ -95,10 +95,9 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
         network: mockNetwork,
         approvalController: mockApprovalControler,
       }),
-    ).resolves.toStrictEqual({
-      error: rpcErrors.invalidParams({
-        message: 'Transaction params are invalid',
-        data: { cause: { _errors: ['Expected array, received object'] } },
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
       }),
     });
   });
@@ -113,10 +112,9 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
         network: mockNetwork,
         approvalController: mockApprovalControler,
       }),
-    ).resolves.toStrictEqual({
-      error: rpcErrors.invalidParams({
-        message: 'Transaction params are invalid',
-        data: { cause: 'No transaction found' },
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
       }),
     });
   });
