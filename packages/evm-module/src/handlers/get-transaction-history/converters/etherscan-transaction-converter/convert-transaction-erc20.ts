@@ -39,6 +39,8 @@ export function convertTransactionERC20({
         type: TokenType.ERC20,
         amount: amountDisplayValue,
         address: contractAddress,
+        from: { address: from },
+        to: { address: to },
       },
     ],
     gasUsed,

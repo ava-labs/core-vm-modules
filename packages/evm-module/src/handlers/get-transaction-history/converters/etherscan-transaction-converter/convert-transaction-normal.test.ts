@@ -40,6 +40,8 @@ describe('convertTransactionNormal ', () => {
           name: 'Ethereum',
           symbol: 'ETH',
           amount: '1',
+          from: { address: '0xSenderAddress' },
+          to: { address: '0xReceiverAddress' },
           type: TokenType.NATIVE,
         },
       ],

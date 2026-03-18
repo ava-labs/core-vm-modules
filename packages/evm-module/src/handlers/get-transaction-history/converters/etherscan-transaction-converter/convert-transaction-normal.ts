@@ -47,6 +47,8 @@ export const convertTransactionNormal = ({
         name: networkToken.name,
         symbol: networkToken.symbol,
         amount: amountDisplayValue,
+        from: { address: from },
+        to: { address: to },
         type: TokenType.NATIVE,
       },
     ],

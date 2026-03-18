@@ -39,6 +39,8 @@ describe('convertTransactionERC20 ', () => {
           type: TokenType.ERC20,
           amount: '1',
           address: '0xContractAddress',
+          from: { address: '0xSenderAddress' },
+          to: { address: '0xReceiverAddress' },
         },
       ],
       gasUsed: '21000',
