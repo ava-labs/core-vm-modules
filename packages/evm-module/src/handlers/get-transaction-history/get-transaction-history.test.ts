@@ -1,6 +1,6 @@
 import { getTransactionHistory } from './get-transaction-history';
 import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
-import { getTransactionsFromExplorerApi } from './converters/etherscan-transaction-converter/get-transactions-from-explorer-api';
+import { getTransactionsFromMoralis } from './converters/moralis-transaction-converter/get-transactions-from-moralis';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
 import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
 
@@ -12,8 +12,8 @@ jest.mock('./converters/etherscan-transaction-converter/get-transaction-from-eth
   getTransactionFromEtherscan: jest.fn(),
 }));
 
-jest.mock('./converters/etherscan-transaction-converter/get-transactions-from-explorer-api', () => ({
-  getTransactionsFromExplorerApi: jest.fn(),
+jest.mock('./converters/moralis-transaction-converter/get-transactions-from-moralis', () => ({
+  getTransactionsFromMoralis: jest.fn(),
 }));
 
 describe('get-transaction-history', () => {
@@ -36,7 +36,8 @@ describe('get-transaction-history', () => {
     });
     expect(getTransactionFromEtherscan).toHaveBeenCalled();
   });
-  it('should have called getTransactionsFromExplorerApi for Base (8453)', async () => {
+
+  it('should have called getTransactionsFromMoralis for Base (8453)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,
       chainId: 8453,
@@ -53,12 +54,12 @@ describe('get-transaction-history', () => {
       nextPageToken: 'nextPageToken',
       offset: 1,
     });
-    expect(getTransactionsFromExplorerApi).toHaveBeenCalled();
+    expect(getTransactionsFromMoralis).toHaveBeenCalled();
     expect(getTransactionsFromGlacier).not.toHaveBeenCalled();
     expect(getTransactionFromEtherscan).not.toHaveBeenCalled();
   });
 
-  it('should have called getTransactionsFromExplorerApi for Arbitrum (42161)', async () => {
+  it('should have called getTransactionsFromMoralis for Arbitrum (42161)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,
       chainId: 42161,
@@ -73,10 +74,10 @@ describe('get-transaction-history', () => {
       explorerUrl: 'https://arbiscan.io',
       address: 'address',
     });
-    expect(getTransactionsFromExplorerApi).toHaveBeenCalled();
+    expect(getTransactionsFromMoralis).toHaveBeenCalled();
   });
 
-  it('should have called getTransactionsFromExplorerApi for Optimism (10)', async () => {
+  it('should have called getTransactionsFromMoralis for Optimism (10)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,
       chainId: 10,
@@ -91,7 +92,7 @@ describe('get-transaction-history', () => {
       explorerUrl: 'https://optimistic.etherscan.io',
       address: 'address',
     });
-    expect(getTransactionsFromExplorerApi).toHaveBeenCalled();
+    expect(getTransactionsFromMoralis).toHaveBeenCalled();
   });
 
   it('should have called getTransactionsFromGlacier for non-L2 chains', async () => {
@@ -116,6 +117,6 @@ describe('get-transaction-history', () => {
       offset: 1,
     });
     expect(getTransactionsFromGlacier).toHaveBeenCalled();
-    expect(getTransactionsFromExplorerApi).not.toHaveBeenCalled();
+    expect(getTransactionsFromMoralis).not.toHaveBeenCalled();
   });
 });
