@@ -134,7 +134,7 @@ describe('convertMoralisTransaction', () => {
   it('should convert a swap transaction with multiple tokens', () => {
     const tx: MoralisTransaction = {
       ...baseTx,
-      category: 'swap',
+      category: 'token swap',
       method_label: 'swap',
       erc20_transfers: [
         {
@@ -170,20 +170,6 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens).toHaveLength(2);
     expect(result.tokens[0]?.symbol).toBe('USDC');
     expect(result.tokens[1]?.symbol).toBe('WETH');
-  });
-
-  it('should convert an approve transaction', () => {
-    const tx: MoralisTransaction = {
-      ...baseTx,
-      category: 'approve',
-      method_label: 'approve',
-      value: '0',
-    };
-
-    const result = convertMoralisTransaction({ tx, ...baseParams });
-
-    expect(result.txType).toBe(TransactionType.APPROVE);
-    expect(result.isContractCall).toBe(true);
   });
 
   it('should convert an NFT transfer', () => {
@@ -273,21 +259,27 @@ describe('convertMoralisTransaction', () => {
     expect(result.timestamp).toBe(new Date('2025-11-14T12:00:00.000Z').getTime());
   });
 
-  it('should map bridge category correctly', () => {
-    const tx: MoralisTransaction = { ...baseTx, category: 'bridge' };
-    const result = convertMoralisTransaction({ tx, ...baseParams });
-    expect(result.txType).toBe(TransactionType.BRIDGE);
-  });
-
   it('should map airdrop category correctly', () => {
     const tx: MoralisTransaction = { ...baseTx, category: 'airdrop' };
     const result = convertMoralisTransaction({ tx, ...baseParams });
     expect(result.txType).toBe(TransactionType.AIRDROP);
   });
 
-  it('should map unknown category to UNKNOWN', () => {
-    const tx: MoralisTransaction = { ...baseTx, category: 'something_new' };
+  it('should map contract interaction to UNKNOWN', () => {
+    const tx: MoralisTransaction = { ...baseTx, category: 'contract interaction' };
     const result = convertMoralisTransaction({ tx, ...baseParams });
     expect(result.txType).toBe(TransactionType.UNKNOWN);
+  });
+
+  it('should map nft purchase to NFT_BUY', () => {
+    const tx: MoralisTransaction = { ...baseTx, category: 'nft purchase' };
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+    expect(result.txType).toBe(TransactionType.NFT_BUY);
+  });
+
+  it('should map token swap to SWAP', () => {
+    const tx: MoralisTransaction = { ...baseTx, category: 'token swap' };
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+    expect(result.txType).toBe(TransactionType.SWAP);
   });
 });

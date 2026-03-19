@@ -8,6 +8,7 @@ import {
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
 import type {
+  MoralisCategory,
   MoralisTransaction,
   MoralisErc20Transfer,
   MoralisNativeTransfer,
@@ -32,7 +33,7 @@ export function convertMoralisTransaction({
   const isSender = tx.from_address.toLowerCase() === address.toLowerCase();
   const timestamp = new Date(tx.block_timestamp).getTime();
   const txType = getMoralisTransactionType(tx.category);
-  const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category.toLowerCase());
+  const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category);
   const tokens = buildTokens(tx, networkToken, address);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
 
@@ -55,23 +56,29 @@ export function convertMoralisTransaction({
   };
 }
 
-const NON_CONTRACT_CALL_CATEGORIES = new Set(['send', 'receive', 'token send', 'token receive']);
+const NON_CONTRACT_CALL_CATEGORIES = new Set<MoralisCategory>(['send', 'receive', 'token send', 'token receive']);
 
-function getMoralisTransactionType(category: string): TransactionType {
-  const cat = category.toLowerCase();
+const CATEGORY_TO_TX_TYPE: Record<MoralisCategory, TransactionType> = {
+  send: TransactionType.SEND,
+  receive: TransactionType.RECEIVE,
+  'token send': TransactionType.SEND,
+  'token receive': TransactionType.RECEIVE,
+  'nft send': TransactionType.NFT_SEND,
+  'nft receive': TransactionType.NFT_RECEIVE,
+  'token swap': TransactionType.SWAP,
+  'nft purchase': TransactionType.NFT_BUY,
+  'nft sale': TransactionType.NFT_SEND,
+  airdrop: TransactionType.AIRDROP,
+  mint: TransactionType.NFT_BUY,
+  burn: TransactionType.UNKNOWN,
+  deposit: TransactionType.UNKNOWN,
+  withdraw: TransactionType.UNKNOWN,
+  borrow: TransactionType.UNKNOWN,
+  'contract interaction': TransactionType.UNKNOWN,
+};
 
-  if (cat.includes('send')) return TransactionType.SEND;
-  if (cat.includes('receive')) return TransactionType.RECEIVE;
-  if (cat.includes('swap')) return TransactionType.SWAP;
-  if (cat.includes('bridge')) return TransactionType.BRIDGE;
-  if (cat.includes('approve')) return TransactionType.APPROVE;
-  if (cat.includes('airdrop')) return TransactionType.AIRDROP;
-  if (cat.includes('mint') || cat.includes('nft purchase')) return TransactionType.NFT_BUY;
-  if (cat.includes('unwrap')) return TransactionType.UNWRAP;
-  if (cat.includes('fill_order')) return TransactionType.FILL_ORDER;
-  if (cat.includes('transfer')) return TransactionType.TRANSFER;
-
-  return TransactionType.UNKNOWN;
+function getMoralisTransactionType(category: MoralisCategory): TransactionType {
+  return CATEGORY_TO_TX_TYPE[category] ?? TransactionType.UNKNOWN;
 }
 
 function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address: string): TxToken[] {

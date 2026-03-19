@@ -5,6 +5,25 @@ export interface MoralisWalletHistoryResponse {
   result: MoralisTransaction[];
 }
 
+// https://docs.moralis.com/web3-data-api/evm/reference/wallet-api/get-wallet-history
+export type MoralisCategory =
+  | 'send'
+  | 'receive'
+  | 'token send'
+  | 'token receive'
+  | 'nft send'
+  | 'nft receive'
+  | 'token swap'
+  | 'deposit'
+  | 'withdraw'
+  | 'nft purchase'
+  | 'nft sale'
+  | 'airdrop'
+  | 'mint'
+  | 'burn'
+  | 'borrow'
+  | 'contract interaction';
+
 export interface MoralisTransaction {
   hash: string;
   nonce: string;
@@ -22,7 +41,7 @@ export interface MoralisTransaction {
   native_transfers: MoralisNativeTransfer[];
   nft_transfers: MoralisNftTransfer[];
   summary: string;
-  category: string;
+  category: MoralisCategory;
 }
 
 export interface MoralisErc20Transfer {
