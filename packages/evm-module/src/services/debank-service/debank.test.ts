@@ -1,87 +1,60 @@
 import { DeBank, type DeBankNftToken } from './de-bank';
 
-global.fetch = jest.fn();
+type FetchArgs = Parameters<typeof fetch>;
+type FetchResult = ReturnType<typeof fetch>;
 
 describe('DeBank', () => {
-  let debank: DeBank;
   const baseUrl = 'https://proxy/debank';
 
-  beforeEach(() => {
-    debank = new DeBank(baseUrl);
-  });
+  const getMockFetch = (data: unknown) =>
+    jest.fn<FetchResult, FetchArgs>(() => Promise.resolve(new Response(JSON.stringify(data), { status: 200 })));
 
   describe('isNetworkSupported', () => {
-    beforeEach(() => {
-      global.fetch = jest.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([{ community_id: 42161 }, { community_id: 56 }]),
-        }),
-      ) as jest.Mock;
-    });
+    const mockFetch = getMockFetch([{ community_id: 42161 }, { community_id: 56 }]);
 
-    it('should return true for supported chain IDs', async () => {
-      const isSupported1 = await debank.isNetworkSupported(42161);
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
-      expect(isSupported1).toBe(true);
-
-      const isSupported2 = await debank.isNetworkSupported(56);
-      expect(isSupported2).toBe(true);
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
-    });
-
-    it('should return false for unsupported chain IDs', async () => {
-      const isSupported1 = await debank.isNetworkSupported(-1);
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
-      expect(isSupported1).toBe(false);
-
-      const isSupported2 = await debank.isNetworkSupported(-100);
-      expect(isSupported2).toBe(false);
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+    it.each([
+      { chainId: 42161, isSupported: true },
+      { chainId: 56, isSupported: true },
+      { chainId: 2137, isSupported: false },
+      { chainId: 112, isSupported: false },
+    ])('should return $isSupported for chain ID $chainId', async ({ chainId, isSupported }) => {
+      const debank = new DeBank(baseUrl, mockFetch);
+      const result = await debank.isNetworkSupported(chainId);
+      expect(mockFetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(result).toBe(isSupported);
     });
 
     it('should cache calls to chain/list', async () => {
+      const debank = new DeBank(baseUrl, mockFetch);
       await debank.isNetworkSupported(1);
       await debank.isNetworkSupported(2);
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
-      expect(global.fetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('getChainList', () => {
-    beforeEach(() => {
-      global.fetch = jest.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([{ id: 'eth', chain: 'info' }]),
-        }),
-      ) as jest.Mock;
-    });
+    const mockFetch = getMockFetch([{ id: 'eth', chain: 'info' }]);
 
     it('should fetch chain info from the API', async () => {
+      const debank = new DeBank(baseUrl, mockFetch);
       const chainId = 'eth';
       const chainInfo = await debank.getChainInfo({ chainId });
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
+      expect(mockFetch).toHaveBeenCalledWith(`${baseUrl}/v1/chain/list`);
       expect(chainInfo).toEqual({ id: 'eth', chain: 'info' });
     });
   });
 
   describe('getTokenBalance', () => {
-    beforeEach(() => {
-      global.fetch = jest.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ token: 'balance' }),
-        }),
-      ) as jest.Mock;
-    });
+    const mockFetch = getMockFetch({ token: 'balance' });
 
     it('should fetch token balance from the API', async () => {
       const chainId = 'eth';
       const address = '0x123';
       const tokenId = '0x456';
+      const debank = new DeBank(baseUrl, mockFetch);
       const tokenBalance = await debank.getTokenBalance({ chainId, address, tokenId });
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledWith(
         `${baseUrl}/v1/user/token?id=${address}&chain_id=${chainId}&token_id=${tokenId}`,
       );
       expect(tokenBalance).toEqual({ token: 'balance' });
@@ -89,20 +62,14 @@ describe('DeBank', () => {
   });
 
   describe('getTokenList', () => {
-    beforeEach(() => {
-      global.fetch = jest.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([{ token: 'list' }]),
-        }),
-      ) as jest.Mock;
-    });
+    const mockFetch = getMockFetch([{ token: 'list' }]);
 
     it('should fetch token list from the API', async () => {
       const chainId = 'eth';
       const address = '0x123';
+      const debank = new DeBank(baseUrl, mockFetch);
       const tokenList = await debank.getTokenList({ chainId, address });
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`${baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
       expect(tokenList).toEqual([{ token: 'list' }]);
     });
   });
@@ -132,19 +99,15 @@ describe('DeBank', () => {
       collection_name: 'New collection',
       is_erc721: false,
     };
-    beforeEach(() => {
-      global.fetch = jest.fn(() =>
-        Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve([mockResponse]),
-        }),
-      ) as jest.Mock;
-    });
+
+    const mockFetch = getMockFetch([mockResponse]);
+
     it('should fetch nft list from the API', async () => {
       const chainId = 'eth';
       const address = '0x123';
+      const debank = new DeBank(baseUrl, mockFetch);
       const tokenList = await debank.getNftList({ chainId, address });
-      expect(global.fetch).toHaveBeenCalledWith(`${baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`);
+      expect(mockFetch).toHaveBeenCalledWith(`${baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`);
       expect(tokenList).toEqual([mockResponse]);
     });
   });

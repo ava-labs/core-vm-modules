@@ -1,6 +1,6 @@
-import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
 import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import { TokenUnit } from '@avalabs/core-utils-sdk';
+import { type GetBalancesParams, TokenType, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
 
 import { TokenService } from '@internal/utils';
 
@@ -12,6 +12,7 @@ type GetBTCBalancesParams = Omit<GetBalancesParams, 'currency'> & {
   proxyApiUrl: string;
   withScripts?: boolean;
   currency?: string;
+  fetch?: typeof globalThis.fetch;
 };
 
 export const getBalances = async ({
@@ -21,13 +22,14 @@ export const getBalances = async ({
   withScripts = false,
   proxyApiUrl,
   storage,
+  fetch,
 }: GetBTCBalancesParams): Promise<GetBtcBalancesResponse> => {
   const provider = await getProvider({
     isTestnet: Boolean(network.isTestnet),
     proxyApiUrl,
   });
 
-  const tokenService = new TokenService({ proxyApiUrl, storage });
+  const tokenService = new TokenService({ proxyApiUrl, storage, fetch });
   const coingeckoTokenId = network.pricingProviders?.coingecko.nativeTokenId;
   const withPrices = typeof currency === 'string' && typeof coingeckoTokenId === 'string';
   const marketData = withPrices

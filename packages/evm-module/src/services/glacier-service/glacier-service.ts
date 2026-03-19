@@ -1,3 +1,4 @@
+import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
   CurrencyCode,
   Erc1155Token,
@@ -7,22 +8,21 @@ import {
   Erc721TokenBalance,
   Glacier,
 } from '@avalabs/glacier-sdk';
-import { TokenUnit } from '@avalabs/core-utils-sdk';
 import {
-  type Error,
   type ERC20Token,
+  type Error,
   type NetworkTokenWithBalance,
+  type NftTokenWithBalance,
   TokenType,
   type TokenWithBalanceERC20,
   type TokenWithBalanceEVM,
-  type NftTokenWithBalance,
 } from '@avalabs/vm-module-types';
 
-import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
-import { DEFAULT_DECIMALS } from '@src/constants';
 import { ChainId } from '@avalabs/core-chains-sdk';
-import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 import { GlacierFetchHttpRequest } from '@internal/utils';
+import { DEFAULT_DECIMALS } from '@src/constants';
+import type { BalanceServiceInterface } from '@src/handlers/get-balances/balance-service-interface';
+import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
 
 class GlacierUnhealthyError extends Error {
   override message = 'Glacier is unhealthy. Try again later.';
@@ -30,13 +30,24 @@ class GlacierUnhealthyError extends Error {
 
 const CHAINS_TO_FILTER = [ChainId.ETHEREUM_HOMESTEAD];
 
+type GlacierServiceConfig = {
+  glacierApiUrl: string;
+  headers?: Record<string, string>;
+};
+
 export class EvmGlacierService implements BalanceServiceInterface {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
   supportedChainIds: string[] = [];
 
-  constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
+  constructor({ glacierApiUrl, headers }: GlacierServiceConfig) {
+    this.glacierSdk = new Glacier(
+      {
+        BASE: glacierApiUrl,
+        HEADERS: headers,
+      },
+      GlacierFetchHttpRequest,
+    );
     /**
      * This is for performance, basically we just cache the health of glacier every 5 seconds and
      * go off of that instead of every request

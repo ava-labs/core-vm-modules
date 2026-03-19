@@ -1,39 +1,40 @@
+import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import type {
-  Module,
-  Manifest,
-  NetworkFees,
-  GetTransactionHistory,
-  RpcRequest,
-  Network,
-  GetBalancesParams,
-  GetBalancesResponse,
-  GetAddressParams,
-  GetAddressResponse,
-  ApprovalController,
-  ConstructorParams,
   AppInfo,
+  ApprovalController,
+  BuildDerivationPathParams,
+  ConstructorParams,
   DeriveAddressParams,
   DeriveAddressResponse,
-  BuildDerivationPathParams,
+  GetAddressParams,
+  GetAddressResponse,
+  GetBalancesParams,
+  GetBalancesResponse,
+  GetTransactionHistory,
+  Manifest,
+  Module,
+  Network,
+  NetworkFees,
+  RpcRequest,
+  RuntimeParams,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
+import { getEnv } from './env';
+import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
+import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
+import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { deriveAddress } from './handlers/derive-address/derive-address';
+import { getAddress } from './handlers/get-address/get-address';
+import { getBalances } from './handlers/get-balances/get-balances';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
 import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
-import { getEnv } from './env';
 import { AvalancheGlacierService } from './services/glacier-service/glacier-service';
-import { getCoreHeaders, TokenService } from '@internal/utils';
-import { getBalances } from './handlers/get-balances/get-balances';
-import { hashBlockchainId } from './utils/hash-blockchain-id';
-import { getAddress } from './handlers/get-address/get-address';
-import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanche-sign-message';
-import { avalancheSendTransaction } from './handlers/avalanche-send-transaction/avalanche-send-transaction';
-import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
-import type { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
-import { deriveAddress } from './handlers/derive-address/derive-address';
-import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { hashBlockchainId } from './utils/hash-blockchain-id';
 
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
@@ -41,10 +42,12 @@ export class AvalancheModule implements Module {
   #glacierApiUrl: string;
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
+  #runtime?: RuntimeParams;
 
-  constructor({ approvalController, environment, appInfo }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#appInfo = appInfo;
+    this.#runtime = runtime;
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
@@ -68,7 +71,7 @@ export class AvalancheModule implements Module {
   }
 
   getBalances({ addresses, network, storage, currency }: GetBalancesParams): Promise<GetBalancesResponse> {
-    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
+    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl, fetch: this.#runtime?.fetch });
     return getBalances({ addresses, currency, network, glacierService: this.#glacierService, tokenService });
   }
 

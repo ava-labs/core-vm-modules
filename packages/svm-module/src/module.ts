@@ -12,6 +12,7 @@ import {
   type Network,
   type NetworkFeeParam,
   type RpcRequest,
+  type RuntimeParams,
 } from '@avalabs/vm-module-types';
 import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -38,6 +39,7 @@ export class SvmModule implements Module {
   #approvalController: ApprovalController;
   #appInfo: AppInfo;
   #blockaid: Blockaid;
+  #runtime?: RuntimeParams;
 
   constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
@@ -45,6 +47,7 @@ export class SvmModule implements Module {
     this.#appInfo = appInfo;
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
+    this.#runtime = runtime;
 
     // Temporarily referencing those props here just to silence eslint,
     // as eslint-disable-... comments don't seem to work on class properties.
@@ -80,12 +83,17 @@ export class SvmModule implements Module {
   }
 
   getBalances(params: GetBalancesParams) {
-    const tokenService = new TokenService({ storage: params.storage, proxyApiUrl: this.#proxyApiUrl });
+    const tokenService = new TokenService({
+      storage: params.storage,
+      proxyApiUrl: this.#proxyApiUrl,
+      fetch: this.#runtime?.fetch,
+    });
 
     return getBalances({
       ...params,
       tokenService,
       proxyApiUrl: this.#proxyApiUrl,
+      fetch: this.#runtime?.fetch,
     });
   }
 

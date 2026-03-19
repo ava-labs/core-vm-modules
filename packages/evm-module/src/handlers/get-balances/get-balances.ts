@@ -1,20 +1,20 @@
+import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import type { CurrencyCode } from '@avalabs/glacier-sdk';
 import {
+  type Error,
   type GetBalancesParams,
   type NetworkTokenWithBalance,
-  type Storage,
-  type Error,
-  type TokenWithBalanceEVM,
   type NftTokenWithBalance,
+  type Storage,
   TokenType,
+  type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
 import type { TokenService } from '@internal/utils';
-import { findAsync } from '../../utils/find-async';
-import type { BalanceServiceInterface } from './balance-service-interface';
-import type { CurrencyCode } from '@avalabs/glacier-sdk';
-import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { RpcService } from '../../services/rpc-service/rpc-service';
+import { findAsync } from '../../utils/find-async';
+import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { isERC20Token } from '../../utils/type-utils';
-import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
+import type { BalanceServiceInterface } from './balance-service-interface';
 
 type AccountAddress = string;
 type TokenSymbol = string;
@@ -30,16 +30,18 @@ export const getBalances = async ({
   storage,
   balanceServices = [],
   tokenService,
+  fetch,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   balanceServices: BalanceServiceInterface[];
   storage?: Storage;
   tokenService: TokenService;
+  fetch?: typeof globalThis.fetch;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
   const services: BalanceServiceInterface[] = [
     ...balanceServices,
-    new RpcService({ network, storage, proxyApiUrl, customTokens }),
+    new RpcService({ network, storage, proxyApiUrl, customTokens, fetch }),
   ];
 
   const supportingService: BalanceServiceInterface | undefined = await findAsync(

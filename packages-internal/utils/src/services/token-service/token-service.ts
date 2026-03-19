@@ -5,21 +5,31 @@ import {
   simpleTokenPrice,
   type SimplePriceParams,
 } from '@avalabs/core-coingecko-sdk';
-import type { Storage, RawSimplePriceResponse, SimplePriceResponse } from '@avalabs/vm-module-types';
-import { coingeckoRetry } from '../../utils/coingecko-retry';
+import type { RawSimplePriceResponse, SimplePriceResponse, Storage } from '@avalabs/vm-module-types';
 import { arrayHash } from '../../utils/array-hash';
+import { coingeckoRetry } from '../../utils/coingecko-retry';
 import { CoingeckoProxyClient } from './coingecko-proxy-client';
 import { WatchlistProxyClient } from './watchlist-proxy-client';
 
-const coingeckoBasicClient = getBasicCoingeckoHttp();
+type FetchFn = typeof globalThis.fetch;
+
+type ConstructorParams = {
+  storage?: Storage;
+  proxyApiUrl: string;
+  fetch?: FetchFn;
+};
 
 export class TokenService {
   #storage?: Storage;
   #proxyApiUrl: string;
+  #fetchFn: FetchFn;
+  #coingeckoBasicClient: ReturnType<typeof getBasicCoingeckoHttp>;
 
-  constructor({ storage, proxyApiUrl }: { proxyApiUrl: string; storage?: Storage }) {
+  constructor({ storage, proxyApiUrl, fetch }: ConstructorParams) {
     this.#storage = storage;
     this.#proxyApiUrl = proxyApiUrl;
+    this.#fetchFn = fetch ?? globalThis.fetch;
+    this.#coingeckoBasicClient = getBasicCoingeckoHttp(undefined, this.#fetchFn);
   }
 
   async getWatchlistDataForToken({
@@ -50,7 +60,7 @@ export class TokenService {
         : token.platforms[tokenDetails.caip2Id] === tokenDetails.address;
     });
 
-    const tokenInfo = data[0];
+    const [tokenInfo] = data;
 
     if (!tokenInfo) {
       return {
@@ -156,7 +166,7 @@ export class TokenService {
     useCoingeckoProxy?: boolean;
   }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
-      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl).simplePriceByContractAddresses({
+      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl, this.#fetchFn).simplePriceByContractAddresses({
         id: assetPlatformId,
         contract_addresses: tokenAddresses,
         vs_currencies: [currency],
@@ -167,7 +177,7 @@ export class TokenService {
       return this.transformSimplePriceResponse(rawData, [currency]);
     }
 
-    return simpleTokenPrice(coingeckoBasicClient, {
+    return simpleTokenPrice(this.#coingeckoBasicClient, {
       assetPlatformId,
       tokenAddresses,
       currencies: [currency],
@@ -188,7 +198,7 @@ export class TokenService {
     shouldThrow = true,
   }: SimplePriceParams & { useCoingeckoProxy?: boolean }): Promise<SimplePriceResponse> {
     if (useCoingeckoProxy) {
-      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl).simplePrice({
+      const rawData = await new CoingeckoProxyClient(this.#proxyApiUrl, this.#fetchFn).simplePrice({
         ids: coinIds,
         vs_currencies: currencies,
         include_market_cap: marketCap,
@@ -198,7 +208,7 @@ export class TokenService {
       });
       return this.transformSimplePriceResponse(rawData, currencies);
     }
-    return simplePrice(coingeckoBasicClient, {
+    return simplePrice(this.#coingeckoBasicClient, {
       coinIds,
       currencies,
       marketCap,
