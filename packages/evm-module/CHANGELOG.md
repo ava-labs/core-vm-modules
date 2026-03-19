@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 3.4.0
+
+### Minor Changes
+
+- 24ee483: using morails for activities for some chains
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.4.0
+
 ## 3.3.1
 
 ### Patch Changes
