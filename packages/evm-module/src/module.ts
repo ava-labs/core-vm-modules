@@ -135,11 +135,10 @@ export class EvmModule implements Module {
 
   getTransactionHistory(params: GetTransactionHistory) {
     const { network, address, nextPageToken, offset } = params;
-    const { chainId, isTestnet, networkToken, explorerUrl = '' } = network;
+    const { chainId, networkToken, explorerUrl = '' } = network;
 
     return getTransactionHistory({
       chainId,
-      isTestnet,
       networkToken,
       explorerUrl,
       address,
