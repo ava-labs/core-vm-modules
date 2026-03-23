@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.5.0
+
+### Minor Changes
+
+- 34fb4c3: The modules use runtime.fetch if available
+
 ## 3.4.0
 
 ## 3.3.1

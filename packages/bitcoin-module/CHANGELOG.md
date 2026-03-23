@@ -1,5 +1,16 @@
 # @avalabs/bitcoin-module
 
+## 3.5.0
+
+### Minor Changes
+
+- 34fb4c3: The modules use runtime.fetch if available
+
+### Patch Changes
+
+- Updated dependencies [34fb4c3]
+  - @avalabs/vm-module-types@3.5.0
+
 ## 3.4.0
 
 ### Patch Changes

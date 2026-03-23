@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.7.0
+
+### Minor Changes
+
+- 34fb4c3: The modules use runtime.fetch if available
+
 ## 0.6.1
 
 ### Patch Changes
