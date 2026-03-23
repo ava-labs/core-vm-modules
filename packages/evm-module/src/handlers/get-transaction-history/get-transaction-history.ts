@@ -25,23 +25,23 @@ export const getTransactionHistory = async ({
   offset?: number;
   glacierService: EvmGlacierService;
 }): Promise<TransactionHistoryResponse> => {
-  if (isEthereumChainId(chainId)) {
-    return getTransactionFromEtherscan({
-      isTestnet,
+  if (isMoralisSupportedChain(chainId)) {
+    return getTransactionsFromMoralis({
+      chainId,
       networkToken,
       explorerUrl,
-      chainId,
       address,
       nextPageToken,
       offset,
     });
   }
 
-  if (isMoralisSupportedChain(chainId)) {
-    return getTransactionsFromMoralis({
-      chainId,
+  if (isEthereumChainId(chainId)) {
+    return getTransactionFromEtherscan({
+      isTestnet,
       networkToken,
       explorerUrl,
+      chainId,
       address,
       nextPageToken,
       offset,

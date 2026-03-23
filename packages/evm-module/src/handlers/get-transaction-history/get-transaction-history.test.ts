@@ -17,7 +17,7 @@ jest.mock('./converters/moralis-transaction-converter/get-transactions-from-mora
 }));
 
 describe('get-transaction-history', () => {
-  it('should have called getTransactionFromEtherscan', async () => {
+  it('should have called getTransactionsFromMoralis for Ethereum mainnet (1)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,
       chainId: 1,
@@ -34,8 +34,37 @@ describe('get-transaction-history', () => {
       nextPageToken: 'nextPageToken',
       offset: 1,
     });
-    expect(getTransactionFromEtherscan).toHaveBeenCalled();
+    expect(getTransactionsFromMoralis).toHaveBeenCalled();
+    expect(getTransactionFromEtherscan).not.toHaveBeenCalled();
   });
+
+  it.each([
+    { chainId: 11155111, explorerUrl: 'https://sepolia.etherscan.io' },
+    { chainId: 5, explorerUrl: 'https://goerli.etherscan.io' },
+    { chainId: 4, explorerUrl: 'https://rinkeby.etherscan.io' },
+  ])(
+    'should have called getTransactionsFromMoralis for Ethereum testnet (chainId $chainId)',
+    async ({ chainId, explorerUrl }) => {
+      await getTransactionHistory({
+        glacierService: {} as EvmGlacierService,
+        chainId,
+        isTestnet: true,
+        networkToken: {
+          name: 'ETH',
+          symbol: 'ETH',
+          decimals: 18,
+          description: 'description',
+          logoUri: 'logoUri',
+        },
+        explorerUrl,
+        address: 'address',
+        nextPageToken: 'nextPageToken',
+        offset: 1,
+      });
+      expect(getTransactionsFromMoralis).toHaveBeenCalled();
+      expect(getTransactionFromEtherscan).not.toHaveBeenCalled();
+    },
+  );
 
   it('should have called getTransactionsFromMoralis for Base (8453)', async () => {
     await getTransactionHistory({
