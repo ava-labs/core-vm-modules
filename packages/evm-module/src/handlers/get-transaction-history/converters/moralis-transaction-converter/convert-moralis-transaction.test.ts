@@ -100,6 +100,34 @@ describe('convertMoralisTransaction', () => {
     expect(result.txType).toBe(TransactionType.RECEIVE);
   });
 
+  it('should fall back to network native symbol when Moralis native token_symbol is blank', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      from_address: '0xOther',
+      to_address: '0xSender',
+      category: 'receive',
+      native_transfers: [
+        {
+          from_address: '0xOther',
+          to_address: '0xSender',
+          value: '1000000000000000000',
+          value_formatted: '1',
+          direction: 'receive',
+          internal_transaction: false,
+          token_symbol: '   ',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({
+      tx,
+      ...baseParams,
+      address: '0xSender',
+    });
+
+    expect(result.tokens[0]?.symbol).toBe('ETH');
+  });
+
   it('should convert an ERC-20 token transfer', () => {
     const tx: MoralisTransaction = {
       ...baseTx,
@@ -133,6 +161,64 @@ describe('convertMoralisTransaction', () => {
     expect(token.address).toBe('0xUsdcContract');
     expect(result.tokens[0]?.from?.address).toBe('0xSender');
     expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
+  });
+
+  it('should use token name when ERC-20 symbol is missing', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'token receive',
+      erc20_transfers: [
+        {
+          token_name: 'Unknown Token',
+          token_symbol: '',
+          token_decimals: '18',
+          from_address: '0xOther',
+          to_address: '0xSender',
+          address: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          value: '1000000000000000000',
+          direction: 'receive',
+          value_formatted: '1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({
+      tx,
+      ...baseParams,
+      address: '0xSender',
+    });
+
+    expect(result.tokens[0]?.symbol).toBe('Unknown Token');
+    expect(result.tokens[0]?.name).toBe('Unknown Token');
+  });
+
+  it('should shorten contract address when ERC-20 symbol and name are missing', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'token receive',
+      erc20_transfers: [
+        {
+          token_name: '',
+          token_symbol: '',
+          token_decimals: '18',
+          from_address: '0xOther',
+          to_address: '0xSender',
+          address: '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+          value: '1000000000000000000',
+          direction: 'receive',
+          value_formatted: '1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({
+      tx,
+      ...baseParams,
+      address: '0xSender',
+    });
+
+    expect(result.tokens[0]?.symbol).toBe('0xabcd…abcd');
+    expect(result.tokens[0]?.name).toBe('0xabcd…abcd');
   });
 
   it('should convert a swap transaction with multiple tokens', () => {
