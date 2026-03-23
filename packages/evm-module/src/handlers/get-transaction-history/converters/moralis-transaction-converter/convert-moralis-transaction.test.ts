@@ -69,6 +69,8 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens).toHaveLength(1);
     expect(result.tokens[0]?.type).toBe(TokenType.NATIVE);
     expect(result.tokens[0]?.symbol).toBe('ETH');
+    expect(result.tokens[0]?.from?.address).toBe('0xSender');
+    expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
   });
 
   it('should convert a receive transaction', () => {
@@ -129,6 +131,8 @@ describe('convertMoralisTransaction', () => {
 
     const token = result.tokens[0] as { address: string };
     expect(token.address).toBe('0xUsdcContract');
+    expect(result.tokens[0]?.from?.address).toBe('0xSender');
+    expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
   });
 
   it('should convert a swap transaction with multiple tokens', () => {
@@ -170,6 +174,10 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens).toHaveLength(2);
     expect(result.tokens[0]?.symbol).toBe('USDC');
     expect(result.tokens[1]?.symbol).toBe('WETH');
+    expect(result.tokens[0]?.from?.address).toBe('0xSender');
+    expect(result.tokens[0]?.to?.address).toBe('0xRouter');
+    expect(result.tokens[1]?.from?.address).toBe('0xRouter');
+    expect(result.tokens[1]?.to?.address).toBe('0xSender');
   });
 
   it('should convert an NFT transfer', () => {
@@ -197,6 +205,8 @@ describe('convertMoralisTransaction', () => {
 
     const token = result.tokens[0] as { address: string };
     expect(token.address).toBe('0xNftContract');
+    expect(result.tokens[0]?.from?.address).toBe('0xSender');
+    expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
   });
 
   it('should handle ERC1155 NFT transfers', () => {
@@ -234,6 +244,8 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens).toHaveLength(1);
     expect(result.tokens[0]?.type).toBe(TokenType.NATIVE);
     expect(result.tokens[0]?.symbol).toBe('ETH');
+    expect(result.tokens[0]?.from?.address).toBe('0xSender');
+    expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
   });
 
   it('should handle null to_address', () => {

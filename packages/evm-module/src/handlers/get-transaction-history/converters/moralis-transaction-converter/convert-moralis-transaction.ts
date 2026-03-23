@@ -81,6 +81,13 @@ function getMoralisTransactionType(category: MoralisCategory): TransactionType {
   return CATEGORY_TO_TX_TYPE[category] ?? TransactionType.UNKNOWN;
 }
 
+function getTransferAddress(address: string | null | undefined): { address: string } | undefined {
+  if (address == null || address === '') {
+    return undefined;
+  }
+  return { address };
+}
+
 function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address: string): TxToken[] {
   const tokens: TxToken[] = [];
 
@@ -111,6 +118,8 @@ function buildNativeToken(transfer: MoralisNativeTransfer, networkToken: Network
     name: networkToken.name,
     symbol: transfer.token_symbol || networkToken.symbol,
     amount: amount.toDisplay(),
+    from: getTransferAddress(transfer.from_address),
+    to: getTransferAddress(transfer.to_address),
     type: TokenType.NATIVE,
   };
 }
@@ -124,6 +133,8 @@ function buildErc20Token(transfer: MoralisErc20Transfer): TxToken {
     name: transfer.token_name,
     symbol: transfer.token_symbol,
     amount: amount.toDisplay(),
+    from: getTransferAddress(transfer.from_address),
+    to: getTransferAddress(transfer.to_address),
     type: TokenType.ERC20,
     address: transfer.address,
   };
@@ -137,6 +148,8 @@ function buildNftToken(transfer: MoralisNftTransfer): TxToken {
     symbol: '',
     amount: transfer.amount,
     collectableTokenId: transfer.token_id,
+    from: getTransferAddress(transfer.from_address),
+    to: getTransferAddress(transfer.to_address),
     type: tokenType,
     address: transfer.token_address,
   };
@@ -152,6 +165,8 @@ function buildFallbackNativeToken(tx: MoralisTransaction, networkToken: NetworkT
     name: networkToken.name,
     symbol: networkToken.symbol,
     amount: displayAmount,
+    from: getTransferAddress(tx.from_address),
+    to: getTransferAddress(tx.to_address),
     type: TokenType.NATIVE,
   };
 }

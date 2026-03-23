@@ -275,9 +275,6 @@ importers:
       '@avalabs/core-coingecko-sdk':
         specifier: 3.1.0-alpha.80
         version: 3.1.0-alpha.80(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/core-etherscan-sdk':
-        specifier: 3.1.0-alpha.80
-        version: 3.1.0-alpha.80(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-utils-sdk':
         specifier: 3.1.0-alpha.80
         version: 3.1.0-alpha.80(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
