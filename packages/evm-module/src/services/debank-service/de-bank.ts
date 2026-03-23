@@ -1,17 +1,22 @@
 import type { Hex } from '@avalabs/vm-module-types';
-import { isHexString } from 'ethers';
 import { fetchAndVerify } from '@internal/utils';
+import { isHexString } from 'ethers';
 import { z } from 'zod';
 
 export class DeBank {
   #supportedChainIds: DeBankChainInfo[] = [];
+  #fetchFn: typeof fetch;
 
-  constructor(private baseUrl: string) {}
+  constructor(
+    private baseUrl: string,
+    fetchFn?: typeof fetch,
+  ) {
+    this.#fetchFn = fetchFn ?? fetch;
+  }
 
   async isNetworkSupported(chainId: number): Promise<boolean> {
     const chainList: DeBankChainInfo[] = await this.getChainList();
-    const chainIds = chainList.map((value) => value.community_id);
-    return chainIds.some((id) => id === chainId);
+    return chainList.some((value) => value.community_id === chainId);
   }
 
   /**
@@ -36,7 +41,7 @@ export class DeBank {
     address: Hex;
     tokenId: Hex | string;
   }): Promise<DeBankToken> {
-    const tokenBalanceResponse = await fetch(
+    const tokenBalanceResponse = await this.#fetchFn(
       `${this.baseUrl}/v1/user/token?id=${address}&chain_id=${chainId}&token_id=${tokenId}`,
     );
     if (tokenBalanceResponse.ok) {
@@ -51,7 +56,9 @@ export class DeBank {
    * @param address - account address
    */
   async getTokensBalanceOnChain({ chainId, address }: { chainId: string; address: Hex }): Promise<DeBankToken[]> {
-    const tokenBalanceResponse = await fetch(`${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
+    const tokenBalanceResponse = await this.#fetchFn(
+      `${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`,
+    );
     if (tokenBalanceResponse.ok) {
       return await tokenBalanceResponse.json();
     } else {
@@ -64,7 +71,9 @@ export class DeBank {
    * @param address - account address
    */
   async getTokenList({ chainId, address }: { chainId: string; address: Hex }): Promise<DeBankToken[]> {
-    const response = await fetch(`${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`);
+    const response = await (this.#fetchFn ?? globalThis.fetch)(
+      `${this.baseUrl}/v1/user/token_list?id=${address}&chain_id=${chainId}`,
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -77,7 +86,7 @@ export class DeBank {
    */
   async getChainList(): Promise<DeBankChainInfo[]> {
     if (this.#supportedChainIds.length === 0) {
-      const chainListResponse = await fetch(`${this.baseUrl}/v1/chain/list`);
+      const chainListResponse = await this.#fetchFn(`${this.baseUrl}/v1/chain/list`);
       if (chainListResponse.ok) {
         this.#supportedChainIds = await chainListResponse.json();
       } else {
@@ -95,6 +104,7 @@ export class DeBank {
     return fetchAndVerify<typeof DeBankNftTokenListSchema>(
       [`${this.baseUrl}/v1/user/nft_list?id=${address}&chain_id=${chainId}`],
       DeBankNftTokenListSchema,
+      this.#fetchFn,
     );
   }
 }

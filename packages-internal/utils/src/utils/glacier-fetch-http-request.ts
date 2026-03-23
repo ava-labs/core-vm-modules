@@ -1,5 +1,12 @@
-import { FetchHttpRequest, type OpenAPIConfig, type ApiRequestOptions, CancelablePromise } from '@avalabs/glacier-sdk';
+import {
+  ApiError,
+  type ApiRequestOptions,
+  CancelablePromise,
+  FetchHttpRequest,
+  type OpenAPIConfig,
+} from '@avalabs/glacier-sdk';
 import { getGlacierApiKey } from './get-glacier-api-key';
+import { RetryBackoffPolicy } from './retry';
 
 const GLOBAL_QUERY_PARAMS: Record<string, string | undefined> = {
   rltoken: getGlacierApiKey(),
@@ -10,6 +17,9 @@ const GLOBAL_QUERY_PARAMS: Record<string, string | undefined> = {
  * to bypass rate limits in development environments.
  */
 export class GlacierFetchHttpRequest extends FetchHttpRequest {
+  #failedRequests = 3;
+  #getDelay = RetryBackoffPolicy.exponential();
+
   constructor(config: OpenAPIConfig) {
     super(config);
   }
@@ -27,7 +37,41 @@ export class GlacierFetchHttpRequest extends FetchHttpRequest {
       query: Object.keys(mergedQuery).length > 0 ? mergedQuery : undefined,
     };
 
-    // Call the base class's request method
-    return super.request<T>(modifiedOptions);
+    const getRequest = () => super.request<T>(modifiedOptions);
+    return this.#failedRequests > 0 ? this.#postponeRequest<T>(getRequest) : this.#request<T>(getRequest);
+  }
+
+  #request<T>(getRequest: () => CancelablePromise<T>): CancelablePromise<T> {
+    const inner = getRequest();
+    return new CancelablePromise((resolve, reject, onCancel) => {
+      onCancel(() => inner.cancel());
+      inner
+        .then((response) => {
+          this.#failedRequests = 0;
+          resolve(response);
+        })
+        .catch((err) => {
+          if (err instanceof ApiError) {
+            const isHttpTooManyRequests = err.status === 429;
+            const isHttpInternalServerError = err.status >= 500 && err.status < 600;
+            this.#failedRequests += Number(isHttpTooManyRequests || isHttpInternalServerError);
+          }
+          reject(err);
+        });
+    });
+  }
+
+  #postponeRequest<T>(getRequest: () => CancelablePromise<T>): CancelablePromise<T> {
+    const delay = this.#getDelay(this.#failedRequests);
+    return new CancelablePromise<T>((resolve, reject, onCancel) => {
+      const timeout = setTimeout(() => {
+        const inner = getRequest();
+        onCancel(() => {
+          inner.cancel();
+          clearTimeout(timeout);
+        });
+        inner.then(resolve).catch(reject);
+      }, delay);
+    });
   }
 }

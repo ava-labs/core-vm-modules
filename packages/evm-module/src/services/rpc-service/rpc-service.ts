@@ -26,22 +26,26 @@ export class RpcService implements BalanceServiceInterface {
   #storage: Storage | undefined;
   #proxyApiUrl: string;
   #customTokens: NetworkContractToken[];
+  #fetch?: typeof globalThis.fetch;
 
   constructor({
     network,
     storage,
     proxyApiUrl,
     customTokens,
+    fetch,
   }: {
     network: Network;
     storage?: Storage;
     proxyApiUrl: string;
     customTokens: NetworkContractToken[];
+    fetch?: typeof globalThis.fetch;
   }) {
     this.#network = network;
     this.#storage = storage;
     this.#proxyApiUrl = proxyApiUrl;
     this.#customTokens = customTokens;
+    this.#fetch = fetch;
   }
 
   async isNetworkSupported(): Promise<boolean> {
@@ -66,7 +70,11 @@ export class RpcService implements BalanceServiceInterface {
 
     const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
     const networkToken = this.#network.networkToken;
-    const tokenService = new TokenService({ storage: this.#storage, proxyApiUrl: this.#proxyApiUrl });
+    const tokenService = new TokenService({
+      storage: this.#storage,
+      proxyApiUrl: this.#proxyApiUrl,
+      fetch: this.#fetch,
+    });
     const simplePriceResponse = coingeckoTokenId
       ? await tokenService.getSimplePrice({
           coinIds: [coingeckoTokenId],
@@ -137,7 +145,11 @@ export class RpcService implements BalanceServiceInterface {
       return addIdToPromise(getTokenWithBalance(token), token.address);
     });
     const tokenBalancesResults = await settleAllIdPromises(tokenBalancePromises);
-    const tokenService = new TokenService({ storage: this.#storage, proxyApiUrl: this.#proxyApiUrl });
+    const tokenService = new TokenService({
+      storage: this.#storage,
+      proxyApiUrl: this.#proxyApiUrl,
+      fetch: this.#fetch,
+    });
     const simplePriceResponse =
       (coingeckoPlatformId &&
         (await tokenService.getPricesByAddresses(
