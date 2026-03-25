@@ -158,6 +158,7 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens[0]?.decimal).toBe('6');
 
     const token = result.tokens[0] as { address: string };
+
     expect(token.address).toBe('0xUsdcContract');
     expect(result.tokens[0]?.from?.address).toBe('0xSender');
     expect(result.tokens[0]?.to?.address).toBe('0xReceiver');
