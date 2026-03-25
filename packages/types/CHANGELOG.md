@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.5.1
+
+### Patch Changes
+
+- ab99fe7: Moralis ERC-20 history: fill missing token symbols (fallback to name, then shortened contract address) and trim blank native symbols so Activity shows a label on Base and other Moralis-backed chains.
+
 ## 3.5.0
 
 ### Minor Changes
