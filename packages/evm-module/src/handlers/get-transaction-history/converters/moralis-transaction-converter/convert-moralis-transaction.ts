@@ -88,6 +88,30 @@ function getTransferAddress(address: string | null | undefined): { address: stri
   return { address };
 }
 
+function trimOrEmpty(value: string | null | undefined): string {
+  return value?.trim() ?? '';
+}
+
+function shortenHexAddress(address: string): string {
+  const normalized = address.trim().toLowerCase();
+  if (!normalized.startsWith('0x') || normalized.length < 12) {
+    return address.trim();
+  }
+  return `${normalized.slice(0, 6)}…${normalized.slice(-4)}`;
+}
+
+function getErc20DisplaySymbol(transfer: MoralisErc20Transfer): string {
+  const fromSymbol = trimOrEmpty(transfer.token_symbol);
+  if (fromSymbol !== '') {
+    return fromSymbol;
+  }
+  const fromName = trimOrEmpty(transfer.token_name);
+  if (fromName !== '') {
+    return fromName;
+  }
+  return shortenHexAddress(transfer.address);
+}
+
 function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address: string): TxToken[] {
   const tokens: TxToken[] = [];
 
@@ -111,12 +135,13 @@ function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address
 }
 
 function buildNativeToken(transfer: MoralisNativeTransfer, networkToken: NetworkToken): TxToken {
-  const amount = new TokenUnit(transfer.value, networkToken.decimals, networkToken.symbol);
+  const displaySymbol = trimOrEmpty(transfer.token_symbol) || networkToken.symbol;
+  const amount = new TokenUnit(transfer.value, networkToken.decimals, displaySymbol);
 
   return {
     decimal: networkToken.decimals.toString(),
     name: networkToken.name,
-    symbol: transfer.token_symbol || networkToken.symbol,
+    symbol: displaySymbol,
     amount: amount.toDisplay(),
     from: getTransferAddress(transfer.from_address),
     to: getTransferAddress(transfer.to_address),
@@ -126,12 +151,14 @@ function buildNativeToken(transfer: MoralisNativeTransfer, networkToken: Network
 
 function buildErc20Token(transfer: MoralisErc20Transfer): TxToken {
   const decimals = Number(transfer.token_decimals);
-  const amount = new TokenUnit(transfer.value, decimals, transfer.token_symbol);
+  const displaySymbol = getErc20DisplaySymbol(transfer);
+  const amount = new TokenUnit(transfer.value, decimals, displaySymbol);
+  const displayName = trimOrEmpty(transfer.token_name) || displaySymbol;
 
   return {
     decimal: transfer.token_decimals,
-    name: transfer.token_name,
-    symbol: transfer.token_symbol,
+    name: displayName,
+    symbol: displaySymbol,
     amount: amount.toDisplay(),
     from: getTransferAddress(transfer.from_address),
     to: getTransferAddress(transfer.to_address),
