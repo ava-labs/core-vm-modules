@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 3.6.0
+
+### Patch Changes
+
+- 281614e: getAddressesByIndices supports internalIndices on P Chain; bump sdks
+- Updated dependencies [281614e]
+  - @avalabs/vm-module-types@3.6.0
+
 ## 3.5.1
 
 ### Patch Changes

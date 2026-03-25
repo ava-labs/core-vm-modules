@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.7.1
+
+### Patch Changes
+
+- 281614e: getAddressesByIndices supports internalIndices on P Chain; bump sdks
+
 ## 0.7.0
 
 ### Minor Changes

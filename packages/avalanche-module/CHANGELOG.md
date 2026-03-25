@@ -1,5 +1,16 @@
 # @avalabs/avalanche-module
 
+## 3.6.0
+
+### Minor Changes
+
+- 281614e: getAddressesByIndices supports internalIndices on P Chain; bump sdks
+
+### Patch Changes
+
+- Updated dependencies [281614e]
+  - @avalabs/vm-module-types@3.6.0
+
 ## 3.5.1
 
 ### Patch Changes
