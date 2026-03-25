@@ -33,7 +33,7 @@
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",
-    "bn.js": "5.2.1",
+    "bn.js": "5.2.3",
     "zod": "3.23.8"
   },
   "devDependencies": {
