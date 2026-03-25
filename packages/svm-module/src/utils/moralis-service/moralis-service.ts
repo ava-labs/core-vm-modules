@@ -4,11 +4,18 @@ import type { SolanaNetworkName } from '@src/types';
 
 import { PORTFOLIO_SCHEMA, type PortfolioResponse } from './moralis-schemas';
 
+type FetchFn = typeof globalThis.fetch;
+type ConstructorParams = {
+  proxyApiUrl: string;
+  fetch?: FetchFn;
+};
 export class MoralisService {
   #baseUrl: string;
+  #fetchFn?: FetchFn;
 
-  constructor({ proxyApiUrl }: { proxyApiUrl: string }) {
-    this.#baseUrl = `${proxyApiUrl}/proxy/moralis`;
+  constructor(params: ConstructorParams) {
+    this.#baseUrl = `${params.proxyApiUrl}/proxy/moralis`;
+    this.#fetchFn = params.fetch ?? globalThis.fetch;
   }
 
   async getPortfolio({
@@ -20,7 +27,7 @@ export class MoralisService {
   }): Promise<{ address: string; portfolio: PortfolioResponse } | { address: string; error: string }> {
     try {
       const url = this.#buildUrl(`/account/${network}/${address}/portfolio`);
-      const portfolio = await fetchAndVerify([url], PORTFOLIO_SCHEMA);
+      const portfolio = await fetchAndVerify([url], PORTFOLIO_SCHEMA, this.#fetchFn);
 
       return {
         address,

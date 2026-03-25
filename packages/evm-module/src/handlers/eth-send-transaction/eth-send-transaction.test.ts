@@ -189,7 +189,10 @@ describe('eth_sendTransaction handler', () => {
     const response = await ethSendTransaction(testRequestParams());
 
     expect(response).toEqual({
-      error: rpcErrors.invalidParams({ message: 'Transaction params are invalid: Invalid params', data: { cause: testError } }),
+      error: rpcErrors.invalidParams({
+        message: 'Transaction params are invalid: Invalid params',
+        data: { cause: testError },
+      }),
     });
   });
 
@@ -532,7 +535,10 @@ describe('eth_sendTransaction handler', () => {
     const response = await ethSendTransaction(requestParams);
 
     expect(response).toEqual({
-      error: rpcErrors.internal({ message: 'Unable to calculate gas limit: gas calculation error', data: { cause: new Error('gas calculation error') } }),
+      error: rpcErrors.internal({
+        message: 'Unable to calculate gas limit: gas calculation error',
+        data: { cause: new Error('gas calculation error') },
+      }),
     });
   });
 
@@ -547,7 +553,10 @@ describe('eth_sendTransaction handler', () => {
     const response = await ethSendTransaction(requestParams);
 
     expect(response).toEqual({
-      error: rpcErrors.internal({ message: 'Unable to calculate nonce: Nonce calculation error', data: { cause: new Error('Nonce calculation error') } }),
+      error: rpcErrors.internal({
+        message: 'Unable to calculate nonce: Nonce calculation error',
+        data: { cause: new Error('Nonce calculation error') },
+      }),
     });
   });
 

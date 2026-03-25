@@ -26,11 +26,13 @@ export const getBalances = async ({
   currency,
   network,
   tokenService,
+  fetch,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   tokenService: TokenService;
+  fetch?: typeof globalThis.fetch;
 }): Promise<GetSolanaBalancesResponse> => {
-  const moralisService = new MoralisService({ proxyApiUrl });
+  const moralisService = new MoralisService({ proxyApiUrl, fetch });
   const coingeckoAssetId = network.pricingProviders?.coingecko.nativeTokenId ?? '';
   const coingeckoPlatformId = network.pricingProviders?.coingecko.assetPlatformId ?? '';
   const lowercaseCurrency = currency.toLowerCase();

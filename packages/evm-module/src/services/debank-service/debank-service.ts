@@ -1,7 +1,5 @@
-import { CurrencyCode, NftTokenMetadataStatus } from '@avalabs/glacier-sdk';
-import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
-import { isHexString } from 'ethers';
+import { CurrencyCode, NftTokenMetadataStatus } from '@avalabs/glacier-sdk';
 import {
   type Error,
   type NetworkTokenWithBalance,
@@ -9,16 +7,18 @@ import {
   TokenType,
   type TokenWithBalanceEVM,
 } from '@avalabs/vm-module-types';
-import { DeBank, type DeBankChainInfo, type DeBankNftToken } from './de-bank';
-import { rpcErrors } from '@metamask/rpc-errors';
 import { getExchangeRates } from '@internal/utils';
+import { rpcErrors } from '@metamask/rpc-errors';
+import type { BalanceServiceInterface, TokenId } from '@src/handlers/get-balances/balance-service-interface';
 import { getSmallImageForNFT } from '@src/utils/get-small-image-for-nft';
+import { isHexString } from 'ethers';
+import { DeBank, type DeBankChainInfo, type DeBankNftToken } from './de-bank';
 
 export class DeBankService implements BalanceServiceInterface {
   #deBank: DeBank;
 
-  constructor({ proxyApiUrl }: { proxyApiUrl: string }) {
-    this.#deBank = new DeBank(`${proxyApiUrl}/proxy/debank`);
+  constructor({ proxyApiUrl, fetch }: { proxyApiUrl: string; fetch?: typeof globalThis.fetch }) {
+    this.#deBank = new DeBank(`${proxyApiUrl}/proxy/debank`, fetch);
   }
 
   async isNetworkSupported(chainId: number): Promise<boolean> {

@@ -12,6 +12,7 @@ import type {
   ConstructorParams,
   DeriveAddressParams,
   BuildDerivationPathParams,
+  RuntimeParams,
 } from '@avalabs/vm-module-types';
 import { RpcMethod, parseManifest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
@@ -32,12 +33,14 @@ import { buildDerivationPath } from './handlers/build-derivation-path/build-deri
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
+  #runtime?: RuntimeParams;
 
-  constructor({ environment, approvalController }: ConstructorParams) {
+  constructor({ environment, approvalController, runtime }: ConstructorParams) {
     const { proxyApiUrl } = getEnv(environment);
 
     this.#approvalController = approvalController;
     this.#proxyApiUrl = proxyApiUrl;
+    this.#runtime = runtime;
   }
 
   getProvider(network: Network): Promise<BitcoinProvider> {
@@ -69,6 +72,7 @@ export class BitcoinModule implements Module {
       network,
       proxyApiUrl: this.#proxyApiUrl,
       storage,
+      fetch: this.#runtime?.fetch,
     });
   }
 

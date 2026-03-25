@@ -1,5 +1,37 @@
 # @avalabs/evm-module
 
+## 3.5.1
+
+### Patch Changes
+
+- ab99fe7: Moralis ERC-20 history: fill missing token symbols (fallback to name, then shortened contract address) and trim blank native symbols so Activity shows a label on Base and other Moralis-backed chains.
+- 7a303ce: triggering release
+- ab99fe7: improve native tokens handling in transactions history
+- Updated dependencies [ab99fe7]
+  - @avalabs/vm-module-types@3.5.1
+
+## 3.5.0
+
+### Minor Changes
+
+- 90b7306: use Morails for ethereum activity
+- 34fb4c3: The modules use runtime.fetch if available
+
+### Patch Changes
+
+- Updated dependencies [34fb4c3]
+  - @avalabs/vm-module-types@3.5.0
+
+## 3.4.0
+
+### Minor Changes
+
+- 24ee483: using morails for activities for some chains
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.4.0
+
 ## 3.3.1
 
 ### Patch Changes

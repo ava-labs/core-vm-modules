@@ -2,7 +2,10 @@ import { RawSimplePriceResponseSchema } from '@avalabs/vm-module-types';
 import { fetchAndVerify } from '../../utils/fetch-and-verify';
 
 export class CoingeckoProxyClient {
-  constructor(private proxyApiUrl: string) {}
+  constructor(
+    private proxyApiUrl: string,
+    private fetchFn?: typeof fetch,
+  ) {}
 
   simplePrice(params: {
     ids: string[];
@@ -27,6 +30,7 @@ export class CoingeckoProxyClient {
         },
       ],
       RawSimplePriceResponseSchema,
+      this.fetchFn,
     );
   }
 
@@ -56,6 +60,7 @@ export class CoingeckoProxyClient {
         },
       ],
       RawSimplePriceResponseSchema,
+      this.fetchFn,
     );
   }
 }

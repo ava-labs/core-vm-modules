@@ -1,12 +1,11 @@
-import { getTransactionFromEtherscan } from './converters/etherscan-transaction-converter/get-transaction-from-etherscan';
-import { isEthereumChainId } from './utils/is-ethereum-chain-id';
+import { getTransactionsFromMoralis } from './converters/moralis-transaction-converter/get-transactions-from-moralis';
+import { isMoralisSupportedChain } from './utils/moralis-chain-ids';
 import type { NetworkToken, TransactionHistoryResponse } from '@avalabs/vm-module-types';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
 import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
 
 export const getTransactionHistory = async ({
   chainId,
-  isTestnet,
   networkToken,
   explorerUrl,
   address,
@@ -15,7 +14,6 @@ export const getTransactionHistory = async ({
   glacierService,
 }: {
   chainId: number;
-  isTestnet?: boolean;
   networkToken: NetworkToken;
   explorerUrl: string;
   address: string;
@@ -23,12 +21,11 @@ export const getTransactionHistory = async ({
   offset?: number;
   glacierService: EvmGlacierService;
 }): Promise<TransactionHistoryResponse> => {
-  if (isEthereumChainId(chainId)) {
-    return getTransactionFromEtherscan({
-      isTestnet,
+  if (isMoralisSupportedChain(chainId)) {
+    return getTransactionsFromMoralis({
+      chainId,
       networkToken,
       explorerUrl,
-      chainId,
       address,
       nextPageToken,
       offset,

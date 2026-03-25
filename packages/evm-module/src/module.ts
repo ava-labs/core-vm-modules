@@ -1,45 +1,46 @@
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import {
-  type Module,
-  type Manifest,
-  type NetworkFees,
-  type GetTransactionHistory,
-  type RpcRequest,
-  type Network,
-  type ApprovalController,
-  type GetBalancesParams,
-  type GetBalancesResponse,
-  type GetAddressParams,
-  type GetAddressResponse,
-  RpcMethod,
   parseManifest,
+  RpcMethod,
+  type ApprovalController,
+  type BuildDerivationPathParams,
   type ConstructorParams,
-  type NetworkFeeParam,
   type DeriveAddressParams,
   type DeriveAddressResponse,
-  type BuildDerivationPathParams,
+  type GetAddressParams,
+  type GetAddressResponse,
+  type GetBalancesParams,
+  type GetBalancesResponse,
+  type GetTransactionHistory,
+  type Manifest,
+  type Module,
+  type Network,
+  type NetworkFeeParam,
+  type NetworkFees,
+  type RpcRequest,
+  type RuntimeParams,
 } from '@avalabs/vm-module-types';
+import Blockaid from '@blockaid/client';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getTokens } from './handlers/get-tokens/get-tokens';
-import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
-import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import ManifestJson from '../manifest.json';
-import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
-import { getBalances } from './handlers/get-balances/get-balances';
+import { BLOCKAID_API_KEY } from './constants';
 import { getEnv } from './env';
-import { EvmGlacierService } from './services/glacier-service/glacier-service';
+import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { deriveAddress } from './handlers/derive-address/derive-address';
+import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
+import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 import { ethSign } from './handlers/eth-sign/eth-sign';
 import { forwardToRpcNode } from './handlers/forward-to-rpc-node/forward-to-rpc-node';
 import { getAddress } from './handlers/get-address/get-address';
-import { deriveAddress } from './handlers/derive-address/derive-address';
+import { getBalances } from './handlers/get-balances/get-balances';
+import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
+import { getTokens } from './handlers/get-tokens/get-tokens';
+import { getTransactionHistory } from './handlers/get-transaction-history/get-transaction-history';
 import { DeBankService } from './services/debank-service/debank-service';
-import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
+import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { getProvider } from './utils/get-provider';
-import { getCoreHeaders, TokenService } from '@internal/utils';
-import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { supportsBatchApprovals } from './utils/type-utils';
-import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
-import Blockaid from '@blockaid/client';
-import { BLOCKAID_API_KEY } from './constants';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -47,14 +48,16 @@ export class EvmModule implements Module {
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
   #blockaid: Blockaid;
+  #runtime?: RuntimeParams;
 
   constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
+    this.#runtime = runtime;
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
     });
-    this.#deBankService = new DeBankService({ proxyApiUrl });
+    this.#deBankService = new DeBankService({ proxyApiUrl, fetch: this.#runtime?.fetch });
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
     this.#blockaid = new Blockaid({
@@ -98,7 +101,7 @@ export class EvmModule implements Module {
     storage,
     tokenTypes,
   }: GetBalancesParams): Promise<GetBalancesResponse> {
-    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl });
+    const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl, fetch: this.#runtime?.fetch });
     return getBalances({
       addresses,
       currency,
@@ -109,6 +112,7 @@ export class EvmModule implements Module {
       storage,
       tokenTypes,
       tokenService,
+      fetch: this.#runtime?.fetch,
     });
   }
 
@@ -131,11 +135,10 @@ export class EvmModule implements Module {
 
   getTransactionHistory(params: GetTransactionHistory) {
     const { network, address, nextPageToken, offset } = params;
-    const { chainId, isTestnet, networkToken, explorerUrl = '' } = network;
+    const { chainId, networkToken, explorerUrl = '' } = network;
 
     return getTransactionHistory({
       chainId,
-      isTestnet,
       networkToken,
       explorerUrl,
       address,
