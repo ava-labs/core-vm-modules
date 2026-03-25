@@ -381,4 +381,69 @@ describe('convertMoralisTransaction', () => {
     const result = convertMoralisTransaction({ tx, ...baseParams });
     expect(result.txType).toBe(TransactionType.SWAP);
   });
+
+  it('should classify Moralis category send with native + wallet ERC-20 out as Bridge', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'send',
+      to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+      native_transfers: [
+        {
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          value: '233715262334053',
+          value_formatted: '0.000233',
+          direction: 'send',
+          internal_transaction: false,
+          token_symbol: 'ETH',
+        },
+      ],
+      erc20_transfers: [
+        {
+          token_name: 'USD Coin',
+          token_symbol: 'USDC',
+          token_decimals: '6',
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          value: '100000',
+          direction: 'send',
+          value_formatted: '0.1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+
+    expect(result.txType).toBe(TransactionType.BRIDGE);
+    expect(result.tokens.some((t) => t.type === TokenType.NATIVE)).toBe(false);
+    expect(result.tokens[0]?.type).toBe(TokenType.ERC20);
+    expect(result.tokens[0]?.symbol).toBe('USDC');
+  });
+
+  it('should not classify send + ERC-20 out as Bridge when the user pays no native in Moralis payload', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'send',
+      value: '0',
+      native_transfers: [],
+      erc20_transfers: [
+        {
+          token_name: 'USD Coin',
+          token_symbol: 'USDC',
+          token_decimals: '6',
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          value: '100000',
+          direction: 'send',
+          value_formatted: '0.1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+
+    expect(result.txType).toBe(TransactionType.SEND);
+  });
 });

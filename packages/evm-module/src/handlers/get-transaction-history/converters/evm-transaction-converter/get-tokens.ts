@@ -6,14 +6,22 @@ import { resolve } from '../../utils/resolve';
 import { getNftMetadata } from './get-nft-metadata';
 import { getSmallImageForNFT } from '../../utils/get-small-image-for-nft';
 import { ipfsResolverWithFallback } from '../../utils/ipfs-resolver-with-fallback';
+import { isErc20FromUserWithUserNativePayment } from './is-erc20-from-user-with-user-native-payment';
 
 export const getTokens = async (
   { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
   networkToken: NetworkToken,
+  userAddress: string,
 ): Promise<TxToken[]> => {
   const result: TxToken[] = [];
 
-  if (nativeTransaction.value !== '0') {
+  const omitTopLevelNativeForPerTokenActivity = isErc20FromUserWithUserNativePayment(
+    nativeTransaction,
+    erc20Transfers,
+    userAddress,
+  );
+
+  if (nativeTransaction.value !== '0' && !omitTopLevelNativeForPerTokenActivity) {
     const decimal = networkToken.decimals;
     const amount = new TokenUnit(nativeTransaction.value, networkToken.decimals, networkToken.symbol);
     const amountDisplayValue = amount.toDisplay();

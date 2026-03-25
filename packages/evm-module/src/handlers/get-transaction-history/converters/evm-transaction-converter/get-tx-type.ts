@@ -1,6 +1,7 @@
 import type { TransactionDetails } from '@avalabs/glacier-sdk';
 import { TokenType, TransactionType, type TxToken } from '@avalabs/vm-module-types';
 import startCase from 'lodash.startcase';
+import { isErc20FromUserWithUserNativePayment } from './is-erc20-from-user-with-user-native-payment';
 
 export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
@@ -27,6 +28,9 @@ export const getTxType = (
   if (isSwap) return TransactionType.SWAP;
   if (isNativeSend) return TransactionType.SEND;
   if (isNativeReceive) return TransactionType.RECEIVE;
+  if (!nativeOnly && isErc20FromUserWithUserNativePayment(nativeTransaction, erc20Transfers, userAddress)) {
+    return TransactionType.BRIDGE;
+  }
   if (isNFTPurchase) return TransactionType.NFT_BUY;
   if (isApprove) return TransactionType.APPROVE;
   if (isNFTSend) return TransactionType.NFT_SEND;

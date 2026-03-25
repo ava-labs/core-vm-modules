@@ -21,7 +21,7 @@ export const convertTransaction = async ({
   chainId,
   address,
 }: ConvertTransactionParams): Promise<Transaction> => {
-  const tokens = await getTokens(transactions, networkToken);
+  const tokens = await getTokens(transactions, networkToken, address);
   const txType = getTxType(transactions, address, tokens);
   const { isOutgoing, isIncoming, isSender, from, to } = getSenderInfo(txType, transactions, address);
   const { blockTimestamp, txHash: hash, gasPrice, gasUsed } = transactions.nativeTransaction;

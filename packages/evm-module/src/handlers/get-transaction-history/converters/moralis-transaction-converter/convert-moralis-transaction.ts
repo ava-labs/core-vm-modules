@@ -32,7 +32,7 @@ export function convertMoralisTransaction({
 }: ConvertMoralisTransactionParams): Transaction {
   const isSender = tx.from_address.toLowerCase() === address.toLowerCase();
   const timestamp = new Date(tx.block_timestamp).getTime();
-  const txType = getMoralisTransactionType(tx.category);
+  const txType = resolveMoralisTransactionType(tx, address);
   const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category);
   const tokens = buildTokens(tx, networkToken, address);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
@@ -81,6 +81,21 @@ function getMoralisTransactionType(category: MoralisCategory): TransactionType {
   return CATEGORY_TO_TX_TYPE[category] ?? TransactionType.UNKNOWN;
 }
 
+/**
+ * When Moralis uses raw category `send` (not `token send`) and the tx matches
+ * `isErc20FromUserWithUserNativePayment` on the Glacier path — classify as Bridge. Keeps `token send` as
+ * SEND (both map to TransactionType.SEND downstream).
+ */
+function resolveMoralisTransactionType(tx: MoralisTransaction, walletAddress: string): TransactionType {
+  const fromCategory = getMoralisTransactionType(tx.category);
+
+  if (tx.category === 'send' && isMoralisErc20FromUserWithUserNativePayment(tx, walletAddress)) {
+    return TransactionType.BRIDGE;
+  }
+
+  return fromCategory;
+}
+
 function getTransferAddress(address: string | null | undefined): { address: string } | undefined {
   if (address == null || address === '') {
     return undefined;
@@ -90,6 +105,28 @@ function getTransferAddress(address: string | null | undefined): { address: stri
 
 function trimOrEmpty(value: string | null | undefined): string {
   return value?.trim() ?? '';
+}
+
+function positiveTxValueBigInt(value: string | null | undefined): bigint {
+  try {
+    const n = BigInt(trimOrEmpty(value) || '0');
+    return n > 0n ? n : 0n;
+  } catch {
+    return 0n;
+  }
+}
+
+/** Same predicate as `isErc20FromUserWithUserNativePayment` (Glacier); Moralis field shapes differ. */
+function isMoralisErc20FromUserWithUserNativePayment(tx: MoralisTransaction, walletAddress: string): boolean {
+  const addr = walletAddress.toLowerCase();
+  const userSentErc20 = tx.erc20_transfers.some((t) => trimOrEmpty(t.from_address).toLowerCase() === addr);
+  if (!userSentErc20) {
+    return false;
+  }
+  const userNativeOut =
+    tx.native_transfers.some((n) => trimOrEmpty(n.from_address).toLowerCase() === addr) ||
+    (positiveTxValueBigInt(tx.value) > 0n && trimOrEmpty(tx.from_address).toLowerCase() === addr);
+  return userNativeOut;
 }
 
 function shortenHexAddress(address: string): string {
@@ -114,8 +151,14 @@ function getErc20DisplaySymbol(transfer: MoralisErc20Transfer): string {
 
 function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address: string): TxToken[] {
   const tokens: TxToken[] = [];
+  const addr = address.toLowerCase();
+  const omitUserNativeLegForPerTokenActivity = isMoralisErc20FromUserWithUserNativePayment(tx, address);
 
   for (const transfer of tx.native_transfers) {
+    const nativeFromUser = trimOrEmpty(transfer.from_address).toLowerCase() === addr;
+    if (omitUserNativeLegForPerTokenActivity && nativeFromUser) {
+      continue;
+    }
     tokens.push(buildNativeToken(transfer, networkToken));
   }
 
