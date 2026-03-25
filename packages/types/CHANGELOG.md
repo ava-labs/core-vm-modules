@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.6.0
+
+### Patch Changes
+
+- 281614e: getAddressesByIndices supports internalIndices on P Chain; bump sdks
+
 ## 3.5.1
 
 ### Patch Changes
