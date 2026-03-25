@@ -1,0 +1,25 @@
+{
+  "_comment": "Sample Moralis wallet-history row shape: raw send + USDC out + ETH native fee (for parity / manual testing).",
+  "category": "send",
+  "method_label": "ccipSend",
+  "from_address": "0xSender",
+  "to_address": "0xBridge",
+  "value": "233715262334053",
+  "native_transfers": [
+    {
+      "from_address": "0xSender",
+      "to_address": "0xBridge",
+      "value": "233715262334053",
+      "token_symbol": "ETH"
+    }
+  ],
+  "erc20_transfers": [
+    {
+      "from_address": "0xSender",
+      "token_symbol": "USDC",
+      "token_decimals": "6",
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "value": "100000"
+    }
+  ]
+}

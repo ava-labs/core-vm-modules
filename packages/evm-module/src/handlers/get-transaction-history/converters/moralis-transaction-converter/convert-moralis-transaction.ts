@@ -1,10 +1,4 @@
-import {
-  TokenType,
-  TransactionType,
-  type NetworkToken,
-  type Transaction,
-  type TxToken,
-} from '@avalabs/vm-module-types';
+import { TokenType, type NetworkToken, type Transaction, type TxToken } from '@avalabs/vm-module-types';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
 import type {
@@ -14,6 +8,8 @@ import type {
   MoralisNativeTransfer,
   MoralisNftTransfer,
 } from './moralis-types';
+import { classifyMoralisWalletTransactionType } from './moralis-transaction-type';
+import { isMoralisErc20FromUserWithUserNativePayment } from './moralis-erc20-from-user-with-user-native-payment';
 
 type ConvertMoralisTransactionParams = {
   tx: MoralisTransaction;
@@ -32,7 +28,7 @@ export function convertMoralisTransaction({
 }: ConvertMoralisTransactionParams): Transaction {
   const isSender = tx.from_address.toLowerCase() === address.toLowerCase();
   const timestamp = new Date(tx.block_timestamp).getTime();
-  const txType = resolveMoralisTransactionType(tx, address);
+  const txType = classifyMoralisWalletTransactionType(tx, address);
   const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category);
   const tokens = buildTokens(tx, networkToken, address);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
@@ -58,44 +54,6 @@ export function convertMoralisTransaction({
 
 const NON_CONTRACT_CALL_CATEGORIES = new Set<MoralisCategory>(['send', 'receive', 'token send', 'token receive']);
 
-const CATEGORY_TO_TX_TYPE: Record<MoralisCategory, TransactionType> = {
-  send: TransactionType.SEND,
-  receive: TransactionType.RECEIVE,
-  'token send': TransactionType.SEND,
-  'token receive': TransactionType.RECEIVE,
-  'nft send': TransactionType.NFT_SEND,
-  'nft receive': TransactionType.NFT_RECEIVE,
-  'token swap': TransactionType.SWAP,
-  'nft purchase': TransactionType.NFT_BUY,
-  'nft sale': TransactionType.NFT_SEND,
-  airdrop: TransactionType.AIRDROP,
-  mint: TransactionType.NFT_BUY,
-  burn: TransactionType.UNKNOWN,
-  deposit: TransactionType.UNKNOWN,
-  withdraw: TransactionType.UNKNOWN,
-  borrow: TransactionType.UNKNOWN,
-  'contract interaction': TransactionType.UNKNOWN,
-};
-
-function getMoralisTransactionType(category: MoralisCategory): TransactionType {
-  return CATEGORY_TO_TX_TYPE[category] ?? TransactionType.UNKNOWN;
-}
-
-/**
- * When Moralis uses raw category `send` (not `token send`) and the tx matches
- * `isErc20FromUserWithUserNativePayment` on the Glacier path — classify as Bridge. Keeps `token send` as
- * SEND (both map to TransactionType.SEND downstream).
- */
-function resolveMoralisTransactionType(tx: MoralisTransaction, walletAddress: string): TransactionType {
-  const fromCategory = getMoralisTransactionType(tx.category);
-
-  if (tx.category === 'send' && isMoralisErc20FromUserWithUserNativePayment(tx, walletAddress)) {
-    return TransactionType.BRIDGE;
-  }
-
-  return fromCategory;
-}
-
 function getTransferAddress(address: string | null | undefined): { address: string } | undefined {
   if (address == null || address === '') {
     return undefined;
@@ -105,28 +63,6 @@ function getTransferAddress(address: string | null | undefined): { address: stri
 
 function trimOrEmpty(value: string | null | undefined): string {
   return value?.trim() ?? '';
-}
-
-function positiveTxValueBigInt(value: string | null | undefined): bigint {
-  try {
-    const n = BigInt(trimOrEmpty(value) || '0');
-    return n > 0n ? n : 0n;
-  } catch {
-    return 0n;
-  }
-}
-
-/** Same predicate as `isErc20FromUserWithUserNativePayment` (Glacier); Moralis field shapes differ. */
-function isMoralisErc20FromUserWithUserNativePayment(tx: MoralisTransaction, walletAddress: string): boolean {
-  const addr = walletAddress.toLowerCase();
-  const userSentErc20 = tx.erc20_transfers.some((t) => trimOrEmpty(t.from_address).toLowerCase() === addr);
-  if (!userSentErc20) {
-    return false;
-  }
-  const userNativeOut =
-    tx.native_transfers.some((n) => trimOrEmpty(n.from_address).toLowerCase() === addr) ||
-    (positiveTxValueBigInt(tx.value) > 0n && trimOrEmpty(tx.from_address).toLowerCase() === addr);
-  return userNativeOut;
 }
 
 function shortenHexAddress(address: string): string {

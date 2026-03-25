@@ -12,6 +12,11 @@ jest.mock('./converters/moralis-transaction-converter/get-transactions-from-mora
 }));
 
 describe('get-transaction-history', () => {
+  beforeEach(() => {
+    jest.mocked(getTransactionsFromMoralis).mockResolvedValue({ transactions: [], nextPageToken: '' });
+    jest.mocked(getTransactionsFromGlacier).mockResolvedValue({ transactions: [], nextPageToken: '' });
+  });
+
   it('should have called getTransactionsFromMoralis for Ethereum mainnet (1)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,

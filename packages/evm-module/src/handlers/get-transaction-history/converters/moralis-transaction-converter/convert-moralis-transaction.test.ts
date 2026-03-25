@@ -446,4 +446,112 @@ describe('convertMoralisTransaction', () => {
 
     expect(result.txType).toBe(TransactionType.SEND);
   });
+
+  it('should classify contract interaction as Bridge when bridge hint + ERC-20/native payment shape', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'contract interaction',
+      method_label: 'ccipSend',
+      native_transfers: [
+        {
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          value: '233715262334053',
+          value_formatted: '0.000233',
+          direction: 'send',
+          internal_transaction: false,
+          token_symbol: 'ETH',
+        },
+      ],
+      erc20_transfers: [
+        {
+          token_name: 'USD Coin',
+          token_symbol: 'USDC',
+          token_decimals: '6',
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          value: '100000',
+          direction: 'send',
+          value_formatted: '0.1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+
+    expect(result.txType).toBe(TransactionType.BRIDGE);
+  });
+
+  it('should not promote send to Bridge when method label is swap-like', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'send',
+      method_label: 'exactInputSingle',
+      native_transfers: [
+        {
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          value: '233715262334053',
+          value_formatted: '0.000233',
+          direction: 'send',
+          internal_transaction: false,
+          token_symbol: 'ETH',
+        },
+      ],
+      erc20_transfers: [
+        {
+          token_name: 'USD Coin',
+          token_symbol: 'USDC',
+          token_decimals: '6',
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          value: '100000',
+          direction: 'send',
+          value_formatted: '0.1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+
+    expect(result.txType).toBe(TransactionType.SEND);
+  });
+
+  it('should not promote send to Bridge when method label is liquidity provision', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      category: 'send',
+      method_label: 'addLiquidityETH',
+      native_transfers: [
+        {
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          value: '233715262334053',
+          value_formatted: '0.000233',
+          direction: 'send',
+          internal_transaction: false,
+          token_symbol: 'ETH',
+        },
+      ],
+      erc20_transfers: [
+        {
+          token_name: 'USD Coin',
+          token_symbol: 'USDC',
+          token_decimals: '6',
+          from_address: '0xSender',
+          to_address: '0x5C32d9Dac5d16EF5E0ff634Da73934e27F1669cc',
+          address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          value: '100000',
+          direction: 'send',
+          value_formatted: '0.1',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({ tx, ...baseParams });
+
+    expect(result.txType).toBe(TransactionType.SEND);
+  });
 });

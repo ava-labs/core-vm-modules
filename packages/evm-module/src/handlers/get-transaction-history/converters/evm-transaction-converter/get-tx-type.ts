@@ -3,6 +3,10 @@ import { TokenType, TransactionType, type TxToken } from '@avalabs/vm-module-typ
 import startCase from 'lodash.startcase';
 import { isErc20FromUserWithUserNativePayment } from './is-erc20-from-user-with-user-native-payment';
 
+/**
+ * Glacier / non-Moralis EVM history: lightweight method-string checks only.
+ * Moralis-specific classification lives under `moralis-transaction-converter/`.
+ */
 export const getTxType = (
   { nativeTransaction, erc20Transfers, erc721Transfers, erc1155Transfers }: TransactionDetails,
   userAddress: string,
@@ -25,20 +29,42 @@ export const getTxType = (
   const isNFTSend = !!tokens[0] && isNFT(tokens[0].type) && tokens[0].from?.address.toLowerCase() === address;
   const isNFTReceive = !!tokens[0] && isNFT(tokens[0].type) && tokens[0].to?.address.toLowerCase() === address;
 
-  if (isSwap) return TransactionType.SWAP;
-  if (isNativeSend) return TransactionType.SEND;
-  if (isNativeReceive) return TransactionType.RECEIVE;
+  if (isSwap) {
+    return TransactionType.SWAP;
+  }
+  if (isNativeSend) {
+    return TransactionType.SEND;
+  }
+  if (isNativeReceive) {
+    return TransactionType.RECEIVE;
+  }
   if (!nativeOnly && isErc20FromUserWithUserNativePayment(nativeTransaction, erc20Transfers, userAddress)) {
     return TransactionType.BRIDGE;
   }
-  if (isNFTPurchase) return TransactionType.NFT_BUY;
-  if (isApprove) return TransactionType.APPROVE;
-  if (isNFTSend) return TransactionType.NFT_SEND;
-  if (isNFTReceive) return TransactionType.NFT_RECEIVE;
-  if (isTransfer) return TransactionType.TRANSFER;
-  if (isAirdrop) return TransactionType.AIRDROP;
-  if (isUnwrap) return TransactionType.UNWRAP;
-  if (isFillOrder) return TransactionType.FILL_ORDER;
+  if (isNFTPurchase) {
+    return TransactionType.NFT_BUY;
+  }
+  if (isApprove) {
+    return TransactionType.APPROVE;
+  }
+  if (isNFTSend) {
+    return TransactionType.NFT_SEND;
+  }
+  if (isNFTReceive) {
+    return TransactionType.NFT_RECEIVE;
+  }
+  if (isTransfer) {
+    return TransactionType.TRANSFER;
+  }
+  if (isAirdrop) {
+    return TransactionType.AIRDROP;
+  }
+  if (isUnwrap) {
+    return TransactionType.UNWRAP;
+  }
+  if (isFillOrder) {
+    return TransactionType.FILL_ORDER;
+  }
   return TransactionType.UNKNOWN;
 };
 
