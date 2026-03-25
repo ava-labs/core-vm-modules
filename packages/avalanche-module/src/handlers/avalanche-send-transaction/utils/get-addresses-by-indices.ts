@@ -16,10 +16,6 @@ export const getAddressesByIndices = async ({
   xpubXP?: string;
   externalXPAddresses?: { index: number; address: string }[];
 }): Promise<string[]> => {
-  if (isChange && chainAlias !== 'X') {
-    return [];
-  }
-
   if (xpubXP) {
     const provider = await getProvider({ isTestnet });
 
