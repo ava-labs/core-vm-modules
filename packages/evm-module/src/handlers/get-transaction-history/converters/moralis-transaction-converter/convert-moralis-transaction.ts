@@ -10,6 +10,7 @@ import type {
 } from './moralis-types';
 import { classifyMoralisWalletTransactionType } from './moralis-transaction-type';
 import { isMoralisErc20FromUserWithUserNativePayment } from './moralis-erc20-from-user-with-user-native-payment';
+import { orderActivityTokensForWallet } from './order-activity-tokens-for-wallet';
 
 type ConvertMoralisTransactionParams = {
   tx: MoralisTransaction;
@@ -30,7 +31,8 @@ export function convertMoralisTransaction({
   const timestamp = new Date(tx.block_timestamp).getTime();
   const txType = classifyMoralisWalletTransactionType(tx, address);
   const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category);
-  const tokens = buildTokens(tx, networkToken, address);
+  let tokens = buildTokens(tx, networkToken, address);
+  tokens = orderActivityTokensForWallet(tokens, txType, address);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
 
   return {

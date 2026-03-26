@@ -86,7 +86,13 @@ export class AvalancheModule implements Module {
   }
 
   getTransactionHistory({ network, address, nextPageToken, offset }: GetTransactionHistory) {
-    return getTransactionHistory({ network, address, nextPageToken, offset, glacierService: this.#glacierService });
+    return getTransactionHistory({
+      network,
+      address,
+      nextPageToken,
+      offset,
+      glacierService: this.#glacierService,
+    });
   }
 
   getTokens(_: Network) {

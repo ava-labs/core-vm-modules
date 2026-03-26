@@ -22,6 +22,10 @@ export type Transaction = {
   hash: string;
   from: string;
   to: string;
+  /**
+   * For EVM Moralis `token swap`, `@avalabs/evm-module` orders fungible legs as:
+   * `[0]` outgoing from the history `address`, `[1]` incoming to it (other legs follow).
+   */
   tokens: TxToken[];
   gasPrice?: string;
   gasUsed: string;
