@@ -17,7 +17,7 @@ const GLOBAL_QUERY_PARAMS: Record<string, string | undefined> = {
  * to bypass rate limits in development environments.
  */
 export class GlacierFetchHttpRequest extends FetchHttpRequest {
-  #failedRequests = 3;
+  #failedRequests = 0;
   #getDelay = RetryBackoffPolicy.exponential();
 
   constructor(config: OpenAPIConfig) {
