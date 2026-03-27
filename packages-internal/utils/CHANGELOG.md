@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.7.2
+
+### Patch Changes
+
+- e205743: fix: reset failed attempts
+
 ## 0.7.1
 
 ### Patch Changes

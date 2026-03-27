@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.6.1
+
+### Patch Changes
+
+- 88175bb: clean start for glacier
+
 ## 3.6.0
 
 ### Patch Changes
