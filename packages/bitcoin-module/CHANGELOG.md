@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 3.6.1
+
+### Patch Changes
+
+- 88175bb: clean start for glacier
+- Updated dependencies [88175bb]
+  - @avalabs/vm-module-types@3.6.1
+
 ## 3.6.0
 
 ### Patch Changes
