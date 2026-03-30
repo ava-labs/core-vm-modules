@@ -7,6 +7,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
+import { convertTransactionType } from '../evm-transaction-converter/get-tx-type';
 import type {
   MoralisCategory,
   MoralisTransaction,
@@ -47,6 +48,13 @@ export function convertMoralisTransaction({
 
   const tokens = buildTokens(tx, networkToken, address, isFusionOutgoingCrossChain);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
+
+  txType = convertTransactionType({
+    txType,
+    isSender,
+    walletAddress: address,
+    tokens,
+  });
 
   return {
     isContractCall,
