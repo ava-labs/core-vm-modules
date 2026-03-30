@@ -86,4 +86,42 @@ describe('convertTransactionType', () => {
     });
     expect(result).toBe(TransactionType.RECEIVE);
   });
+
+  it('promotes AIRDROP to NFT_RECEIVE when Moralis lists fungible before an NFT leg to the wallet', () => {
+    const fungible: TxToken = {
+      name: 'Spam',
+      symbol: 'SPAM',
+      amount: '1',
+      type: TokenType.ERC20,
+      address: '0xspam',
+      from: { address: '0xOther' },
+      to: { address: wallet },
+    };
+    const result = convertTransactionType({
+      txType: TransactionType.AIRDROP,
+      isSender: false,
+      walletAddress: wallet,
+      tokens: [fungible, buildErc721ToUser()],
+    });
+    expect(result).toBe(TransactionType.NFT_RECEIVE);
+  });
+
+  it('leaves AIRDROP unchanged when there is no NFT to the wallet', () => {
+    const fungible: TxToken = {
+      name: 'T',
+      symbol: 'TKN',
+      amount: '1',
+      type: TokenType.ERC20,
+      address: '0xerc20',
+      from: { address: '0xOther' },
+      to: { address: wallet },
+    };
+    const result = convertTransactionType({
+      txType: TransactionType.AIRDROP,
+      isSender: false,
+      walletAddress: wallet,
+      tokens: [fungible],
+    });
+    expect(result).toBe(TransactionType.AIRDROP);
+  });
 });

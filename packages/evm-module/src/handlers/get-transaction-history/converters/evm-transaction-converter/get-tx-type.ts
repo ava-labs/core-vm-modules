@@ -8,9 +8,11 @@ function isNftTokenType(type: TokenType): boolean {
 
 /**
  * After a provisional {@link TransactionType} (e.g. Moralis category or Glacier heuristics below),
- * returns the same type or promotes generic send/receive/transfer/unknown to `NFT_SEND` / `NFT_RECEIVE`
+ * returns the same type or promotes generic classifications to `NFT_SEND` / `NFT_RECEIVE`
  * when `tokens` shows the wallet sent or received an ERC-721/1155 (often not `tokens[0]` because rows
- * are ordered native → ERC-20 → NFTs). Exported for Moralis, which does not use {@link getTxType}.
+ * are ordered native → ERC-20 → NFTs). Includes {@link TransactionType.AIRDROP} because Moralis labels
+ * many bulk ERC-721/1155 mint/receive spam txs as `airdrop`; without promotion the UI falls back to
+ * fungible `mainToken` (“1 received”). Exported for Moralis, which does not use {@link getTxType}.
  */
 export function convertTransactionType(params: {
   txType: TransactionType;
@@ -32,9 +34,15 @@ export function convertTransactionType(params: {
   );
 
   const receiveLike =
-    txType === TransactionType.RECEIVE || txType === TransactionType.UNKNOWN || txType === TransactionType.TRANSFER;
+    txType === TransactionType.RECEIVE ||
+    txType === TransactionType.UNKNOWN ||
+    txType === TransactionType.TRANSFER ||
+    txType === TransactionType.AIRDROP;
   const sendLike =
-    txType === TransactionType.SEND || txType === TransactionType.UNKNOWN || txType === TransactionType.TRANSFER;
+    txType === TransactionType.SEND ||
+    txType === TransactionType.UNKNOWN ||
+    txType === TransactionType.TRANSFER ||
+    txType === TransactionType.AIRDROP;
 
   if (!isSender && userReceivedNft && receiveLike) {
     return TransactionType.NFT_RECEIVE;
