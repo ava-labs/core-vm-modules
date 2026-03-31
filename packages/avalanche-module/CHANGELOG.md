@@ -1,5 +1,11 @@
 # @avalabs/avalanche-module
 
+## 3.6.2
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.6.2
+
 ## 3.6.1
 
 ### Patch Changes
