@@ -1,5 +1,7 @@
 # @avalabs/vm-module-types
 
+## 3.6.2
+
 ## 3.6.1
 
 ### Patch Changes

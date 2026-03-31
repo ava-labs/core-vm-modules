@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 3.6.2
+
+### Patch Changes
+
+- f81549f: ethereum fusion cross chain as contract call
+- f81549f: fix nft tx type
+  - @avalabs/vm-module-types@3.6.2
+
 ## 3.6.1
 
 ### Patch Changes
