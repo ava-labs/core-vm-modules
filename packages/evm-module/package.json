@@ -35,7 +35,7 @@
     "@blockaid/client": "0.48.0",
     "@metamask/rpc-errors": "6.3.0",
     "@openzeppelin/contracts": "4.9.6",
-    "bn.js": "5.2.1",
+    "bn.js": "5.2.3",
     "lodash.startcase": "4.4.0",
     "xss": "1.0.13",
     "zod": "3.23.8"
