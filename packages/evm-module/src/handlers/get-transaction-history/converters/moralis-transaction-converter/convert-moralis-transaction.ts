@@ -7,6 +7,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { getExplorerAddressByNetwork } from '../../utils/get-explorer-address-by-network';
+import { convertTransactionType } from '../evm-transaction-converter/get-tx-type';
 import type {
   MoralisCategory,
   MoralisTransaction,
@@ -32,10 +33,18 @@ export function convertMoralisTransaction({
 }: ConvertMoralisTransactionParams): Transaction {
   const isSender = tx.from_address.toLowerCase() === address.toLowerCase();
   const timestamp = new Date(tx.block_timestamp).getTime();
-  const txType = getMoralisTransactionType(tx.category);
+  let txType = getMoralisTransactionType(tx.category);
   const isContractCall = !NON_CONTRACT_CALL_CATEGORIES.has(tx.category);
+
   const tokens = buildTokens(tx, networkToken, address);
   const explorerLink = getExplorerAddressByNetwork(explorerUrl, tx.hash);
+
+  txType = convertTransactionType({
+    txType,
+    isSender,
+    walletAddress: address,
+    tokens,
+  });
 
   return {
     isContractCall,
@@ -114,14 +123,10 @@ function getErc20DisplaySymbol(transfer: MoralisErc20Transfer): string {
 
 function buildTokens(tx: MoralisTransaction, networkToken: NetworkToken, address: string): TxToken[] {
   const tokens: TxToken[] = [];
+  const nativeTokens = tx.native_transfers.map((transfer) => buildNativeToken(transfer, networkToken));
+  const erc20Tokens = tx.erc20_transfers.map((transfer) => buildErc20Token(transfer));
 
-  for (const transfer of tx.native_transfers) {
-    tokens.push(buildNativeToken(transfer, networkToken));
-  }
-
-  for (const transfer of tx.erc20_transfers) {
-    tokens.push(buildErc20Token(transfer));
-  }
+  tokens.push(...nativeTokens, ...erc20Tokens);
 
   for (const transfer of tx.nft_transfers) {
     tokens.push(buildNftToken(transfer));

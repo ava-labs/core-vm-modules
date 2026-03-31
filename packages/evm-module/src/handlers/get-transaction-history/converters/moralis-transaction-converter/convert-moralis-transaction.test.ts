@@ -267,6 +267,47 @@ describe('convertMoralisTransaction', () => {
     expect(result.tokens[1]?.to?.address).toBe('0xSender');
   });
 
+  it('should classify token receive with native plus NFT to the wallet as NFT_RECEIVE', () => {
+    const tx: MoralisTransaction = {
+      ...baseTx,
+      from_address: '0xOther',
+      to_address: '0xReceiver',
+      category: 'token receive',
+      native_transfers: [
+        {
+          from_address: '0xOther',
+          to_address: '0xReceiver',
+          value: '1000000000000000',
+          value_formatted: '0.001',
+          direction: 'receive',
+          internal_transaction: false,
+          token_symbol: 'ETH',
+        },
+      ],
+      nft_transfers: [
+        {
+          token_address: '0xNftContract',
+          token_id: '1',
+          from_address: '0xOther',
+          to_address: '0xReceiver',
+          contract_type: 'ERC721',
+          amount: '1',
+          direction: 'receive',
+        },
+      ],
+    };
+
+    const result = convertMoralisTransaction({
+      tx,
+      ...baseParams,
+      address: '0xReceiver',
+    });
+
+    expect(result.isSender).toBe(false);
+    expect(result.txType).toBe(TransactionType.NFT_RECEIVE);
+    expect(result.tokens.some((token) => token.type === TokenType.ERC721)).toBe(true);
+  });
+
   it('should convert an NFT transfer', () => {
     const tx: MoralisTransaction = {
       ...baseTx,

@@ -4,7 +4,13 @@ import { TransactionType } from '@avalabs/vm-module-types';
 import type { transactionSchema } from './utils/transaction-schema';
 import type { transactionArraySchema } from './handlers/eth-send-transaction-batch/schema';
 
-export const NonContractCallTypes = [TransactionType.SEND, TransactionType.RECEIVE, TransactionType.TRANSFER];
+export const NonContractCallTypes = [
+  TransactionType.SEND,
+  TransactionType.RECEIVE,
+  TransactionType.TRANSFER,
+  TransactionType.NFT_SEND,
+  TransactionType.NFT_RECEIVE,
+];
 
 export type TransactionParams = z.infer<typeof transactionSchema>;
 

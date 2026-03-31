@@ -7,8 +7,10 @@ export const getSenderInfo = (
   address: string,
 ): { isOutgoing: boolean; isIncoming: boolean; isSender: boolean; from: string; to: string } => {
   const isTransfer = txType === TransactionType.TRANSFER;
-  const isNativeSend = txType === TransactionType.SEND;
-  const isNativeReceive = txType === TransactionType.RECEIVE;
+  // Glacier: SEND/RECEIVE are already “direction known from tx type” (historically native-only).
+  // NFT_SEND/NFT_RECEIVE are the same idea for one-sided NFT transfers — not “native”.
+  const isOutgoingByTxType = txType === TransactionType.SEND || txType === TransactionType.NFT_SEND;
+  const isIncomingByTxType = txType === TransactionType.RECEIVE || txType === TransactionType.NFT_RECEIVE;
   let from = nativeTransaction?.from?.address;
   let to = nativeTransaction?.to?.address;
 
@@ -23,8 +25,8 @@ export const getSenderInfo = (
     to = erc721Transfers[0].to.address;
   }
 
-  const isOutgoing = isNativeSend || (isTransfer && from.toLowerCase() === address.toLowerCase());
-  const isIncoming = isNativeReceive || (isTransfer && to.toLowerCase() === address.toLowerCase());
+  const isOutgoing = isOutgoingByTxType || (isTransfer && from.toLowerCase() === address.toLowerCase());
+  const isIncoming = isIncomingByTxType || (isTransfer && to.toLowerCase() === address.toLowerCase());
 
   const isSender = from === address;
 
