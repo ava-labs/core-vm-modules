@@ -14,7 +14,10 @@ export const deriveAddress = async (
   // When dealing with single-account private keys, we don't need the derivation path any more.
   const xpDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).AVM : undefined;
   const coreEthDerivationPath = hasDerivationDetails(params) ? buildDerivationPath(params).CoreEth : undefined;
-  const provXP = await getProvider({ isTestnet: Boolean(network.isTestnet) });
+  const provXP = await getProvider({
+    isTestnet: Boolean(network.isTestnet),
+    customRpcHeaders: network.customRpcHeaders,
+  });
 
   const xpPublicKeyHex = await approvalController
     .requestPublicKey({

@@ -7,11 +7,13 @@ import { getProvider } from '../../utils/get-provider';
 export async function getNetworkFee({
   isTestnet,
   vmName,
+  customRpcHeaders,
 }: {
   isTestnet: boolean;
   vmName: NetworkVMType;
+  customRpcHeaders?: Record<string, string>;
 }): Promise<NetworkFees> {
-  const provider = await getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet, customRpcHeaders });
 
   // Return static fees for X-Chain
   if (vmName === NetworkVMType.AVM) {

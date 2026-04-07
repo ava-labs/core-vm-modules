@@ -27,6 +27,7 @@ export async function getNetworkFee({
   multiContractAddress,
   caipId,
   proxyApiUrl,
+  customRpcHeaders,
 }: {
   chainId: number;
   chainName: string;
@@ -34,12 +35,14 @@ export async function getNetworkFee({
   proxyApiUrl?: string;
   multiContractAddress?: string;
   caipId?: string;
+  customRpcHeaders?: Record<string, string>;
 }): Promise<NetworkFees> {
   const provider = await getProvider({
     chainId,
     chainName,
     rpcUrl,
     multiContractAddress,
+    customRpcHeaders,
   });
 
   if (!proxyApiUrl) {

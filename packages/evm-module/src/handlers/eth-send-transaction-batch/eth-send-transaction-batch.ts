@@ -50,6 +50,7 @@ export const ethSendTransactionBatch = async ({
     rpcUrl: network.rpcUrl,
     multiContractAddress: network.utilityAddresses?.multicall,
     pollingInterval: 1000,
+    customRpcHeaders: network.customRpcHeaders,
   });
 
   // Ensure all transactions in the batch have the nonce set

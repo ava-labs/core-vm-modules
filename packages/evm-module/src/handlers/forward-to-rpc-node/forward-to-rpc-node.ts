@@ -10,6 +10,7 @@ export const forwardToRpcNode = async (request: RpcRequest, network: Network) =>
       rpcUrl: network.rpcUrl,
       multiContractAddress: network.utilityAddresses?.multicall,
       pollingInterval: 1000,
+      customRpcHeaders: network.customRpcHeaders,
     });
 
     const response = await provider.send(request.method, request.params as unknown[]);

@@ -49,7 +49,7 @@ export const avalancheSignTransaction = async ({
 
   const vm = Avalanche.getVmByChainAlias(chainAlias);
   const isTestnet = network.isTestnet ?? false;
-  const provider = await getProvider({ isTestnet });
+  const provider = await getProvider({ isTestnet, customRpcHeaders: network.customRpcHeaders });
 
   const contextParserResult = getAccountFromContext(request.context);
 

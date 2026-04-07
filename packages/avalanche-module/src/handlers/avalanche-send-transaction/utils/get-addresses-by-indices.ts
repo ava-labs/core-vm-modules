@@ -8,6 +8,7 @@ export const getAddressesByIndices = async ({
   isTestnet,
   xpubXP,
   externalXPAddresses,
+  customRpcHeaders,
 }: {
   indices: number[];
   chainAlias: 'X' | 'P';
@@ -15,9 +16,10 @@ export const getAddressesByIndices = async ({
   isTestnet: boolean;
   xpubXP?: string;
   externalXPAddresses?: { index: number; address: string }[];
+  customRpcHeaders?: Record<string, string>;
 }): Promise<string[]> => {
   if (xpubXP) {
-    const provider = await getProvider({ isTestnet });
+    const provider = await getProvider({ isTestnet, customRpcHeaders });
 
     return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
   }

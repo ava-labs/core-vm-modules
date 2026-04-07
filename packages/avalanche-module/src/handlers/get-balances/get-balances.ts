@@ -30,7 +30,10 @@ export const getBalances = async ({
   glacierService: AvalancheGlacierService;
   tokenService: TokenService;
 }): Promise<GetAvalancheBalancesResponse> => {
-  const provider = await getProvider({ isTestnet: Boolean(network.isTestnet) });
+  const provider = await getProvider({
+    isTestnet: Boolean(network.isTestnet),
+    customRpcHeaders: network.customRpcHeaders,
+  });
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');

@@ -6,6 +6,7 @@ export type Network = {
   caipId?: string;
   chainName: string;
   rpcUrl: string;
+  customRpcHeaders?: Record<string, string>;
   utilityAddresses?: {
     multicall: string;
   };
