@@ -4,6 +4,14 @@
  * which is what viem exposes as `error.details` to dapps.
  */
 export const rpcErrorOpts = (message: string, cause: unknown) => ({
-  message: `${message}${cause instanceof Error ? `: ${cause.message}` : ''}`,
+  message: `${message}${
+    cause instanceof Error
+      ? `: ${cause.message}`
+      : typeof cause === 'string'
+      ? `: ${cause}`
+      : cause
+      ? `: ${String(cause)}`
+      : ''
+  }`,
   data: { cause },
 });
