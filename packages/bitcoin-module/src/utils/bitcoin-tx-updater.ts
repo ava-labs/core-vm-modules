@@ -16,7 +16,7 @@ export const getTxUpdater = (
   requests.set(requestId, { signingData, displayData });
 
   return {
-    updateTx: ({ feeRate }) => {
+    updateTx: async ({ feeRate }) => {
       const request = requests.get(requestId);
 
       if (!request) {
@@ -33,17 +33,14 @@ export const getTxUpdater = (
         account,
         data: { to, amount, balance },
       } = signingData;
-      const { inputs, outputs, fee } = createTransferTx(
-        to,
-        account,
-        amount,
-        feeRate,
-        balance.utxos as BitcoinInputUTXO[],
-        provider.getNetwork(),
-      );
+
+      const freshBalance = await provider.getUtxoBalance(account, true);
+      const utxos = (freshBalance?.utxos ?? balance.utxos) as BitcoinInputUTXO[];
+
+      const { inputs, outputs, fee } = createTransferTx(to, account, amount, feeRate, utxos, provider.getNetwork());
 
       if (!inputs || !outputs) {
-        throw rpcErrors.internal('Unable to create transaction');
+        throw rpcErrors.internal(`Unable to create transaction: insufficient funds for fee (${fee} sats required)`);
       }
 
       const newData = {
