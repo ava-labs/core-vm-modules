@@ -14,6 +14,7 @@ import {
 import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import waitForExpect from 'wait-for-expect';
 
 // doesn't print the ugly console errors out
@@ -31,6 +32,9 @@ jest.mock('../../utils/evm-tx-updater', () => ({
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
+jest.mock('../../utils/resolve-agent-identity', () => ({
+  resolveAgentIdentity: jest.fn(),
+}));
 const mockBlockaid = {
   evm: {
     transaction: {
@@ -55,6 +59,7 @@ const mockApprovalController: jest.Mocked<ApprovalController> = {
 
 const mockParseRequestParams = parseRequestParams as jest.MockedFunction<typeof parseRequestParams>;
 const mockEstimateGasLimit = estimateGasLimit as jest.MockedFunction<typeof estimateGasLimit>;
+const mockResolveAgentIdentity = resolveAgentIdentity as jest.MockedFunction<typeof resolveAgentIdentity>;
 const mockGetNonce = getNonce as jest.MockedFunction<typeof getNonce>;
 const mockSend = jest.fn();
 const mockGetTransactionReceipt = jest.fn();
@@ -167,6 +172,15 @@ const signingData = {
 const testSignedTxHash = '0xsignedtxhash';
 const testTxHash = '0xtxhash';
 
+const testAgentIdentity = {
+  agentId: '1599',
+  agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+  owner: '0x1234567890123456789012345678901234567890',
+  reputationScore: 88,
+  metadataUri: 'ipfs://agent.json',
+  trustLevel: 'high' as const,
+};
+
 describe('eth_sendTransaction handler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -177,6 +191,7 @@ describe('eth_sendTransaction handler', () => {
     });
 
     mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
+    mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
   });
 
   it('should return error if request params are invalid', async () => {
@@ -735,3 +750,37 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     });
   }
 };
+
+describe('agent identity propagation', () => {
+  it('threads resolved agent identity into approval display data', async () => {
+    mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
+    await ethSendTransaction({
+      ...testRequestParams(),
+      request: {
+        ...testRequestParams().request,
+        context: {
+          agentIdentity: {
+            agentId: '1599',
+            agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+          },
+        },
+      },
+    });
+
+    expect(mockResolveAgentIdentity).toHaveBeenCalledWith({
+      declaration: {
+        agentId: '1599',
+        agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+      },
+      rpcUrl: testNetwork.rpcUrl,
+    });
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          agentIdentity: testAgentIdentity,
+        }),
+      }),
+    );
+  });
+});
