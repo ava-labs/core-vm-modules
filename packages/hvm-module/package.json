@@ -27,7 +27,7 @@
     "hypersdk-client": "0.4.16",
     "@noble/hashes": "1.5.0",
     "@scure/base": "1.2.4",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.82",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.5ab932b.0",
     "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8"
   },
