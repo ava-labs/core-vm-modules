@@ -1,5 +1,16 @@
 # @avalabs/evm-module
 
+## 3.7.0
+
+### Minor Changes
+
+- dd311fe: allow passing custom HTTP headers to RPC calls
+
+### Patch Changes
+
+- Updated dependencies [dd311fe]
+  - @avalabs/vm-module-types@3.7.0
+
 ## 3.6.2
 
 ### Patch Changes
