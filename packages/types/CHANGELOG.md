@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.7.0
+
+### Minor Changes
+
+- dd311fe: allow passing custom HTTP headers to RPC calls
+
 ## 3.6.2
 
 ## 3.6.1
