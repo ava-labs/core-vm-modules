@@ -18,7 +18,7 @@ export const getAddress = async ({
     throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
-  const provXP = await getProvider({ isTestnet });
+  const provXP = await getProvider({ isTestnet, customRpcHeaders: network?.customRpcHeaders });
   let xpPub: Buffer;
 
   switch (walletType) {

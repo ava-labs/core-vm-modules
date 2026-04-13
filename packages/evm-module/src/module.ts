@@ -75,6 +75,7 @@ export class EvmModule implements Module {
       rpcUrl: network.rpcUrl,
       multiContractAddress: network.utilityAddresses?.multicall,
       pollingInterval: 1000,
+      customRpcHeaders: network.customRpcHeaders,
     });
   }
 
@@ -122,7 +123,7 @@ export class EvmModule implements Module {
   }
 
   getNetworkFee(network: NetworkFeeParam): Promise<NetworkFees> {
-    const { chainId, chainName, rpcUrl, utilityAddresses, caipId } = network;
+    const { chainId, chainName, rpcUrl, utilityAddresses, caipId, customRpcHeaders } = network;
     return getNetworkFee({
       chainId,
       chainName,
@@ -130,6 +131,7 @@ export class EvmModule implements Module {
       multiContractAddress: utilityAddresses?.multicall,
       caipId,
       proxyApiUrl: this.#proxyApiUrl,
+      customRpcHeaders,
     });
   }
 

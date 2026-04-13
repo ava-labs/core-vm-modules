@@ -50,7 +50,7 @@ export const avalancheSendTransaction = async ({
     const vm = Avalanche.getVmByChainAlias(chainAlias);
     const txBytes = utils.hexToBuffer(transactionHex);
     const isTestnet = network.isTestnet ?? false;
-    const provider = await getProvider({ isTestnet });
+    const provider = await getProvider({ isTestnet, customRpcHeaders: network.customRpcHeaders });
     const contextResult = getAccountFromContext(request.context);
 
     if (!contextResult.success) {
@@ -101,6 +101,7 @@ export const avalancheSendTransaction = async ({
         isTestnet,
         xpubXP,
         externalXPAddresses,
+        customRpcHeaders: network.customRpcHeaders,
       });
 
       const internalAddresses = await getAddressesByIndices({
@@ -110,6 +111,7 @@ export const avalancheSendTransaction = async ({
         isTestnet,
         xpubXP,
         externalXPAddresses,
+        customRpcHeaders: network.customRpcHeaders,
       });
 
       const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
