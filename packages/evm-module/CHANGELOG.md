@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.7.1
+
+### Patch Changes
+
+- 017571e: fix sepolia erc20 balances
+  - @avalabs/vm-module-types@3.7.1
+
 ## 3.7.0
 
 ### Minor Changes
