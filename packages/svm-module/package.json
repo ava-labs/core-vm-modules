@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/svm-module",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
