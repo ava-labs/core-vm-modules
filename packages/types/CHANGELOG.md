@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.7.2
+
+### Patch Changes
+
+- aed1605: Use polygon gas stations
+
 ## 3.7.1
 
 ## 3.7.0

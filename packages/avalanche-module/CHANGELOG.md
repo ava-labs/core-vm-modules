@@ -1,5 +1,13 @@
 # @avalabs/avalanche-module
 
+## 3.7.2
+
+### Patch Changes
+
+- aed1605: Use polygon gas stations
+- Updated dependencies [aed1605]
+  - @avalabs/vm-module-types@3.7.2
+
 ## 3.7.1
 
 ### Patch Changes
