@@ -140,6 +140,97 @@ describe('get-network-fee', () => {
       displayDecimals: 9,
     });
   });
+  describe('for Polygon', () => {
+    const polygonParams = {
+      ...params,
+      chainId: 137,
+      caipId: 'eip155:137',
+    };
+
+    const gasStationResponse = {
+      safeLow: { maxPriorityFee: 30.0, maxFee: 31.0 },
+      standard: { maxPriorityFee: 33.0, maxFee: 34.0 },
+      fast: { maxPriorityFee: 37.0, maxFee: 38.0 },
+      estimatedBaseFee: 1.0,
+      blockTime: 2,
+      blockNumber: 50555440,
+    };
+
+    it('uses Polygon Gas Station for mainnet', async () => {
+      (global.fetch as jest.Mock).mockImplementationOnce(async () => ({
+        ok: true,
+        json: async () => gasStationResponse,
+      }));
+
+      const fee = await getNetworkFee(polygonParams);
+
+      expect(global.fetch).toHaveBeenCalledWith('https://gasstation.polygon.technology/v2');
+      expect(fee).toEqual({
+        baseFee: 1_000_000_000n,
+        low: {
+          maxFeePerGas: 31_000_000_000n,
+          maxPriorityFeePerGas: 30_000_000_000n,
+        },
+        medium: {
+          maxFeePerGas: 34_000_000_000n,
+          maxPriorityFeePerGas: 33_000_000_000n,
+        },
+        high: {
+          maxFeePerGas: 38_000_000_000n,
+          maxPriorityFeePerGas: 37_000_000_000n,
+        },
+        isFixedFee: false,
+        displayDecimals: 9,
+      });
+    });
+
+    it('uses Polygon Amoy Gas Station for testnet', async () => {
+      const amoyParams = { ...polygonParams, chainId: 80002, caipId: 'eip155:80002' };
+
+      (global.fetch as jest.Mock).mockImplementationOnce(async () => ({
+        ok: true,
+        json: async () => gasStationResponse,
+      }));
+
+      const fee = await getNetworkFee(amoyParams);
+
+      expect(global.fetch).toHaveBeenCalledWith('https://gasstation-amoy.polygon.technology/');
+      expect(fee.baseFee).toBe(1_000_000_000n);
+      expect(fee.isFixedFee).toBe(false);
+    });
+
+    it('falls back to generic EIP-1559 if Gas Station fails', async () => {
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Gas Station unavailable'));
+
+      jest.spyOn(JsonRpcProvider.prototype, 'getBlock').mockImplementationOnce(
+        async () =>
+          ({
+            baseFeePerGas: 1_000_000_000n,
+          }) as Block,
+      );
+
+      const fee = await getNetworkFee(polygonParams);
+
+      expect(fee).toEqual({
+        baseFee: 3_000_000_000n,
+        low: {
+          maxFeePerGas: 3_500_000_000n,
+          maxPriorityFeePerGas: 500_000_000n,
+        },
+        medium: {
+          maxFeePerGas: 5_000_000_000n,
+          maxPriorityFeePerGas: 2_000_000_000n,
+        },
+        high: {
+          maxFeePerGas: 6_000_000_000n,
+          maxPriorityFeePerGas: 3_000_000_000n,
+        },
+        isFixedFee: false,
+        displayDecimals: 9,
+      });
+    });
+  });
+
   it('should return with the correct network fees and default gas multiplier and the fiexed fee is `true` because of the newtork chainId (swimmer)', async () => {
     jest.spyOn(JsonRpcProvider.prototype, 'getBlock').mockImplementationOnce(async () => {
       return {

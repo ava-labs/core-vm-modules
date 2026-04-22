@@ -16,6 +16,55 @@ const BASE_PRIORITY_FEE_WEI = 500000000n; //0.5 GWei
 const isCChain = (chainId: number) =>
   chainId === ChainId.AVALANCHE_TESTNET_ID || chainId === ChainId.AVALANCHE_MAINNET_ID;
 
+const POLYGON_MAINNET_CHAIN_ID = 137;
+const POLYGON_AMOY_CHAIN_ID = 80002;
+
+const isPolygon = (chainId: number) => chainId === POLYGON_MAINNET_CHAIN_ID || chainId === POLYGON_AMOY_CHAIN_ID;
+
+const POLYGON_GAS_STATION_URL: Record<number, string> = {
+  [POLYGON_MAINNET_CHAIN_ID]: 'https://gasstation.polygon.technology/v2',
+  [POLYGON_AMOY_CHAIN_ID]: 'https://gasstation-amoy.polygon.technology/',
+};
+
+type PolygonGasStationResponse = {
+  safeLow: { maxPriorityFee: number; maxFee: number };
+  standard: { maxPriorityFee: number; maxFee: number };
+  fast: { maxPriorityFee: number; maxFee: number };
+  estimatedBaseFee: number;
+};
+
+function gweiToWei(gwei: number): bigint {
+  return BigInt(Math.round(gwei * 1e9));
+}
+
+async function getPolygonGasStationFees(chainId: number): Promise<NetworkFees> {
+  const url = POLYGON_GAS_STATION_URL[chainId];
+  if (!url) throw new Error(`No gas station URL for Polygon chain ${chainId}`);
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Polygon Gas Station returned ${response.status}`);
+
+  const data: PolygonGasStationResponse = await response.json();
+
+  return {
+    baseFee: gweiToWei(data.estimatedBaseFee),
+    low: {
+      maxFeePerGas: gweiToWei(data.safeLow.maxFee),
+      maxPriorityFeePerGas: gweiToWei(data.safeLow.maxPriorityFee),
+    },
+    medium: {
+      maxFeePerGas: gweiToWei(data.standard.maxFee),
+      maxPriorityFeePerGas: gweiToWei(data.standard.maxPriorityFee),
+    },
+    high: {
+      maxFeePerGas: gweiToWei(data.fast.maxFee),
+      maxPriorityFeePerGas: gweiToWei(data.fast.maxPriorityFee),
+    },
+    isFixedFee: false,
+    displayDecimals: 9,
+  };
+}
+
 /**
  * Returns {@link NetworkFees} based on {@link DEFAULT_PRESETS} multipliers.
  * @throws Error if provider does not support eip-1559
@@ -61,6 +110,14 @@ export async function getNetworkFee({
       };
     } catch (err) {
       console.error('eth_suggestPriceOptions call failed, falling back to legacy fee fetching');
+    }
+  }
+
+  if (isPolygon(chainId)) {
+    try {
+      return await getPolygonGasStationFees(chainId);
+    } catch (err) {
+      console.error('Polygon Gas Station call failed, falling back to generic fee fetching');
     }
   }
 
