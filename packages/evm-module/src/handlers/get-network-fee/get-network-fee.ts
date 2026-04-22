@@ -23,7 +23,7 @@ const isPolygon = (chainId: number) => chainId === POLYGON_MAINNET_CHAIN_ID || c
 
 const POLYGON_GAS_STATION_URL: Record<number, string> = {
   [POLYGON_MAINNET_CHAIN_ID]: 'https://gasstation.polygon.technology/v2',
-  [POLYGON_AMOY_CHAIN_ID]: 'https://gasstation-amoy.polygon.technology/',
+  [POLYGON_AMOY_CHAIN_ID]: 'https://gasstation.polygon.technology/amoy',
 };
 
 type PolygonGasStationResponse = {

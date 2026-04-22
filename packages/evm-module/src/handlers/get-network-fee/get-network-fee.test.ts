@@ -194,7 +194,7 @@ describe('get-network-fee', () => {
 
       const fee = await getNetworkFee(amoyParams);
 
-      expect(global.fetch).toHaveBeenCalledWith('https://gasstation-amoy.polygon.technology/');
+      expect(global.fetch).toHaveBeenCalledWith('https://gasstation.polygon.technology/amoy');
       expect(fee.baseFee).toBe(1_000_000_000n);
       expect(fee.isFixedFee).toBe(false);
     });
