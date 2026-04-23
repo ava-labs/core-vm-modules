@@ -1,5 +1,6 @@
 import {
   TxType,
+  type AddAutoRenewedValidatorTx,
   type AddPermissionlessDelegatorTx,
   type AddPermissionlessValidatorTx,
   type AddSubnetValidatorTx,
@@ -16,6 +17,8 @@ import {
   type IncreaseL1ValidatorBalanceTx,
   type RegisterL1ValidatorTx,
   type RemoveSubnetValidatorTx,
+  type RewardAutoRenewedValidatorTx,
+  type SetAutoRenewedValidatorConfigTx,
   type SetL1ValidatorWeightTx,
   type StakingDetails,
   type SubnetDetails,
@@ -44,12 +47,21 @@ export const isRegisterL1ValidatorTx = (tx: TxDetails): tx is RegisterL1Validato
   tx.type === TxType.RegisterL1Validator;
 export const isSetL1ValidatorWeightTx = (tx: TxDetails): tx is SetL1ValidatorWeightTx =>
   tx.type === TxType.SetL1ValidatorWeight;
+export const isAddAutoRenewedValidatorTx = (tx: TxDetails): tx is AddAutoRenewedValidatorTx =>
+  tx.type === TxType.AddAutoRenewedValidator;
+export const isSetAutoRenewedValidatorConfigTx = (tx: TxDetails): tx is SetAutoRenewedValidatorConfigTx =>
+  tx.type === TxType.SetAutoRenewedValidatorConfig;
+export const isRewardAutoRenewedValidatorTx = (tx: TxDetails): tx is RewardAutoRenewedValidatorTx =>
+  tx.type === TxType.RewardAutoRenewedValidator;
 
 export const isStakingDetails = (tx: TxDetails): tx is StakingDetails =>
   isAddPermissionlessDelegatorTx(tx) ||
   isAddPermissionlessValidatorTx(tx) ||
   isAddSubnetValidatorTx(tx) ||
-  isRemoveSubnetValidatorTx(tx);
+  isRemoveSubnetValidatorTx(tx) ||
+  isAddAutoRenewedValidatorTx(tx) ||
+  isSetAutoRenewedValidatorConfigTx(tx) ||
+  isRewardAutoRenewedValidatorTx(tx);
 export const isExportImportTxDetails = (tx: TxDetails): tx is ExportImportTxDetails => isExportTx(tx) || isImportTx(tx);
 export const isChainDetails = (tx: TxDetails): tx is ChainDetails => isBaseTx(tx);
 export const isBlockchainDetails = (tx: TxDetails): tx is BlockchainDetails => isCreateChainTx(tx);

@@ -1,5 +1,6 @@
 import { type Network, type TxDetails } from '@avalabs/vm-module-types';
 import {
+  isAddAutoRenewedValidatorTx,
   isAddPermissionlessDelegatorTx,
   isAddPermissionlessValidatorTx,
   isAddSubnetValidatorTx,
@@ -7,6 +8,8 @@ import {
   isExportTx,
   isImportTx,
   isRemoveSubnetValidatorTx,
+  isRewardAutoRenewedValidatorTx,
+  isSetAutoRenewedValidatorConfigTx,
   isSubnetDetails,
   isConvertSubnetToL1Tx,
   isDisableL1ValidatorTx,
@@ -16,6 +19,7 @@ import {
   isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
 import {
+  addAutoRenewedValidatorDetailSection,
   convertSubnetToL1DetailSection,
   addSubnetValidatorDetailSection,
   removeSubnetValidatorDetailSection,
@@ -29,6 +33,8 @@ import {
   disableL1ValidatorDetailSection,
   increaseL1ValidatorBalanceDetailSection,
   registerL1ValidatorDetailSection,
+  rewardAutoRenewedValidatorDetailSection,
+  setAutoRenewedValidatorConfigDetailSection,
   setL1ValidatorWeightDetailSection,
 } from './transaction-detail-sections';
 
@@ -82,5 +88,17 @@ export const getTransactionDetailSections = (
     return registerL1ValidatorDetailSection(txDetails, symbol);
   } else if (isSetL1ValidatorWeightTx(txDetails)) {
     return setL1ValidatorWeightDetailSection(txDetails, symbol);
+  } else if (isAddAutoRenewedValidatorTx(txDetails)) {
+    if (!context) throw new Error('context (network, signerAccount) is required for AddAutoRenewedValidator');
+    return addAutoRenewedValidatorDetailSection({
+      tx: txDetails,
+      symbol,
+      network: context.network,
+      signerAccount: context.signerAccount,
+    });
+  } else if (isSetAutoRenewedValidatorConfigTx(txDetails)) {
+    return setAutoRenewedValidatorConfigDetailSection(txDetails, symbol);
+  } else if (isRewardAutoRenewedValidatorTx(txDetails)) {
+    return rewardAutoRenewedValidatorDetailSection(txDetails, symbol);
   }
 };
