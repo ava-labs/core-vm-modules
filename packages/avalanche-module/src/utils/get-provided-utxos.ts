@@ -8,6 +8,7 @@ export const getProvidedUtxos = ({ utxoHexes = [], vm }: { utxoHexes?: string[];
       return Utxo.fromBytes(utxoBytes, codec)[0];
     });
   } catch (err) {
+    console.error('Error getting provided utxos', err);
     return [];
   }
 };
