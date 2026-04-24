@@ -848,9 +848,9 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         items: [
           { label: 'Node', value: 'NodeID', type: 'nodeID' },
           { label: 'Stake Amount', value: 50n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' },
-          { label: 'Delegation Fee', value: '30 %', alignment: 'horizontal', type: 'text' },
-          { label: 'Auto-Compound Reward Shares', value: '50 %', alignment: 'horizontal', type: 'text' },
-          { label: 'Renewal Period', value: '14 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Delegation fee', value: '30 %', alignment: 'horizontal', type: 'text' },
+          { label: 'Cycle duration', value: '14 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Compound rewards percentage', value: '50 %', alignment: 'horizontal', type: 'text' },
         ],
       },
       {
@@ -886,7 +886,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       });
       const stakingItems = details?.find((s) => s.title === 'Staking Details')?.items;
       expect(stakingItems).toContainEqual({
-        label: 'Auto-Compound Reward Shares',
+        label: 'Compound rewards percentage',
         value: expected,
         alignment: 'horizontal',
         type: 'text',
@@ -909,8 +909,8 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         title: 'Staking Details',
         items: [
           { label: 'Validator Tx ID', value: 'ValidatorTxId', type: 'nodeID' },
-          { label: 'Auto-Compound Reward Shares', value: '100 %', alignment: 'horizontal', type: 'text' },
-          { label: 'Renewal Period', value: '30 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Cycle duration', value: '30 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Compound rewards percentage', value: '100 %', alignment: 'horizontal', type: 'text' },
         ],
       },
       {

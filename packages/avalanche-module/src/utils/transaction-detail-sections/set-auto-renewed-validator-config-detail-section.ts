@@ -14,8 +14,8 @@ export const setAutoRenewedValidatorConfigDetailSection = (tx: SetAutoRenewedVal
 
   const items: DetailItem[] = [
     nodeIDItem('Validator Tx ID', txId),
-    textItem('Auto-Compound Reward Shares', `${autoCompoundRewardShares / PPM_TO_PERCENT_DIVISOR} %`),
-    textItem('Renewal Period', `${Number(period) / SECONDS_IN_DAY} days`),
+    textItem('Cycle duration', `${Number(period) / SECONDS_IN_DAY} days`),
+    textItem('Compound rewards percentage', `${autoCompoundRewardShares / PPM_TO_PERCENT_DIVISOR} %`),
   ];
 
   details.push({

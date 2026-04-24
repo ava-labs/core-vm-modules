@@ -42,9 +42,9 @@ export const addAutoRenewedValidatorDetailSection = ({
   const items: DetailItem[] = [
     nodeIDItem('Node', nodeID),
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
-    textItem('Delegation Fee', `${delegationFee / PPM_TO_PERCENT_DIVISOR} %`),
-    textItem('Auto-Compound Reward Shares', `${autoCompoundRewardShares / PPM_TO_PERCENT_DIVISOR} %`),
-    textItem('Renewal Period', `${Number(period) / SECONDS_IN_DAY} days`),
+    textItem('Delegation fee', `${delegationFee / PPM_TO_PERCENT_DIVISOR} %`),
+    textItem('Cycle duration', `${Number(period) / SECONDS_IN_DAY} days`),
+    textItem('Compound rewards percentage', `${autoCompoundRewardShares / PPM_TO_PERCENT_DIVISOR} %`),
   ];
 
   details.push({
