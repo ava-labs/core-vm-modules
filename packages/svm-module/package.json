@@ -22,10 +22,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-chains-sdk": "3.1.0-canary.a1461ba.0",
-    "@avalabs/core-coingecko-sdk": "3.1.0-canary.a1461ba.0",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.a1461ba.0",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.a1461ba.0",
+    "@avalabs/core-chains-sdk": "3.1.0-canary.1c1c1d0.0",
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.1c1c1d0.0",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.1c1c1d0.0",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.1c1c1d0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.48.0",
     "@metamask/rpc-errors": "6.3.0",
