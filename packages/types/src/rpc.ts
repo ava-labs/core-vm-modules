@@ -335,10 +335,10 @@ export type EvmTxUpdateFn = (data: {
   approvalLimit?: Hex; // as hexadecimal, 0x-prefixed
 }) => { displayData: DisplayData; signingData: SigningData_EthSendTx };
 
-export type BtcTxUpdateFn = (data: { feeRate?: number }) => {
+export type BtcTxUpdateFn = (data: { feeRate?: number }) => Promise<{
   displayData: DisplayData;
   signingData: Extract<SigningData, { type: RpcMethod.BITCOIN_SEND_TRANSACTION }>;
-};
+}>;
 
 export type SigningRequest<Data = SigningData> = {
   displayData: DisplayData;

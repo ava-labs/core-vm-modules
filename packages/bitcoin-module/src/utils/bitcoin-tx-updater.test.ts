@@ -40,10 +40,26 @@ describe('bitcoin-tx-updater', () => {
     ],
   } as unknown as TokenWithBalanceBTC;
 
-  const network = {};
-  const provider = { getNetwork: jest.fn().mockReturnValue(network) } as unknown as BitcoinProvider;
+  const freshUtxos = [
+    {
+      txHash: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2',
+      txHex: '0200000001c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8',
+      index: 1,
+      value: 6000,
+      script: '76a914c2e9f0a1b3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8ac',
+      blockHeight: 813000,
+      confirmations: 10,
+      confirmedTime: '2024-06-02T08:00:00Z',
+    },
+  ];
 
-  it('returns the updateTx callback', () => {
+  const network = {};
+  const provider = {
+    getNetwork: jest.fn().mockReturnValue(network),
+    getUtxoBalance: jest.fn().mockResolvedValue({ utxos: freshUtxos }),
+  } as unknown as BitcoinProvider;
+
+  it('fetches fresh UTXOs and rebuilds the transaction', async () => {
     const updatedTx = {
       inputs: [],
       outputs: [],
@@ -72,7 +88,7 @@ describe('bitcoin-tx-updater', () => {
       provider,
     );
 
-    expect(updateTx({ feeRate: 2 })).toEqual({
+    await expect(updateTx({ feeRate: 2 })).resolves.toEqual({
       signingData: {
         type: RpcMethod.BITCOIN_SEND_TRANSACTION,
         account: 'from',
@@ -90,6 +106,42 @@ describe('bitcoin-tx-updater', () => {
       displayData: {},
     });
 
-    expect(createTransferTx).toHaveBeenCalledWith('to', 'from', 1, 2, testBtcBalance.utxos, network);
+    expect(provider.getUtxoBalance).toHaveBeenCalledWith('from', true);
+    expect(createTransferTx).toHaveBeenCalledWith('to', 'from', 1, 2, freshUtxos, network);
+  });
+
+  it('falls back to original UTXOs when fresh fetch fails', async () => {
+    const updatedTx = {
+      inputs: [],
+      outputs: [],
+      fee: 100,
+    };
+
+    jest.mocked(createTransferTx).mockReturnValue(updatedTx);
+    jest.mocked(provider.getUtxoBalance).mockResolvedValueOnce(undefined as never);
+
+    const { updateTx } = getTxUpdater(
+      'abcd-1234-fallback',
+      {
+        type: RpcMethod.BITCOIN_SEND_TRANSACTION,
+        account: 'from',
+        data: {
+          to: 'to',
+          amount: 1,
+          fee: 1,
+          feeRate: 1,
+          gasLimit: 1,
+          inputs: testInputs,
+          outputs: testOutputs,
+          balance: testBtcBalance,
+        },
+      },
+      {} as DisplayData,
+      provider,
+    );
+
+    await updateTx({ feeRate: 3 });
+
+    expect(createTransferTx).toHaveBeenCalledWith('to', 'from', 1, 3, testBtcBalance.utxos, network);
   });
 });
