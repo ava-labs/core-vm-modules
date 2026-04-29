@@ -18,7 +18,7 @@ export const parseTxDisplayTitle = (tx: Avalanche.Tx): string => {
     case TxType.CreateChain:
       return 'Do you want to create this chain?';
     case TxType.CreateSubnet:
-      return 'Do you want to create this subnet?';
+      return 'Do you want to create this L1?';
     case TxType.RemoveSubnetValidator:
       return 'Do you want to remove this subnet validator?';
     case TxType.ConvertSubnetToL1:

@@ -7,10 +7,10 @@ export const subnetDetailSection = (tx: CreateSubnetTx, symbol: string) => {
   const { txFee, threshold, controlKeys } = tx;
 
   details.push({
-    title: 'Subnet Details',
+    title: 'L1 Details',
     items: [
-      textItem(controlKeys.length > 1 ? 'Owners' : 'Owner', controlKeys.join('\n'), 'vertical'),
-      textItem('Signature Threshold', `${threshold}/${controlKeys.length}`, 'vertical'),
+      textItem(controlKeys.length > 1 ? 'Owners' : 'Owner', controlKeys.join('\n'), 'horizontal'),
+      textItem('Signature Threshold', `${threshold}/${controlKeys.length}`, 'horizontal'),
     ],
   });
   if (txFee) {
