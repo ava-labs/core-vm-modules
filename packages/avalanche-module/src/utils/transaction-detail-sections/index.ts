@@ -14,4 +14,3 @@ export { registerL1ValidatorDetailSection } from './register-l1-validator-detail
 export { setL1ValidatorWeightDetailSection } from './set-l1-validator-weight-detail-section';
 export { addAutoRenewedValidatorDetailSection } from './add-auto-renewed-validator-detail-section';
 export { setAutoRenewedValidatorConfigDetailSection } from './set-auto-renewed-validator-config-detail-section';
-export { rewardAutoRenewedValidatorDetailSection } from './reward-auto-renewed-validator-detail-section';

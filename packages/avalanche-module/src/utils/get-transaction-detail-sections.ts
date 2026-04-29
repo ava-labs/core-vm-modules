@@ -8,7 +8,6 @@ import {
   isExportTx,
   isImportTx,
   isRemoveSubnetValidatorTx,
-  isRewardAutoRenewedValidatorTx,
   isSetAutoRenewedValidatorConfigTx,
   isSubnetDetails,
   isConvertSubnetToL1Tx,
@@ -33,7 +32,6 @@ import {
   disableL1ValidatorDetailSection,
   increaseL1ValidatorBalanceDetailSection,
   registerL1ValidatorDetailSection,
-  rewardAutoRenewedValidatorDetailSection,
   setAutoRenewedValidatorConfigDetailSection,
   setL1ValidatorWeightDetailSection,
 } from './transaction-detail-sections';
@@ -98,7 +96,5 @@ export const getTransactionDetailSections = (
     });
   } else if (isSetAutoRenewedValidatorConfigTx(txDetails)) {
     return setAutoRenewedValidatorConfigDetailSection(txDetails, symbol);
-  } else if (isRewardAutoRenewedValidatorTx(txDetails)) {
-    return rewardAutoRenewedValidatorDetailSection(txDetails, symbol);
   }
 };

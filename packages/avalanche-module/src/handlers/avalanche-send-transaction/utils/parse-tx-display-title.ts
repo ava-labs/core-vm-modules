@@ -35,8 +35,6 @@ export const parseTxDisplayTitle = (tx: Avalanche.Tx): string => {
       return 'Do you want to add this auto-renewed validator?';
     case TxType.SetAutoRenewedValidatorConfig:
       return 'Do you want to update this auto-renewed validator config?';
-    case TxType.RewardAutoRenewedValidator:
-      return 'Do you want to reward this auto-renewed validator?';
     default:
       return 'Sign Message';
   }

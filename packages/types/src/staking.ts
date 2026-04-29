@@ -14,8 +14,7 @@ export type StakingDetails =
   | AddSubnetValidatorTx
   | RemoveSubnetValidatorTx
   | AddAutoRenewedValidatorTx
-  | SetAutoRenewedValidatorConfigTx
-  | RewardAutoRenewedValidatorTx;
+  | SetAutoRenewedValidatorConfigTx;
 export type ExportImportTxDetails = ExportTx | ImportTx;
 export type ChainDetails = BaseTx;
 export type BlockchainDetails = CreateChainTx;
@@ -149,13 +148,6 @@ export type SetAutoRenewedValidatorConfigTx = {
   txFee: bigint;
 };
 
-export type RewardAutoRenewedValidatorTx = {
-  type: TxType.RewardAutoRenewedValidator;
-  // ID of the AddAutoRenewedValidator tx whose validator is being rewarded (ACP-236)
-  txId: string;
-  txFee: bigint;
-};
-
 export type FeeData = {
   totalAvaxBurned: bigint;
   totalAvaxOutput: bigint;
@@ -223,6 +215,5 @@ export enum TxType {
   DisableL1Validator = 'disable_l1_validator',
   AddAutoRenewedValidator = 'add_auto_renewed_validator',
   SetAutoRenewedValidatorConfig = 'set_auto_renewed_validator_config',
-  RewardAutoRenewedValidator = 'reward_auto_renewed_validator',
   Unknown = 'unknown',
 }
