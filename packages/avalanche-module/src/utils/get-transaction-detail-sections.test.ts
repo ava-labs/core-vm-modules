@@ -218,9 +218,8 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         items: [
           {
             label: 'Owners',
-            value: '0xKey1\n0xKey2',
-            alignment: 'horizontal',
-            type: 'text',
+            value: ['0xKey1', '0xKey2'],
+            type: 'addressList',
           },
           {
             label: 'Signature Threshold',
