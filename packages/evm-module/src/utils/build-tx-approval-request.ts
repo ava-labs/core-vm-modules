@@ -19,6 +19,7 @@ export const buildTxApprovalRequest = (
   network: Network,
   transaction: TransactionParams,
   { isSimulationSuccessful, balanceChange, tokenApprovals, alert }: TransactionSimulationResult,
+  agentIdentity?: DisplayData['agentIdentity'],
 ) => {
   const { dappInfo } = request;
   const transactionType = parseERC20TransactionType(transaction);
@@ -55,6 +56,7 @@ export const buildTxApprovalRequest = (
     balanceChange,
     tokenApprovals,
     isSimulationSuccessful,
+    agentIdentity,
   };
 
   const signingData: SigningData = {

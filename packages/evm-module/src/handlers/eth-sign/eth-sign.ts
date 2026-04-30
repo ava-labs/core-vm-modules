@@ -18,6 +18,8 @@ import { processJsonRpcSimulation } from '../../utils/process-transaction-simula
 import { textItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
+import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 
 export const ethSign = async ({
   request,
@@ -116,6 +118,9 @@ export const ethSign = async ({
     blockaid,
   });
 
+  const declaration = getAgentIdentityFromContext(request);
+  const agentIdentity = declaration ? await resolveAgentIdentity({ declaration, rpcUrl: network.rpcUrl }) : undefined;
+
   const displayData: DisplayData = {
     title: 'Sign Message',
     dAppInfo: {
@@ -138,6 +143,7 @@ export const ethSign = async ({
     alert: simulationResult?.alert ?? alert,
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,
+    agentIdentity,
   };
 
   // prompt user for approval

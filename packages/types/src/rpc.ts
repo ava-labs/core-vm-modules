@@ -1,6 +1,7 @@
 import type { TransactionRequest } from 'ethers';
 import type { Avalanche, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 import type { Caip2ChainId, Hex } from './common';
+import type { AgentIdentity } from './agent-identity';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { TokenWithBalanceBTC } from './balance';
@@ -25,6 +26,7 @@ export enum RpcMethod {
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
   AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
+  AVALANCHE_DECLARE_AGENT_IDENTITY = 'avalanche_declareAgentIdentity',
 
   /* HVM */
   HVM_SIGN_TRANSACTION = 'hvm_signTransaction',
@@ -201,6 +203,7 @@ export type DisplayData = {
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
   isSimulationSuccessful?: boolean;
+  agentIdentity?: AgentIdentity;
 };
 
 export enum AlertType {

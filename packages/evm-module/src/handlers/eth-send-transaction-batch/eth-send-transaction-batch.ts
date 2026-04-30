@@ -19,6 +19,8 @@ import { simulateTransactionBatch } from './utils/process-transaction-batch-simu
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
+import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 
 export const ethSendTransactionBatch = async ({
   request,
@@ -84,6 +86,9 @@ export const ethSendTransactionBatch = async ({
     };
   }
 
+  const declaration = getAgentIdentityFromContext(request);
+  const agentIdentity = declaration ? await resolveAgentIdentity({ declaration, rpcUrl: network.rpcUrl }) : undefined;
+
   const displayData: DisplayData = {
     title: 'Do you approve these transactions?',
     details: [
@@ -104,9 +109,12 @@ export const ethSendTransactionBatch = async ({
     alert,
     tokenApprovals,
     networkFeeSelector: true,
+    agentIdentity,
   };
 
-  const signingRequests = scans.map((scan) => buildTxApprovalRequest(request, network, scan.transaction, scan));
+  const signingRequests = scans.map((scan) =>
+    buildTxApprovalRequest(request, network, scan.transaction, scan, agentIdentity),
+  );
   const { cleanup, updateTx } = getTxBatchUpdater(request.requestId, signingRequests, displayData);
 
   const response = await approvalController.requestBatchApproval({ request, signingRequests, displayData, updateTx });

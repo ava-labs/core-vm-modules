@@ -7,6 +7,8 @@ import { getTxUpdater } from '../../utils/evm-tx-updater';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { buildTxApprovalRequest } from '../../utils/build-tx-approval-request';
 import { simulateTransaction } from '../../utils/process-transaction-simulation';
+import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { rpcErrorOpts } from '@internal/utils';
 
 import { parseRequestParams } from './schema';
@@ -85,6 +87,9 @@ export const ethSendTransaction = async ({
     }
   }
 
+  const declaration = getAgentIdentityFromContext(request);
+  const agentIdentity = declaration ? await resolveAgentIdentity({ declaration, rpcUrl: network.rpcUrl }) : undefined;
+
   const scan = await simulateTransaction({
     rpcMethod: request.method,
     chainId: network.chainId,
@@ -94,7 +99,7 @@ export const ethSendTransaction = async ({
     blockaid,
   });
 
-  const { displayData, signingData } = buildTxApprovalRequest(request, network, transaction, scan);
+  const { displayData, signingData } = buildTxApprovalRequest(request, network, transaction, scan, agentIdentity);
 
   const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData);
   // prompt user for approval

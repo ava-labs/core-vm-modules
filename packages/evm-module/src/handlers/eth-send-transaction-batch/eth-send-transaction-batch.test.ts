@@ -18,6 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getTxBatchUpdater } from '../../utils/evm-tx-batch-updater';
 import type { TransactionParams } from '../../types';
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -34,6 +35,9 @@ jest.mock('../../utils/evm-tx-batch-updater', () => ({
 jest.mock('../../utils/estimate-gas-limit');
 jest.mock('../../utils/get-nonce');
 jest.mock('../../utils/get-provider');
+jest.mock('../../utils/resolve-agent-identity', () => ({
+  resolveAgentIdentity: jest.fn(),
+}));
 const mockBlockaid = {
   evm: {
     transactionBulk: {
@@ -58,6 +62,7 @@ const mockApprovalController: jest.Mocked<BatchApprovalController> = {
 
 const mockParseRequestParams = parseRequestParams as jest.MockedFunction<typeof parseRequestParams>;
 const mockGetNonce = getNonce as jest.MockedFunction<typeof getNonce>;
+const mockResolveAgentIdentity = resolveAgentIdentity as jest.MockedFunction<typeof resolveAgentIdentity>;
 const mockSend = jest.fn();
 const mockGetTransactionReceipt = jest.fn();
 
@@ -118,6 +123,15 @@ const testRequestParams = () => ({
   approvalController: mockApprovalController,
   blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 });
+
+const testAgentIdentity = {
+  agentId: '1599',
+  agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+  owner: '0x1234567890123456789012345678901234567890',
+  reputationScore: 88,
+  metadataUri: 'ipfs://agent.json',
+  trustLevel: 'high' as const,
+};
 
 const displayData = {
   title: 'Do you approve these transactions?',
@@ -983,3 +997,46 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     });
   }
 };
+
+describe('agent identity propagation', () => {
+  it('threads resolved agent identity into batch approval payloads', async () => {
+    mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
+    mockApprovalController.requestBatchApproval.mockResolvedValue({
+      result: [{ signedData: '0xsignedtx1' }, { signedData: '0xsignedtx2' }],
+    });
+    await ethSendTransactionBatch({
+      ...testRequestParams(),
+      request: {
+        ...testRequestParams().request,
+        context: {
+          agentIdentity: {
+            agentId: '1599',
+            agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+          },
+        },
+      },
+    });
+
+    expect(mockResolveAgentIdentity).toHaveBeenCalledWith({
+      declaration: {
+        agentId: '1599',
+        agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+      },
+      rpcUrl: testNetwork.rpcUrl,
+    });
+    expect(mockApprovalController.requestBatchApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          agentIdentity: testAgentIdentity,
+        }),
+        signingRequests: expect.arrayContaining([
+          expect.objectContaining({
+            displayData: expect.objectContaining({
+              agentIdentity: testAgentIdentity,
+            }),
+          }),
+        ]),
+      }),
+    );
+  });
+});
