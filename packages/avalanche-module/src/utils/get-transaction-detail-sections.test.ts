@@ -214,18 +214,17 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Subnet Details',
+        title: 'L1 Details',
         items: [
           {
             label: 'Owners',
-            value: '0xKey1\n0xKey2',
-            alignment: 'vertical',
-            type: 'text',
+            value: ['0xKey1', '0xKey2'],
+            type: 'addressList',
           },
           {
             label: 'Signature Threshold',
             value: '2/2',
-            alignment: 'vertical',
+            alignment: 'horizontal',
             type: 'text',
           },
         ],
