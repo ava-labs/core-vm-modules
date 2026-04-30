@@ -1,25 +1,24 @@
 import { Avalanche } from '@avalabs/core-wallets-sdk';
+import type { Network } from '@avalabs/vm-module-types';
 import { getProvider } from '../../../utils/get-provider';
 
 export const getAddressesByIndices = async ({
   indices,
   chainAlias,
   isChange,
-  isTestnet,
+  network,
   xpubXP,
   externalXPAddresses,
-  customRpcHeaders,
 }: {
   indices: number[];
   chainAlias: 'X' | 'P';
   isChange: boolean;
-  isTestnet: boolean;
+  network: Network;
   xpubXP?: string;
   externalXPAddresses?: { index: number; address: string }[];
-  customRpcHeaders?: Record<string, string>;
 }): Promise<string[]> => {
   if (xpubXP) {
-    const provider = await getProvider({ isTestnet, customRpcHeaders });
+    const provider = await getProvider(network);
 
     return indices.map((index) => Avalanche.getAddressFromXpub(xpubXP, index, provider, chainAlias, isChange));
   }

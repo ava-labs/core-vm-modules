@@ -12,7 +12,9 @@ export type StakingDetails =
   | AddPermissionlessDelegatorTx
   | AddPermissionlessValidatorTx
   | AddSubnetValidatorTx
-  | RemoveSubnetValidatorTx;
+  | RemoveSubnetValidatorTx
+  | AddAutoRenewedValidatorTx
+  | SetAutoRenewedValidatorConfigTx;
 export type ExportImportTxDetails = ExportTx | ImportTx;
 export type ChainDetails = BaseTx;
 export type BlockchainDetails = CreateChainTx;
@@ -119,6 +121,33 @@ export type RemoveSubnetValidatorTx = {
   txFee: bigint;
 };
 
+export type AddAutoRenewedValidatorTx = {
+  type: TxType.AddAutoRenewedValidator;
+  nodeID: string;
+  stake: bigint;
+  delegationFee: number;
+  weight: bigint;
+  // Share of staking rewards reinvested as additional stake on each auto-renewal cycle (ACP-236).
+  // Expressed in millionths (percentage × 10,000), range [0..1_000_000]: 1_000_000 = 100%, 300_000 = 30%.
+  autoCompoundRewardShares: number;
+  // Auto-renewal cycle duration in seconds (ACP-236)
+  period: bigint;
+  publicKey?: string;
+  signature?: string;
+  txFee: bigint;
+};
+
+export type SetAutoRenewedValidatorConfigTx = {
+  type: TxType.SetAutoRenewedValidatorConfig;
+  // ID of the AddAutoRenewedValidator tx whose config is being updated (ACP-236)
+  txId: string;
+  // Same scale as `AddAutoRenewedValidatorTx.autoCompoundRewardShares`:
+  // millionths (percentage × 10,000), range [0..1_000_000].
+  autoCompoundRewardShares: number;
+  period: bigint;
+  txFee: bigint;
+};
+
 export type FeeData = {
   totalAvaxBurned: bigint;
   totalAvaxOutput: bigint;
@@ -184,5 +213,7 @@ export enum TxType {
   SetL1ValidatorWeight = 'set_l1_validator_weight',
   IncreaseL1ValidatorBalance = 'increase_l1_validator_balance',
   DisableL1Validator = 'disable_l1_validator',
+  AddAutoRenewedValidator = 'add_auto_renewed_validator',
+  SetAutoRenewedValidatorConfig = 'set_auto_renewed_validator_config',
   Unknown = 'unknown',
 }

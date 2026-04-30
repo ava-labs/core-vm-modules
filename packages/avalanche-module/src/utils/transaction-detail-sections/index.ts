@@ -12,3 +12,5 @@ export { disableL1ValidatorDetailSection } from './disable-l1-validator-detail-s
 export { increaseL1ValidatorBalanceDetailSection } from './increase-l1-validator-balance-detail-section';
 export { registerL1ValidatorDetailSection } from './register-l1-validator-detail-section';
 export { setL1ValidatorWeightDetailSection } from './set-l1-validator-weight-detail-section';
+export { addAutoRenewedValidatorDetailSection } from './add-auto-renewed-validator-detail-section';
+export { setAutoRenewedValidatorConfigDetailSection } from './set-auto-renewed-validator-config-detail-section';

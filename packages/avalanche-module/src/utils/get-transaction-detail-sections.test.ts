@@ -819,6 +819,107 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
+  it('should handle AddAutoRenewedValidator transactions (ACP-236 ppm conversion)', () => {
+    const txDetails: TxDetails = {
+      type: TxType.AddAutoRenewedValidator,
+      nodeID: 'NodeID',
+      stake: 50n,
+      delegationFee: 300_000,
+      weight: 50n,
+      autoCompoundRewardShares: 500_000,
+      period: 1_209_600n,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
+    const expectedDetails = [
+      {
+        items: [
+          { label: 'Account', type: 'address', value: mockAccount },
+          { label: 'Network', type: 'network', value: { name: mockNetwork.chainName, logoUri: mockNetwork.logoUri } },
+        ],
+      },
+      {
+        title: 'Staking Details',
+        items: [
+          { label: 'Node', value: 'NodeID', type: 'nodeID' },
+          { label: 'Stake Amount', value: 50n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' },
+          { label: 'Delegation fee', value: '30 %', alignment: 'horizontal', type: 'text' },
+          { label: 'Cycle duration', value: '14 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Compound rewards percentage', value: '50 %', alignment: 'horizontal', type: 'text' },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [{ label: 'Fee Amount', value: 1n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' }],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
+  it.each([
+    { raw: 0, expected: '0 %' },
+    { raw: 1_000, expected: '0.1 %' },
+    { raw: 300_000, expected: '30 %' },
+    { raw: 1_000_000, expected: '100 %' },
+  ])(
+    'AddAutoRenewedValidator: autoCompoundRewardShares=$raw renders as $expected (ppm → percent)',
+    ({ raw, expected }) => {
+      const txDetails: TxDetails = {
+        type: TxType.AddAutoRenewedValidator,
+        nodeID: 'NodeID',
+        stake: 1n,
+        delegationFee: 0,
+        weight: 1n,
+        autoCompoundRewardShares: raw,
+        period: 86_400n,
+        txFee: 1n,
+      };
+
+      const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+        network: mockNetwork,
+        signerAccount: mockAccount,
+      });
+      const stakingItems = details?.find((s) => s.title === 'Staking Details')?.items;
+      expect(stakingItems).toContainEqual({
+        label: 'Compound rewards percentage',
+        value: expected,
+        alignment: 'horizontal',
+        type: 'text',
+      });
+    },
+  );
+
+  it('should handle SetAutoRenewedValidatorConfig transactions (ACP-236 ppm conversion)', () => {
+    const txDetails: TxDetails = {
+      type: TxType.SetAutoRenewedValidatorConfig,
+      txId: 'ValidatorTxId',
+      autoCompoundRewardShares: 1_000_000,
+      period: 2_592_000n,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol);
+    const expectedDetails = [
+      {
+        title: 'Staking Details',
+        items: [
+          { label: 'Validator Tx ID', value: 'ValidatorTxId', type: 'nodeID' },
+          { label: 'Cycle duration', value: '30 days', alignment: 'horizontal', type: 'text' },
+          { label: 'Compound rewards percentage', value: '100 %', alignment: 'horizontal', type: 'text' },
+        ],
+      },
+      {
+        title: 'Network Fee',
+        items: [{ label: 'Fee Amount', value: 1n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' }],
+      },
+    ];
+    expect(details).toEqual(expectedDetails);
+  });
+
   it('should handle increase l1 validator balance details', () => {
     const txDetails: TxDetails = {
       chain: NetworkVMType.PVM,
