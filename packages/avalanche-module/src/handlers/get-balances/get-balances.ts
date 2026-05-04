@@ -30,10 +30,7 @@ export const getBalances = async ({
   glacierService: AvalancheGlacierService;
   tokenService: TokenService;
 }): Promise<GetAvalancheBalancesResponse> => {
-  const provider = await getProvider({
-    isTestnet: Boolean(network.isTestnet),
-    customRpcHeaders: network.customRpcHeaders,
-  });
+  const provider = await getProvider(network);
   const isHealthy = glacierService.isHealthy();
   if (!isHealthy) {
     return Promise.reject('Glacier is unhealthy. Try again later.');
@@ -45,7 +42,11 @@ export const getBalances = async ({
   const coingeckoId = network.pricingProviders?.coingecko.nativeTokenId;
 
   const blockchainId = network.vmName === NetworkVMType.PVM ? BlockchainId.P_CHAIN : BlockchainId.X_CHAIN;
-  const glacierNetwork = network.isTestnet ? Network.FUJI : Network.MAINNET;
+  const glacierNetwork = network.isDevnet ? null : network.isTestnet ? Network.FUJI : Network.MAINNET;
+
+  if (!glacierNetwork) {
+    return Promise.reject('Glacier does not supported local devnets');
+  }
 
   const chainBalances = await glacierService
     .getChainBalance({

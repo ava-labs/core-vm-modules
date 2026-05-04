@@ -12,13 +12,15 @@ export const getAddress = async ({
   walletType,
   network,
 }: GetAddress): Promise<GetAddressResponse> => {
-  const isTestnet = Boolean(network?.isTestnet);
+  if (!network) {
+    throw rpcErrors.invalidParams('network is required to get address');
+  }
 
   if (xpubXP === undefined) {
     throw rpcErrors.invalidParams('xpubXP is required to get address');
   }
 
-  const provXP = await getProvider({ isTestnet, customRpcHeaders: network?.customRpcHeaders });
+  const provXP = await getProvider(network);
   let xpPub: Buffer;
 
   switch (walletType) {
