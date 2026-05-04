@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
 ## 3.7.3
 
 ## 3.7.2
