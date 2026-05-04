@@ -1,5 +1,16 @@
 # @avalabs/avalanche-module
 
+## 3.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
+### Patch Changes
+
+- Updated dependencies [1eaf0ca]
+  - @avalabs/vm-module-types@3.8.0
+
 ## 3.7.3
 
 ### Patch Changes
