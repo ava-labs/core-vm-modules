@@ -20,6 +20,7 @@ import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
 import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
+import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
 
 export const ethSign = async ({
   request,
@@ -139,11 +140,11 @@ export const ethSign = async ({
         title: 'Message',
         items: [textItem('Message', messageDetails, 'vertical')],
       },
+      ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
     alert: simulationResult?.alert ?? alert,
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,
-    agentIdentity,
   };
 
   // prompt user for approval

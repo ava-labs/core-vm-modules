@@ -21,6 +21,7 @@ import { rpcErrorOpts } from '@internal/utils';
 import type Blockaid from '@blockaid/client';
 import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
+import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
 
 export const ethSendTransactionBatch = async ({
   request,
@@ -102,13 +103,13 @@ export const ethSendTransactionBatch = async ({
           linkItem('Website', request.dappInfo),
         ],
       },
+      ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
     isSimulationSuccessful,
     balanceChange,
     alert,
     tokenApprovals,
     networkFeeSelector: true,
-    agentIdentity,
   };
 
   const signingRequests = scans.map((scan) =>

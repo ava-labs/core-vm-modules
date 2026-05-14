@@ -39,7 +39,7 @@ describe('avalancheDeclareAgentIdentity', () => {
     jest.clearAllMocks();
   });
 
-  it('returns resolved identity', async () => {
+  it('returns resolved identity for prefetch without persisting request state', async () => {
     mockResolveAgentIdentity.mockResolvedValue({
       agentId: '1599',
       agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
