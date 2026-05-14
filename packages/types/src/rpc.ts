@@ -1,7 +1,6 @@
 import type { TransactionRequest } from 'ethers';
 import type { Avalanche, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 import type { Caip2ChainId, Hex } from './common';
-import type { AgentIdentity } from './agent-identity';
 import type { JsonRpcError, EthereumProviderError, OptionalDataWithOptionalCause } from '@metamask/rpc-errors';
 import type { BalanceChange, TokenApprovals } from './transaction-simulation';
 import type { TokenWithBalanceBTC } from './balance';
@@ -203,7 +202,6 @@ export type DisplayData = {
   balanceChange?: BalanceChange;
   tokenApprovals?: TokenApprovals;
   isSimulationSuccessful?: boolean;
-  agentIdentity?: AgentIdentity;
 };
 
 export enum AlertType {

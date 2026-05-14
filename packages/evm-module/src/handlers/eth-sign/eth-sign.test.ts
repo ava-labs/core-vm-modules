@@ -133,7 +133,16 @@ describe('ethSign', () => {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({
         displayData: expect.objectContaining({
-          agentIdentity: testAgentIdentity,
+          details: expect.arrayContaining([
+            expect.objectContaining({
+              title: 'Agent Identity',
+              items: expect.arrayContaining([
+                expect.objectContaining({ label: 'Agent ID', value: testAgentIdentity.agentId }),
+                expect.objectContaining({ label: 'Registry', value: testAgentIdentity.agentRegistry }),
+                expect.objectContaining({ label: 'Trust level', value: testAgentIdentity.trustLevel }),
+              ]),
+            }),
+          ]),
         }),
       }),
     );

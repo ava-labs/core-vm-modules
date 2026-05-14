@@ -9,6 +9,11 @@ const schema = z.object({
   agentRegistry: z.string().min(1),
 });
 
+/**
+ * Prefetch-only helper for agent identity resolution.
+ * This does not persist per-dApp state; callers must still pass context.agentIdentity
+ * on signing / transaction requests when they want identity shown in approvals.
+ */
 export const avalancheDeclareAgentIdentity = async ({
   request,
   network,

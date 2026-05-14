@@ -752,6 +752,17 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
 };
 
 describe('agent identity propagation', () => {
+  it('does not add an Agent Identity section when no declaration is provided', async () => {
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
+
+    await ethSendTransaction(testRequestParams());
+
+    const displayData = mockApprovalController.requestApproval.mock.calls.at(-1)?.[0]?.displayData;
+    expect(displayData?.details).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ title: 'Agent Identity' })]),
+    );
+  });
+
   it('threads resolved agent identity into approval display data', async () => {
     mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
     mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
@@ -778,7 +789,16 @@ describe('agent identity propagation', () => {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({
         displayData: expect.objectContaining({
-          agentIdentity: testAgentIdentity,
+          details: expect.arrayContaining([
+            expect.objectContaining({
+              title: 'Agent Identity',
+              items: expect.arrayContaining([
+                expect.objectContaining({ label: 'Agent ID', value: testAgentIdentity.agentId }),
+                expect.objectContaining({ label: 'Registry', value: testAgentIdentity.agentRegistry }),
+                expect.objectContaining({ label: 'Trust level', value: testAgentIdentity.trustLevel }),
+              ]),
+            }),
+          ]),
         }),
       }),
     );
