@@ -1,5 +1,11 @@
 # @avalabs/bitcoin-module
 
+## 3.8.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.8.1
+
 ## 3.8.0
 
 ### Minor Changes
