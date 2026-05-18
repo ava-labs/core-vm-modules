@@ -32,7 +32,7 @@ const ProxyApiTokensSchema = z.array(
     decimals: z.number(),
     internalId: z.string().optional(),
     isNative: z.boolean(),
-    logoUri: z.string().optional(),
+    logoUri: z.string().optional().nullable(),
     name: z.string(),
     symbol: z.string(),
     caip2Id: z.string().optional(),
