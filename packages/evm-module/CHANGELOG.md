@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.8.1
+
+### Patch Changes
+
+- 75ff0b7: fix: allow nullable logoUri in tokens schema
+  - @avalabs/vm-module-types@3.8.1
+
 ## 3.8.0
 
 ### Minor Changes
