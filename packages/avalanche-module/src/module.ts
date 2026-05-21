@@ -4,6 +4,8 @@ import type {
   ApprovalController,
   BuildDerivationPathParams,
   ConstructorParams,
+  DeriveAddressesParams,
+  DeriveAddressesResponse,
   DeriveAddressParams,
   DeriveAddressResponse,
   GetAddressParams,
@@ -28,6 +30,7 @@ import { avalancheSignMessage } from './handlers/avalanche-sign-message/avalanch
 import { avalancheSignTransaction } from './handlers/avalanche-sign-transaction/avalanche-sign-transaction';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { getAddress } from './handlers/get-address/get-address';
 import { getBalances } from './handlers/get-balances/get-balances';
 import { getNetworkFee } from './handlers/get-network-fee/get-network-fee';
@@ -98,6 +101,13 @@ export class AvalancheModule implements Module {
 
   async deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {
     return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
+  }
+
+  async deriveAddresses(params: DeriveAddressesParams): Promise<DeriveAddressesResponse> {
+    return deriveAddresses({
       ...params,
       approvalController: this.#approvalController,
     });

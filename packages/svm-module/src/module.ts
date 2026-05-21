@@ -5,6 +5,7 @@ import {
   type ApprovalController,
   type BuildDerivationPathParams,
   type ConstructorParams,
+  type DeriveAddressesParams,
   type DeriveAddressParams,
   type GetBalancesParams,
   type GetTransactionHistory,
@@ -22,6 +23,7 @@ import { TokenService } from '@internal/utils';
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
 import { deriveAddress } from './handlers/derive-address';
+import { deriveAddresses } from './handlers/derive-addresses';
 import { buildDerivationPath } from './handlers/build-derivation-path';
 import { getNetworkFee } from './handlers/get-network-fee';
 import { getTokens } from './handlers/get-tokens';
@@ -77,6 +79,13 @@ export class SvmModule implements Module {
 
   deriveAddress(params: DeriveAddressParams) {
     return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
+  }
+
+  deriveAddresses(params: DeriveAddressesParams) {
+    return deriveAddresses({
       ...params,
       approvalController: this.#approvalController,
     });
