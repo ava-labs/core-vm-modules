@@ -11,6 +11,7 @@ import type {
   ApprovalController,
   ConstructorParams,
   DeriveAddressParams,
+  DeriveAddressesParams,
   BuildDerivationPathParams,
   RuntimeParams,
 } from '@avalabs/vm-module-types';
@@ -28,6 +29,7 @@ import type { BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import { getProvider } from './utils/get-provider';
 import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitcoin-sign-transaction';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class BitcoinModule implements Module {
@@ -60,6 +62,13 @@ export class BitcoinModule implements Module {
 
   deriveAddress(params: DeriveAddressParams) {
     return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
+  }
+
+  deriveAddresses(params: DeriveAddressesParams) {
+    return deriveAddresses({
       ...params,
       approvalController: this.#approvalController,
     });

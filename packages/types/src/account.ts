@@ -49,6 +49,16 @@ export type DeriveAddressParams = SimpleDeriveAddressParams | DetailedDeriveAddr
 
 export type DeriveAddressResponse = Partial<Record<NetworkVMType, string>>;
 
+export type DeriveAddressesParams = {
+  network: Omit<Network, 'tokens'>;
+  secretId: string;
+  accountIndices: number[];
+  derivationPathType: DerivationPathType;
+  addressIndex?: number;
+};
+
+export type DeriveAddressesResponse = DeriveAddressResponse[];
+
 export type DerivationPathType = 'bip44' | 'ledger_live';
 export type BuildDerivationPathParams = {
   accountIndex: number;

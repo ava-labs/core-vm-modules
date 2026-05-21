@@ -16,6 +16,7 @@ import {
   RpcMethod,
   type GetAddressParams,
   type DeriveAddressParams,
+  type DeriveAddressesParams,
   type BuildDerivationPathParams,
 } from '@avalabs/vm-module-types';
 
@@ -25,6 +26,7 @@ import { hvmGetBalances } from './handlers/get-balances';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { hvmSign } from './handlers/sign-transaction/sign-transaction';
 import { deriveAddress } from './handlers/derive-address/derive-address';
+import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
 
 export class HvmModule implements Module {
@@ -53,6 +55,13 @@ export class HvmModule implements Module {
 
   deriveAddress(params: DeriveAddressParams) {
     return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
+  }
+
+  deriveAddresses(params: DeriveAddressesParams) {
+    return deriveAddresses({
       ...params,
       approvalController: this.#approvalController,
     });
