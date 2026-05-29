@@ -26,7 +26,7 @@
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.87",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.87",
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.87",
-    "@avalabs/crypto-sdk": "0.0.0-ray-crypto-core-20260521183935",
+    "@avalabs/crypto-sdk": "0.0.0-ray-crypto-core-20260529182526",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.48.0",
     "@metamask/rpc-errors": "6.3.0",
