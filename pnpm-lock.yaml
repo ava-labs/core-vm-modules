@@ -160,8 +160,8 @@ importers:
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
       '@avalabs/crypto-sdk':
-        specifier: 0.0.0-ray-crypto-core-20260529182526
-        version: 0.0.0-ray-crypto-core-20260529182526
+        specifier: 0.0.0-ray-crypto-core-20260601162312
+        version: 0.0.0-ray-crypto-core-20260601162312
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87
@@ -224,8 +224,8 @@ importers:
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
       '@avalabs/crypto-sdk':
-        specifier: 0.0.0-ray-crypto-core-20260529182526
-        version: 0.0.0-ray-crypto-core-20260529182526
+        specifier: 0.0.0-ray-crypto-core-20260601162312
+        version: 0.0.0-ray-crypto-core-20260601162312
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -291,8 +291,8 @@ importers:
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
       '@avalabs/crypto-sdk':
-        specifier: 0.0.0-ray-crypto-core-20260529182526
-        version: 0.0.0-ray-crypto-core-20260529182526
+        specifier: 0.0.0-ray-crypto-core-20260601162312
+        version: 0.0.0-ray-crypto-core-20260601162312
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87
@@ -434,8 +434,8 @@ importers:
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.2)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@avalabs/crypto-sdk':
-        specifier: 0.0.0-ray-crypto-core-20260529182526
-        version: 0.0.0-ray-crypto-core-20260529182526
+        specifier: 0.0.0-ray-crypto-core-20260601162312
+        version: 0.0.0-ray-crypto-core-20260601162312
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -590,12 +590,12 @@ packages:
     peerDependencies:
       ethers: ^6.7.1
 
-  '@avalabs/crypto-sdk@0.0.0-ray-crypto-core-20260529182526':
-    resolution: {integrity: sha512-emPrAsoPGXpXCxGQO+4u9jsIjPM6dnjFIXbPGPh2iLGdKw2olOL1hPWJI85mFvIwUgLML1ljlMnvm2i6EwBaQg==}
+  '@avalabs/crypto-sdk@0.0.0-ray-crypto-core-20260601162312':
+    resolution: {integrity: sha512-p8QAwZCK7SVEmzgCJgChWeWHUWZU69HlzMoFENOGbcr7Rgt7sYL8h+j9ANVw1Pq056pHOebmsvmeE0dpnPo/3A==}
     engines: {node: '>=20.18.0'}
     peerDependencies:
-      '@avalabs/crypto-nitro': 0.0.0-ray-crypto-core-20260529182526
-      '@avalabs/crypto-wasm': 0.0.0-ray-crypto-core-20260529182526
+      '@avalabs/crypto-nitro': 0.0.0-ray-crypto-core-20260601162312
+      '@avalabs/crypto-wasm': 0.0.0-ray-crypto-core-20260601162312
     peerDependenciesMeta:
       '@avalabs/crypto-nitro':
         optional: true
@@ -6577,7 +6577,7 @@ snapshots:
       - typescript
       - ws
 
-  '@avalabs/crypto-sdk@0.0.0-ray-crypto-core-20260529182526': {}
+  '@avalabs/crypto-sdk@0.0.0-ray-crypto-core-20260601162312': {}
 
   '@avalabs/glacier-sdk@3.1.0-alpha.61': {}
 

@@ -29,7 +29,7 @@
     "@avalabs/core-utils-sdk": "3.1.0-alpha.87",
     "@avalabs/core-chains-sdk": "3.1.0-alpha.87",
     "@avalabs/core-wallets-sdk": "3.1.0-alpha.87",
-    "@avalabs/crypto-sdk": "0.0.0-ray-crypto-core-20260529182526",
+    "@avalabs/crypto-sdk": "0.0.0-ray-crypto-core-20260601162312",
     "@avalabs/glacier-sdk": "3.1.0-alpha.87",
     "@avalabs/types": "3.1.0-alpha.87",
     "@avalabs/vm-module-types": "workspace:*",
