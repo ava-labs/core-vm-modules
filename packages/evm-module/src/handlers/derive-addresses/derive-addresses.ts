@@ -27,7 +27,7 @@ export const deriveAddresses = async (
         secretId,
         derivationPath,
       });
-      return Buffer.from(publicKeyHex, 'hex');
+      return Uint8Array.from(Buffer.from(publicKeyHex, 'hex'));
     }),
   );
 

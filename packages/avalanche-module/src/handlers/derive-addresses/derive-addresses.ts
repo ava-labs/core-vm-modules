@@ -33,7 +33,10 @@ export const deriveAddresses = async (
           derivationPath: paths.CoreEth,
         }),
       ]);
-      return { xp: Buffer.from(xpHex, 'hex'), evm: Buffer.from(evmHex, 'hex') };
+      return {
+        xp: Uint8Array.from(Buffer.from(xpHex, 'hex')),
+        evm: Uint8Array.from(Buffer.from(evmHex, 'hex')),
+      };
     }),
   );
 
