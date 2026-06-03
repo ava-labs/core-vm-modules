@@ -159,6 +159,9 @@ importers:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
+      '@avalabs/crypto-sdk':
+        specifier: 1.0.0
+        version: 1.0.0
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87
@@ -220,6 +223,9 @@ importers:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
+      '@avalabs/crypto-sdk':
+        specifier: 1.0.0
+        version: 1.0.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -284,6 +290,9 @@ importers:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)
+      '@avalabs/crypto-sdk':
+        specifier: 1.0.0
+        version: 1.0.0
       '@avalabs/glacier-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87
@@ -424,6 +433,9 @@ importers:
       '@avalabs/core-wallets-sdk':
         specifier: 3.1.0-alpha.87
         version: 3.1.0-alpha.87(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.2)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(react@18.3.1)(typescript@5.8.2)(ws@7.5.10(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@avalabs/crypto-sdk':
+        specifier: 1.0.0
+        version: 1.0.0
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -577,6 +589,18 @@ packages:
     resolution: {integrity: sha512-Jy1tsbIgsvKsIHAjmoaTRaGeWVaIbG2Sh0qznY74CahGmEuKEzFSmCwM6Ad6ZGDjF/uEO8ip6E++kDMjDLl6wg==}
     peerDependencies:
       ethers: ^6.7.1
+
+  '@avalabs/crypto-sdk@1.0.0':
+    resolution: {integrity: sha512-2klBU8O8FhNKnQs511eJjCWOzM1XcWsSmK1KtXrGl4qAMhHnat8/Uvs0KQHphIZfCGGkOFe25LrekacP5p6Kpg==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      '@avalabs/crypto-nitro': 0.3.0
+      '@avalabs/crypto-wasm': 0.3.0
+    peerDependenciesMeta:
+      '@avalabs/crypto-nitro':
+        optional: true
+      '@avalabs/crypto-wasm':
+        optional: true
 
   '@avalabs/glacier-sdk@3.1.0-alpha.61':
     resolution: {integrity: sha512-S+BcxSZ+ETeE7OpQgWDi9mbKjmrqZLPDeut7CCMnUfoY6Y1CgMcc8brx2ugr5S9vA9X+L66YrJgiew5YCYp3Dw==}
@@ -6552,6 +6576,8 @@ snapshots:
       - supports-color
       - typescript
       - ws
+
+  '@avalabs/crypto-sdk@1.0.0': {}
 
   '@avalabs/glacier-sdk@3.1.0-alpha.61': {}
 
