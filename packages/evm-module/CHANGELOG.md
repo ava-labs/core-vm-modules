@@ -1,5 +1,24 @@
 # @avalabs/evm-module
 
+## 3.9.0
+
+### Minor Changes
+
+- bf5f068: feat: add `deriveAddresses` batch interface backed by `@avalabs/crypto-sdk`
+
+  Each module now exposes a batch `deriveAddresses(params)` method that
+  resolves one public key per `accountIndex` via the `ApprovalController` and
+  encodes addresses through `@avalabs/crypto-sdk`'s per-chain batch encoders
+  (avalanche / evm / bitcoin / svm). The `hvm-module` keeps interface parity
+  with local ed25519 + sha256 encoding since crypto-sdk has no HVM encoder
+  yet. Adds `DeriveAddressesParams` / `DeriveAddressesResponse` types and a
+  new `deriveAddresses` method on the `Module` interface.
+
+### Patch Changes
+
+- Updated dependencies [bf5f068]
+  - @avalabs/vm-module-types@3.9.0
+
 ## 3.8.1
 
 ### Patch Changes
