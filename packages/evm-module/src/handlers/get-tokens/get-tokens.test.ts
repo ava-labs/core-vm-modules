@@ -103,4 +103,57 @@ describe('get-tokens', () => {
     expect(result.find((token) => token.symbol === 'WBTC')).toBeDefined();
     expect(result.find((token) => token.symbol === 'LINK')).toBeDefined();
   });
+
+  it('should accept tokens with null nullable fields (e.g. Sepolia)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          internalId: 'eip155:11155111-0x779877a7b0d9e8603169ddbd7836e478b4624789',
+          address: '0x779877a7b0d9e8603169ddbd7836e478b4624789',
+          name: 'Chainlink Token',
+          symbol: 'LINK',
+          isNative: false,
+          logoUri: null,
+          decimals: 18,
+          chainId: 11155111,
+          contractType: 'ERC-20',
+        },
+      ],
+    });
+
+    const result = await getTokens({ chainId: 11155111, proxyApiUrl: PROXY_API_URL });
+
+    expect(result.find((token) => token.symbol === 'LINK')).toBeDefined();
+  });
+
+  it('should filter out malformed tokens instead of rejecting the whole list', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          address: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+          name: 'Wrapped AVAX',
+          symbol: 'WAVAX',
+          contractType: 'ERC-20',
+          chainId: 43114,
+          decimals: 18,
+          isNative: false,
+        },
+        // Missing required fields (decimals, isNative) and unknown contractType.
+        {
+          address: '0x0000000000000000000000000000000000000000',
+          name: 'Broken Token',
+          symbol: 'BROKE',
+          contractType: 'SOME-UNKNOWN-TYPE',
+          chainId: 43114,
+        },
+      ],
+    });
+
+    const result = await getTokens({ chainId: 43114, proxyApiUrl: PROXY_API_URL });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]?.symbol).toBe('WAVAX');
+  });
 });
