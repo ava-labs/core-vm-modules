@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.9.1
+
+### Patch Changes
+
+- 41849c6: Fix sepolia balances
+  - @avalabs/vm-module-types@3.9.1
+
 ## 3.9.0
 
 ### Minor Changes
