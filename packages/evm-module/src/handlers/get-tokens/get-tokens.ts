@@ -24,19 +24,28 @@ const ContractTypeSchema = z.string().transform((raw, ctx) => {
   return mapped;
 });
 
-const ProxyApiTokensSchema = z.array(
-  z.object({
-    address: z.string(),
-    chainId: z.number(),
-    contractType: ContractTypeSchema,
-    decimals: z.number(),
-    internalId: z.string().optional(),
-    isNative: z.boolean(),
-    logoUri: z.string().optional().nullable(),
-    name: z.string(),
-    symbol: z.string(),
-    caip2Id: z.string().optional(),
-    color: z.string().optional(),
+const ProxyApiTokenSchema = z.object({
+  address: z.string(),
+  chainId: z.number(),
+  contractType: ContractTypeSchema,
+  decimals: z.number(),
+  internalId: z.string().nullish(),
+  isNative: z.boolean(),
+  logoUri: z.string().nullish(),
+  name: z.string(),
+  symbol: z.string(),
+  caip2Id: z.string().nullish(),
+  color: z.string().nullish(),
+});
+
+type ProxyApiToken = z.infer<typeof ProxyApiTokenSchema>;
+
+// Validate each token independently and drop the ones that don't match the
+// schema, so a single malformed entry doesn't discard the entire list.
+const ProxyApiTokensSchema = z.array(z.unknown()).transform((tokens): ProxyApiToken[] =>
+  tokens.flatMap((token) => {
+    const result = ProxyApiTokenSchema.safeParse(token);
+    return result.success ? [result.data] : [];
   }),
 );
 
