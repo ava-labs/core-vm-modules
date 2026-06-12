@@ -6,7 +6,7 @@ import { NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 jest.mock('../../utils/get-provider');
 jest.mock('@metamask/rpc-errors', () => ({
   rpcErrors: {
-    internal: jest.fn().mockImplementation((message) => ({ error: `mocked error: ${message}` })),
+    internal: jest.fn().mockImplementation((opts) => ({ error: opts })),
   },
 }));
 
@@ -56,11 +56,35 @@ describe('forwardToRpcNode', () => {
       chainId: network.chainId,
       chainName: network.chainName,
       rpcUrl: network.rpcUrl,
-      multiContractAddress: undefined,
       pollingInterval: 1000,
+      customRpcHeaders: undefined,
     });
     expect(mockProvider.send).toHaveBeenCalledWith(request.method, request.params);
     expect(result).toEqual({ result: expectedResult });
+  });
+
+  it('does NOT enable Multicall3 aggregation (would rewrite msg.sender and break caller-dependent reads)', async () => {
+    const request = {
+      method: 'eth_call' as RpcMethod,
+      params: [{ from: '0xabc', to: '0xdef', data: '0xfc6f7865' }, 'latest'],
+      requestId: 'requestId',
+      sessionId: 'sessionId',
+      chainId: 'eip155:1',
+      dappInfo: { name: 'some dapp', url: 'some url', icon: 'some icon' },
+    };
+
+    // network carries a multicall utility address — it must NOT be forwarded to the provider.
+    const networkWithMulticall = {
+      ...network,
+      utilityAddresses: { multicall: '0xcA11bde05977b3631167028862bE2a173976CA11' },
+    };
+
+    mockProvider.send.mockResolvedValue('0x1');
+
+    await forwardToRpcNode(request, networkWithMulticall);
+
+    const passedParams = (getProvider as jest.Mock).mock.calls[0][0];
+    expect(passedParams).not.toHaveProperty('multiContractAddress');
   });
 
   it('should handle errors and return a formatted error response', async () => {
@@ -83,8 +107,40 @@ describe('forwardToRpcNode', () => {
 
     const result = await forwardToRpcNode(request, network);
 
+    // No structured JSON-RPC payload -> fall back to a generic internal error.
     expect(rpcErrors.internal).toHaveBeenCalledWith(error.message);
     expect(result).toHaveProperty('error');
-    expect(result.error).toEqual({ error: `mocked error: ${error.message}` });
+  });
+
+  it('relays the node JSON-RPC error verbatim (code + message + revert data) for reverted calls', async () => {
+    const request = {
+      method: 'eth_call' as RpcMethod,
+      params: [{ to: '0x0', data: '0x' }, 'latest'],
+      requestId: 'requestId',
+      sessionId: 'sessionId',
+      chainId: 'eip155:1',
+      dappInfo: {
+        name: 'some dapp',
+        url: 'some url',
+        icon: 'some icon',
+      },
+    };
+
+    // Shape ethers v6 throws for a reverted eth_call: the raw node error
+    // (code 3 = execution reverted, with the revert bytes) lives under `info.error`.
+    const nodeError = {
+      code: 3,
+      message: 'execution reverted: Multicall3: call failed',
+      data: '0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000174d756c746963616c6c333a2063616c6c206661696c6564000000000000000000',
+    };
+    const error = Object.assign(new Error('execution reverted'), { info: { error: nodeError } });
+
+    mockProvider.send.mockRejectedValue(error);
+
+    const result = await forwardToRpcNode(request, network);
+
+    // Forwarded as-is — NOT re-wrapped as -32603 — so dApps decode the revert like a direct RPC connection.
+    expect(rpcErrors.internal).not.toHaveBeenCalled();
+    expect(result).toEqual({ error: nodeError });
   });
 });
