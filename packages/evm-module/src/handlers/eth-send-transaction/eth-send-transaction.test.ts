@@ -359,15 +359,15 @@ describe('eth_sendTransaction handler', () => {
   });
 
   it('should add alert object with Warning type to displayData when validation result is Warning', async () => {
-    testWithValidationResultType('Warning');
+    await testWithValidationResultType('Warning');
   });
 
-  it('should add alert object with Warning type to displayData when validation result is Error', async () => {
-    testWithValidationResultType('Error');
+  it('should not add an alert to displayData when validation result is Error', async () => {
+    await testWithValidationResultType('Error');
   });
 
   it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
-    testWithValidationResultType('Malicious');
+    await testWithValidationResultType('Malicious');
   });
 
   it('should process transaction and add token approvals and balance changes to displayData', async () => {
@@ -717,7 +717,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       signingData,
       updateTx,
     });
-  } else {
+  } else if (resultType === 'Warning') {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
       displayData: {
@@ -730,6 +730,14 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           },
         },
       },
+      signingData,
+      updateTx,
+    });
+  } else {
+    // `result_type === 'Error'` is not a security verdict — no alert is raised.
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
+      request: requestParams.request,
+      displayData: { ...displayData, alert: undefined },
       signingData,
       updateTx,
     });

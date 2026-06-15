@@ -203,15 +203,15 @@ describe('ethSign', () => {
   });
 
   it('should add alert object with Warning type to displayData when validation result is Warning', async () => {
-    testWithValidationResultType('Warning');
+    await testWithValidationResultType('Warning');
   });
 
-  it('should add alert object with Warning type to displayData when validation result is Error', async () => {
-    testWithValidationResultType('Error');
+  it('should not add an alert to displayData when validation result is Error', async () => {
+    await testWithValidationResultType('Error');
   });
 
   it('should add alert object with Danger type to displayData when validation result is Malicious', async () => {
-    testWithValidationResultType('Malicious');
+    await testWithValidationResultType('Malicious');
   });
 
   it('should add alert object with Warning type to displayData when schema validation error occurs in jsonRpc scan', async () => {
@@ -286,6 +286,8 @@ describe('ethSign', () => {
 });
 
 const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'Malicious') => {
+  // `result_type === 'Error'` (e.g. an unsupported EIP-712 type Blockaid can't
+  // parse) is not a security verdict and must not raise an alert.
   const mockBlockaid = {
     evm: {
       jsonRpc: {
@@ -330,7 +332,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
         }),
       }),
     );
-  } else {
+  } else if (resultType === 'Warning') {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({
         displayData: expect.objectContaining({
@@ -342,6 +344,12 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
             },
           },
         }),
+      }),
+    );
+  } else {
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({ alert: undefined }),
       }),
     );
   }
