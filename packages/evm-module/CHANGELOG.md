@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.9.2
+
+### Patch Changes
+
+- d7d6378: Only surface a Blockaid transaction warning when the scan returns a genuine Warning or Malicious verdict
+  - @avalabs/vm-module-types@3.9.2
+
 ## 3.9.1
 
 ### Patch Changes
