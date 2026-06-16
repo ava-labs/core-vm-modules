@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.9.3
+
+### Patch Changes
+
+- 029f3ff: fix: stop routing forwarded dApp `eth_call`s through Multicall3 aggregation
+  - @avalabs/vm-module-types@3.9.3
+
 ## 3.9.2
 
 ### Patch Changes
