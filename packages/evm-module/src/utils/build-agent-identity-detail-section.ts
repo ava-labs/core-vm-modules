@@ -1,6 +1,9 @@
 import type { AgentIdentity, DetailItem, DetailSection } from '@avalabs/vm-module-types';
 import { addressItem, linkItem, textItem } from '@internal/utils/src/utils/detail-item';
 
+const isNavigableMetadataUri = (metadataUri: string) =>
+  metadataUri.startsWith('https://') || metadataUri.startsWith('http://') || metadataUri.startsWith('ipfs://');
+
 export const buildAgentIdentityDetailSection = (agentIdentity: AgentIdentity): DetailSection => {
   const items: DetailItem[] = [
     textItem('Agent ID', agentIdentity.agentId),
@@ -17,7 +20,11 @@ export const buildAgentIdentityDetailSection = (agentIdentity: AgentIdentity): D
   }
 
   if (agentIdentity.metadataUri) {
-    items.push(linkItem('Metadata', { url: agentIdentity.metadataUri, name: agentIdentity.metadataUri }));
+    items.push(
+      isNavigableMetadataUri(agentIdentity.metadataUri)
+        ? linkItem('Metadata', { url: agentIdentity.metadataUri, name: agentIdentity.metadataUri })
+        : textItem('Metadata', 'Embedded data URI', 'vertical'),
+    );
   }
 
   return {
