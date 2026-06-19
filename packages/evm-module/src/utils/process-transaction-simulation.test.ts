@@ -1,7 +1,11 @@
 import { type AssetDiffs, processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
-import { RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
+import { AlertType, RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
 import simulationResult from './__mocks__/simulation-result';
+import { transactionAlerts } from './transaction-alerts';
+import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import Blockaid from '@blockaid/client';
+
+const emptyProvider = {} as unknown as JsonRpcBatchInternal;
 
 jest.mock('@blockaid/client', () => {
   return jest.fn().mockImplementation(() => {
@@ -43,6 +47,70 @@ describe('processTransactionSimulation', () => {
     });
 
     expect(result).toEqual(expect.objectContaining({ alert: undefined, isSimulationSuccessful: false }));
+  });
+
+  it.each(['Error', 'Benign'] as const)(
+    'should not raise an alert when Blockaid validation result_type is %s',
+    async (resultType) => {
+      const clonedSimulation = structuredClone(simulationResult);
+      clonedSimulation.validation.result_type = resultType;
+
+      const result = await processTransactionSimulation({
+        rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+        params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+        chainId: 43112,
+        provider: emptyProvider,
+        simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+      });
+
+      expect(result.alert).toBeUndefined();
+    },
+  );
+
+  it('should not raise an alert when the validation section is missing', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    // @ts-expect-error - intentionally removing validation to simulate an unscored response
+    delete clonedSimulation.validation;
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+      chainId: 43112,
+      provider: emptyProvider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(result.alert).toBeUndefined();
+  });
+
+  it('should raise a WARNING alert when validation result_type is Warning', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.validation.result_type = 'Warning';
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+      chainId: 43112,
+      provider: emptyProvider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(result.alert).toEqual(transactionAlerts[AlertType.WARNING]);
+  });
+
+  it('should raise a DANGER alert when validation result_type is Malicious', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.validation.result_type = 'Malicious';
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+      chainId: 43112,
+      provider: emptyProvider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(result.alert).toEqual(transactionAlerts[AlertType.DANGER]);
   });
 
   it('should get the tokenApprovals from the traces of the simulation result', async () => {

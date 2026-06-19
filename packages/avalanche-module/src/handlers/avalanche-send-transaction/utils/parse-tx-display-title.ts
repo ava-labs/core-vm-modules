@@ -18,7 +18,7 @@ export const parseTxDisplayTitle = (tx: Avalanche.Tx): string => {
     case TxType.CreateChain:
       return 'Do you want to create this chain?';
     case TxType.CreateSubnet:
-      return 'Do you want to create this subnet?';
+      return 'Do you want to create this L1?';
     case TxType.RemoveSubnetValidator:
       return 'Do you want to remove this subnet validator?';
     case TxType.ConvertSubnetToL1:
@@ -31,6 +31,10 @@ export const parseTxDisplayTitle = (tx: Avalanche.Tx): string => {
       return 'Do you want to register this validator?';
     case TxType.SetL1ValidatorWeight:
       return 'Do you want to set this validator weight?';
+    case TxType.AddAutoRenewedValidator:
+      return 'Do you want to add this auto-renewed validator?';
+    case TxType.SetAutoRenewedValidatorConfig:
+      return 'Do you want to update this auto-renewed validator config?';
     default:
       return 'Sign Message';
   }

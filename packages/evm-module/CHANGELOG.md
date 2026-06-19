@@ -1,5 +1,95 @@
 # @avalabs/evm-module
 
+## 3.9.3
+
+### Patch Changes
+
+- 029f3ff: fix: stop routing forwarded dApp `eth_call`s through Multicall3 aggregation
+  - @avalabs/vm-module-types@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- d7d6378: Only surface a Blockaid transaction warning when the scan returns a genuine Warning or Malicious verdict
+  - @avalabs/vm-module-types@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- 41849c6: Fix sepolia balances
+  - @avalabs/vm-module-types@3.9.1
+
+## 3.9.0
+
+### Minor Changes
+
+- bf5f068: feat: add `deriveAddresses` batch interface backed by `@avalabs/crypto-sdk`
+
+  Each module now exposes a batch `deriveAddresses(params)` method that
+  resolves one public key per `accountIndex` via the `ApprovalController` and
+  encodes addresses through `@avalabs/crypto-sdk`'s per-chain batch encoders
+  (avalanche / evm / bitcoin / svm). The `hvm-module` keeps interface parity
+  with local ed25519 + sha256 encoding since crypto-sdk has no HVM encoder
+  yet. Adds `DeriveAddressesParams` / `DeriveAddressesResponse` types and a
+  new `deriveAddresses` method on the `Module` interface.
+
+### Patch Changes
+
+- Updated dependencies [bf5f068]
+  - @avalabs/vm-module-types@3.9.0
+
+## 3.8.1
+
+### Patch Changes
+
+- 75ff0b7: fix: allow nullable logoUri in tokens schema
+  - @avalabs/vm-module-types@3.8.1
+
+## 3.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
+### Patch Changes
+
+- Updated dependencies [1eaf0ca]
+  - @avalabs/vm-module-types@3.8.0
+
+## 3.7.3
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.7.3
+
+## 3.7.2
+
+### Patch Changes
+
+- aed1605: Use polygon gas stations
+- Updated dependencies [aed1605]
+  - @avalabs/vm-module-types@3.7.2
+
+## 3.7.1
+
+### Patch Changes
+
+- 017571e: fix sepolia erc20 balances
+  - @avalabs/vm-module-types@3.7.1
+
+## 3.7.0
+
+### Minor Changes
+
+- dd311fe: allow passing custom HTTP headers to RPC calls
+
+### Patch Changes
+
+- Updated dependencies [dd311fe]
+  - @avalabs/vm-module-types@3.7.0
+
 ## 3.6.2
 
 ### Patch Changes

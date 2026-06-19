@@ -1,5 +1,49 @@
 # @avalabs/vm-module-types
 
+## 3.9.3
+
+## 3.9.2
+
+## 3.9.1
+
+## 3.9.0
+
+### Minor Changes
+
+- bf5f068: feat: add `deriveAddresses` batch interface backed by `@avalabs/crypto-sdk`
+
+  Each module now exposes a batch `deriveAddresses(params)` method that
+  resolves one public key per `accountIndex` via the `ApprovalController` and
+  encodes addresses through `@avalabs/crypto-sdk`'s per-chain batch encoders
+  (avalanche / evm / bitcoin / svm). The `hvm-module` keeps interface parity
+  with local ed25519 + sha256 encoding since crypto-sdk has no HVM encoder
+  yet. Adds `DeriveAddressesParams` / `DeriveAddressesResponse` types and a
+  new `deriveAddresses` method on the `Module` interface.
+
+## 3.8.1
+
+## 3.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
+## 3.7.3
+
+## 3.7.2
+
+### Patch Changes
+
+- aed1605: Use polygon gas stations
+
+## 3.7.1
+
+## 3.7.0
+
+### Minor Changes
+
+- dd311fe: allow passing custom HTTP headers to RPC calls
+
 ## 3.6.2
 
 ## 3.6.1

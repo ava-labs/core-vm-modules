@@ -2,6 +2,8 @@ import type { Avalanche, BitcoinProvider, JsonRpcBatchInternal, SolanaProvider }
 import type {
   BuildDerivationPathParams,
   BuildDerivationPathResponse,
+  DeriveAddressesParams,
+  DeriveAddressesResponse,
   DeriveAddressParams,
   DeriveAddressResponse,
   GetAddressParams,
@@ -50,6 +52,7 @@ export interface Module {
    */
   getAddress: (params: GetAddressParams) => Promise<GetAddressResponse>;
   deriveAddress: (params: DeriveAddressParams) => Promise<DeriveAddressResponse>;
+  deriveAddresses: (params: DeriveAddressesParams) => Promise<DeriveAddressesResponse>;
   buildDerivationPath: (params: BuildDerivationPathParams) => BuildDerivationPathResponse;
   getTokens: (network: Network) => Promise<NetworkContractToken[]>;
   onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;

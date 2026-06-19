@@ -1,5 +1,86 @@
 # @avalabs/svm-module
 
+## 3.9.3
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.9.3
+
+## 3.9.2
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.9.2
+
+## 3.9.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.9.1
+
+## 3.9.0
+
+### Minor Changes
+
+- bf5f068: feat: add `deriveAddresses` batch interface backed by `@avalabs/crypto-sdk`
+
+  Each module now exposes a batch `deriveAddresses(params)` method that
+  resolves one public key per `accountIndex` via the `ApprovalController` and
+  encodes addresses through `@avalabs/crypto-sdk`'s per-chain batch encoders
+  (avalanche / evm / bitcoin / svm). The `hvm-module` keeps interface parity
+  with local ed25519 + sha256 encoding since crypto-sdk has no HVM encoder
+  yet. Adds `DeriveAddressesParams` / `DeriveAddressesResponse` types and a
+  new `deriveAddresses` method on the `Module` interface.
+
+### Patch Changes
+
+- Updated dependencies [bf5f068]
+  - @avalabs/vm-module-types@3.9.0
+
+## 3.8.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.8.1
+
+## 3.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
+### Patch Changes
+
+- Updated dependencies [1eaf0ca]
+  - @avalabs/vm-module-types@3.8.0
+
+## 3.7.3
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.7.3
+
+## 3.7.2
+
+### Patch Changes
+
+- aed1605: Use polygon gas stations
+- Updated dependencies [aed1605]
+  - @avalabs/vm-module-types@3.7.2
+
+## 3.7.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.7.1
+
+## 3.7.0
+
+### Patch Changes
+
+- Updated dependencies [dd311fe]
+  - @avalabs/vm-module-types@3.7.0
+
 ## 3.6.2
 
 ### Patch Changes

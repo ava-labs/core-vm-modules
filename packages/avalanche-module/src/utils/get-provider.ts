@@ -1,11 +1,15 @@
 import { Avalanche } from '@avalabs/core-wallets-sdk';
+import type { Network } from '@avalabs/vm-module-types';
 
-type ProviderParams = {
-  isTestnet: boolean;
-};
+export const getProvider = async (network: Network): Promise<Avalanche.JsonRpcProvider> => {
+  const { isTestnet, isDevnet, rpcUrl, customRpcHeaders } = network;
+  const fetchOptions: RequestInit | undefined = customRpcHeaders ? { headers: customRpcHeaders } : undefined;
 
-export const getProvider = async ({ isTestnet }: ProviderParams): Promise<Avalanche.JsonRpcProvider> => {
+  if (isDevnet) {
+    return Avalanche.JsonRpcProvider.fromBaseURL(rpcUrl);
+  }
+
   return isTestnet
-    ? Avalanche.JsonRpcProvider.getDefaultFujiProvider()
-    : Avalanche.JsonRpcProvider.getDefaultMainnetProvider();
+    ? Avalanche.JsonRpcProvider.getDefaultFujiProvider(fetchOptions)
+    : Avalanche.JsonRpcProvider.getDefaultMainnetProvider(fetchOptions);
 };

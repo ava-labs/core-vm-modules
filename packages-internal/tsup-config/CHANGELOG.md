@@ -1,5 +1,11 @@
 # @internal/tsup-config
 
+## 0.1.1
+
+### Patch Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
 ## 0.1.0
 
 ### Minor Changes

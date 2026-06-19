@@ -47,6 +47,7 @@ export const ethSendTransaction = async ({
     rpcUrl: network.rpcUrl,
     multiContractAddress: network.utilityAddresses?.multicall,
     pollingInterval: 1000,
+    customRpcHeaders: network.customRpcHeaders,
   });
 
   // calculate gas limit if not provided/invalid

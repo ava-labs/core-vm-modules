@@ -2,10 +2,12 @@ import type { NetworkContractToken, NetworkToken } from './token';
 
 export type Network = {
   isTestnet?: boolean;
+  isDevnet?: boolean;
   chainId: number;
   caipId?: string;
   chainName: string;
   rpcUrl: string;
+  customRpcHeaders?: Record<string, string>;
   utilityAddresses?: {
     multicall: string;
   };

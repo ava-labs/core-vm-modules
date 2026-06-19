@@ -7,6 +7,9 @@ import { devEnv, prodEnv } from './env';
 
 jest.mock('./handlers/get-network-fee/get-network-fee');
 jest.mock('./handlers/get-balances/get-balances');
+// Short-circuit the @avalabs/crypto-wasm peer-resolution chain. None of the
+// tests in this file exercise deriveAddresses, so an empty stub is sufficient.
+jest.mock('@avalabs/crypto-sdk', () => ({}));
 
 describe('bitcoin-module', () => {
   describe('getNetworkFee()', () => {
