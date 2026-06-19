@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.8.0
+
+### Minor Changes
+
+- 1eaf0ca: auto-renewed validators - ACP-236
+
 ## 0.7.2
 
 ### Patch Changes

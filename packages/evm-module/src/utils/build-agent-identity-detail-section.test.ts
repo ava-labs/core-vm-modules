@@ -11,20 +11,32 @@ describe('buildAgentIdentityDetailSection', () => {
     trustLevel: 'high' as const,
   };
 
-  it('renders navigable metadata URIs as links', () => {
+  const expectMetadataLink = (metadataUri: string) => {
     const section = buildAgentIdentityDetailSection({
       ...baseAgentIdentity,
-      metadataUri: 'ipfs://agent.json',
+      metadataUri,
     });
 
     expect(section.items).toContainEqual({
       label: 'Metadata',
       type: DetailItemType.LINK,
       value: {
-        name: 'ipfs://agent.json',
-        url: 'ipfs://agent.json',
+        name: metadataUri,
+        url: metadataUri,
       },
     });
+  };
+
+  it('renders ipfs metadata URIs as links', () => {
+    expectMetadataLink('ipfs://agent.json');
+  });
+
+  it('renders http metadata URIs as links', () => {
+    expectMetadataLink('http://example.com/agent.json');
+  });
+
+  it('renders https metadata URIs as links', () => {
+    expectMetadataLink('https://example.com/agent.json');
   });
 
   it('renders data URIs as non-clickable text', () => {
@@ -37,6 +49,20 @@ describe('buildAgentIdentityDetailSection', () => {
       label: 'Metadata',
       type: DetailItemType.TEXT,
       value: 'Embedded data URI',
+      alignment: 'vertical',
+    });
+  });
+
+  it('renders unsupported metadata URI schemes as raw non-clickable text', () => {
+    const section = buildAgentIdentityDetailSection({
+      ...baseAgentIdentity,
+      metadataUri: 'ftp://agent.json',
+    });
+
+    expect(section.items).toContainEqual({
+      label: 'Metadata',
+      type: DetailItemType.TEXT,
+      value: 'ftp://agent.json',
       alignment: 'vertical',
     });
   });

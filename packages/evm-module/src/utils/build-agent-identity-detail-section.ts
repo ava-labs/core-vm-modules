@@ -4,6 +4,8 @@ import { addressItem, linkItem, textItem } from '@internal/utils/src/utils/detai
 const isNavigableMetadataUri = (metadataUri: string) =>
   metadataUri.startsWith('https://') || metadataUri.startsWith('http://') || metadataUri.startsWith('ipfs://');
 
+const isEmbeddedDataUri = (metadataUri: string) => metadataUri.startsWith('data:');
+
 export const buildAgentIdentityDetailSection = (agentIdentity: AgentIdentity): DetailSection => {
   const items: DetailItem[] = [
     textItem('Agent ID', agentIdentity.agentId),
@@ -23,7 +25,9 @@ export const buildAgentIdentityDetailSection = (agentIdentity: AgentIdentity): D
     items.push(
       isNavigableMetadataUri(agentIdentity.metadataUri)
         ? linkItem('Metadata', { url: agentIdentity.metadataUri, name: agentIdentity.metadataUri })
-        : textItem('Metadata', 'Embedded data URI', 'vertical'),
+        : isEmbeddedDataUri(agentIdentity.metadataUri)
+        ? textItem('Metadata', 'Embedded data URI', 'vertical')
+        : textItem('Metadata', agentIdentity.metadataUri, 'vertical'),
     );
   }
 

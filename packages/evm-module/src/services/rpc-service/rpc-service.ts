@@ -66,6 +66,7 @@ export class RpcService implements BalanceServiceInterface {
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
+      customRpcHeaders: this.#network.customRpcHeaders,
     });
 
     const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
@@ -122,6 +123,7 @@ export class RpcService implements BalanceServiceInterface {
       chainName: this.#network.chainName,
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
+      customRpcHeaders: this.#network.customRpcHeaders,
     });
 
     const coingeckoPlatformId = this.#network.pricingProviders?.coingecko.assetPlatformId;

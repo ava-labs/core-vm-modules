@@ -4,21 +4,35 @@ import { type VM, TxType, type TxDetails } from '@avalabs/vm-module-types';
 export const parseTxDetails = (tx: Avalanche.Tx): TxDetails | undefined => {
   switch (tx.type) {
     case TxType.AddPermissionlessDelegator:
+      return { ...tx, type: TxType.AddPermissionlessDelegator };
     case TxType.AddPermissionlessValidator:
+      return { ...tx, type: TxType.AddPermissionlessValidator };
     case TxType.AddSubnetValidator:
+      return { ...tx, type: TxType.AddSubnetValidator };
     case TxType.CreateChain:
+      return { ...tx, type: TxType.CreateChain };
     case TxType.CreateSubnet:
+      return { ...tx, type: TxType.CreateSubnet };
     case TxType.RemoveSubnetValidator:
-      return tx;
+      return { ...tx, type: TxType.RemoveSubnetValidator };
+    case TxType.AddAutoRenewedValidator:
+      return { ...tx, type: TxType.AddAutoRenewedValidator };
+    case TxType.SetAutoRenewedValidatorConfig:
+      return { ...tx, type: TxType.SetAutoRenewedValidatorConfig };
     case TxType.ConvertSubnetToL1:
+      return { ...tx, type: TxType.ConvertSubnetToL1, chain: tx.chain as VM };
     case TxType.SetL1ValidatorWeight:
+      return { ...tx, type: TxType.SetL1ValidatorWeight, chain: tx.chain as VM };
     case TxType.DisableL1Validator:
+      return { ...tx, type: TxType.DisableL1Validator, chain: tx.chain as VM };
     case TxType.IncreaseL1ValidatorBalance:
-    case TxType.RegisterL1Validator:
       return {
         ...tx,
+        type: TxType.IncreaseL1ValidatorBalance,
         chain: tx.chain as VM,
       };
+    case TxType.RegisterL1Validator:
+      return { ...tx, type: TxType.RegisterL1Validator, chain: tx.chain as VM };
     case TxType.Export:
       return {
         ...tx,

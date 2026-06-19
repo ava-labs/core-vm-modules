@@ -23,6 +23,9 @@ jest.mock('./handlers/get-network-fee');
 jest.mock('./handlers/get-tokens');
 jest.mock('./handlers/get-transaction-history');
 jest.mock('./handlers/sign-and-send-transaction');
+// Short-circuit the @avalabs/crypto-wasm peer-resolution chain. None of the
+// tests in this file exercise deriveAddresses, so an empty stub is sufficient.
+jest.mock('@avalabs/crypto-sdk', () => ({}));
 
 describe('SVM Module', () => {
   const svm = new SvmModule({

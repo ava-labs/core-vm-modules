@@ -1,17 +1,12 @@
-import { NetworkVMType, type NetworkFees } from '@avalabs/vm-module-types';
+import { NetworkVMType, type Network, type NetworkFees } from '@avalabs/vm-module-types';
 import { getProvider } from '../../utils/get-provider';
 
 /**
  * Returns {@link NetworkFees} based on a fixed fee.
  */
-export async function getNetworkFee({
-  isTestnet,
-  vmName,
-}: {
-  isTestnet: boolean;
-  vmName: NetworkVMType;
-}): Promise<NetworkFees> {
-  const provider = await getProvider({ isTestnet });
+export async function getNetworkFee(network: Network): Promise<NetworkFees> {
+  const { vmName } = network;
+  const provider = await getProvider(network);
 
   // Return static fees for X-Chain
   if (vmName === NetworkVMType.AVM) {

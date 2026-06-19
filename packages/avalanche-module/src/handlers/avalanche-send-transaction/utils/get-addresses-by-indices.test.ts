@@ -1,4 +1,5 @@
 import { Avalanche } from '@avalabs/core-wallets-sdk';
+import { NetworkVMType, type Network } from '@avalabs/vm-module-types';
 import { getAddressesByIndices } from './get-addresses-by-indices';
 import { getProvider } from '../../../utils/get-provider';
 
@@ -8,6 +9,20 @@ jest.mock('@avalabs/core-wallets-sdk', () => ({
     getAddressFromXpub: jest.fn(),
   },
 }));
+
+const mockNetwork: Network = {
+  isTestnet: false,
+  vmName: NetworkVMType.PVM,
+  chainId: 1,
+  chainName: 'Avalanche P-Chain',
+  rpcUrl: 'https://example.com',
+  networkToken: {
+    decimals: 9,
+    symbol: 'AVAX',
+    name: 'Avalanche',
+    logoUri: '',
+  },
+};
 
 describe('getAddressesByIndices', () => {
   const mockProvider = { networkID: 1 };
@@ -20,7 +35,7 @@ describe('getAddressesByIndices', () => {
   describe('with xpubXP', () => {
     const baseParams = {
       indices: [0, 1],
-      isTestnet: false,
+      network: mockNetwork,
       xpubXP: 'xpub-test',
     };
 
@@ -86,7 +101,7 @@ describe('getAddressesByIndices', () => {
         indices: [0, 2],
         chainAlias: 'P',
         isChange: false,
-        isTestnet: false,
+        network: mockNetwork,
         externalXPAddresses,
       });
 
@@ -98,7 +113,7 @@ describe('getAddressesByIndices', () => {
         indices: [0, 99],
         chainAlias: 'P',
         isChange: false,
-        isTestnet: false,
+        network: mockNetwork,
         externalXPAddresses,
       });
 
@@ -112,7 +127,7 @@ describe('getAddressesByIndices', () => {
         indices: [0],
         chainAlias: 'P',
         isChange: false,
-        isTestnet: false,
+        network: mockNetwork,
       });
 
       expect(result).toEqual([]);

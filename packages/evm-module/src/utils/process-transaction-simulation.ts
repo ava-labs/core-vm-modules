@@ -91,9 +91,11 @@ export const processTransactionSimulation = async ({
   if (simulationResult) {
     const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
 
-    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+    // Only surface an alert when Blockaid returns a genuine verdict. A missing
+    // validation or `result_type === 'Error'` is not a security signal
+    if (validation?.result_type === 'Warning') {
       alert = transactionAlerts[AlertType.WARNING];
-    } else if (validation.result_type === 'Malicious') {
+    } else if (validation?.result_type === 'Malicious') {
       alert = transactionAlerts[AlertType.DANGER];
     }
 
@@ -360,9 +362,11 @@ export const processJsonRpcSimulation = async ({
       blockaid,
     });
 
-    if (!validation || validation.result_type === 'Error' || validation.result_type === 'Warning') {
+    // Only surface an alert when Blockaid returns a genuine verdict. A missing
+    // validation or `result_type === 'Error'` is not a security signal
+    if (validation?.result_type === 'Warning') {
       alert = transactionAlerts[AlertType.WARNING];
-    } else if (validation.result_type === 'Malicious') {
+    } else if (validation?.result_type === 'Malicious') {
       alert = transactionAlerts[AlertType.DANGER];
     }
 

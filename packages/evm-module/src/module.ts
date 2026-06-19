@@ -5,6 +5,8 @@ import {
   type ApprovalController,
   type BuildDerivationPathParams,
   type ConstructorParams,
+  type DeriveAddressesParams,
+  type DeriveAddressesResponse,
   type DeriveAddressParams,
   type DeriveAddressResponse,
   type GetAddressParams,
@@ -27,8 +29,9 @@ import ManifestJson from '../manifest.json';
 import { BLOCKAID_API_KEY } from './constants';
 import { getEnv } from './env';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
-import { deriveAddress } from './handlers/derive-address/derive-address';
 import { avalancheDeclareAgentIdentity } from './handlers/avalanche-declare-agent-identity/avalanche-declare-agent-identity';
+import { deriveAddress } from './handlers/derive-address/derive-address';
+import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
 import { ethSendTransaction } from './handlers/eth-send-transaction/eth-send-transaction';
 import { ethSign } from './handlers/eth-sign/eth-sign';
@@ -76,6 +79,7 @@ export class EvmModule implements Module {
       rpcUrl: network.rpcUrl,
       multiContractAddress: network.utilityAddresses?.multicall,
       pollingInterval: 1000,
+      customRpcHeaders: network.customRpcHeaders,
     });
   }
 
@@ -89,6 +93,13 @@ export class EvmModule implements Module {
 
   deriveAddress(params: DeriveAddressParams): Promise<DeriveAddressResponse> {
     return deriveAddress({
+      ...params,
+      approvalController: this.#approvalController,
+    });
+  }
+
+  deriveAddresses(params: DeriveAddressesParams): Promise<DeriveAddressesResponse> {
+    return deriveAddresses({
       ...params,
       approvalController: this.#approvalController,
     });
@@ -123,7 +134,7 @@ export class EvmModule implements Module {
   }
 
   getNetworkFee(network: NetworkFeeParam): Promise<NetworkFees> {
-    const { chainId, chainName, rpcUrl, utilityAddresses, caipId } = network;
+    const { chainId, chainName, rpcUrl, utilityAddresses, caipId, customRpcHeaders } = network;
     return getNetworkFee({
       chainId,
       chainName,
@@ -131,6 +142,7 @@ export class EvmModule implements Module {
       multiContractAddress: utilityAddresses?.multicall,
       caipId,
       proxyApiUrl: this.#proxyApiUrl,
+      customRpcHeaders,
     });
   }
 

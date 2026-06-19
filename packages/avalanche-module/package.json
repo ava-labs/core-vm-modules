@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/avalanche-module",
-  "version": "3.6.2",
+  "version": "3.9.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -22,14 +22,15 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/avalanchejs": "5.1.0-alpha.2",
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.82",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.82",
-    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.82",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.82",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.82",
-    "@avalabs/glacier-sdk": "3.1.0-alpha.82",
-    "@avalabs/types": "3.1.0-alpha.82",
+    "@avalabs/avalanchejs": "5.1.0-alpha.4",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.87",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.87",
+    "@avalabs/core-etherscan-sdk": "3.1.0-alpha.87",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.87",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.87",
+    "@avalabs/crypto-sdk": "1.0.0",
+    "@avalabs/glacier-sdk": "3.1.0-alpha.87",
+    "@avalabs/types": "3.1.0-alpha.87",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
     "big.js": "6.2.1",

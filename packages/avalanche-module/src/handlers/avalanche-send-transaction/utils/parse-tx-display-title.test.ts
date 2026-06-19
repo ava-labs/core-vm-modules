@@ -46,7 +46,7 @@ describe('parse-display-data-title', () => {
   it('should return title "Do you want to create this subnet?" for CreateSubnetTx', () => {
     const tx = { type: TxType.CreateSubnet };
     const title = parseTxDisplayTitle({ ...tx } as Avalanche.CreateSubnetTx);
-    expect(title).toEqual('Do you want to create this subnet?');
+    expect(title).toEqual('Do you want to create this L1?');
   });
   it('should return title "Do you want to remove this subnet validator?" for RemoveSubnetValidatorTx', () => {
     const tx = { type: TxType.RemoveSubnetValidator };
