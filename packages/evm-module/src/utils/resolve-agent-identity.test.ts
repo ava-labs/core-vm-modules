@@ -148,4 +148,42 @@ describe('resolveAgentIdentity', () => {
     expect(result.reputationScore).toBeNull();
     expect(result.trustLevel).toBe('unknown');
   });
+
+  it('falls back to unknown reputation when feedback reads fail', async () => {
+    const customContract = jest.fn((address: string, _abi: unknown, provider: unknown) => {
+      if (address === identityAddress) {
+        return {
+          provider,
+          ownerOf: jest.fn().mockResolvedValue('0x1234567890123456789012345678901234567890'),
+          tokenURI: jest.fn().mockResolvedValue('ipfs://agent.json'),
+          agentURI: jest.fn(),
+          getMetadata: jest.fn(),
+        };
+      }
+
+      return {
+        provider,
+        getIdentityRegistry: jest.fn().mockResolvedValue(identityAddress),
+        getSummary: jest.fn(),
+        readAllFeedback: jest.fn().mockRejectedValue(new Error('rpc down')),
+      };
+    });
+
+    Contract.mockImplementation(customContract);
+
+    const result = await resolveAgentIdentity({
+      declaration: {
+        agentId: '1601',
+        agentRegistry: `eip155:43114:${identityAddress}`,
+      },
+      rpcUrl: 'https://rpc.example/resolve-agent-identity-test-feedback-failure',
+      chainId: 43114,
+      chainName: 'Avalanche',
+    });
+
+    expect(result.owner).toBe('0x1234567890123456789012345678901234567890');
+    expect(result.metadataUri).toBe('ipfs://agent.json');
+    expect(result.reputationScore).toBeNull();
+    expect(result.trustLevel).toBe('unknown');
+  });
 });

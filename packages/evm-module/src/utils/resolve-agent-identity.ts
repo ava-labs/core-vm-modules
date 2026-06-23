@@ -183,26 +183,34 @@ const resolveReputationScore = async (
   parsedRegistryAddress: string,
   agentId: bigint,
 ): Promise<number | null> => {
-  const identityRegistry = getAddress(await reputationContract.getIdentityRegistry());
-  if (identityRegistry !== parsedRegistryAddress) {
+  try {
+    const identityRegistry = getAddress(await reputationContract.getIdentityRegistry());
+    if (identityRegistry !== parsedRegistryAddress) {
+      return null;
+    }
+
+    const feedbackResult = await reputationContract.readAllFeedback(agentId, [], STARRED_TAG, '', false);
+    const feedback = getFeedbackValues(feedbackResult)
+      .filter((entry) => entry.tag1 === undefined || entry.tag1 === STARRED_TAG)
+      .filter((entry) => !entry.isRevoked);
+
+    const clientAddresses = dedupeAddresses(getFeedbackClients(feedbackResult));
+    if (clientAddresses.length) {
+      try {
+        const summary = getSummaryValue(await reputationContract.getSummary(agentId, clientAddresses, STARRED_TAG, ''));
+        const count = toNumber(summary.count);
+        if (count) {
+          return scaleFixedPoint(summary.summaryValue, summary.summaryValueDecimals);
+        }
+      } catch {
+        // Ignore summary lookup failures and fall back to raw feedback averaging.
+      }
+    }
+
+    return averageScores(feedback.map((entry) => scaleFixedPoint(entry.value, entry.valueDecimals)));
+  } catch {
     return null;
   }
-
-  const feedbackResult = await reputationContract.readAllFeedback(agentId, [], STARRED_TAG, '', false);
-  const feedback = getFeedbackValues(feedbackResult)
-    .filter((entry) => entry.tag1 === undefined || entry.tag1 === STARRED_TAG)
-    .filter((entry) => !entry.isRevoked);
-
-  const clientAddresses = dedupeAddresses(getFeedbackClients(feedbackResult));
-  if (clientAddresses.length) {
-    const summary = getSummaryValue(await reputationContract.getSummary(agentId, clientAddresses, STARRED_TAG, ''));
-    const count = toNumber(summary.count);
-    if (count) {
-      return scaleFixedPoint(summary.summaryValue, summary.summaryValueDecimals);
-    }
-  }
-
-  return averageScores(feedback.map((entry) => scaleFixedPoint(entry.value, entry.valueDecimals)));
 };
 
 const parseAgentRegistry = (agentRegistry: string) => {
