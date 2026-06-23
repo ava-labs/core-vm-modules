@@ -16,11 +16,9 @@ const IDENTITY_ABI = [
 ] as const;
 
 const REPUTATION_ABI = [
-  'function getScore(uint256 agentId) view returns (int256)',
-  'function getReputation(uint256 agentId) view returns (int256)',
-  'function reputationScores(uint256 agentId) view returns (int256)',
-  'function scores(uint256 agentId) view returns (int256)',
-  'function reputations(uint256 agentId) view returns (int256)',
+  'function getSummary(uint256 agentId, address[] clientAddresses, string tag1, string tag2) view returns (uint64 count, int128 summaryValue, uint8 summaryValueDecimals)',
+  'function readAllFeedback(uint256 agentId, address[] clientAddresses, string tag1, string tag2, bool includeRevoked) view returns (address[] clients, uint64[] feedbackIndexes, int128[] values, uint8[] valueDecimals, string[] tag1s, string[] tag2s, bool[] isRevoked)',
+  'function getIdentityRegistry() view returns (address)',
 ] as const;
 
 type IdentityContract = Contract & {
@@ -30,12 +28,58 @@ type IdentityContract = Contract & {
   getMetadata: (agentId: bigint, metadataKey: string) => Promise<string>;
 };
 
+type ReputationSummary = {
+  count: bigint | number;
+  summaryValue: bigint | number;
+  summaryValueDecimals: bigint | number;
+};
+
+type ReputationFeedback = {
+  value: bigint | number;
+  valueDecimals: bigint | number;
+  tag1?: string;
+  tag2?: string;
+  isRevoked?: boolean;
+};
+
+type ReputationSummaryTuple = readonly [bigint | number, bigint | number, bigint | number];
+type ReputationFeedbackTuple = readonly [
+  string[],
+  (bigint | number)[],
+  (bigint | number)[],
+  (bigint | number)[],
+  string[],
+  string[],
+  boolean[],
+];
+
+type ReputationFeedbackResult =
+  | ReputationFeedbackTuple
+  | {
+      clients: string[];
+      feedbackIndexes: (bigint | number)[];
+      values: (bigint | number)[];
+      valueDecimals: (bigint | number)[];
+      tag1s: string[];
+      tag2s: string[];
+      isRevoked: boolean[];
+    };
+
 type ReputationContract = Contract & {
-  getScore: (agentId: bigint) => Promise<bigint | number>;
-  getReputation: (agentId: bigint) => Promise<bigint | number>;
-  reputationScores: (agentId: bigint) => Promise<bigint | number>;
-  scores: (agentId: bigint) => Promise<bigint | number>;
-  reputations: (agentId: bigint) => Promise<bigint | number>;
+  getIdentityRegistry: () => Promise<string>;
+  getSummary: (
+    agentId: bigint,
+    clientAddresses: string[],
+    tag1: string,
+    tag2: string,
+  ) => Promise<ReputationSummaryTuple | ReputationSummary>;
+  readAllFeedback: (
+    agentId: bigint,
+    clientAddresses: string[],
+    tag1: string,
+    tag2: string,
+    includeRevoked: boolean,
+  ) => Promise<ReputationFeedbackResult>;
 };
 
 const cache = new Map<string, { expiresAt: number; value: AgentIdentity }>();
@@ -47,11 +91,118 @@ const getTrustLevel = (score: number | null): AgentIdentity['trustLevel'] => {
   return 'low';
 };
 
-const clampScore = (value: bigint | number | null): number | null => {
+const clampScore = (value: number | null): number | null => {
   if (value === null) return null;
-  const score = typeof value === 'bigint' ? Number(value) : value;
-  if (!Number.isFinite(score)) return null;
-  return Math.max(0, Math.min(100, Math.trunc(score)));
+  if (!Number.isFinite(value)) return null;
+  return Math.max(0, Math.min(100, Math.trunc(value)));
+};
+
+const toNumber = (value: bigint | number): number | null => {
+  const numeric = typeof value === 'bigint' ? Number(value) : value;
+  return Number.isFinite(numeric) ? numeric : null;
+};
+
+const scaleFixedPoint = (value: bigint | number, decimals: bigint | number): number | null => {
+  const numericValue = toNumber(value);
+  const numericDecimals = toNumber(decimals);
+
+  if (numericValue === null || numericDecimals === null || numericDecimals < 0) {
+    return null;
+  }
+
+  return numericValue / 10 ** numericDecimals;
+};
+
+const isReputationSummaryTuple = (
+  summary: ReputationSummaryTuple | ReputationSummary,
+): summary is ReputationSummaryTuple => Array.isArray(summary);
+
+const isReputationFeedbackTuple = (feedback: ReputationFeedbackResult): feedback is ReputationFeedbackTuple =>
+  Array.isArray(feedback);
+
+const getSummaryValue = (summary: ReputationSummaryTuple | ReputationSummary): ReputationSummary => {
+  if (isReputationSummaryTuple(summary)) {
+    return {
+      count: summary[0],
+      summaryValue: summary[1],
+      summaryValueDecimals: summary[2],
+    };
+  }
+
+  return summary;
+};
+
+const getFeedbackValues = (feedback: ReputationFeedbackResult): ReputationFeedback[] => {
+  const values = isReputationFeedbackTuple(feedback) ? feedback[2] : feedback.values;
+  const valueDecimals = isReputationFeedbackTuple(feedback) ? feedback[3] : feedback.valueDecimals;
+  const tag1s = isReputationFeedbackTuple(feedback) ? feedback[4] : feedback.tag1s;
+  const tag2s = isReputationFeedbackTuple(feedback) ? feedback[5] : feedback.tag2s;
+  const revoked = isReputationFeedbackTuple(feedback) ? feedback[6] : feedback.isRevoked;
+
+  return values.map((value: bigint | number, index: number) => ({
+    value,
+    valueDecimals: valueDecimals[index] ?? 0,
+    tag1: tag1s[index],
+    tag2: tag2s[index],
+    isRevoked: revoked[index],
+  }));
+};
+
+const averageScores = (scores: Array<number | null>): number | null => {
+  const filtered = scores.filter((score): score is number => score !== null);
+  if (!filtered.length) return null;
+  return filtered.reduce((sum, score) => sum + score, 0) / filtered.length;
+};
+
+const STARRED_TAG = 'starred';
+
+const dedupeAddresses = (addresses: string[]): string[] => {
+  const seen = new Set<string>();
+  const deduped: string[] = [];
+
+  for (const address of addresses) {
+    try {
+      const normalized = getAddress(address);
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        deduped.push(normalized);
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return deduped;
+};
+
+const getFeedbackClients = (feedback: ReputationFeedbackResult): string[] =>
+  isReputationFeedbackTuple(feedback) ? feedback[0] : feedback.clients;
+
+const resolveReputationScore = async (
+  reputationContract: ReputationContract,
+  parsedRegistryAddress: string,
+  agentId: bigint,
+): Promise<number | null> => {
+  const identityRegistry = getAddress(await reputationContract.getIdentityRegistry());
+  if (identityRegistry !== parsedRegistryAddress) {
+    return null;
+  }
+
+  const feedbackResult = await reputationContract.readAllFeedback(agentId, [], STARRED_TAG, '', false);
+  const feedback = getFeedbackValues(feedbackResult)
+    .filter((entry) => entry.tag1 === undefined || entry.tag1 === STARRED_TAG)
+    .filter((entry) => !entry.isRevoked);
+
+  const clientAddresses = dedupeAddresses(getFeedbackClients(feedbackResult));
+  if (clientAddresses.length) {
+    const summary = getSummaryValue(await reputationContract.getSummary(agentId, clientAddresses, STARRED_TAG, ''));
+    const count = toNumber(summary.count);
+    if (count) {
+      return scaleFixedPoint(summary.summaryValue, summary.summaryValueDecimals);
+    }
+  }
+
+  return averageScores(feedback.map((entry) => scaleFixedPoint(entry.value, entry.valueDecimals)));
 };
 
 const parseAgentRegistry = (agentRegistry: string) => {
@@ -159,22 +310,18 @@ export const resolveAgentIdentity = async ({
       async () => decodeMetadata(await identityContract.getMetadata(BigInt(declaration.agentId), 'uri')),
     ]),
     reputationContract
-      ? callFirst<bigint | number>([
-          async () => await reputationContract.getScore(BigInt(declaration.agentId)),
-          async () => await reputationContract.getReputation(BigInt(declaration.agentId)),
-          async () => await reputationContract.reputationScores(BigInt(declaration.agentId)),
-          async () => await reputationContract.scores(BigInt(declaration.agentId)),
-          async () => await reputationContract.reputations(BigInt(declaration.agentId)),
-        ])
+      ? resolveReputationScore(reputationContract, parsedRegistry.address, BigInt(declaration.agentId))
       : Promise.resolve(null),
   ]);
+
+  const normalizedReputationScore = clampScore(reputationScore ?? null);
 
   const resolved: AgentIdentity = {
     ...fallback,
     owner: owner ?? null,
     metadataUri: metadataUri ?? null,
-    reputationScore: clampScore(reputationScore ?? null),
-    trustLevel: getTrustLevel(clampScore(reputationScore ?? null)),
+    reputationScore: normalizedReputationScore,
+    trustLevel: getTrustLevel(normalizedReputationScore),
   };
 
   cache.set(`${rpcUrl}:${declaration.agentRegistry}:${declaration.agentId}`, {
