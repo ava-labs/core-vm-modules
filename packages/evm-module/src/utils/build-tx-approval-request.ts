@@ -1,5 +1,6 @@
 import {
   RpcMethod,
+  type AgentIdentity,
   type DetailItem,
   type DisplayData,
   type Network,
@@ -10,6 +11,8 @@ import {
 
 import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
 
+import { buildAgentIdentityDetailSection } from './build-agent-identity-detail-section';
+
 import { ERC20TransactionType } from '../types';
 import type { TransactionParams } from './transaction-schema';
 import { parseERC20TransactionType } from './parse-erc20-transaction-type';
@@ -19,6 +22,7 @@ export const buildTxApprovalRequest = (
   network: Network,
   transaction: TransactionParams,
   { isSimulationSuccessful, balanceChange, tokenApprovals, alert }: TransactionSimulationResult,
+  agentIdentity?: AgentIdentity,
 ) => {
   const { dappInfo } = request;
   const transactionType = parseERC20TransactionType(transaction);
@@ -49,6 +53,7 @@ export const buildTxApprovalRequest = (
         title: 'Transaction Details',
         items: transactionDetails,
       },
+      ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
     networkFeeSelector: true,
     alert,

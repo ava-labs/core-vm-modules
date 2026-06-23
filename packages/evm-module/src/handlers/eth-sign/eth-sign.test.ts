@@ -1,6 +1,7 @@
 import { ethSign } from './eth-sign';
 import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 
 // doesn't print the ugly console errors out
 jest.spyOn(global.console, 'error').mockImplementation(() => {});
@@ -33,6 +34,10 @@ jest.mock('./utils/beautify-message/beautify-message', () => ({
   beautifyComplexMessage: jest.fn(),
 }));
 
+jest.mock('../../utils/resolve-agent-identity', () => ({
+  resolveAgentIdentity: jest.fn(),
+}));
+
 jest.mock('./utils/typeguards', () => ({
   isTypedDataV1: jest.fn(),
   isTypedData: jest.fn(),
@@ -44,6 +49,7 @@ const mockToUtf8 = require('ethers').toUtf8String;
 const mockBeautifySimpleMessage = require('./utils/beautify-message/beautify-message').beautifySimpleMessage;
 const mockBeautifyComplexMessage = require('./utils/beautify-message/beautify-message').beautifyComplexMessage;
 const mockIsTypedDataV1 = require('./utils/typeguards').isTypedDataV1;
+const mockResolveAgentIdentity = resolveAgentIdentity as jest.MockedFunction<typeof resolveAgentIdentity>;
 
 const mockRequest = {
   method: RpcMethod.ETH_SIGN,
@@ -63,12 +69,22 @@ const mockNetwork = {
   chainName: 'Ethereum',
   logoUri: 'test-logo-uri',
   rpcUrl: 'rpcUrl',
+  customRpcHeaders: undefined,
   networkToken: {
     name: 'ethereum',
     symbol: 'ETH',
     decimals: 18,
   },
   vmName: NetworkVMType.EVM,
+};
+
+const testAgentIdentity = {
+  agentId: '1599',
+  agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+  owner: '0x1234567890123456789012345678901234567890',
+  reputationScore: 88,
+  metadataUri: 'ipfs://agent.json',
+  trustLevel: 'high' as const,
 };
 
 const mockApprovalController = {
@@ -84,6 +100,56 @@ describe('ethSign', () => {
     mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
     mockBeautifyComplexMessage.mockReturnValue('beautified complex message');
+    mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
+  });
+
+  it('threads resolved agent identity into sign approval display data', async () => {
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method: RpcMethod.ETH_SIGN, data: 'data', address: '0xabc' },
+    });
+
+    await ethSign({
+      request: {
+        ...mockRequest,
+        context: {
+          agentIdentity: {
+            agentId: '1599',
+            agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+          },
+        },
+      },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      blockaid: mockBlockaid as never,
+    });
+
+    expect(mockResolveAgentIdentity).toHaveBeenCalledWith({
+      declaration: {
+        agentId: '1599',
+        agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
+      },
+      rpcUrl: mockNetwork.rpcUrl,
+      chainId: mockNetwork.chainId,
+      chainName: mockNetwork.chainName,
+      customRpcHeaders: mockNetwork.customRpcHeaders,
+    });
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          details: expect.arrayContaining([
+            expect.objectContaining({
+              title: 'Agent Identity',
+              items: expect.arrayContaining([
+                expect.objectContaining({ label: 'Agent ID', value: testAgentIdentity.agentId }),
+                expect.objectContaining({ label: 'Registry', value: testAgentIdentity.agentRegistry }),
+                expect.objectContaining({ label: 'Trust level', value: testAgentIdentity.trustLevel }),
+              ]),
+            }),
+          ]),
+        }),
+      }),
+    );
   });
 
   it('should return error when params are invalid', async () => {
