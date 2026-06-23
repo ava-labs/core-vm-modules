@@ -1,5 +1,7 @@
 import type { AgentIdentity, AgentIdentityDeclaration } from '@avalabs/vm-module-types';
-import { Contract, JsonRpcProvider, getAddress, toUtf8String } from 'ethers';
+import { Contract, getAddress, toUtf8String } from 'ethers';
+
+import { getProvider } from './get-provider';
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const DEFAULT_REPUTATION_REGISTRIES: Record<number, string> = {
@@ -20,6 +22,21 @@ const REPUTATION_ABI = [
   'function scores(uint256 agentId) view returns (int256)',
   'function reputations(uint256 agentId) view returns (int256)',
 ] as const;
+
+type IdentityContract = Contract & {
+  ownerOf: (tokenId: bigint) => Promise<string>;
+  tokenURI: (tokenId: bigint) => Promise<string>;
+  agentURI: (agentId: bigint) => Promise<string>;
+  getMetadata: (agentId: bigint, metadataKey: string) => Promise<string>;
+};
+
+type ReputationContract = Contract & {
+  getScore: (agentId: bigint) => Promise<bigint | number>;
+  getReputation: (agentId: bigint) => Promise<bigint | number>;
+  reputationScores: (agentId: bigint) => Promise<bigint | number>;
+  scores: (agentId: bigint) => Promise<bigint | number>;
+  reputations: (agentId: bigint) => Promise<bigint | number>;
+};
 
 const cache = new Map<string, { expiresAt: number; value: AgentIdentity }>();
 
@@ -86,9 +103,15 @@ const decodeMetadata = (value: string): string | null => {
 export const resolveAgentIdentity = async ({
   declaration,
   rpcUrl,
+  chainId,
+  chainName,
+  customRpcHeaders,
 }: {
   declaration: AgentIdentityDeclaration;
   rpcUrl: string;
+  chainId: number;
+  chainName: string;
+  customRpcHeaders?: Record<string, string>;
 }): Promise<AgentIdentity> => {
   const cached = cache.get(`${rpcUrl}:${declaration.agentRegistry}:${declaration.agentId}`);
   if (cached && cached.expiresAt > Date.now()) {
@@ -114,11 +137,18 @@ export const resolveAgentIdentity = async ({
 
   const fallback = buildFallback(normalizedDeclaration);
 
-  const provider = new JsonRpcProvider(rpcUrl);
-  const identityContract = new Contract(parsedRegistry.address, IDENTITY_ABI, provider);
+  const provider = await getProvider({
+    chainId,
+    chainName,
+    rpcUrl,
+    customRpcHeaders,
+  });
+  const identityContract = new Contract(parsedRegistry.address, IDENTITY_ABI, provider) as IdentityContract;
 
   const reputationRegistry = DEFAULT_REPUTATION_REGISTRIES[parsedRegistry.chainId];
-  const reputationContract = reputationRegistry ? new Contract(reputationRegistry, REPUTATION_ABI, provider) : null;
+  const reputationContract = reputationRegistry
+    ? (new Contract(reputationRegistry, REPUTATION_ABI, provider) as ReputationContract)
+    : null;
 
   const [owner, metadataUri, reputationScore] = await Promise.all([
     callFirst<string | null>([async () => getAddress(await identityContract.ownerOf(BigInt(declaration.agentId)))]),

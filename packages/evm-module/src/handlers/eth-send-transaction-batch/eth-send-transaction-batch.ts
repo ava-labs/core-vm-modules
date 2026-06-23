@@ -88,7 +88,15 @@ export const ethSendTransactionBatch = async ({
   }
 
   const declaration = getAgentIdentityFromContext(request);
-  const agentIdentity = declaration ? await resolveAgentIdentity({ declaration, rpcUrl: network.rpcUrl }) : undefined;
+  const agentIdentity = declaration
+    ? await resolveAgentIdentity({
+        declaration,
+        rpcUrl: network.rpcUrl,
+        chainId: network.chainId,
+        chainName: network.chainName,
+        customRpcHeaders: network.customRpcHeaders,
+      })
+    : undefined;
 
   const displayData: DisplayData = {
     title: 'Do you approve these transactions?',

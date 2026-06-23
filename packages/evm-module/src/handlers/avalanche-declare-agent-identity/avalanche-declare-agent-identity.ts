@@ -37,6 +37,9 @@ export const avalancheDeclareAgentIdentity = async ({
     result: await resolveAgentIdentity({
       declaration: parsed.data,
       rpcUrl: network.rpcUrl,
+      chainId: network.chainId,
+      chainName: network.chainName,
+      customRpcHeaders: network.customRpcHeaders,
     }),
   };
 };
