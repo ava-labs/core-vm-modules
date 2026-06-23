@@ -69,6 +69,7 @@ const mockNetwork = {
   chainName: 'Ethereum',
   logoUri: 'test-logo-uri',
   rpcUrl: 'rpcUrl',
+  customRpcHeaders: undefined,
   networkToken: {
     name: 'ethereum',
     symbol: 'ETH',
@@ -129,6 +130,9 @@ describe('ethSign', () => {
         agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
       },
       rpcUrl: mockNetwork.rpcUrl,
+      chainId: mockNetwork.chainId,
+      chainName: mockNetwork.chainName,
+      customRpcHeaders: mockNetwork.customRpcHeaders,
     });
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({

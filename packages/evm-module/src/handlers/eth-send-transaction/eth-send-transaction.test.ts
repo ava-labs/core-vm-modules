@@ -793,6 +793,9 @@ describe('agent identity propagation', () => {
         agentRegistry: 'eip155:43114:0x8004A169FB4a3325136EB29fA0ceB6D2e539a432',
       },
       rpcUrl: testNetwork.rpcUrl,
+      chainId: testNetwork.chainId,
+      chainName: testNetwork.chainName,
+      customRpcHeaders: testNetwork.customRpcHeaders,
     });
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({

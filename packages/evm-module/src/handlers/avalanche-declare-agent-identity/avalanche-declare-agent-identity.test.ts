@@ -29,6 +29,7 @@ const network = {
   chainId: 43114,
   chainName: 'Avalanche',
   rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
+  customRpcHeaders: undefined,
   logoUri: 'logo',
   networkToken: { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
   vmName: NetworkVMType.EVM,
@@ -57,6 +58,9 @@ describe('avalancheDeclareAgentIdentity', () => {
     expect(mockResolveAgentIdentity).toHaveBeenCalledWith({
       declaration: request.params,
       rpcUrl: network.rpcUrl,
+      chainId: network.chainId,
+      chainName: network.chainName,
+      customRpcHeaders: network.customRpcHeaders,
     });
     expect(result).toEqual({
       result: {
