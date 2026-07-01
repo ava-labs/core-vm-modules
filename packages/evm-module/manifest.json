@@ -34,6 +34,7 @@
       "dapps": true,
       "methods": [
         "personal_sign",
+        "avalanche_declareAgentIdentity",
         "eth_sendTransaction",
         "eth_sendTransactionBatch",
         "eth_*",

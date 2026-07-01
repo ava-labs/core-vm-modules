@@ -25,6 +25,7 @@ export enum RpcMethod {
   AVALANCHE_SIGN_MESSAGE = 'avalanche_signMessage',
   AVALANCHE_SEND_TRANSACTION = 'avalanche_sendTransaction',
   AVALANCHE_SIGN_TRANSACTION = 'avalanche_signTransaction',
+  AVALANCHE_DECLARE_AGENT_IDENTITY = 'avalanche_declareAgentIdentity',
 
   /* HVM */
   HVM_SIGN_TRANSACTION = 'hvm_signTransaction',
