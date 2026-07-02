@@ -12,3 +12,4 @@ export * from './transaction-simulation';
 export * from './account';
 export * from './staking';
 export * from './provider';
+export * from './agent-identity';

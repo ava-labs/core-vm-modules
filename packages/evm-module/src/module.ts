@@ -29,6 +29,7 @@ import ManifestJson from '../manifest.json';
 import { BLOCKAID_API_KEY } from './constants';
 import { getEnv } from './env';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
+import { avalancheDeclareAgentIdentity } from './handlers/avalanche-declare-agent-identity/avalanche-declare-agent-identity';
 import { deriveAddress } from './handlers/derive-address/derive-address';
 import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { ethSendTransactionBatch } from './handlers/eth-send-transaction-batch/eth-send-transaction-batch';
@@ -188,6 +189,11 @@ export class EvmModule implements Module {
           blockaid: this.#blockaid,
         });
       }
+      case RpcMethod.AVALANCHE_DECLARE_AGENT_IDENTITY:
+        return avalancheDeclareAgentIdentity({
+          request,
+          network,
+        });
       case RpcMethod.PERSONAL_SIGN:
       case RpcMethod.ETH_SIGN:
       case RpcMethod.SIGN_TYPED_DATA:
