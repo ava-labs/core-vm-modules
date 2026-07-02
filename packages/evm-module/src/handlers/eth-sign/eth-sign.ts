@@ -12,8 +12,8 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { toUtf8String } from 'ethers';
 import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message/beautify-message';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
-import { isTypedDataV1 } from './utils/typeguards';
-import { isTypedDataValid } from './utils/is-typed-data-valid';
+import { isTypedData, isTypedDataV1 } from './utils/typeguards';
+import { isTypedDataValid, isTypedDataV1Valid } from './utils/is-typed-data-valid';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
@@ -44,9 +44,25 @@ export const ethSign = async ({
 
   // validate typed data
   let typedDataValidationResult: ReturnType<typeof isTypedDataValid> | undefined;
+  const isLegacyTypedDataMethod = method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1;
 
   if (method === RpcMethod.SIGN_TYPED_DATA_V3 || method === RpcMethod.SIGN_TYPED_DATA_V4) {
     typedDataValidationResult = isTypedDataValid(data);
+  } else if (isLegacyTypedDataMethod) {
+    // These legacy methods can carry either the flat V1 format or a full V3/V4-style typed
+    // data object - both need the same type-mismatch check, for the same reason.
+    if (isTypedDataV1(data)) {
+      typedDataValidationResult = isTypedDataV1Valid(data);
+    } else if (isTypedData(data)) {
+      typedDataValidationResult = isTypedDataValid(data);
+    }
+  }
+
+  if (typedDataValidationResult && !typedDataValidationResult.isValid && typedDataValidationResult.blocking) {
+    return {
+      success: false,
+      error: rpcErrors.invalidParams(rpcErrorOpts('EIP-712 message is invalid', typedDataValidationResult.error)),
+    };
   }
 
   // generate display data and signing data
