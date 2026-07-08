@@ -16,6 +16,7 @@ import { buildAgentIdentityDetailSection } from './build-agent-identity-detail-s
 import { ERC20TransactionType } from '../types';
 import type { TransactionParams } from './transaction-schema';
 import { parseERC20TransactionType } from './parse-erc20-transaction-type';
+import { getRecipientAddress } from './get-recipient-address';
 
 export const buildTxApprovalRequest = (
   request: RpcRequest,
@@ -33,9 +34,11 @@ export const buildTxApprovalRequest = (
     title = 'Do you approve this spend limit?';
   }
 
+  const recipientAddress = getRecipientAddress(transaction);
+
   const transactionDetails: DetailItem[] = [
     addressItem('Account', transaction.from),
-    transaction.to ? addressItem('To', transaction.to) : null,
+    recipientAddress ? addressItem('To', recipientAddress) : null,
     networkItem('Network', {
       name: network.chainName,
       logoUri: network.logoUri,

@@ -185,6 +185,11 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               value: tx1.from,
             },
             {
+              label: 'To',
+              type: DetailItemType.ADDRESS,
+              value: tx1.to,
+            },
+            {
               label: 'Network',
               type: DetailItemType.NETWORK,
               value: {
@@ -242,6 +247,11 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               label: 'Account',
               type: DetailItemType.ADDRESS,
               value: tx2.from,
+            },
+            {
+              label: 'To',
+              type: DetailItemType.ADDRESS,
+              value: tx2.to,
             },
             {
               label: 'Network',
