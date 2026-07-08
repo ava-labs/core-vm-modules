@@ -126,7 +126,7 @@ const displayData = {
           type: 'address',
         },
         {
-          label: 'Account',
+          label: 'To',
           value: '0xto',
           type: 'address',
         },

@@ -105,7 +105,7 @@ export const ethSendTransactionBatch = async ({
         title: 'Transaction Details',
         items: [
           addressItem('Account', transactionRequests[0].from),
-          transactionRequests[0].to ? addressItem('Account', transactionRequests[0].to) : null,
+          transactionRequests[0].to ? addressItem('To', transactionRequests[0].to) : null,
           networkItem('Network', {
             name: network.chainName,
             logoUri: network.logoUri,

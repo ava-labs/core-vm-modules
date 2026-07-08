@@ -140,7 +140,7 @@ const displayData = {
       title: 'Transaction Details',
       items: [
         addressItem('Account', tx1.from),
-        addressItem('Account', tx1.to),
+        addressItem('To', tx1.to),
         networkItem('Network', {
           name: testNetwork.chainName,
           logoUri: testNetwork.logoUri,
@@ -186,7 +186,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               value: tx1.from,
             },
             {
-              label: 'Account',
+              label: 'To',
               type: DetailItemType.ADDRESS,
               value: tx1.to,
             },
@@ -250,7 +250,7 @@ const signingRequests: [SigningRequest, SigningRequest] = [
               value: tx2.from,
             },
             {
-              label: 'Account',
+              label: 'To',
               type: DetailItemType.ADDRESS,
               value: tx2.to,
             },

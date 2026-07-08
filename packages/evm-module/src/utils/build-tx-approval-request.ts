@@ -35,7 +35,7 @@ export const buildTxApprovalRequest = (
 
   const transactionDetails: DetailItem[] = [
     addressItem('Account', transaction.from),
-    transaction.to ? addressItem('Account', transaction.to) : null,
+    transaction.to ? addressItem('To', transaction.to) : null,
     networkItem('Network', {
       name: network.chainName,
       logoUri: network.logoUri,
