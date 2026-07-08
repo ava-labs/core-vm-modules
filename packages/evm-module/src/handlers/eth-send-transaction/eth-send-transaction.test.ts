@@ -126,6 +126,11 @@ const displayData = {
           type: 'address',
         },
         {
+          label: 'Account',
+          value: '0xto',
+          type: 'address',
+        },
+        {
           label: 'Network',
           type: 'network',
           value: {

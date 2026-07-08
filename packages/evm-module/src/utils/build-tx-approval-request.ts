@@ -35,12 +35,13 @@ export const buildTxApprovalRequest = (
 
   const transactionDetails: DetailItem[] = [
     addressItem('Account', transaction.from),
+    transaction.to ? addressItem('Account', transaction.to) : null,
     networkItem('Network', {
       name: network.chainName,
       logoUri: network.logoUri,
     }),
     linkItem('Website', dappInfo),
-  ];
+  ].filter((item) => !!item);
 
   if (transaction.to) {
     transactionDetails.push(addressItem('Contract', transaction.to));
