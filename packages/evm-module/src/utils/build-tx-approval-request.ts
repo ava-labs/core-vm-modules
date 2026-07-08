@@ -46,7 +46,9 @@ export const buildTxApprovalRequest = (
     linkItem('Website', dappInfo),
   ].filter((item) => !!item);
 
-  if (transaction.to) {
+  const isContractInteraction = Boolean(transaction.data && transaction.data !== '0x');
+
+  if (transaction.to && isContractInteraction) {
     transactionDetails.push(addressItem('Contract', transaction.to));
   }
 
