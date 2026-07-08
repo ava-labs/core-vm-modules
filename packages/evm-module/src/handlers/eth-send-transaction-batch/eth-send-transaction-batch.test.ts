@@ -140,6 +140,7 @@ const displayData = {
       title: 'Transaction Details',
       items: [
         addressItem('Account', tx1.from),
+        addressItem('Account', tx1.to),
         networkItem('Network', {
           name: testNetwork.chainName,
           logoUri: testNetwork.logoUri,
