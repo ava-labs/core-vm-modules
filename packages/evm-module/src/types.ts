@@ -26,3 +26,9 @@ export enum ERC20TransactionType {
   APPROVE = 'approve',
   ALLOWANCE = 'allowance',
 }
+
+export enum TransactionKind {
+  NATIVE_TRANSFER = 'native_transfer',
+  ERC20_TRANSFER = 'erc20_transfer',
+  CONTRACT_CALL = 'contract_call',
+}
