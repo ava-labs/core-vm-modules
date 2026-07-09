@@ -27,6 +27,7 @@ export const getBalances = async ({
   proxyApiUrl,
   tokenTypes = [TokenType.NATIVE, TokenType.ERC20, TokenType.ERC721, TokenType.ERC1155],
   customTokens = [],
+  customTokensOnly = false,
   storage,
   balanceServices = [],
   tokenService,
@@ -39,10 +40,13 @@ export const getBalances = async ({
   fetch?: typeof globalThis.fetch;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
-  const services: BalanceServiceInterface[] = [
-    ...balanceServices,
-    new RpcService({ network, storage, proxyApiUrl, customTokens, fetch }),
-  ];
+  // When only custom tokens are requested we bypass indexed providers (which
+  // return a zero-balance polyfill for tokens they don't index) and query the
+  // chain directly via RPC to get the real on-chain balances.
+  const rpcService = new RpcService({ network, storage, proxyApiUrl, customTokens, fetch });
+  const services: BalanceServiceInterface[] = customTokensOnly ? [rpcService] : [...balanceServices, rpcService];
+
+  const resolvedTokenTypes = customTokensOnly ? [TokenType.ERC20] : tokenTypes;
 
   const supportingService: BalanceServiceInterface | undefined = await findAsync(
     services,
@@ -55,7 +59,7 @@ export const getBalances = async ({
     const erc20TokenPromises: Promise<IdPromise<Record<string, TokenWithBalanceEVM | Error>>>[] = [];
     const nftTokenPromises: Promise<IdPromise<Record<string, NftTokenWithBalance | Error>>>[] = [];
     addresses.forEach((address) => {
-      if (tokenTypes.includes(TokenType.NATIVE)) {
+      if (resolvedTokenTypes.includes(TokenType.NATIVE)) {
         nativeTokenPromises.push(
           addIdToPromise(
             supportingService
@@ -92,11 +96,12 @@ export const getBalances = async ({
         );
       }
 
-      if (tokenTypes.includes(TokenType.ERC20)) {
+      if (resolvedTokenTypes.includes(TokenType.ERC20)) {
         erc20TokenPromises.push(
           addIdToPromise(
             supportingService.listErc20Balances({
               customTokens: customTokens.filter(isERC20Token),
+              customTokensOnly,
               currency: currency.toUpperCase() as CurrencyCode,
               chainId,
               address,
@@ -107,7 +112,7 @@ export const getBalances = async ({
         );
       }
 
-      if (tokenTypes.includes(TokenType.ERC721) || tokenTypes.includes(TokenType.ERC1155)) {
+      if (resolvedTokenTypes.includes(TokenType.ERC721) || resolvedTokenTypes.includes(TokenType.ERC1155)) {
         nftTokenPromises.push(
           addIdToPromise(
             supportingService.listNftBalances({

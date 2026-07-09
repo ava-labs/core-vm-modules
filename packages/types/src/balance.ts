@@ -10,6 +10,12 @@ export type GetBalancesParams = {
   customTokens?: NetworkContractToken[];
   currency: string;
   storage?: Storage;
+  /**
+   * When true, only the balances for the provided `customTokens` are fetched,
+   * queried directly from the chain (RPC) rather than an indexed source. Used
+   * to back-fill custom tokens that an indexed balance provider doesn't cover.
+   */
+  customTokensOnly?: boolean;
 };
 
 export type TokenBalanceData = {

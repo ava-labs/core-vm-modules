@@ -111,12 +111,14 @@ export class RpcService implements BalanceServiceInterface {
     chainId,
     address,
     currency,
+    customTokensOnly = false,
   }: {
     chainId: number;
     address: string;
     currency: CurrencyCode;
     pageSize: number;
     pageToken?: string;
+    customTokensOnly?: boolean;
   }): Promise<Record<TokenId, TokenWithBalanceEVM | Error>> {
     const provider = await getProvider({
       chainId,
@@ -128,7 +130,11 @@ export class RpcService implements BalanceServiceInterface {
 
     const coingeckoPlatformId = this.#network.pricingProviders?.coingecko.assetPlatformId;
     const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
-    const tokens = await getTokens({ chainId: Number(chainId), proxyApiUrl: this.#proxyApiUrl });
+    // When only custom tokens are requested, skip fetching the full curated
+    // token list to keep the query cheap and targeted.
+    const tokens = customTokensOnly
+      ? []
+      : await getTokens({ chainId: Number(chainId), proxyApiUrl: this.#proxyApiUrl });
     const tokenAddresses = tokens.map((token) => token.address);
     const erc20TokenList = [...tokens, ...this.#customTokens].filter(isERC20Token);
 
