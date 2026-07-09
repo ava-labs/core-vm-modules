@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.9.4
+
+### Patch Changes
+
+- f0a0ff7: Fixing the evm contract and 'to' transaction details for single transactions
+  - @avalabs/vm-module-types@3.9.4
+
 ## 3.9.3
 
 ### Patch Changes
