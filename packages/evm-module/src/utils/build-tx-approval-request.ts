@@ -13,9 +13,11 @@ import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/de
 
 import { buildAgentIdentityDetailSection } from './build-agent-identity-detail-section';
 
-import { ERC20TransactionType } from '../types';
+import { ERC20TransactionType, TransactionKind } from '../types';
 import type { TransactionParams } from './transaction-schema';
 import { parseERC20TransactionType } from './parse-erc20-transaction-type';
+import { getRecipientAddress } from './get-recipient-address';
+import { classifyTransaction } from '@src/utils/classify-transaction';
 
 export const buildTxApprovalRequest = (
   request: RpcRequest,
@@ -33,6 +35,8 @@ export const buildTxApprovalRequest = (
     title = 'Do you approve this spend limit?';
   }
 
+  const recipientAddress = getRecipientAddress(transaction);
+
   const transactionDetails: DetailItem[] = [
     addressItem('Account', transaction.from),
     networkItem('Network', {
@@ -40,9 +44,18 @@ export const buildTxApprovalRequest = (
       logoUri: network.logoUri,
     }),
     linkItem('Website', dappInfo),
-  ];
+  ].filter((item) => !!item);
 
-  if (transaction.to) {
+  const transactionClassification = classifyTransaction(transaction);
+
+  if (transactionClassification !== TransactionKind.CONTRACT_CALL && recipientAddress) {
+    transactionDetails.push(addressItem('To', recipientAddress));
+  }
+
+  if (
+    transaction.to &&
+    [TransactionKind.ERC20_TRANSFER, TransactionKind.CONTRACT_CALL].includes(transactionClassification)
+  ) {
     transactionDetails.push(addressItem('Contract', transaction.to));
   }
 
