@@ -181,5 +181,59 @@ describe('RpcService', () => {
         reputation: null,
       });
     });
+
+    it('skips the curated token list and only queries custom tokens when customTokensOnly is true', async () => {
+      const mockAddress = '0xMockAddress';
+      const mockChainId = 1;
+      const mockCurrency = 'usd' as CurrencyCode;
+      const customToken: ERC20Token = {
+        name: 'CUSTOM',
+        type: TokenType.ERC20,
+        address: '0xCustomTokenAddress',
+        symbol: 'CUST',
+        decimals: 18,
+      };
+      const mockBalanceBigInt = 5000000000000000000n;
+
+      const rpcServiceWithCustom = new RpcService({
+        network: mockNetwork,
+        proxyApiUrl: mockProxyApiUrl,
+        customTokens: [customToken],
+      });
+
+      (getTokens as jest.Mock).mockClear();
+
+      const mockProvider = {
+        getBalance: jest.fn().mockResolvedValue(mockBalanceBigInt),
+      };
+      (getProvider as jest.Mock).mockReturnValue(mockProvider);
+
+      const mockContract = {
+        balanceOf: jest.fn().mockResolvedValue(mockBalanceBigInt),
+      };
+      (ethers.Contract as jest.Mock).mockReturnValue(mockContract);
+
+      const mockTokenService = {
+        getPricesByAddresses: jest.fn().mockResolvedValue({}),
+      };
+      (TokenService as jest.Mock).mockReturnValue(mockTokenService);
+
+      const result = await rpcServiceWithCustom.listErc20Balances({
+        chainId: mockChainId,
+        address: mockAddress,
+        currency: mockCurrency,
+        pageSize: 10,
+        customTokensOnly: true,
+      });
+
+      expect(getTokens).not.toHaveBeenCalled();
+      expect(result[customToken.address.toLowerCase()]).toEqual(
+        expect.objectContaining({
+          address: '0xCustomTokenAddress',
+          balance: mockBalanceBigInt,
+          type: TokenType.ERC20,
+        }),
+      );
+    });
   });
 });

@@ -285,4 +285,62 @@ describe('getBalances', () => {
       expect(glacierService.listNftBalances).not.toHaveBeenCalled();
     });
   });
+
+  describe('when customTokensOnly is true', () => {
+    let mockedRpcService: jest.Mocked<RpcService>;
+
+    beforeEach(() => {
+      mockedRpcService = new RpcService({
+        customTokens,
+        network,
+        proxyApiUrl,
+      }) as jest.Mocked<RpcService>;
+      const mockFindAsync = findAsync as jest.MockedFunction<typeof findAsync>;
+      mockFindAsync.mockResolvedValue(mockedRpcService);
+      mockedRpcService.isNetworkSupported.mockResolvedValue(true);
+      mockedRpcService.listErc20Balances.mockResolvedValue({
+        '0xtoken1': { symbol: 'TOKEN1', address: '0xToken1' } as TokenWithBalanceEVM,
+      });
+    });
+
+    it('only fetches ERC-20 balances for the custom tokens, skipping native and NFTs', async () => {
+      const result = await getBalances({
+        addresses: ['0xAddress1'],
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        customTokensOnly: true,
+        balanceServices: [glacierService, deBankService],
+        tokenService: mockTokenService,
+      });
+
+      expect(mockedRpcService.getNativeBalance).not.toHaveBeenCalled();
+      expect(mockedRpcService.listNftBalances).not.toHaveBeenCalled();
+      expect(mockedRpcService.listErc20Balances).toHaveBeenCalledWith(
+        expect.objectContaining({ customTokensOnly: true }),
+      );
+      expect(result).toEqual({
+        '0xAddress1': { '0xtoken1': { symbol: 'TOKEN1', address: '0xToken1' } },
+      });
+    });
+
+    it('ignores tokenTypes and never uses indexed balance services', async () => {
+      await getBalances({
+        addresses: ['0xAddress1'],
+        currency,
+        network,
+        proxyApiUrl,
+        customTokens,
+        customTokensOnly: true,
+        tokenTypes: [TokenType.NATIVE, TokenType.ERC20, TokenType.ERC721],
+        balanceServices: [glacierService, deBankService],
+        tokenService: mockTokenService,
+      });
+
+      expect(glacierService.getNativeBalance).not.toHaveBeenCalled();
+      expect(glacierService.listErc20Balances).not.toHaveBeenCalled();
+      expect(deBankService.listErc20Balances).not.toHaveBeenCalled();
+    });
+  });
 });

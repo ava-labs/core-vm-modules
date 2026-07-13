@@ -27,6 +27,7 @@ export interface BalanceServiceInterface {
     pageSize: number;
     pageToken?: string;
     customTokens: ERC20Token[];
+    customTokensOnly?: boolean;
   }): Promise<Record<string, TokenWithBalanceEVM | Error>>;
 
   listNftBalances(params: { chainId: number; address: string }): Promise<Record<string, NftTokenWithBalance | Error>>;

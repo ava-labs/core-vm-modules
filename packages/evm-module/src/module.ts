@@ -112,6 +112,7 @@ export class EvmModule implements Module {
     customTokens,
     storage,
     tokenTypes,
+    customTokensOnly,
   }: GetBalancesParams): Promise<GetBalancesResponse> {
     const tokenService = new TokenService({ storage, proxyApiUrl: this.#proxyApiUrl, fetch: this.#runtime?.fetch });
     return getBalances({
@@ -120,6 +121,7 @@ export class EvmModule implements Module {
       network,
       proxyApiUrl: this.#proxyApiUrl,
       customTokens,
+      customTokensOnly,
       balanceServices: [this.#glacierService, this.#deBankService],
       storage,
       tokenTypes,
