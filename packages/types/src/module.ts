@@ -14,7 +14,7 @@ import { AppName, Environment, type Network } from './common';
 import type { Manifest } from './manifest';
 import type { NetworkFees } from './network-fee';
 import type { RpcRequest, RpcResponse } from './rpc';
-import type { NetworkContractToken } from './token';
+import type { NetworkContractToken, HypercoreSpotToken } from './token';
 import type { GetTransactionHistory, TransactionHistoryResponse } from './transaction-history';
 import type { ApprovalController } from './rpc';
 import type { HyperSDKClient } from 'hypersdk-client';
@@ -54,6 +54,6 @@ export interface Module {
   deriveAddress: (params: DeriveAddressParams) => Promise<DeriveAddressResponse>;
   deriveAddresses: (params: DeriveAddressesParams) => Promise<DeriveAddressesResponse>;
   buildDerivationPath: (params: BuildDerivationPathParams) => BuildDerivationPathResponse;
-  getTokens: (network: Network) => Promise<NetworkContractToken[]>;
+  getTokens: (network: Network) => Promise<(NetworkContractToken | HypercoreSpotToken)[]>;
   onRpcRequest: (request: RpcRequest, chain: Network) => Promise<RpcResponse>;
 }

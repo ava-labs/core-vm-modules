@@ -1,0 +1,30 @@
+{
+  "name": "HyperCore",
+  "description": "Read-only Hyperliquid HyperCore module (balances, tokens, activity).",
+  "version": "0.0.1",
+  "sources": {
+    "module": {
+      "checksum": "",
+      "location": {
+        "npm": {
+          "filePath": "dist/index.js",
+          "packageName": "@avalabs/hypercore-module",
+          "registry": "https://registry.npmjs.org"
+        }
+      }
+    }
+  },
+  "network": {
+    "chainIds": ["hlcore:mainnet"],
+    "namespaces": ["hlcore"]
+  },
+  "cointype": "60",
+  "permissions": {
+    "rpc": {
+      "dapps": false,
+      "methods": [],
+      "nonRestrictedMethods": []
+    }
+  },
+  "manifestVersion": "0.1"
+}
