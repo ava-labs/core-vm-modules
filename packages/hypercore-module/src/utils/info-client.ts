@@ -43,7 +43,19 @@ export type PostInfoOptions = {
   url?: string;
 };
 
-const lowercaseUser = (user: string) => user.toLowerCase();
+const resolveFetch = (fetchFn?: typeof globalThis.fetch): typeof globalThis.fetch => {
+  if (typeof fetchFn === 'function') {
+    return fetchFn;
+  }
+
+  if (typeof globalThis.fetch === 'function') {
+    return globalThis.fetch.bind(globalThis);
+  }
+
+  throw new Error(
+    'HypercoreInfoClient requires a fetch implementation. Pass config.fetch when globalThis.fetch is unavailable (e.g. React Native).',
+  );
+};
 
 export class HypercoreInfoClient {
   readonly #infoUrl: string;
@@ -53,7 +65,7 @@ export class HypercoreInfoClient {
   constructor(config: HypercoreInfoClientConfig) {
     this.#infoUrl = config.infoUrl;
     this.#activityInfoUrl = config.activityInfoUrl ?? config.infoUrl;
-    this.#fetch = config.fetch ?? globalThis.fetch.bind(globalThis);
+    this.#fetch = resolveFetch(config.fetch);
   }
 
   async postInfo<T>(body: HypercoreInfoRequest, schema: z.ZodType<T>, options?: PostInfoOptions) {
@@ -80,7 +92,7 @@ export class HypercoreInfoClient {
     return this.postInfo(
       {
         type: 'spotClearinghouseState',
-        user: lowercaseUser(user),
+        user: user.toLowerCase(),
         dex: '',
       },
       spotClearinghouseStateSchema,
@@ -92,7 +104,7 @@ export class HypercoreInfoClient {
     return this.postInfo(
       {
         type: 'clearinghouseState',
-        user: lowercaseUser(user),
+        user: user.toLowerCase(),
         dex: '',
       },
       clearinghouseStateSchema,
@@ -102,14 +114,14 @@ export class HypercoreInfoClient {
 
   getUserAbstraction(user: string, options?: PostInfoOptions): Promise<UserAbstractionMode> {
     return this.postInfo(
-      { type: 'userAbstraction', user: lowercaseUser(user) },
+      { type: 'userAbstraction', user: user.toLowerCase() },
       userAbstractionSchema,
       options,
     ) as Promise<UserAbstractionMode>;
   }
 
   getUserFills(user: string, options?: PostInfoOptions): Promise<UserFill[]> {
-    return this.postInfo({ type: 'userFills', user: lowercaseUser(user) }, userFillsSchema, {
+    return this.postInfo({ type: 'userFills', user: user.toLowerCase() }, userFillsSchema, {
       ...options,
       url: options?.url ?? this.#activityInfoUrl,
     });
@@ -123,7 +135,7 @@ export class HypercoreInfoClient {
     return this.postInfo(
       {
         type: 'userNonFundingLedgerUpdates',
-        user: lowercaseUser(user),
+        user: user.toLowerCase(),
         startTime,
       },
       hypercoreLedgerUpdatesSchema,
