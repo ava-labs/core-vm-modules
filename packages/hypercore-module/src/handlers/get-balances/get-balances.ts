@@ -11,7 +11,7 @@ import { buildHypercoreTokens, type HypercoreTokenBalance } from '../../utils/bu
 import { hyperliquidCoinSvgUrl } from '../../utils/hyperliquid-coin-svg-url';
 import { toHypercoreSpotTokens } from '../../utils/spot-tokens';
 
-type GetHypercoreBalancesParams = Omit<GetBalancesParams, 'currency' | 'customTokens' | 'tokenTypes'> & {
+type GetHypercoreBalancesParams = Omit<GetBalancesParams, 'currency' | 'customTokens'> & {
   infoClient: HypercoreInfoClient;
 };
 
@@ -59,7 +59,15 @@ export const getBalances = async ({
   addresses,
   network,
   infoClient,
+  tokenTypes = [TokenType.NATIVE, TokenType.HYPERCORE_SPOT],
 }: GetHypercoreBalancesParams): Promise<GetBalancesResponse> => {
+  const includeNative = tokenTypes.includes(TokenType.NATIVE);
+  const includeSpot = tokenTypes.includes(TokenType.HYPERCORE_SPOT);
+
+  if (!includeNative && !includeSpot) {
+    return Object.fromEntries(addresses.map((address) => [address, {}]));
+  }
+
   const spotMeta = await infoClient.getSpotMeta();
   const spotTokens = toHypercoreSpotTokens(spotMeta.tokens);
 
@@ -68,8 +76,8 @@ export const getBalances = async ({
       try {
         const [spotState, perpState, abstractionMode] = await Promise.all([
           infoClient.getSpotClearinghouseState(address),
-          infoClient.getClearinghouseState(address).catch(() => undefined),
-          infoClient.getUserAbstraction(address).catch(() => undefined),
+          includeNative ? infoClient.getClearinghouseState(address).catch(() => undefined) : Promise.resolve(undefined),
+          includeNative ? infoClient.getUserAbstraction(address).catch(() => undefined) : Promise.resolve(undefined),
         ]);
 
         const tokens = buildHypercoreTokens({
@@ -77,7 +85,7 @@ export const getBalances = async ({
           perpState,
           abstractionMode,
           spotTokens,
-        });
+        }).filter((token) => (token.kind === 'native' ? includeNative : includeSpot));
 
         const bySymbol = Object.fromEntries(
           tokens.map((token) => {
