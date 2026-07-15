@@ -56,6 +56,7 @@ describe('getTransactionsFromHyperEvm', () => {
 
     const result = await getTransactionsFromHyperEvm({
       client,
+      chainId: 999,
       networkToken: { name: 'Hyperliquid', symbol: 'HYPE', decimals: 18 },
       explorerUrl: 'https://hyperevmscan.io',
       address: '0xwallet',
@@ -66,6 +67,7 @@ describe('getTransactionsFromHyperEvm', () => {
       transactions: [
         expect.objectContaining({
           hash: '0xswap',
+          chainId: '999',
           txType: TransactionType.SWAP,
           isContractCall: true,
           explorerLink: 'https://hyperevmscan.io/tx/0xswap',
@@ -73,5 +75,25 @@ describe('getTransactionsFromHyperEvm', () => {
         }),
       ],
     });
+  });
+
+  it('uses the first page for an invalid page token', async () => {
+    const client = {
+      listNormalTransactions: jest.fn().mockResolvedValue([]),
+      listErc20Transfers: jest.fn().mockResolvedValue([]),
+      listInternalTransactions: jest.fn().mockResolvedValue([]),
+    };
+
+    const result = await getTransactionsFromHyperEvm({
+      client,
+      chainId: 999,
+      networkToken: { name: 'Hyperliquid', symbol: 'HYPE', decimals: 18 },
+      explorerUrl: 'https://hyperevmscan.io',
+      address: '0xwallet',
+      nextPageToken: 'not-a-page',
+    });
+
+    expect(client.listNormalTransactions).toHaveBeenCalledWith('0xwallet', { page: 1, offset: 25 });
+    expect(result).toEqual({ transactions: [], nextPageToken: '' });
   });
 });

@@ -32,7 +32,11 @@ describe('get-transaction-history', () => {
       address: '0xaddress',
     });
 
-    expect(getTransactionsFromHyperEvm).toHaveBeenCalled();
+    expect(getTransactionsFromHyperEvm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chainId: 999,
+      }),
+    );
     expect(getTransactionsFromGlacier).not.toHaveBeenCalled();
   });
 

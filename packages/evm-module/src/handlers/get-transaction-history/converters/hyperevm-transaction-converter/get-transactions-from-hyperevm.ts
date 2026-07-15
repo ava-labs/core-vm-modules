@@ -28,6 +28,7 @@ type Aggregate = {
 
 export async function getTransactionsFromHyperEvm({
   client,
+  chainId,
   networkToken,
   explorerUrl,
   address,
@@ -35,6 +36,7 @@ export async function getTransactionsFromHyperEvm({
   offset = 25,
 }: {
   client: Pick<HyperEvmEtherscanClient, 'listNormalTransactions' | 'listErc20Transfers' | 'listInternalTransactions'>;
+  chainId: number;
   networkToken: NetworkToken;
   explorerUrl: string;
   address: string;
@@ -42,7 +44,7 @@ export async function getTransactionsFromHyperEvm({
   offset?: number;
 }): Promise<TransactionHistoryResponse> {
   try {
-    const page = Number(nextPageToken || '1');
+    const page = getPage(nextPageToken);
     const [normal, erc20, internal] = await Promise.all([
       client.listNormalTransactions(address, { page, offset }),
       client.listErc20Transfers(address, { page, offset }),
@@ -68,7 +70,7 @@ export async function getTransactionsFromHyperEvm({
     }
 
     const transactions = Array.from(aggregates.values())
-      .map((aggregate) => toTransaction(aggregate, address, explorerUrl, networkToken))
+      .map((aggregate) => toTransaction(aggregate, address, explorerUrl, networkToken, chainId))
       .sort((a, b) => b.timestamp - a.timestamp);
     const hasNextPage = [normal, erc20, internal].some((list) => list.length === offset);
 
@@ -76,6 +78,11 @@ export async function getTransactionsFromHyperEvm({
   } catch {
     return { transactions: [], nextPageToken: '' };
   }
+}
+
+function getPage(nextPageToken?: string): number {
+  const page = Number(nextPageToken);
+  return Number.isSafeInteger(page) && page > 0 ? page : 1;
 }
 
 function getAggregate(
@@ -143,6 +150,7 @@ function toTransaction(
   address: string,
   explorerUrl: string,
   networkToken: NetworkToken,
+  chainId: number,
 ): Transaction {
   const wallet = address.toLowerCase();
   const hasIncoming = aggregate.tokens.some((token) => token.to?.address.toLowerCase() === wallet);
@@ -174,7 +182,7 @@ function toTransaction(
           ],
     gasPrice: aggregate.gasPrice,
     gasUsed: aggregate.gasUsed,
-    chainId: '999',
+    chainId: chainId.toString(),
     txType,
     explorerLink: getExplorerAddressByNetwork(explorerUrl, aggregate.hash),
   };

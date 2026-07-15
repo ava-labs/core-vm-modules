@@ -34,6 +34,7 @@ export const getTransactionHistory = async ({
 
     return getTransactionsFromHyperEvm({
       client: hyperEvmEtherscanClient,
+      chainId,
       networkToken,
       explorerUrl,
       address,
