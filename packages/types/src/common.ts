@@ -33,6 +33,7 @@ export enum NetworkVMType {
   CoreEth = 'CoreEth',
   HVM = 'HVM',
   SVM = 'SVM',
+  HYPERCORE = 'HYPERCORE',
 }
 
 export type Storage = {

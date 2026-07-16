@@ -71,6 +71,19 @@ export type TokenWithBalanceSPL = TokenBalanceDataWithDecimals &
     reputation: null;
   };
 
+/**
+ * HyperCore spot TokenWithBalance. Identity is spot `index`, not an EVM address.
+ */
+export type TokenWithBalanceHypercoreSpot = TokenBalanceDataWithDecimals &
+  TokenMarketData & {
+    type: TokenType.HYPERCORE_SPOT;
+    index: number;
+    logoUri?: string;
+    reputation: null;
+    /** Optional HyperEVM bridge contract when the spot asset is bridged. */
+    evmContract?: string;
+  };
+
 export type TokenWithBalanceEVM = NetworkTokenWithBalance | TokenWithBalanceERC20 | NftTokenWithBalance;
 
 /**
@@ -180,6 +193,7 @@ export type TokenWithBalance =
   | TokenWithBalancePVM
   | TokenWithBalanceAVM
   | TokenWithBalanceSVM
-  | TokenWithBalanceSPL;
+  | TokenWithBalanceSPL
+  | TokenWithBalanceHypercoreSpot;
 
 export type GetBalancesResponse = Record<string, Record<string, TokenWithBalance | Error> | Error>;

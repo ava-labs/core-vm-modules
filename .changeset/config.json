@@ -9,7 +9,8 @@
       "@avalabs/vm-module-types",
       "@avalabs/bitcoin-module",
       "@avalabs/hvm-module",
-      "@avalabs/svm-module"
+      "@avalabs/svm-module",
+      "@avalabs/hypercore-module"
     ]
   ],
   "linked": [],

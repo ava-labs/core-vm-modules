@@ -5,6 +5,7 @@ export enum TokenType {
   ERC1155 = 'ERC1155',
   NONERC = 'NONERC',
   SPL = 'SPL',
+  HYPERCORE_SPOT = 'HYPERCORE_SPOT',
 }
 
 export interface NetworkToken {
@@ -65,4 +66,19 @@ export interface NONERCToken {
   logoUri?: string;
   name?: string;
   symbol?: string;
+}
+
+/**
+ * HyperCore spot token. Identity is the Hyperliquid spot `index`, not an EVM
+ * contract. `evmContract` is present only when the asset is bridged to HyperEVM.
+ */
+export interface HypercoreSpotToken {
+  type: TokenType.HYPERCORE_SPOT;
+  index: number;
+  name: string;
+  symbol: string;
+  decimals: number;
+  logoUri?: string;
+  /** Optional HyperEVM bridge contract; not required for HyperCore-only spot. */
+  evmContract?: string;
 }

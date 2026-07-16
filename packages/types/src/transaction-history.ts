@@ -49,6 +49,12 @@ export type TxToken = {
   | {
       type: TokenType.NATIVE;
     }
+  | {
+      type: TokenType.HYPERCORE_SPOT;
+      index: number;
+      /** Optional HyperEVM bridge contract when the spot asset is bridged. */
+      evmContract?: string;
+    }
 );
 
 // this is RichAddress from @avalabs/glacier-sdk,
