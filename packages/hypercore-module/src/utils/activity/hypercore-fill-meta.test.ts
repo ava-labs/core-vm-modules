@@ -3,6 +3,7 @@ import {
   parseHypercoreFillMethod,
   tickerOfCoin,
   closedPnlTone,
+  fillLabel,
 } from './hypercore-fill-meta';
 
 describe('hypercoreFillMeta', () => {
@@ -15,6 +16,12 @@ describe('hypercoreFillMeta', () => {
     expect(closedPnlTone('1.5')).toBe('profit');
     expect(closedPnlTone('-2')).toBe('loss');
     expect(closedPnlTone('0')).toBeUndefined();
+  });
+
+  it('maps fill dirs to label direction', () => {
+    expect(fillLabel('Close Long', '1')).toEqual({ text: 'Long closed', direction: 'up', tone: 'profit' });
+    expect(fillLabel('Close Short', '-1')).toEqual({ text: 'Short closed', direction: 'down', tone: 'loss' });
+    expect(fillLabel('Open Long')).toEqual({ text: 'Order opened' });
   });
 
   it('round-trips fill method encoding', () => {

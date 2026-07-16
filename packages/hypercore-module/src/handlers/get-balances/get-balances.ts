@@ -15,6 +15,8 @@ type GetHypercoreBalancesParams = Omit<GetBalancesParams, 'currency' | 'customTo
   infoClient: HypercoreInfoClient;
 };
 
+const toErrorMessage = (err: unknown) => (err instanceof Error ? err.message : String(err));
+
 const toTokenWithBalance = (
   token: HypercoreTokenBalance,
   networkToken: GetBalancesParams['network']['networkToken'],
@@ -68,43 +70,44 @@ export const getBalances = async ({
     return Object.fromEntries(addresses.map((address) => [address, {}]));
   }
 
-  const spotMeta = await infoClient.getSpotMeta();
-  const spotTokens = toHypercoreSpotTokens(spotMeta.tokens);
+  // Spot meta is only required to label non-USDC spot inventory. Native USDC is
+  // derived from spot clearinghouse balances (+ optional perp collateral).
+  const spotTokens = includeSpot ? toHypercoreSpotTokens((await infoClient.getSpotMeta()).tokens) : [];
 
   const results = await Promise.allSettled(
     addresses.map(async (address) => {
-      try {
-        const [spotState, perpState, abstractionMode] = await Promise.all([
-          infoClient.getSpotClearinghouseState(address),
-          includeNative ? infoClient.getClearinghouseState(address).catch(() => undefined) : Promise.resolve(undefined),
-          includeNative ? infoClient.getUserAbstraction(address).catch(() => undefined) : Promise.resolve(undefined),
-        ]);
+      const [spotState, perpState, abstractionMode] = await Promise.all([
+        infoClient.getSpotClearinghouseState(address),
+        includeNative ? infoClient.getClearinghouseState(address) : Promise.resolve(undefined),
+        includeNative ? infoClient.getUserAbstraction(address) : Promise.resolve(undefined),
+      ]);
 
-        const tokens = buildHypercoreTokens({
-          spotBalances: spotState.balances,
-          perpState,
-          abstractionMode,
-          spotTokens,
-        }).filter((token) => (token.kind === 'native' ? includeNative : includeSpot));
+      const tokens = buildHypercoreTokens({
+        spotBalances: spotState.balances,
+        perpState,
+        abstractionMode,
+        spotTokens,
+      }).filter((token) => (token.kind === 'native' ? includeNative : includeSpot));
 
-        const bySymbol = Object.fromEntries(
-          tokens.map((token) => {
-            const { key, value } = toTokenWithBalance(token, network.networkToken);
-            return [key, value];
-          }),
-        );
+      const bySymbol = Object.fromEntries(
+        tokens.map((token) => {
+          const { key, value } = toTokenWithBalance(token, network.networkToken);
+          return [key, value];
+        }),
+      );
 
-        return { [address]: bySymbol };
-      } catch (err) {
-        return { [address]: { error: (err as Error).toString() } };
-      }
+      return { [address]: bySymbol };
     }),
   );
 
-  return results.reduce((acc, curr) => {
+  return results.reduce((acc, curr, index) => {
     if (curr.status === 'fulfilled') {
       return { ...acc, ...curr.value };
     }
-    return acc;
+    const address = addresses[index];
+    if (!address) {
+      return acc;
+    }
+    return { ...acc, [address]: { error: toErrorMessage(curr.reason) } };
   }, {} as GetBalancesResponse);
 };

@@ -3,11 +3,15 @@ import type { HypercoreLedgerUpdate } from '../schemas';
 import type { HypercoreActivityItem } from './types';
 import { toTimeMs } from './types';
 
-/** Bound ledger pagination so busy accounts cannot trigger unbounded requests. */
+/**
+ * Safety cap only — ledger events are infrequent vs fills, so we normally stop
+ * on an empty page well before this. Hitting the cap would truncate the *newest*
+ * updates (pages are ascending from `startTime`).
+ */
 export const MAX_LEDGER_PAGES = 20;
 
-/** Prefer recent ledger history; paging from `0` would return the oldest pages first. */
-export const LEDGER_LOOKBACK_MS = 365 * 24 * 60 * 60 * 1000;
+/** Default ledger window; keep short so a capped crawl still covers recent activity. */
+export const LEDGER_LOOKBACK_MS = 30 * 24 * 60 * 60 * 1000;
 
 type FetchHypercoreActivityOptions = {
   signal?: AbortSignal;
@@ -29,9 +33,10 @@ const softFail = async <T>(promise: Promise<T>, fallback: T): Promise<T> => {
 
 /**
  * `userNonFundingLedgerUpdates` returns an ascending, capped page (~500) from
- * `startTime`. Start within a lookback window and page forward until empty,
- * aborted, or `MAX_LEDGER_PAGES`, so recent activity is included without an
- * unbounded crawl from epoch.
+ * `startTime`. A single request therefore returns the *oldest* rows in the
+ * window and can omit recent activity. Page forward — advancing past the last
+ * row's time — until empty (or the safety page cap), so the newest updates in
+ * the lookback window are included.
  */
 const fetchLedgerUpdates = async (
   client: HypercoreInfoClient,

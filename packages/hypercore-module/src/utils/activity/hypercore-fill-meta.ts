@@ -1,18 +1,20 @@
 const METHOD_PREFIX = 'hypercoreFill:v1:';
 
-export const FILL_ARROW_UP = '\u25B2';
-export const FILL_ARROW_DOWN = '\u25BC';
-
 export type HypercoreFillMeta = {
+  /** Fill side / action from Hyperliquid (`Open Long`, `Close Short`, …). */
   readonly dir: string;
+  /** Fill price as a decimal string (Hyperliquid `px`). */
   readonly px: string;
+  /** Realized PnL for the fill as a decimal string; `"0"` when none. */
   readonly closedPnl: string;
+  /** Market coin id (`ETH`, or HIP-3 `dex:TICKER`). */
   readonly coin: string;
 };
 
 export type FillLabel = {
   readonly text: string;
-  readonly arrow?: typeof FILL_ARROW_UP | typeof FILL_ARROW_DOWN;
+  /** Long / short cue for the UI to pick an icon. */
+  readonly direction?: 'up' | 'down';
   readonly tone?: 'profit' | 'loss';
 };
 
@@ -35,17 +37,17 @@ export const closedPnlTone = (closedPnl: string | undefined): 'profit' | 'loss' 
 };
 
 /**
- * Map a fill's `dir` into a display label. Arrow direction follows side
- * (long ▲ / short ▼); success/error tone comes from `closedPnl` when provided.
+ * Map a fill's `dir` into a display label. Direction follows side
+ * (long → up / short → down); success/error tone comes from `closedPnl` when provided.
  */
 export const fillLabel = (dir: string, closedPnl?: string): FillLabel => {
   const tone = closedPnlTone(closedPnl);
   const d = dir.toLowerCase();
   if (d.includes('close') && d.includes('long')) {
-    return { text: 'Long closed', arrow: FILL_ARROW_UP, tone };
+    return { text: 'Long closed', direction: 'up', tone };
   }
   if (d.includes('close') && d.includes('short')) {
-    return { text: 'Short closed', arrow: FILL_ARROW_DOWN, tone };
+    return { text: 'Short closed', direction: 'down', tone };
   }
   if (d.includes('open') && (d.includes('long') || d.includes('short'))) {
     return { text: 'Order opened' };
