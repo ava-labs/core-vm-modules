@@ -1,5 +1,12 @@
 # @avalabs/svm-module
 
+## 3.12.0
+
+### Patch Changes
+
+- Updated dependencies [3278272]
+  - @avalabs/vm-module-types@3.12.0
+
 ## 3.11.0
 
 ### Patch Changes
