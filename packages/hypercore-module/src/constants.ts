@@ -1,4 +1,6 @@
-/** CAIP-2 id for HyperCore mainnet. Namespace must be 3–8 chars (CAIP-2). */
+/** CAIP-2 id for HyperCore mainnet. Namespace must be 3–8 chars (CAIP-2).
+ * This is a synthetic CAIP-2 for the HyperCore network as HyperCore does not have a chain id.
+ */
 export const HYPERCORE_CAIP_ID = 'hlcore:mainnet';
 
 /**
