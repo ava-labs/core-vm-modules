@@ -45,6 +45,7 @@ import { DeBankService } from './services/debank-service/debank-service';
 import { EvmGlacierService } from './services/glacier-service/glacier-service';
 import { getProvider } from './utils/get-provider';
 import { supportsBatchApprovals } from './utils/type-utils';
+import { HyperEvmEtherscanClient } from './services/hyperevm-etherscan-client/hyperevm-etherscan-client';
 
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
@@ -53,6 +54,7 @@ export class EvmModule implements Module {
   #approvalController: ApprovalController;
   #blockaid: Blockaid;
   #runtime?: RuntimeParams;
+  #hyperEvmEtherscanClient: HyperEvmEtherscanClient;
 
   constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
@@ -63,6 +65,10 @@ export class EvmModule implements Module {
     });
     this.#deBankService = new DeBankService({ proxyApiUrl, fetch: this.#runtime?.fetch });
     this.#proxyApiUrl = proxyApiUrl;
+    this.#hyperEvmEtherscanClient = new HyperEvmEtherscanClient({
+      proxyApiUrl,
+      fetch: this.#runtime?.fetch,
+    });
     this.#approvalController = approvalController;
     this.#blockaid = new Blockaid({
       baseURL: proxyApiUrl + '/proxy/blockaid/',
@@ -160,6 +166,7 @@ export class EvmModule implements Module {
       nextPageToken,
       offset,
       glacierService: this.#glacierService,
+      hyperEvmEtherscanClient: this.#hyperEvmEtherscanClient,
     });
   }
 

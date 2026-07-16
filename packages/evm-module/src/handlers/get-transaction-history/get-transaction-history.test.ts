@@ -1,7 +1,9 @@
 import { getTransactionHistory } from './get-transaction-history';
 import { getTransactionsFromMoralis } from './converters/moralis-transaction-converter/get-transactions-from-moralis';
 import { getTransactionsFromGlacier } from './converters/evm-transaction-converter/get-transactions-from-glacier';
+import { getTransactionsFromHyperEvm } from './converters/hyperevm-transaction-converter/get-transactions-from-hyperevm';
 import type { EvmGlacierService } from '../../services/glacier-service/glacier-service';
+import type { HyperEvmEtherscanClient } from '../../services/hyperevm-etherscan-client/hyperevm-etherscan-client';
 
 jest.mock('./converters/evm-transaction-converter/get-transactions-from-glacier', () => ({
   getTransactionsFromGlacier: jest.fn(),
@@ -11,7 +13,33 @@ jest.mock('./converters/moralis-transaction-converter/get-transactions-from-mora
   getTransactionsFromMoralis: jest.fn(),
 }));
 
+jest.mock('./converters/hyperevm-transaction-converter/get-transactions-from-hyperevm', () => ({
+  getTransactionsFromHyperEvm: jest.fn(),
+}));
+
 describe('get-transaction-history', () => {
+  it('routes HyperEVM (999) to its explorer before the Glacier fallback', async () => {
+    await getTransactionHistory({
+      glacierService: {} as EvmGlacierService,
+      hyperEvmEtherscanClient: {} as HyperEvmEtherscanClient,
+      chainId: 999,
+      networkToken: {
+        name: 'Hyperliquid',
+        symbol: 'HYPE',
+        decimals: 18,
+      },
+      explorerUrl: 'https://hyperevmscan.io',
+      address: '0xaddress',
+    });
+
+    expect(getTransactionsFromHyperEvm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chainId: 999,
+      }),
+    );
+    expect(getTransactionsFromGlacier).not.toHaveBeenCalled();
+  });
+
   it('should have called getTransactionsFromMoralis for Ethereum mainnet (1)', async () => {
     await getTransactionHistory({
       glacierService: {} as EvmGlacierService,
