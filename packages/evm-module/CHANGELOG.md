@@ -1,5 +1,15 @@
 # @avalabs/evm-module
 
+## 3.11.0
+
+### Minor Changes
+
+- 2df9a78: Add HyperEVM scan compatible transaction history support.
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.11.0
+
 ## 3.10.0
 
 ### Minor Changes
