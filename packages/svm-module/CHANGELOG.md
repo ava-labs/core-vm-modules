@@ -1,5 +1,14 @@
 # @avalabs/svm-module
 
+## 3.12.1
+
+### Patch Changes
+
+- cf5a3e0: Improved simulation error handling for solana
+- cf5a3e0: Add Glacier API key to the Solana provider RPC url and share the `addGlacierAPIKeyIfNeeded` helper between the EVM and SVM modules
+- Updated dependencies [cf5a3e0]
+  - @avalabs/vm-module-types@3.12.1
+
 ## 3.12.0
 
 ### Patch Changes

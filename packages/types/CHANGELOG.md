@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.12.1
+
+### Patch Changes
+
+- cf5a3e0: Improved simulation error handling for solana
+
 ## 3.12.0
 
 ### Minor Changes
