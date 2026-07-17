@@ -1,5 +1,13 @@
 # @avalabs/bitcoin-module
 
+## 3.12.1
+
+### Patch Changes
+
+- cf5a3e0: Improved simulation error handling for solana
+- Updated dependencies [cf5a3e0]
+  - @avalabs/vm-module-types@3.12.1
+
 ## 3.12.0
 
 ### Patch Changes
