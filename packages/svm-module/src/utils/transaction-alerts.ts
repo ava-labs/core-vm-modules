@@ -15,6 +15,17 @@ export const getAlertForError = (error: MessageScanResponse['error_details']): A
     }
   }
 
+  if (error?.type === 'TransactionError' && error.message.toLowerCase().includes('insufficient funds for rent')) {
+    return {
+      type: AlertType.WARNING,
+      details: {
+        title: 'This transaction will likely be reverted',
+        description:
+          'The recipient account needs a minimum balance to exist on Solana (rent). Try increasing the amount you send.',
+      },
+    };
+  }
+
   return {
     type: AlertType.WARNING,
     details: {

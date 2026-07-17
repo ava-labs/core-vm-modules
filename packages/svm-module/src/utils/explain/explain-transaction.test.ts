@@ -182,6 +182,66 @@ describe('explainTransaction', () => {
     });
   });
 
+  it('should not crash and surface a revert alert when Blockaid simulation status is Error (insufficient rent)', async () => {
+    // Real Blockaid response shape when the simulation itself errors: `simulation`
+    // is a truthy object WITHOUT `account_summary`, validation is Benign, and the
+    // real reason lives in the top-level error_details.
+    const mockScanResponse = {
+      status: 'ERROR',
+      result: {
+        simulation: {
+          status: 'Error',
+          error: 'Failed to simulate transaction',
+          error_details: null,
+          params: {},
+        },
+        validation: {
+          result_type: 'Benign',
+          reason: 'There was an error validating the transaction',
+          features: [],
+          extended_features: [],
+        },
+        gas_estimation: null,
+        slot: null,
+      },
+      error: 'The transaction was reverted',
+      error_details: {
+        type: 'TransactionError',
+        message: 'Account GVV1dfBGtdfCk2hdSdm74S9yE1gg3T5Hc39w5RwsSiSV has insufficient funds for rent',
+        transaction_index: 0,
+      },
+    };
+
+    jest.mocked(scanSolanaTransaction).mockResolvedValueOnce(
+      mockScanResponse as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    );
+
+    const mockParseTransaction = {
+      balanceChange: { ins: [], outs: [] },
+      details: [{ title: 'Mock section', items: [] }],
+    };
+    jest.mocked(parseTransaction).mockResolvedValueOnce(
+      mockParseTransaction as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    );
+
+    const result = await explainTransaction({
+      simulationParams: mockSimulationParams,
+      network: mockNetwork,
+      provider: mockProvider,
+    });
+
+    // An errored simulation is not a successful one - fall back to manual parsing.
+    expect(result.isSimulationSuccessful).toBe(false);
+    expect(result.alert).toEqual({
+      type: AlertType.WARNING,
+      details: {
+        title: 'This transaction will likely be reverted',
+        description:
+          'The recipient account needs a minimum balance to exist on Solana (rent). Try increasing the amount you send.',
+      },
+    });
+  });
+
   it('should return parsed transaction details', async () => {
     const mockParseTransaction = {
       balanceChange: {
