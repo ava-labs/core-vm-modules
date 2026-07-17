@@ -21,11 +21,13 @@ export const ethSendTransaction = async ({
   network,
   approvalController,
   blockaid,
+  eercEnabled = false,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   blockaid: Blockaid;
+  eercEnabled?: boolean;
 }) => {
   const { params } = request;
 
@@ -107,7 +109,14 @@ export const ethSendTransaction = async ({
     blockaid,
   });
 
-  const { displayData, signingData } = buildTxApprovalRequest(request, network, transaction, scan, agentIdentity);
+  const { displayData, signingData } = buildTxApprovalRequest(
+    request,
+    network,
+    transaction,
+    scan,
+    agentIdentity,
+    eercEnabled,
+  );
 
   const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData);
   // prompt user for approval

@@ -47,16 +47,30 @@ import { getProvider } from './utils/get-provider';
 import { supportsBatchApprovals } from './utils/type-utils';
 import { HyperEvmEtherscanClient } from './services/hyperevm-etherscan-client/hyperevm-etherscan-client';
 
+/** EVM-specific feature toggles, resolved from the consumer's feature-flag source. */
+type EvmModuleFeatures = {
+  encryptedERCs: boolean;
+};
+
+/** EVM module runtime params: the shared ones plus EVM-specific feature toggles. */
+type EvmRuntimeParams = RuntimeParams & {
+  features?: Partial<EvmModuleFeatures>;
+};
+
+type EvmConstructorParams = Omit<ConstructorParams, 'runtime'> & {
+  runtime?: EvmRuntimeParams;
+};
+
 export class EvmModule implements Module {
   #glacierService: EvmGlacierService;
   #deBankService: DeBankService;
   #proxyApiUrl: string;
   #approvalController: ApprovalController;
   #blockaid: Blockaid;
-  #runtime?: RuntimeParams;
+  #runtime?: EvmRuntimeParams;
   #hyperEvmEtherscanClient: HyperEvmEtherscanClient;
 
-  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, runtime }: EvmConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#runtime = runtime;
     this.#glacierService = new EvmGlacierService({
@@ -76,6 +90,22 @@ export class EvmModule implements Module {
       httpAgent: runtime?.httpAgent,
       fetch: runtime?.fetch,
     });
+  }
+
+  /**
+   * Applies a partial update to the module's runtime params, overriding only the
+   * provided keys (nested `features` are merged, not replaced). The module is
+   * constructed once, so the consumer uses this to push later changes (e.g. flags).
+   */
+  updateRuntimeParams(params: Partial<EvmRuntimeParams>): void {
+    this.#runtime = {
+      ...this.#runtime,
+      ...params,
+      features: {
+        ...this.#runtime?.features,
+        ...params.features,
+      },
+    };
   }
 
   getProvider(network: Network): Promise<JsonRpcBatchInternal> {
@@ -183,6 +213,7 @@ export class EvmModule implements Module {
           network,
           approvalController: this.#approvalController,
           blockaid: this.#blockaid,
+          eercEnabled: this.#runtime?.features?.encryptedERCs === true,
         });
       case RpcMethod.ETH_SEND_TRANSACTION_BATCH: {
         if (!supportsBatchApprovals(this.#approvalController)) {
