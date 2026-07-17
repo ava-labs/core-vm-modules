@@ -1,7 +1,7 @@
 import { getGlacierApiKey } from './get-glacier-api-key';
 
 // RPC urls returned in the token list are always using the production URL
-const knownHosts = ['glacier-api.avax.network', 'proxy-api.avax.network'];
+const knownHosts = ['glacier-api.avax.network', 'proxy-api.avax.network', 'proxy-api-dev.avax.network'];
 
 /**
  * Glacier needs an API key for development, this adds the key if needed.
