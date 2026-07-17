@@ -11,9 +11,10 @@ export const getProvider = ({
   proxyApiUrl: string;
 }): SolanaProvider => {
   const rpcUrl = isTestnet ? RPC_URL_DEVNET : proxyApiUrl + RPC_URL_PROXY_API_ENDPOINT;
-
+  const url = addGlacierAPIKeyIfNeeded(rpcUrl);
+  console.log('url', url);
   return getSolanaProvider({
     isTestnet,
-    rpcUrl: addGlacierAPIKeyIfNeeded(rpcUrl),
+    rpcUrl: url,
   });
 };
