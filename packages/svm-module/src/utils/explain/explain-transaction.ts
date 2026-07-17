@@ -28,7 +28,12 @@ export const explainTransaction = async ({
 }): Promise<TransactionSimulationResult & { details: DetailSection[] }> => {
   const { params } = simulationParams;
   const scanResponse = await scanSolanaTransaction(simulationParams);
-  const { simulation, validation } = scanResponse?.result ?? {};
+  const { simulation: rawSimulation, validation } = scanResponse?.result ?? {};
+  // A failed Blockaid simulation still comes back as a (truthy) object - e.g.
+  // `{ status: 'Error', error, error_details }` - but without an `account_summary`.
+  // Only treat it as a usable simulation when that data is actually present,
+  // otherwise we fall back to manual parsing instead of crashing.
+  const simulation = rawSimulation?.account_summary ? rawSimulation : undefined;
   const genericDetails: DetailSection = {
     title: 'Transaction Details',
     items: [dataItem('Raw Data', simulationParams.params.transactionBase64)],
