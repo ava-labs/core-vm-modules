@@ -8,12 +8,14 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
 
 import { buildTxApprovalRequest } from './build-tx-approval-request';
+import { EERC_ABI } from './eerc-abi';
 import type { TransactionParams } from './transaction-schema';
 
 const iface = new Interface(ERC20.abi);
+const eercIface = new Interface(EERC_ABI);
 
 const FROM = '0x0000000000000000000000000000000000000001';
 const TO_EOA = '0x0000000000000000000000000000000000000002';
@@ -86,6 +88,45 @@ describe('buildTxApprovalRequest', () => {
       expect(displayData.title).toBe('Do you approve this spend limit?');
       // approve is not a transfer, so it is treated as a contract call (no `To`)
       expect(displayData.details[0]!.items).toEqual([...baseItems, addressItem('Contract', TOKEN_CONTRACT)]);
+    });
+  });
+
+  describe('eERC Operation/Privacy rows', () => {
+    const eercDepositData = eercIface.encodeFunctionData('deposit(uint256,address,uint256[7])', [
+      1n,
+      TOKEN_CONTRACT,
+      new Array(7).fill(0n),
+    ]);
+
+    it('appends Operation and Privacy rows for an eERC tx when the flag is enabled', () => {
+      const transaction = { from: FROM, to: TOKEN_CONTRACT, data: eercDepositData } as TransactionParams;
+
+      const items = buildTxApprovalRequest(request, network, transaction, emptyScan, undefined, true).displayData
+        .details[0]!.items;
+
+      expect(items).toEqual([
+        ...baseItems,
+        addressItem('Contract', TOKEN_CONTRACT),
+        textItem('Operation', 'deposit'),
+        textItem('Privacy', 'eERC20'),
+      ]);
+    });
+
+    it('does not append the rows when the flag is disabled (default)', () => {
+      const transaction = { from: FROM, to: TOKEN_CONTRACT, data: eercDepositData } as TransactionParams;
+
+      const items = getFirstSectionItems(transaction);
+
+      expect(items).toEqual([...baseItems, addressItem('Contract', TOKEN_CONTRACT)]);
+    });
+
+    it('does not append the rows for a non-eERC tx even when the flag is enabled', () => {
+      const transaction = { from: FROM, to: TO_EOA, value: '0x1' } as TransactionParams;
+
+      const items = buildTxApprovalRequest(request, network, transaction, emptyScan, undefined, true).displayData
+        .details[0]!.items;
+
+      expect(items).toEqual([...baseItems, addressItem('To', TO_EOA)]);
     });
   });
 

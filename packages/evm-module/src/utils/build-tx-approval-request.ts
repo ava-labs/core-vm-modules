@@ -9,7 +9,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, linkItem, networkItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
 
 import { buildAgentIdentityDetailSection } from './build-agent-identity-detail-section';
 
@@ -18,6 +18,7 @@ import type { TransactionParams } from './transaction-schema';
 import { parseERC20TransactionType } from './parse-erc20-transaction-type';
 import { getRecipientAddress } from './get-recipient-address';
 import { classifyTransaction } from '@src/utils/classify-transaction';
+import { parseEercTransaction } from './parse-eerc-transaction';
 
 export const buildTxApprovalRequest = (
   request: RpcRequest,
@@ -25,6 +26,7 @@ export const buildTxApprovalRequest = (
   transaction: TransactionParams,
   { isSimulationSuccessful, balanceChange, tokenApprovals, alert }: TransactionSimulationResult,
   agentIdentity?: AgentIdentity,
+  eercDisplayEnabled = false,
 ) => {
   const { dappInfo } = request;
   const transactionType = parseERC20TransactionType(transaction);
@@ -57,6 +59,15 @@ export const buildTxApprovalRequest = (
     [TransactionKind.ERC20_TRANSFER, TransactionKind.CONTRACT_CALL].includes(transactionClassification)
   ) {
     transactionDetails.push(addressItem('Contract', transaction.to));
+  }
+
+  if (eercDisplayEnabled) {
+    const eercTransaction = parseEercTransaction(transaction);
+
+    if (eercTransaction) {
+      transactionDetails.push(textItem('Operation', eercTransaction.operation));
+      transactionDetails.push(textItem('Privacy', 'eERC20'));
+    }
   }
 
   const displayData: DisplayData = {
