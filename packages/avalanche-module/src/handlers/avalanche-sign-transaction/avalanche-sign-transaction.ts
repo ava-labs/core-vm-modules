@@ -29,12 +29,14 @@ export const avalancheSignTransaction = async ({
   approvalController,
   glacierApiUrl,
   appInfo,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   glacierApiUrl: string;
   appInfo: AppInfo;
+  getAuthHeaders?: () => Promise<Record<string, string>>;
 }) => {
   const result = parseRequestParams(request.params);
 
@@ -80,6 +82,7 @@ export const avalancheSignTransaction = async ({
         headers: {
           ...getCoreHeaders(appInfo),
           ...(glacierApiKey ? { 'x-api-key': glacierApiKey } : {}),
+          ...(await getAuthHeaders?.()),
         },
       });
 

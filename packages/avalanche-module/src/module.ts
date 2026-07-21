@@ -54,6 +54,9 @@ export class AvalancheModule implements Module {
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
+      // Reads #runtime at call time; resolves to no extra headers when
+      // runtime.getAuthHeaders is unset.
+      getAuthHeaders: async () => this.#runtime?.getAuthHeaders?.(),
     });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
@@ -124,6 +127,7 @@ export class AvalancheModule implements Module {
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
           appInfo: this.#appInfo,
+          getAuthHeaders: this.#runtime?.getAuthHeaders,
         });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
@@ -132,6 +136,7 @@ export class AvalancheModule implements Module {
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
           appInfo: this.#appInfo,
+          getAuthHeaders: this.#runtime?.getAuthHeaders,
         });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };

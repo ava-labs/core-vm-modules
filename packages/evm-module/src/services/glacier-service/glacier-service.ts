@@ -33,6 +33,11 @@ const CHAINS_TO_FILTER = [ChainId.ETHEREUM_HOMESTEAD];
 type GlacierServiceConfig = {
   glacierApiUrl: string;
   headers?: Record<string, string>;
+  /**
+   * Resolves per-request auth headers (e.g. a Firebase AppCheck token) required
+   * by the Glacier proxy. Merged over the static `headers`.
+   */
+  getAuthHeaders?: () => Promise<Record<string, string> | undefined>;
 };
 
 export class EvmGlacierService implements BalanceServiceInterface {
@@ -40,11 +45,11 @@ export class EvmGlacierService implements BalanceServiceInterface {
   isGlacierHealthy = true;
   supportedChainIds: string[] = [];
 
-  constructor({ glacierApiUrl, headers }: GlacierServiceConfig) {
+  constructor({ glacierApiUrl, headers, getAuthHeaders }: GlacierServiceConfig) {
     this.glacierSdk = new Glacier(
       {
         BASE: glacierApiUrl,
-        HEADERS: headers,
+        HEADERS: getAuthHeaders ? async () => ({ ...headers, ...(await getAuthHeaders()) }) : headers,
       },
       GlacierFetchHttpRequest,
     );

@@ -126,6 +126,28 @@ describe('avalanche-sign-transaction', () => {
     });
   });
 
+  it('merges resolved auth headers into the Glacier UTXO request', async () => {
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P' });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+      getAuthHeaders: jest.fn().mockResolvedValue({ 'X-Firebase-AppCheck': 'appcheck-token' }),
+    });
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'glacierApiUrl',
+        headers: {
+          'x-application-name': 'core-mobile-ios',
+          'x-application-version': 'version',
+          'X-Firebase-AppCheck': 'appcheck-token',
+        },
+      }),
+    );
+  });
+
   it('returns error if missing signer address', async () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     (utils.addressesFromBytes as jest.Mock).mockReturnValue([]);

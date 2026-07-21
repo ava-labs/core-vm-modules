@@ -76,6 +76,10 @@ export class EvmModule implements Module {
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
+      // Always a resolver (even when runtime.getAuthHeaders is unset, in which
+      // case it resolves to no extra headers) so that #runtime is read at call
+      // time and updateRuntimeParams() can supply the resolver later.
+      getAuthHeaders: async () => this.#runtime?.getAuthHeaders?.(),
     });
     this.#deBankService = new DeBankService({ proxyApiUrl, fetch: this.#runtime?.fetch });
     this.#proxyApiUrl = proxyApiUrl;

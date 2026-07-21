@@ -452,6 +452,36 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
+  it('merges resolved auth headers into the Glacier UTXO request', async () => {
+    mockGetGlacierApiKey.mockReturnValue(undefined);
+    const params = {
+      ...testParams(testRequestParams),
+      getAuthHeaders: jest.fn().mockResolvedValue({ 'X-Firebase-AppCheck': 'appcheck-token' }),
+    };
+    const tx = { vm: AVM };
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      type: 'import',
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'X',
+      network: 'fuji',
+      url: GLACIER_API_URL,
+      token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+        'X-Firebase-AppCheck': 'appcheck-token',
+      },
+    });
+  });
+
   describe('approve succeeds', () => {
     beforeEach(() => {
       jest.clearAllMocks();
