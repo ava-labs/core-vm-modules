@@ -3,10 +3,17 @@ import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-ty
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
+import { getGlacierApiKey } from '@internal/utils/src/utils/get-glacier-api-key';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
+jest.mock('@internal/utils/src/utils/get-glacier-api-key', () => ({
+  getGlacierApiKey: jest.fn(),
+}));
+
+const mockGetGlacierApiKey = getGlacierApiKey as jest.MockedFunction<typeof getGlacierApiKey>;
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
@@ -224,6 +231,53 @@ describe('avalanche-sign-transaction', () => {
 
     expect(result).toEqual({
       result: 'signedData',
+    });
+  });
+
+  it('passes the Glacier API key as token and x-api-key header when it is defined', async () => {
+    mockGetGlacierApiKey.mockReturnValue('test-api-key');
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+    });
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'P',
+      network: GlacierNetwork.MAINNET,
+      url: 'glacierApiUrl',
+      token: 'test-api-key',
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+        'x-api-key': 'test-api-key',
+      },
+    });
+  });
+
+  it('omits the x-api-key header when the Glacier API key is not defined', async () => {
+    mockGetGlacierApiKey.mockReturnValue(undefined);
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+    });
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'P',
+      network: GlacierNetwork.MAINNET,
+      url: 'glacierApiUrl',
+      token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+      },
     });
   });
 });

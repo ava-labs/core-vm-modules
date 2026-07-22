@@ -66,6 +66,7 @@ export const avalancheSendTransaction = async ({
       vm,
     });
 
+    const glacierApiKey = getGlacierApiKey();
     const utxos = providedUtxos.length
       ? providedUtxos
       : await Avalanche.getUtxosByTxFromGlacier({
@@ -73,8 +74,13 @@ export const avalancheSendTransaction = async ({
           chainAlias,
           network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
-          token: getGlacierApiKey(),
-          headers: getCoreHeaders(appInfo),
+          // This token does not work.
+          // The Glacier SDK sets the token as an Authorization header, however the rate limit token has to be used as a query parameter or as an `x-api-key` header.
+          token: glacierApiKey,
+          headers: {
+            ...getCoreHeaders(appInfo),
+            ...(glacierApiKey ? { 'x-api-key': glacierApiKey } : {}),
+          },
         });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
