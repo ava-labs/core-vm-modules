@@ -1,4 +1,5 @@
 import type { z } from 'zod';
+import type Big from 'big.js';
 import {
   clearinghouseStateSchema,
   hypercoreLedgerUpdatesSchema,
@@ -13,6 +14,7 @@ import {
   type UserAbstractionMode,
   type UserFill,
 } from './schemas';
+import { getWithdrawableUsd } from './get-withdrawable-usd';
 
 export type HypercoreInfoRequest =
   | { type: 'spotMeta' }
@@ -41,6 +43,13 @@ export type PostInfoOptions = {
   signal?: AbortSignal;
   /** Overrides the client default URL for this call. */
   url?: string;
+};
+
+export type HypercoreWithdrawableState = {
+  withdrawableUsd: Big;
+  abstractionMode: UserAbstractionMode | undefined;
+  clearinghouse: ClearinghouseState | undefined;
+  spotClearinghouse: SpotClearinghouseState | undefined;
 };
 
 const resolveFetch = (fetchFn?: typeof globalThis.fetch): typeof globalThis.fetch => {
@@ -118,6 +127,28 @@ export class HypercoreInfoClient {
       userAbstractionSchema,
       options,
     ) as Promise<UserAbstractionMode>;
+  }
+
+  /**
+   * Fetches clearinghouse + spot + abstraction and returns Hyperliquid's
+   * withdrawable USD (unified accounts include free spot USDC).
+   *
+   * Partial `/info` failures degrade gracefully (missing legs → 0 contribution).
+   */
+  async fetchWithdrawableState(user: string, options?: PostInfoOptions): Promise<HypercoreWithdrawableState> {
+    const normalized = user.toLowerCase();
+    const [clearinghouse, spotClearinghouse, abstractionMode] = await Promise.all([
+      this.getClearinghouseState(normalized, options).catch(() => undefined),
+      this.getSpotClearinghouseState(normalized, options).catch(() => undefined),
+      this.getUserAbstraction(normalized, options).catch(() => undefined),
+    ]);
+
+    return {
+      withdrawableUsd: getWithdrawableUsd(clearinghouse, spotClearinghouse, abstractionMode),
+      abstractionMode,
+      clearinghouse,
+      spotClearinghouse,
+    };
   }
 
   getUserFills(user: string, options?: PostInfoOptions): Promise<UserFill[]> {
