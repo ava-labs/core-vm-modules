@@ -6,6 +6,7 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getProvider } from '../../utils/get-provider';
 import { retry } from '@internal/utils/src/utils/retry';
+import { getGlacierApiKey } from '@internal/utils/src/utils/get-glacier-api-key';
 
 const GLACIER_API_URL = 'https://glacier-api.avax.network';
 
@@ -16,6 +17,11 @@ jest.mock('../../utils/get-provider');
 jest.mock('@internal/utils/src/utils/retry', () => ({
   retry: jest.fn(),
 }));
+jest.mock('@internal/utils/src/utils/get-glacier-api-key', () => ({
+  getGlacierApiKey: jest.fn(),
+}));
+
+const mockGetGlacierApiKey = getGlacierApiKey as jest.MockedFunction<typeof getGlacierApiKey>;
 
 const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 
@@ -234,7 +240,6 @@ describe('avalanche_sendTransaction handler', () => {
       headers: {
         'x-application-name': 'core-mobile-ios',
         'x-application-version': 'version',
-        'x-api-key': '',
       },
     });
 
@@ -389,7 +394,6 @@ describe('avalanche_sendTransaction handler', () => {
       headers: {
         'x-application-name': 'core-mobile-ios',
         'x-application-version': 'version',
-        'x-api-key': '',
       },
     });
 
@@ -398,6 +402,53 @@ describe('avalanche_sendTransaction handler', () => {
       vm: EVM,
       utxos: utxosMock,
       fromAddress: '0x0',
+    });
+  });
+
+  it('passes the Glacier API key as token and x-api-key header when it is defined', async () => {
+    mockGetGlacierApiKey.mockReturnValue('test-api-key');
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ type: 'import' });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'X',
+      network: 'fuji',
+      url: GLACIER_API_URL,
+      token: 'test-api-key',
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+        'x-api-key': 'test-api-key',
+      },
+    });
+  });
+
+  it('omits the x-api-key header when the Glacier API key is not defined', async () => {
+    mockGetGlacierApiKey.mockReturnValue(undefined);
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ type: 'import' });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(Avalanche.getUtxosByTxFromGlacier).toHaveBeenCalledWith({
+      transactionHex: '0x00001',
+      chainAlias: 'X',
+      network: 'fuji',
+      url: GLACIER_API_URL,
+      token: undefined,
+      headers: {
+        'x-application-name': 'core-mobile-ios',
+        'x-application-version': 'version',
+      },
     });
   });
 
