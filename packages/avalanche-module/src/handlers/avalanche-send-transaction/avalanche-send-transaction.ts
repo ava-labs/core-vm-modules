@@ -73,8 +73,12 @@ export const avalancheSendTransaction = async ({
           chainAlias,
           network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
+          // This token does not work. The Glacier SDK uses the token as an Authorization header, however the rate limit token has to be used as a query parameter.
           token: getGlacierApiKey(),
-          headers: getCoreHeaders(appInfo),
+          headers: {
+            ...getCoreHeaders(appInfo),
+            'x-api-key': getGlacierApiKey() ?? '',
+          },
         });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
