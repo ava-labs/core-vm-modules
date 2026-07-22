@@ -234,6 +234,7 @@ describe('avalanche_sendTransaction handler', () => {
       headers: {
         'x-application-name': 'core-mobile-ios',
         'x-application-version': 'version',
+        'x-api-key': '',
       },
     });
 
@@ -388,6 +389,7 @@ describe('avalanche_sendTransaction handler', () => {
       headers: {
         'x-application-name': 'core-mobile-ios',
         'x-application-version': 'version',
+        'x-api-key': '',
       },
     });
 
