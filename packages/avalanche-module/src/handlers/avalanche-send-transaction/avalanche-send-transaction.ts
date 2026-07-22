@@ -18,7 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from '../../utils/get-provided-utxos';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { getCoreHeaders, getGlacierApiKey, retry, rpcErrorOpts } from '@internal/utils';
+import { getCoreHeaders, getProxyApiKey, getGlacierApiKey, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
@@ -66,6 +66,7 @@ export const avalancheSendTransaction = async ({
       vm,
     });
 
+    const proxyApiKey = getProxyApiKey();
     const glacierApiKey = getGlacierApiKey();
     const utxos = providedUtxos.length
       ? providedUtxos
@@ -79,7 +80,7 @@ export const avalancheSendTransaction = async ({
           token: glacierApiKey,
           headers: {
             ...getCoreHeaders(appInfo),
-            ...(glacierApiKey ? { 'x-api-key': glacierApiKey } : {}),
+            ...(proxyApiKey ? { 'x-api-key': proxyApiKey } : {}),
           },
         });
 
