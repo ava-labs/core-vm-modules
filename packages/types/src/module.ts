@@ -39,6 +39,8 @@ export type RuntimeParams = {
    * Resolves auth headers (e.g. a Firebase AppCheck token) attached to requests
    * against Core's authenticated proxies, such as Glacier via core-proxy-api.
    * Invoked per request, so short-lived tokens are re-read on every call.
+   * Optional here; the EVM and Avalanche modules require it in their
+   * constructor params since their Glacier calls cannot succeed without it.
    */
   getAuthHeaders?: () => Promise<Record<string, string>>;
 };
