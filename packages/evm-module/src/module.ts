@@ -58,7 +58,12 @@ type EvmRuntimeParams = RuntimeParams & {
 };
 
 type EvmConstructorParams = Omit<ConstructorParams, 'runtime'> & {
-  runtime?: EvmRuntimeParams;
+  /**
+   * Required: the module's internal Glacier calls (EVM balances, transaction
+   * history) go through core-proxy-api, which rejects requests without auth
+   * headers (Firebase AppCheck) — so `getAuthHeaders` must be supplied.
+   */
+  runtime: EvmRuntimeParams & Required<Pick<RuntimeParams, 'getAuthHeaders'>>;
 };
 
 export class EvmModule implements Module {
@@ -76,6 +81,8 @@ export class EvmModule implements Module {
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
+      // Reads #runtime at call time so updateRuntimeParams() is respected.
+      getAuthHeaders: async () => this.#runtime?.getAuthHeaders?.(),
     });
     this.#deBankService = new DeBankService({ proxyApiUrl, fetch: this.#runtime?.fetch });
     this.#proxyApiUrl = proxyApiUrl;

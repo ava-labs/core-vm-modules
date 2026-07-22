@@ -39,6 +39,16 @@ import { AvalancheGlacierService } from './services/glacier-service/glacier-serv
 import { getProvider } from './utils/get-provider';
 import { hashBlockchainId } from './utils/hash-blockchain-id';
 
+type AvalancheConstructorParams = Omit<ConstructorParams, 'runtime'> & {
+  /**
+   * Required: the module cannot function without it — P/X/C balances,
+   * transaction history and the UTXO fetch during avalanche_sign/sendTransaction
+   * all go through core-proxy-api, which rejects requests without auth headers
+   * (Firebase AppCheck) — so `getAuthHeaders` must be supplied.
+   */
+  runtime: RuntimeParams & Required<Pick<RuntimeParams, 'getAuthHeaders'>>;
+};
+
 export class AvalancheModule implements Module {
   #glacierService: AvalancheGlacierService;
   #proxyApiUrl: string;
@@ -47,13 +57,15 @@ export class AvalancheModule implements Module {
   #appInfo: AppInfo;
   #runtime?: RuntimeParams;
 
-  constructor({ approvalController, environment, appInfo, runtime }: ConstructorParams) {
+  constructor({ approvalController, environment, appInfo, runtime }: AvalancheConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#appInfo = appInfo;
     this.#runtime = runtime;
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
+      // Reads #runtime at call time rather than capturing the resolver.
+      getAuthHeaders: async () => this.#runtime?.getAuthHeaders?.(),
     });
     this.#proxyApiUrl = proxyApiUrl;
     this.#glacierApiUrl = glacierApiUrl;
@@ -124,6 +136,7 @@ export class AvalancheModule implements Module {
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
           appInfo: this.#appInfo,
+          getAuthHeaders: this.#runtime?.getAuthHeaders,
         });
       case RpcMethod.AVALANCHE_SEND_TRANSACTION:
         return avalancheSendTransaction({
@@ -132,6 +145,7 @@ export class AvalancheModule implements Module {
           approvalController: this.#approvalController,
           glacierApiUrl: this.#glacierApiUrl,
           appInfo: this.#appInfo,
+          getAuthHeaders: this.#runtime?.getAuthHeaders,
         });
       default:
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };
