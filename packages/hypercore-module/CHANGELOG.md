@@ -1,5 +1,15 @@
 # @avalabs/hypercore-module
 
+## 3.14.0
+
+### Minor Changes
+
+- 03d3516: Add `withdrawable` to clearinghouse schema, `getWithdrawableUsd`, and `HypercoreInfoClient.fetchWithdrawableState` for Hyperliquid withdrawable balance (Fusion / Markr swap parity)
+
+### Patch Changes
+
+- @avalabs/vm-module-types@3.14.0
+
 ## 3.13.2
 
 ### Patch Changes
