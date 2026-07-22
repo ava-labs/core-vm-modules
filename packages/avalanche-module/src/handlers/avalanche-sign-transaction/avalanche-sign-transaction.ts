@@ -12,7 +12,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 
-import { getCoreHeaders, getGlacierApiKey } from '@internal/utils';
+import { getCoreHeaders, getGlacierApiKey, getProxyApiKey } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../../utils/parse-tx-details';
@@ -66,6 +66,7 @@ export const avalancheSignTransaction = async ({
     vm,
   });
 
+  const proxyApiKey = getProxyApiKey();
   const glacierApiKey = getGlacierApiKey();
   const utxos = providedUtxos.length
     ? providedUtxos
@@ -79,7 +80,7 @@ export const avalancheSignTransaction = async ({
         token: glacierApiKey,
         headers: {
           ...getCoreHeaders(appInfo),
-          ...(glacierApiKey ? { 'x-api-key': glacierApiKey } : {}),
+          ...(proxyApiKey ? { 'x-api-key': proxyApiKey } : {}),
         },
       });
 
