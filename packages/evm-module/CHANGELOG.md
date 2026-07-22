@@ -1,5 +1,12 @@
 # @avalabs/evm-module
 
+## 3.13.1
+
+### Patch Changes
+
+- 5210b2d: Exports parseEercTransaction utility function
+  - @avalabs/vm-module-types@3.13.1
+
 ## 3.13.0
 
 ### Minor Changes
