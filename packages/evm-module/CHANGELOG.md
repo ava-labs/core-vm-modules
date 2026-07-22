@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 3.13.2
+
+### Patch Changes
+
+- 8d8e8d5: Add RL token as header
+- Updated dependencies [8d8e8d5]
+  - @avalabs/vm-module-types@3.13.2
+
 ## 3.13.1
 
 ### Patch Changes
