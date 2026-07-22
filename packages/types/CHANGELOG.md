@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 3.13.2
+
+### Patch Changes
+
+- 8d8e8d5: Add RL token as header
+
 ## 3.13.1
 
 ## 3.13.0
