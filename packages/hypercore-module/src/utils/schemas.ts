@@ -36,8 +36,8 @@ const marginSummarySchema = z.object({
 });
 
 /**
- * `type: "clearinghouseState"` — only fields needed for PnL-excluded
- * perp collateral fold-in.
+ * `type: "clearinghouseState"` — fields for PnL-excluded perp collateral
+ * fold-in and Hyperliquid `withdrawable` (used by swap / withdraw UIs).
  */
 export const clearinghouseStateSchema = z.object({
   assetPositions: z.array(
@@ -48,6 +48,8 @@ export const clearinghouseStateSchema = z.object({
     }),
   ),
   crossMarginSummary: marginSummarySchema,
+  /** USD string (or number) Hyperliquid will release; may be absent on partial payloads. */
+  withdrawable: z.union([z.string(), z.number()]).optional(),
 });
 
 export type UserAbstractionMode = 'unifiedAccount' | 'portfolioMargin' | 'dexAbstraction' | 'disabled' | 'default';
