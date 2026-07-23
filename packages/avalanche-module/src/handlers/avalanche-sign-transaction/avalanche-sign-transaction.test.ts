@@ -6,14 +6,19 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
 import { getGlacierApiKey } from '@internal/utils/src/utils/get-glacier-api-key';
+import { getProxyApiKey } from '@internal/utils/src/utils/get-proxy-api-key';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@internal/utils/src/utils/get-glacier-api-key', () => ({
   getGlacierApiKey: jest.fn(),
 }));
+jest.mock('@internal/utils/src/utils/get-proxy-api-key', () => ({
+  getProxyApiKey: jest.fn(),
+}));
 
 const mockGetGlacierApiKey = getGlacierApiKey as jest.MockedFunction<typeof getGlacierApiKey>;
+const mockGetProxyApiKey = getProxyApiKey as jest.MockedFunction<typeof getProxyApiKey>;
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
@@ -234,8 +239,9 @@ describe('avalanche-sign-transaction', () => {
     });
   });
 
-  it('passes the Glacier API key as token and x-api-key header when it is defined', async () => {
+  it('passes the Glacier API key as token and the proxy API key as x-api-key header when they are defined', async () => {
     mockGetGlacierApiKey.mockReturnValue('test-api-key');
+    mockGetProxyApiKey.mockReturnValue('test-proxy-api-key');
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
 
@@ -253,13 +259,14 @@ describe('avalanche-sign-transaction', () => {
       headers: {
         'x-application-name': 'core-mobile-ios',
         'x-application-version': 'version',
-        'x-api-key': 'test-api-key',
+        'x-api-key': 'test-proxy-api-key',
       },
     });
   });
 
-  it('omits the x-api-key header when the Glacier API key is not defined', async () => {
+  it('omits the x-api-key header and the token when the proxy API key and Glacier api key is not defined', async () => {
     mockGetGlacierApiKey.mockReturnValue(undefined);
+    mockGetProxyApiKey.mockReturnValue(undefined);
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
 
