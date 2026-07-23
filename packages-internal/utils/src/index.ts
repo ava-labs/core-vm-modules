@@ -5,6 +5,7 @@ export { retry, RetryBackoffPolicy } from './utils/retry';
 export { fetchAndVerify } from './utils/fetch-and-verify';
 export { getCoreHeaders } from './utils/get-core-headers';
 export { getGlacierApiKey } from './utils/get-glacier-api-key';
+export { getProxyApiKey } from './utils/get-proxy-api-key';
 export { addGlacierAPIKeyIfNeeded } from './utils/add-glacier-api-key-if-needed';
 export { GlacierFetchHttpRequest } from './utils/glacier-fetch-http-request';
 export { rpcErrorOpts } from './utils/rpc-error-opts';
