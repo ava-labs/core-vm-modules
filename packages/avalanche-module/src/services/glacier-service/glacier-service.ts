@@ -21,8 +21,26 @@ export class AvalancheGlacierService {
   glacierSdk: Glacier;
   isGlacierHealthy = true;
 
-  constructor({ glacierApiUrl, headers }: { glacierApiUrl: string; headers?: Record<string, string> }) {
-    this.glacierSdk = new Glacier({ BASE: glacierApiUrl, HEADERS: headers }, GlacierFetchHttpRequest);
+  constructor({
+    glacierApiUrl,
+    headers,
+    getAuthHeaders,
+  }: {
+    glacierApiUrl: string;
+    headers?: Record<string, string>;
+    /**
+     * Resolves per-request auth headers (e.g. a Firebase AppCheck token) required
+     * by the Glacier proxy. Merged over the static `headers`.
+     */
+    getAuthHeaders?: () => Promise<Record<string, string> | undefined>;
+  }) {
+    this.glacierSdk = new Glacier(
+      {
+        BASE: glacierApiUrl,
+        HEADERS: getAuthHeaders ? async () => ({ ...headers, ...(await getAuthHeaders()) }) : headers,
+      },
+      GlacierFetchHttpRequest,
+    );
   }
 
   isHealthy = (): boolean => this.isGlacierHealthy;

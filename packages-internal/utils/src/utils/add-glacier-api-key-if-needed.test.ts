@@ -19,6 +19,12 @@ describe('packages-internal/utils/src/utils/add-glacier-api-key-if-needed', () =
     expect(addGlacierAPIKeyIfNeeded('https://proxy-api.avax.network/proxy/nownodes/sol')).toBe(
       'https://proxy-api.avax.network/proxy/nownodes/sol?token=secret-key',
     );
+    expect(addGlacierAPIKeyIfNeeded('https://core-proxy-api.avax.network/v1/proxy/glacier/v1/chains')).toBe(
+      'https://core-proxy-api.avax.network/v1/proxy/glacier/v1/chains?token=secret-key',
+    );
+    expect(addGlacierAPIKeyIfNeeded('https://core-proxy-api.avax-test.network/v1/proxy/glacier/v1/chains')).toBe(
+      'https://core-proxy-api.avax-test.network/v1/proxy/glacier/v1/chains?token=secret-key',
+    );
   });
 
   it('preserves existing query params when adding the token', () => {

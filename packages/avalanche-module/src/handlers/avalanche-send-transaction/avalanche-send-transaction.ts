@@ -18,7 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import { getProvidedUtxos } from '../../utils/get-provided-utxos';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
-import { getCoreHeaders, getGlacierApiKey, retry, rpcErrorOpts } from '@internal/utils';
+import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
@@ -30,12 +30,14 @@ export const avalancheSendTransaction = async ({
   approvalController,
   glacierApiUrl,
   appInfo,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   glacierApiUrl: string;
   appInfo: AppInfo;
+  getAuthHeaders?: () => Promise<Record<string, string>>;
 }) => {
   const result = parseRequestParams(request.params);
 
@@ -66,7 +68,6 @@ export const avalancheSendTransaction = async ({
       vm,
     });
 
-    const glacierApiKey = getGlacierApiKey();
     const utxos = providedUtxos.length
       ? providedUtxos
       : await Avalanche.getUtxosByTxFromGlacier({
@@ -74,13 +75,7 @@ export const avalancheSendTransaction = async ({
           chainAlias,
           network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
-          // This token does not work.
-          // The Glacier SDK sets the token as an Authorization header, however the rate limit token has to be used as a query parameter or as an `x-api-key` header.
-          token: glacierApiKey,
-          headers: {
-            ...getCoreHeaders(appInfo),
-            ...(glacierApiKey ? { 'x-api-key': glacierApiKey } : {}),
-          },
+          headers: { ...getCoreHeaders(appInfo), ...(await getAuthHeaders?.()) },
         });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;

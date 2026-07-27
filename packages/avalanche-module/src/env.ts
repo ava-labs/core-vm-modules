@@ -6,12 +6,12 @@ type Env = {
 };
 
 export const prodEnv: Env = {
-  glacierApiUrl: 'https://glacier-api.avax.network',
+  glacierApiUrl: 'https://core-proxy-api.avax.network/v1/proxy/glacier',
   proxyApiUrl: 'https://proxy-api.avax.network',
 };
 
 export const devEnv: Env = {
-  glacierApiUrl: 'https://glacier-api-dev.avax.network',
+  glacierApiUrl: 'https://core-proxy-api.avax-test.network/v1/proxy/glacier',
   proxyApiUrl: 'https://proxy-api-dev.avax.network',
 };
 
