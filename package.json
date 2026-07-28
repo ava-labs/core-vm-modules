@@ -45,6 +45,9 @@
   "pnpm": {
     "patchedDependencies": {
       "jest-runner@29.7.0": "patches/jest-runner@29.7.0.patch"
+    },
+    "overrides": {
+      "@avalabs/avalanchejs": "5.1.1-alpha.2"
     }
   }
 }
