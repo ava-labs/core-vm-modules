@@ -126,7 +126,6 @@ export type AddAutoRenewedValidatorTx = {
   nodeID: string;
   stake: bigint;
   delegationFee: number;
-  weight: bigint;
   // Share of staking rewards reinvested as additional stake on each auto-renewal cycle (ACP-236).
   // Expressed in millionths (percentage × 10,000), range [0..1_000_000]: 1_000_000 = 100%, 300_000 = 30%.
   autoCompoundRewardShares: number;

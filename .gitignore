@@ -11,6 +11,7 @@ public/dist
 .turbo
 tsconfig.tsbuildinfo
 .idea
+.pnpm-store
 
 # evm contract files
 packages/evm-module/src/contracts
