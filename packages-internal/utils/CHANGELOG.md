@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.8.1
+
+### Patch Changes
+
+- 6b68f23: Update SDKs
+
 ## 0.8.0
 
 ### Minor Changes
