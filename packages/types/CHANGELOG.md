@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 4.0.1
+
+### Patch Changes
+
+- 6b68f23: Update SDKs
+
 ## 4.0.0
 
 ### Major Changes

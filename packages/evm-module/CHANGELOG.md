@@ -1,5 +1,13 @@
 # @avalabs/evm-module
 
+## 4.0.1
+
+### Patch Changes
+
+- 6b68f23: Update SDKs
+- Updated dependencies [6b68f23]
+  - @avalabs/vm-module-types@4.0.1
+
 ## 4.0.0
 
 ### Major Changes
