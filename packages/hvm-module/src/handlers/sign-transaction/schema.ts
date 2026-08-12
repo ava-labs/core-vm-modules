@@ -1,31 +1,7 @@
 import { z } from 'zod';
 
+// Schema for validating the transaction data
 const transactionSchema = z.object({
-  abi: z.object({
-    actions: z.array(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-    ),
-    outputs: z.array(
-      z.object({
-        id: z.number(),
-        name: z.string(),
-      }),
-    ),
-    types: z.array(
-      z.object({
-        name: z.string(),
-        fields: z.array(
-          z.object({
-            name: z.string(),
-            type: z.string(),
-          }),
-        ),
-      }),
-    ),
-  }),
   tx: z
     .object({
       base: z.object({

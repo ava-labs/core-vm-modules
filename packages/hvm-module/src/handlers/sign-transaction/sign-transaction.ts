@@ -12,7 +12,8 @@ import {
 import { rpcErrors } from '@metamask/rpc-errors';
 import { rpcErrorOpts } from '@internal/utils';
 import { parseRequestParams } from './schema';
-import type { ActionData } from 'hypersdk-client';
+import { getProvider } from '../../utils/get-provider';
+import type { ActionData, VMABI } from 'hypersdk-client';
 
 const parseDetails = (txPayloadActions: ActionData[]): DetailSection[] => {
   if (!txPayloadActions.length) {
@@ -72,6 +73,16 @@ export const hvmSign = async ({
     };
   }
 
+  let abi: VMABI;
+  try {
+    const provider = getProvider(network);
+    abi = await provider.getAbi();
+  } catch (err) {
+    return {
+      error: rpcErrors.internal(rpcErrorOpts('Unable to fetch the chain ABI required to sign the transaction', err)),
+    };
+  }
+
   const details = parseDetails(transaction.tx.actions);
   const displayData: DisplayData = {
     title: 'Do you approve this transaction?',
@@ -89,7 +100,7 @@ export const hvmSign = async ({
   };
   const signingData: SigningData = {
     type: RpcMethod.HVM_SIGN_TRANSACTION,
-    data: { abi: transaction.abi, txPayload: transaction.tx },
+    data: { abi, txPayload: transaction.tx },
   };
   const response = await approvalController.requestApproval({ request, displayData, signingData });
   if ('error' in response) {

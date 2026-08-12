@@ -7,6 +7,9 @@ import {
 } from '@avalabs/vm-module-types';
 import { hvmSign } from './sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { getProvider } from '../../utils/get-provider';
+
+jest.mock('../../utils/get-provider');
 
 describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', () => {
   const mockApprovalControler: ApprovalController = {
@@ -16,6 +19,19 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
     onTransactionConfirmed: jest.fn(),
     onTransactionReverted: jest.fn(),
   };
+
+  // Check that the request params are valid and that the signingData is correct.
+  const mockNodeAbi = {
+    actions: [{ id: 7, name: 'trusted-send' }],
+    outputs: [{ id: 8, name: 'trusted-output' }],
+    types: [
+      {
+        name: 'trusted-type',
+        fields: [{ name: 'amount', type: 'uint64' }],
+      },
+    ],
+  };
+  const mockGetAbi = jest.fn();
 
   const mockNetwork: Network = {
     chainId: 1,
@@ -83,6 +99,10 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetAbi.mockResolvedValue(mockNodeAbi);
+    jest.mocked(getProvider).mockReturnValue({
+      getAbi: mockGetAbi,
+    } as unknown as ReturnType<typeof getProvider>);
   });
 
   it('returns error if transaction params are in the wrong format', async () => {
@@ -170,25 +190,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
       signingData: {
         type: RpcMethod.HVM_SIGN_TRANSACTION,
         data: {
-          abi: {
-            actions: [{ id: 1, name: 'send' }],
-            outputs: [{ id: 2, name: 'output' }],
-            types: [
-              {
-                name: 'first-type',
-                fields: [
-                  {
-                    name: 'id',
-                    type: 'number',
-                  },
-                  {
-                    name: 'name',
-                    type: 'string',
-                  },
-                ],
-              },
-            ],
-          },
+          abi: mockNodeAbi,
           txPayload: {
             base: {
               timestamp: '1234567',
@@ -207,6 +209,43 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
           },
         },
       },
+    });
+  });
+
+  it('fails closed (does not request approval) when the chain ABI cannot be fetched from the node', async () => {
+    mockGetAbi.mockRejectedValue(new Error('node unreachable'));
+
+    await expect(
+      hvmSign({
+        request: mockRequest,
+        network: mockNetwork,
+        approvalController: mockApprovalControler,
+      }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Unable to fetch the chain ABI'),
+      }),
+    });
+
+    // Must never reach signing when the trusted ABI is unavailable.
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('ignores any ABI supplied in the request and uses the node ABI', async () => {
+    jest.mocked(mockApprovalControler.requestApproval).mockResolvedValue({
+      signedData: '0xsigneddata',
+    });
+
+    await hvmSign({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalControler,
+    });
+
+    const call = jest.mocked(mockApprovalControler.requestApproval).mock.calls[0]?.[0];
+    // The signingData ABI must be the trusted node ABI, not the request one.
+    expect(call?.signingData).toMatchObject({
+      data: { abi: mockNodeAbi },
     });
   });
 
