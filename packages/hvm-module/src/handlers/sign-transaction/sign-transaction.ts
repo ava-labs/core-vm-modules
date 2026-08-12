@@ -13,6 +13,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { rpcErrorOpts } from '@internal/utils';
 import { parseRequestParams } from './schema';
 import { getProvider } from '../../utils/get-provider';
+import { findActionDataMismatches } from '../../utils/check-action-data';
 import type { ActionData, VMABI } from 'hypersdk-client';
 
 const parseDetails = (txPayloadActions: ActionData[]): DetailSection[] => {
@@ -80,6 +81,22 @@ export const hvmSign = async ({
   } catch (err) {
     return {
       error: rpcErrors.internal(rpcErrorOpts('Unable to fetch the chain ABI required to sign the transaction', err)),
+    };
+  }
+
+  // Check that the transaction data matches the ABI
+  const actionDataMismatches = findActionDataMismatches(transaction.tx.actions, abi);
+
+  if (actionDataMismatches.length > 0) {
+    return {
+      error: rpcErrors.invalidParams(
+        rpcErrorOpts(
+          'Transaction params are invalid',
+          new Error(
+            `Transaction contains fields that would not be signed as displayed: ${actionDataMismatches.join('; ')}`,
+          ),
+        ),
+      ),
     };
   }
 

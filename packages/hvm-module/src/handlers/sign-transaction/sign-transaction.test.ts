@@ -22,12 +22,15 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
 
   // Check that the request params are valid and that the signingData is correct.
   const mockNodeAbi = {
-    actions: [{ id: 7, name: 'trusted-send' }],
+    actions: [{ id: 7, name: 'send' }],
     outputs: [{ id: 8, name: 'trusted-output' }],
     types: [
       {
-        name: 'trusted-type',
-        fields: [{ name: 'amount', type: 'uint64' }],
+        name: 'send',
+        fields: [
+          { name: 'value', type: 'uint64' },
+          { name: 'memo', type: 'string' },
+        ],
       },
     ],
   };
@@ -247,6 +250,43 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
     expect(call?.signingData).toMatchObject({
       data: { abi: mockNodeAbi },
     });
+  });
+
+  it.each([
+    ['a value whose type does not match the ABI', { value: true, memo: 'yolo' }],
+    ['a field that is missing from the action', { memo: 'yolo' }],
+    ['a field the chain ABI does not declare', { value: '1234', memo: 'yolo', hidden: 'not signed' }],
+    ['a value outside the declared range', { value: '-1', memo: 'yolo' }],
+  ])('rejects an action with %s without requesting approval', async (_, data) => {
+    const request = structuredClone(mockRequest) as RpcRequest;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (request.params as any)[0].tx.actions[0].data = data;
+
+    await expect(
+      hvmSign({ request, network: mockNetwork, approvalController: mockApprovalControler }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
+      }),
+    });
+
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('rejects an action that does not exist on the connected chain', async () => {
+    const request = structuredClone(mockRequest) as RpcRequest;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (request.params as any)[0].tx.actions[0].actionName = 'unknown-action';
+
+    await expect(
+      hvmSign({ request, network: mockNetwork, approvalController: mockApprovalControler }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
+      }),
+    });
+
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
   });
 
   it('handles approval rejection', async () => {
