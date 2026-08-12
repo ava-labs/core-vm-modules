@@ -16,7 +16,7 @@ import { getCoreHeaders } from '@internal/utils';
 
 import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../../utils/parse-tx-details';
-import { getProvidedUtxos } from '../../utils/get-provided-utxos';
+import { resolveUtxos } from '../../utils/resolve-utxos';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
@@ -63,20 +63,18 @@ export const avalancheSignTransaction = async ({
 
   const { xpAddress: currentAddress, evmAddress: currentEvmAddress } = contextParserResult.data;
 
-  const providedUtxos = getProvidedUtxos({
+  const utxos = await resolveUtxos({
     utxoHexes: providedUtxoHexes,
     vm,
-  });
-
-  const utxos = providedUtxos.length
-    ? providedUtxos
-    : await Avalanche.getUtxosByTxFromGlacier({
+    getIndexedUtxos: async () =>
+      Avalanche.getUtxosByTxFromGlacier({
         transactionHex,
         chainAlias,
         network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
         url: glacierApiUrl,
         headers: { ...getCoreHeaders(appInfo), ...(await getAuthHeaders?.()) },
-      });
+      }),
+  });
 
   const unsignedOrPartiallySignedTx = await getUnsignedOrPartiallySignedTx({
     txBytes: utils.hexToBuffer(transactionHex),

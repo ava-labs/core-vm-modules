@@ -15,7 +15,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
-import { getProvidedUtxos } from '../../utils/get-provided-utxos';
+import { resolveUtxos } from '../../utils/resolve-utxos';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
@@ -63,20 +63,18 @@ export const avalancheSendTransaction = async ({
 
     const { xpAddress: currentAddress, xpubXP, externalXPAddresses } = contextResult.data;
 
-    const providedUtxos = getProvidedUtxos({
+    const utxos = await resolveUtxos({
       utxoHexes: providedUtxoHexes,
       vm,
-    });
-
-    const utxos = providedUtxos.length
-      ? providedUtxos
-      : await Avalanche.getUtxosByTxFromGlacier({
+      getIndexedUtxos: async () =>
+        Avalanche.getUtxosByTxFromGlacier({
           transactionHex,
           chainAlias,
           network: isTestnet ? GlacierNetwork.FUJI : GlacierNetwork.MAINNET,
           url: glacierApiUrl,
           headers: { ...getCoreHeaders(appInfo), ...(await getAuthHeaders?.()) },
-        });
+        }),
+    });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
     if (chainAlias === 'C') {
