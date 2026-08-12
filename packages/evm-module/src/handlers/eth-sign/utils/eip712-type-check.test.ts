@@ -175,6 +175,93 @@ describe('findEip712TypeMismatches', () => {
     expect(result).toEqual([expect.stringContaining('message.permits[1].allowed')]);
   });
 
+  it('flags a non-integer number for a uint256 field', () => {
+    const result = findEip712TypeMismatches({
+      types: baseTypes,
+      primaryType: 'Permit',
+      domain: baseDomain,
+      message: { ...baseMessage, nonce: 1.5 },
+    });
+
+    expect(result).toEqual([expect.stringContaining('message.nonce')]);
+  });
+
+  it('flags a number too large to be represented exactly for a uint256 field', () => {
+    const result = findEip712TypeMismatches({
+      types: baseTypes,
+      primaryType: 'Permit',
+      domain: baseDomain,
+      message: { ...baseMessage, nonce: 1e21 },
+    });
+
+    expect(result).toEqual([expect.stringContaining('message.nonce')]);
+  });
+
+  it('flags a negative value for an unsigned field', () => {
+    const result = findEip712TypeMismatches({
+      types: baseTypes,
+      primaryType: 'Permit',
+      domain: baseDomain,
+      message: { ...baseMessage, nonce: '-1' },
+    });
+
+    expect(result).toEqual([expect.stringContaining('message.nonce')]);
+  });
+
+  it('flags a value outside the declared bit width', () => {
+    const types = {
+      EIP712Domain: baseTypes.EIP712Domain,
+      Mail: [{ name: 'count', type: 'uint8' }],
+    };
+
+    expect(
+      findEip712TypeMismatches({ types, primaryType: 'Mail', domain: baseDomain, message: { count: 256 } }),
+    ).toEqual([expect.stringContaining('message.count')]);
+
+    expect(
+      findEip712TypeMismatches({ types, primaryType: 'Mail', domain: baseDomain, message: { count: 255 } }),
+    ).toEqual([]);
+  });
+
+  it('accepts a negative value for a signed field', () => {
+    const result = findEip712TypeMismatches({
+      types: {
+        EIP712Domain: baseTypes.EIP712Domain,
+        Mail: [{ name: 'delta', type: 'int256' }],
+      },
+      primaryType: 'Mail',
+      domain: baseDomain,
+      message: { delta: '-1' },
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it('flags a fixed-size array whose length does not match the declared type', () => {
+    const result = findEip712TypeMismatches({
+      types: {
+        EIP712Domain: baseTypes.EIP712Domain,
+        Mail: [{ name: 'ids', type: 'uint8[2]' }],
+      },
+      primaryType: 'Mail',
+      domain: baseDomain,
+      message: { ids: [1, 2, 3, 4] },
+    });
+
+    expect(result).toEqual([expect.stringContaining('message.ids')]);
+  });
+
+  it('flags a primaryType that is not defined in the types', () => {
+    const result = findEip712TypeMismatches({
+      types: baseTypes,
+      primaryType: 'NotDeclared',
+      domain: baseDomain,
+      message: baseMessage,
+    });
+
+    expect(result).toEqual([expect.stringContaining('primaryType')]);
+  });
+
   it('does not flag string types regardless of content', () => {
     const types = {
       EIP712Domain: baseTypes.EIP712Domain,
