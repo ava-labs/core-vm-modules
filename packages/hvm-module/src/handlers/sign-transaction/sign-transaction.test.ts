@@ -8,8 +8,13 @@ import {
 import { hvmSign } from './sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
+import { getNodeChainId } from '../../utils/get-node-chain-id';
 
 jest.mock('../../utils/get-provider');
+jest.mock('../../utils/get-node-chain-id', () => ({
+  ...jest.requireActual('../../utils/get-node-chain-id'),
+  getNodeChainId: jest.fn(),
+}));
 
 describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', () => {
   const mockApprovalControler: ApprovalController = {
@@ -35,6 +40,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
     ],
   };
   const mockGetAbi = jest.fn();
+  const mockNodeChainId = 1234n;
 
   const mockNetwork: Network = {
     chainId: 1,
@@ -78,7 +84,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
         tx: {
           base: {
             timestamp: '1234567',
-            chainId: 'hvm1234',
+            chainId: '1234',
             maxFee: '100000000',
           },
           actions: [
@@ -103,6 +109,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetAbi.mockResolvedValue(mockNodeAbi);
+    jest.mocked(getNodeChainId).mockResolvedValue(mockNodeChainId);
     jest.mocked(getProvider).mockReturnValue({
       getAbi: mockGetAbi,
     } as unknown as ReturnType<typeof getProvider>);
@@ -182,6 +189,18 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
             ],
             title: 'send',
           },
+          {
+            items: [
+              {
+                label: 'Max Fee',
+                type: 'currency',
+                value: 100000000n,
+                maxDecimals: 9,
+                symbol: 'COIN',
+              },
+            ],
+            title: 'Network Fee',
+          },
         ],
         network: {
           chainId: 1,
@@ -197,7 +216,7 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
           txPayload: {
             base: {
               timestamp: '1234567',
-              chainId: 'hvm1234',
+              chainId: '1234',
               maxFee: '100000000',
             },
             actions: [
@@ -252,6 +271,56 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
     });
   });
 
+  it('fails closed when the node chain id cannot be fetched', async () => {
+    jest.mocked(getNodeChainId).mockRejectedValue(new Error('node unreachable'));
+
+    await expect(
+      hvmSign({
+        request: mockRequest,
+        network: mockNetwork,
+        approvalController: mockApprovalControler,
+      }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Unable to fetch the chain ABI'),
+      }),
+    });
+
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('rejects a transaction that targets a different chain than the connected one', async () => {
+    jest.mocked(getNodeChainId).mockResolvedValue(9999n);
+
+    await expect(
+      hvmSign({
+        request: mockRequest,
+        network: mockNetwork,
+        approvalController: mockApprovalControler,
+      }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
+      }),
+    });
+
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('accepts the cb58 form of the chain id as well as the decimal one', async () => {
+    jest.mocked(mockApprovalControler.requestApproval).mockResolvedValue({ signedData: '0xsigneddata' });
+    // '3QGVg754' is the cb58 encoding of the bytes 0x04d2, i.e. 1234.
+    jest.mocked(getNodeChainId).mockResolvedValue(1234n);
+
+    const request = structuredClone(mockRequest) as RpcRequest;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (request.params as any)[0].tx.base.chainId = '3QGVg754';
+
+    await expect(
+      hvmSign({ request, network: mockNetwork, approvalController: mockApprovalControler }),
+    ).resolves.toEqual({ result: '0xsigneddata' });
+  });
+
   it.each([
     ['a value whose type does not match the ABI', { value: true, memo: 'yolo' }],
     ['a field that is missing from the action', { memo: 'yolo' }],
@@ -277,6 +346,26 @@ describe('packages/hvm-module/src/handlers/sign-transaction/sign-transaction', (
     const request = structuredClone(mockRequest) as RpcRequest;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (request.params as any)[0].tx.actions[0].actionName = 'unknown-action';
+
+    await expect(
+      hvmSign({ request, network: mockNetwork, approvalController: mockApprovalControler }),
+    ).resolves.toMatchObject({
+      error: expect.objectContaining({
+        message: expect.stringContaining('Transaction params are invalid'),
+      }),
+    });
+
+    expect(mockApprovalControler.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['a negative max fee', { maxFee: '-1' }],
+    ['a max fee that does not fit in 64 bits', { maxFee: '18446744073709551616' }],
+    ['a non-numeric timestamp', { timestamp: 'now' }],
+  ])('rejects %s', async (_, base) => {
+    const request = structuredClone(mockRequest) as RpcRequest;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Object.assign((request.params as any)[0].tx.base, base);
 
     await expect(
       hvmSign({ request, network: mockNetwork, approvalController: mockApprovalControler }),

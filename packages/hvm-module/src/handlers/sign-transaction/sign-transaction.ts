@@ -10,10 +10,11 @@ import {
   type SigningData,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { rpcErrorOpts } from '@internal/utils';
+import { currencyItem, rpcErrorOpts } from '@internal/utils';
 import { parseRequestParams } from './schema';
 import { getProvider } from '../../utils/get-provider';
 import { findActionDataMismatches } from '../../utils/check-action-data';
+import { getNodeChainId, parseRequestChainId } from '../../utils/get-node-chain-id';
 import type { ActionData, VMABI } from 'hypersdk-client';
 
 const parseDetails = (txPayloadActions: ActionData[]): DetailSection[] => {
@@ -48,6 +49,12 @@ const parseDetails = (txPayloadActions: ActionData[]): DetailSection[] => {
   });
 };
 
+// Check maxFee and timestamp are valid uint64 values
+const parseFeeDetails = (maxFee: string, network: Network): DetailSection => ({
+  title: 'Network Fee',
+  items: [currencyItem('Max Fee', BigInt(maxFee), network.networkToken.decimals, network.networkToken.symbol)],
+});
+
 export const hvmSign = async ({
   request,
   network,
@@ -75,12 +82,25 @@ export const hvmSign = async ({
   }
 
   let abi: VMABI;
+  let nodeChainId: bigint;
   try {
     const provider = getProvider(network);
-    abi = await provider.getAbi();
+    [abi, nodeChainId] = await Promise.all([provider.getAbi(), getNodeChainId(network)]);
   } catch (err) {
     return {
       error: rpcErrors.internal(rpcErrorOpts('Unable to fetch the chain ABI required to sign the transaction', err)),
+    };
+  }
+
+  // Ensure that the chainids match
+  if (parseRequestChainId(transaction.tx.base.chainId) !== nodeChainId) {
+    return {
+      error: rpcErrors.invalidParams(
+        rpcErrorOpts(
+          'Transaction params are invalid',
+          new Error(`The transaction targets a different chain than ${network.chainName}`),
+        ),
+      ),
     };
   }
 
@@ -100,7 +120,7 @@ export const hvmSign = async ({
     };
   }
 
-  const details = parseDetails(transaction.tx.actions);
+  const details = [...parseDetails(transaction.tx.actions), parseFeeDetails(transaction.tx.base.maxFee, network)];
   const displayData: DisplayData = {
     title: 'Do you approve this transaction?',
     dAppInfo: {
