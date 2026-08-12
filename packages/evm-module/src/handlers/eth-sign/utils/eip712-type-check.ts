@@ -160,6 +160,47 @@ export const findEip712TypeMismatches = (data: TypedData<MessageTypes>): string[
   return mismatches;
 };
 
+// Show only the fields declared in `types` - anything else is ignored by the signing libraries
+export const sanitizeEip712Message = (data: TypedData<MessageTypes>): Record<string, unknown> => {
+  // `types` is typed as required, but this runs on dApp-supplied input that may be missing it.
+  const types = (data.types ?? {}) as unknown as Record<string, MessageTypeProperty[]>;
+
+  const sanitizeValue = (type: string, value: unknown): unknown => {
+    const arrayMatch = ARRAY_SUFFIX.exec(type);
+
+    if (arrayMatch) {
+      if (!Array.isArray(value)) {
+        return value;
+      }
+
+      const elementType = type.slice(0, type.length - arrayMatch[0].length);
+      return value.map((item) => sanitizeValue(elementType, item));
+    }
+
+    const structFields = types[type];
+
+    if (!structFields || typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return value;
+    }
+
+    const sanitized: Record<string, unknown> = {};
+
+    for (const field of structFields) {
+      if (field.name in (value as Record<string, unknown>)) {
+        sanitized[field.name] = sanitizeValue(field.type, (value as Record<string, unknown>)[field.name]);
+      }
+    }
+
+    return sanitized;
+  };
+
+  const sanitizedMessage = sanitizeValue(data.primaryType as string, data.message);
+
+  // Only structs get sanitized; anything else is returned untouched so a message we cannot
+  // interpret is still displayed in full rather than silently blanked.
+  return (sanitizedMessage ?? data.message) as Record<string, unknown>;
+};
+
 // Check for mismatched types in v1-style typed data
 export const findEip712V1TypeMismatches = (data: TypedDataV1): string[] => {
   const mismatches: string[] = [];

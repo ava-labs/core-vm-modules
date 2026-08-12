@@ -14,6 +14,8 @@ import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedData, isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid, isTypedDataV1Valid } from './utils/is-typed-data-valid';
+import { sanitizeEip712Message } from './utils/eip712-type-check';
+import { mergeAlerts } from './utils/merge-alerts';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
@@ -106,7 +108,13 @@ export const ethSign = async ({
       data: data,
     };
 
-    messageDetails = isTypedDataV1(data) ? beautifySimpleMessage(data) : beautifyComplexMessage(data);
+    if (isTypedDataV1(data)) {
+      messageDetails = beautifySimpleMessage(data);
+    } else if (isTypedData(data)) {
+      messageDetails = beautifyComplexMessage({ ...data, message: sanitizeEip712Message(data) });
+    } else {
+      messageDetails = beautifyComplexMessage(data);
+    }
   } else if (method === RpcMethod.SIGN_TYPED_DATA_V3 || method === RpcMethod.SIGN_TYPED_DATA_V4) {
     signingData = {
       type: method,
@@ -115,7 +123,7 @@ export const ethSign = async ({
     };
 
     const { types, primaryType, ...messageToDisplay } = data;
-    messageDetails = beautifyComplexMessage(messageToDisplay);
+    messageDetails = beautifyComplexMessage({ ...messageToDisplay, message: sanitizeEip712Message(data) });
   }
 
   if (!signingData || !messageDetails) {
@@ -165,7 +173,7 @@ export const ethSign = async ({
       },
       ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
-    alert: simulationResult?.alert ?? alert,
+    alert: mergeAlerts(simulationResult?.alert, alert),
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,
   };

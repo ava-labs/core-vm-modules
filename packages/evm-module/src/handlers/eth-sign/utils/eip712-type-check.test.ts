@@ -1,4 +1,4 @@
-import { findEip712TypeMismatches, findEip712V1TypeMismatches } from './eip712-type-check';
+import { findEip712TypeMismatches, findEip712V1TypeMismatches, sanitizeEip712Message } from './eip712-type-check';
 
 const baseTypes = {
   EIP712Domain: [
@@ -276,6 +276,69 @@ describe('findEip712TypeMismatches', () => {
     });
 
     expect(result).toEqual([]);
+  });
+});
+
+describe('sanitizeEip712Message', () => {
+  it('drops fields that are not declared in the primary type', () => {
+    const result = sanitizeEip712Message({
+      types: baseTypes,
+      primaryType: 'Permit',
+      domain: baseDomain,
+      // `deadline` is not part of the Permit type, so it is never covered by the signature.
+      message: { ...baseMessage, deadline: 'in 1 minute' },
+    });
+
+    expect(result).toEqual(baseMessage);
+    expect(result).not.toHaveProperty('deadline');
+  });
+
+  it('drops undeclared fields inside nested structs and arrays', () => {
+    const types = {
+      ...baseTypes,
+      Batch: [
+        { name: 'permit', type: 'Permit' },
+        { name: 'permits', type: 'Permit[]' },
+      ],
+    };
+
+    const result = sanitizeEip712Message({
+      types,
+      primaryType: 'Batch',
+      domain: baseDomain,
+      message: {
+        permit: { ...baseMessage, notSigned: 'x' },
+        permits: [{ ...baseMessage, notSigned: 'y' }],
+      },
+    });
+
+    expect(result).toEqual({ permit: baseMessage, permits: [baseMessage] });
+  });
+
+  it('keeps declared fields that are missing from the message out of the result', () => {
+    const { allowed, ...withoutAllowed } = baseMessage;
+
+    const result = sanitizeEip712Message({
+      types: baseTypes,
+      primaryType: 'Permit',
+      domain: baseDomain,
+      message: withoutAllowed,
+    });
+
+    expect(result).toEqual(withoutAllowed);
+  });
+
+  it('returns the message untouched when the primary type cannot be resolved', () => {
+    const message = { ...baseMessage, extra: 'kept' };
+
+    const result = sanitizeEip712Message({
+      types: baseTypes,
+      primaryType: 'NotDeclared',
+      domain: baseDomain,
+      message,
+    });
+
+    expect(result).toEqual(message);
   });
 });
 

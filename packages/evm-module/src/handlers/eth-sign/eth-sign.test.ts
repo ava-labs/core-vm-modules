@@ -242,6 +242,40 @@ describe('ethSign', () => {
     },
   );
 
+  it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
+    'should display only the fields covered by the signature for %s',
+    async (method) => {
+      const typedData = {
+        types: {
+          EIP712Domain: [{ name: 'name', type: 'string' }],
+          Permit: [{ name: 'spender', type: 'address' }],
+        },
+        primaryType: 'Permit',
+        domain: { name: 'dApp' },
+        // `dailyLimit` is not declared in the Permit type, so it is not signed and must not
+        // be shown as if it were.
+        message: { spender: `0x${'11'.repeat(20)}`, dailyLimit: '0.01 ETH' },
+      };
+
+      mockParseRequestParams.mockReturnValueOnce({
+        success: true,
+        data: { method, data: typedData, address: '0xabc' },
+      });
+
+      await ethSign({
+        request: { ...mockRequest, method },
+        network: mockNetwork,
+        approvalController: mockApprovalController,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+
+      expect(mockBeautifyComplexMessage).toHaveBeenCalledWith({
+        domain: typedData.domain,
+        message: { spender: typedData.message.spender },
+      });
+    },
+  );
+
   it.each([RpcMethod.SIGN_TYPED_DATA, RpcMethod.SIGN_TYPED_DATA_V1])(
     'should reject the request without prompting for approval when V1 typed data validation is blocking for %s',
     async (method) => {
