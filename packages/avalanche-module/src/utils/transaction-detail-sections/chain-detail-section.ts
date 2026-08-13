@@ -3,6 +3,32 @@ import { addressItem, currencyItem, textItem } from '@internal/utils';
 import { AvalancheChainStrings, AVAX_NONEVM_DENOMINATION } from '../../constants';
 import { PVM } from '@avalabs/avalanchejs';
 
+type Output = BaseTx['outputs'][number];
+
+/**
+ * Renders the amount in the asset the output actually moves.
+ *
+ * The X-Chain carries arbitrary Avalanche Native Tokens, and every output was previously
+ * labelled with the network token's symbol and denomination - so a transfer of some other
+ * asset was shown to the user as if it were AVAX, at AVAX's scale. When the asset is not the
+ * network token and the chain did not describe it, the raw amount and the asset id are shown
+ * instead of a number that would only look like a familiar unit.
+ */
+const amountItems = (output: Output, symbol: string): DetailItem[] => {
+  if (output.isAvax) {
+    return [currencyItem('Amount', output.amount, AVAX_NONEVM_DENOMINATION, symbol)];
+  }
+
+  if (output.assetDescription) {
+    return [
+      currencyItem('Amount', output.amount, output.assetDescription.denomination, output.assetDescription.symbol),
+      textItem('Asset', output.assetDescription.name),
+    ];
+  }
+
+  return [textItem('Amount', `${output.amount} (smallest unit)`), textItem('Asset', output.assetId, 'vertical')];
+};
+
 export const chainDetailSection = (tx: BaseTx, symbol: string) => {
   const details: DetailSection[] = [];
   const { txFee, chain, outputs, memo } = tx;
@@ -15,7 +41,7 @@ export const chainDetailSection = (tx: BaseTx, symbol: string) => {
   outputs.forEach((output, index) => {
     const balanceChangeItems: DetailItem[] = output.owners.flatMap((ownerAddress) => [
       addressItem('To', ownerAddress),
-      currencyItem('Amount', output.amount, AVAX_NONEVM_DENOMINATION, symbol),
+      ...amountItems(output, symbol),
     ]);
 
     if (output.owners.length > 1) {

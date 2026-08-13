@@ -83,6 +83,60 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
+  it('labels a non-AVAX output with the asset the chain described', () => {
+    const txDetails: TxDetails = {
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          isAvax: false,
+          assetId: '0xAssetID',
+          assetDescription: { assetID: '0xAssetID', name: 'Some Token', symbol: 'TKN', denomination: 2 },
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+
+    // Previously rendered as AVAX at AVAX's scale.
+    expect(items).toContainEqual({ label: 'Amount', value: 100n, type: 'currency', maxDecimals: 2, symbol: 'TKN' });
+    expect(items).toContainEqual({ label: 'Asset', value: 'Some Token', type: 'text', alignment: 'horizontal' });
+  });
+
+  it('shows the raw amount and asset id for an undescribed non-AVAX output', () => {
+    const txDetails: TxDetails = {
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          isAvax: false,
+          assetId: '0xAssetID',
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+
+    expect(items).toContainEqual({
+      label: 'Amount',
+      value: '100 (smallest unit)',
+      type: 'text',
+      alignment: 'horizontal',
+    });
+    expect(items).toContainEqual({ label: 'Asset', value: '0xAssetID', type: 'text', alignment: 'vertical' });
+    expect(items).not.toContainEqual(expect.objectContaining({ symbol: networkToken.symbol, label: 'Amount' }));
+  });
+
   it('should handle export transactions', () => {
     const txDetails: TxDetails = {
       amount: 100n,
