@@ -10,6 +10,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 
 import { parseRequestParams } from './schema';
+import { isMatchingChainId } from '../../utils/is-matching-chain-id';
 import { ensureProperNonces } from './utils/ensure-proper-nonces';
 import { buildTxApprovalRequest } from '../../utils/build-tx-approval-request';
 import { getTxHash } from '../../utils/get-tx-hash';
@@ -46,6 +47,19 @@ export const ethSendTransactionBatch = async ({
 
   const { transactions: transactionRequests, options = {} } = parsedParams;
   const { skipIntermediateTxs = false } = options;
+
+  // The schema only requires the batch to agree with itself on the chain id; it still has to
+  // be the chain the approval screen names - see isMatchingChainId.
+  if (transactionRequests.some(({ chainId }) => !isMatchingChainId(chainId, network.chainId))) {
+    return {
+      error: rpcErrors.invalidParams(
+        rpcErrorOpts(
+          'Transaction params are invalid',
+          new Error(`The transactions target a different chain than ${network.chainName}`),
+        ),
+      ),
+    };
+  }
 
   const provider = await getProvider({
     chainId: network.chainId,
