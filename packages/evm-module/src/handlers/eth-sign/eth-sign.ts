@@ -24,6 +24,14 @@ import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
 
+const toUtf8StringOrHex = (data: string): string => {
+  try {
+    return toUtf8String(data);
+  } catch {
+    return data;
+  }
+};
+
 export const ethSign = async ({
   request,
   network,
@@ -100,7 +108,9 @@ export const ethSign = async ({
       data: data,
     };
 
-    messageDetails = toUtf8String(data);
+    // A payload that isn't valid UTF-8 is still signable, so fall back to the raw bytes
+    // rather than throwing out of the handler.
+    messageDetails = toUtf8StringOrHex(data);
   } else if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
     signingData = {
       type: method,

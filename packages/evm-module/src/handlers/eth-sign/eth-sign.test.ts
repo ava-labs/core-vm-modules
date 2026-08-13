@@ -310,6 +310,35 @@ describe('ethSign', () => {
     },
   );
 
+  it('should fall back to the raw payload when a personal_sign message is not valid UTF-8', async () => {
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method: RpcMethod.PERSONAL_SIGN, data: '0xdeadbeef', address: '0xabc' },
+    });
+    mockToUtf8.mockImplementationOnce(() => {
+      throw new Error('invalid codepoint');
+    });
+
+    const result = await ethSign({
+      request: { ...mockRequest, method: RpcMethod.PERSONAL_SIGN },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
+
+    // Signable either way, so the request must not blow up in the handler.
+    expect(result).toEqual({ result: '0x1234' });
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          details: expect.arrayContaining([
+            expect.objectContaining({ items: [expect.objectContaining({ value: '0xdeadbeef' })] }),
+          ]),
+        }),
+      }),
+    );
+  });
+
   it.each([
     [RpcMethod.ETH_SIGN, 'data', 'data'],
     [RpcMethod.PERSONAL_SIGN, 'data', 'data in utf8'],
