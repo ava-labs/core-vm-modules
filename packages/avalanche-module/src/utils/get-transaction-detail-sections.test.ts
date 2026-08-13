@@ -137,6 +137,22 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(items).not.toContainEqual(expect.objectContaining({ symbol: networkToken.symbol, label: 'Amount' }));
   });
 
+  it('flags an output that stays locked, and ignores a locktime already in the past', () => {
+    const buildTx = (locktime: bigint): TxDetails => ({
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [{ amount: 100n, owners: ['0xOwner1'], threshold: 1n, locktime, isAvax: true, assetId: '0xAssetID' }],
+      txFee: 1n,
+    });
+
+    const future = BigInt(Math.floor(Date.now() / 1000) + 3600);
+    const lockedItems = getTransactionDetailSections(buildTx(future), networkToken.symbol)?.[1]?.items;
+    const pastItems = getTransactionDetailSections(buildTx(1n), networkToken.symbol)?.[1]?.items;
+
+    expect(lockedItems).toContainEqual(expect.objectContaining({ label: 'Locked until' }));
+    expect(pastItems).not.toContainEqual(expect.objectContaining({ label: 'Locked until' }));
+  });
+
   it('should handle export transactions', () => {
     const txDetails: TxDetails = {
       amount: 100n,

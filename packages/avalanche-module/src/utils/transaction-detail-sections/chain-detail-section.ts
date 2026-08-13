@@ -48,6 +48,15 @@ export const chainDetailSection = (tx: BaseTx, symbol: string) => {
       balanceChangeItems.push(textItem('Threshold', output.threshold.toString()));
     }
 
+    // A locked output cannot be spent until its locktime passes, which is not something the
+    // amount alone conveys. A locktime already in the past places no restriction on the
+    // funds, so it is left out rather than shown as a condition.
+    const lockedUntilMs = Number(output.locktime) * 1000;
+
+    if (lockedUntilMs > Date.now()) {
+      balanceChangeItems.push(textItem('Locked until', new Date(lockedUntilMs).toUTCString()));
+    }
+
     details.push({
       title: index === 0 ? 'Balance Change' : undefined,
       items: balanceChangeItems,
