@@ -346,6 +346,11 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             type: 'nodeID',
           },
           {
+            label: 'Subnet ID',
+            value: 'SubnetID',
+            type: 'nodeID',
+          },
+          {
             label: 'Stake Amount',
             value: 50n,
             type: 'currency',
@@ -409,6 +414,11 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           {
             label: 'Node',
             value: 'NodeID',
+            type: 'nodeID',
+          },
+          {
+            label: 'Subnet ID',
+            value: 'SubnetID',
             type: 'nodeID',
           },
           {
