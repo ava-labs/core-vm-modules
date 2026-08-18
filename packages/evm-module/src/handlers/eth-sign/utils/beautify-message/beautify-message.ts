@@ -1,4 +1,29 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Renders one field of a typed-data message, at any depth.
+ *
+ * This used to be a hand-unrolled walk over two levels that assumed every array element was
+ * an object: it iterated an element with `for (const subKey in item)`, which yields nothing
+ * for a primitive. An array of primitives - a `uint256[]` of amounts, an `address[]` of
+ * recipients - therefore printed its indices and no values, so those elements were signed
+ * without ever being displayed. Recursing on the value handles primitives, structs, arrays
+ * of primitives, arrays of structs and arrays of arrays alike, with no depth assumption.
+ */
+const renderField = (indent: string, label: string, value: unknown): string => {
+  if (Array.isArray(value)) {
+    return (
+      `${indent}${label}: \n` + value.map((item, index) => renderField(`${indent}  `, String(index), item)).join('')
+    );
+  }
+
+  if (typeof value === 'object' && value !== null) {
+    const entries = Object.entries(value as Record<string, unknown>);
+    return `${indent}${label}: \n` + entries.map(([key, item]) => renderField(`${indent}  `, key, item)).join('');
+  }
+
+  return `${indent}${label}: ${toUnicodeBold(String(value))}\n`;
+};
+
 export const beautifyComplexMessage = (data: { domain: Record<string, any>; message: Record<string, any> }) => {
   let result = '';
 
@@ -9,36 +34,7 @@ export const beautifyComplexMessage = (data: { domain: Record<string, any>; mess
 
   result += '\nMessage\n';
   for (const key in data.message) {
-    if (typeof data.message[key] === 'object' && !Array.isArray(data.message[key])) {
-      result += `  ${key}: \n`;
-      for (const subKey in data.message[key]) {
-        if (Array.isArray(data.message[key][subKey])) {
-          result += `    ${subKey}: \n`;
-          data.message[key][subKey].forEach((item: any, index: number) => {
-            result += `      ${index}: ${toUnicodeBold(item)}\n`;
-          });
-        } else {
-          result += `    ${subKey}: ${toUnicodeBold(String(data.message[key][subKey]))}\n`;
-        }
-      }
-    } else if (Array.isArray(data.message[key])) {
-      result += `  ${key}: \n`;
-      data.message[key].forEach((item: any, index: number) => {
-        result += `     ${index}: \n`;
-        for (const subKey in item) {
-          if (Array.isArray(item[subKey])) {
-            result += `     ${subKey}: \n`;
-            item[subKey].forEach((item: any, index: number) => {
-              result += `      ${index}: ${toUnicodeBold(item)}\n`;
-            });
-          } else {
-            result += `     ${subKey}: ${toUnicodeBold(String(item[subKey]))}\n`;
-          }
-        }
-      });
-    } else {
-      result += `  ${key}: ${toUnicodeBold(String(data.message[key]))}\n`;
-    }
+    result += renderField('  ', key, data.message[key]);
   }
 
   return result;

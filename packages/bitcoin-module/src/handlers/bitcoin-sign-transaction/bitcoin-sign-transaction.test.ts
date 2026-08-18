@@ -279,13 +279,35 @@ describe('bitcoin-sign-transaction', () => {
             ],
           },
           {
-            title: 'Recipients',
+            // Every output, in the order it is signed in - change included. The change output
+            // used to be filtered out entirely, and positions were never shown even though
+            // output order decides which output inherits protocol-layer assets.
+            title: 'Outputs',
             items: [
+              {
+                label: 'Output 0',
+                value: 'Payment',
+                alignment: 'horizontal',
+                type: 'text',
+              },
               {
                 label: 'recipient-address',
                 maxDecimals: 8,
                 symbol: 'BTC',
                 amount: 1_500_000n,
+                type: 'fundsRecipient',
+              },
+              {
+                label: 'Output 1',
+                value: 'Change - returns to this wallet',
+                alignment: 'horizontal',
+                type: 'text',
+              },
+              {
+                label: 'sender-address',
+                maxDecimals: 8,
+                symbol: 'BTC',
+                amount: 900_000n,
                 type: 'fundsRecipient',
               },
             ],

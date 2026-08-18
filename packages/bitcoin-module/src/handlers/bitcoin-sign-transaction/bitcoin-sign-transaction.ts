@@ -10,7 +10,7 @@ import {
 import { rpcErrors } from '@metamask/rpc-errors';
 import type { BitcoinProvider, BitcoinInputUTXO, BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 
-import { addressItem, currencyItem, rpcErrorOpts } from '@internal/utils';
+import { addressItem, currencyItem, rpcErrorOpts, textItem } from '@internal/utils';
 import { fundsRecipientItem, linkItem } from '@internal/utils/src/utils/detail-item';
 
 import { getProvider } from '../../utils/get-provider';
@@ -53,7 +53,7 @@ export const bitcoinSignTransaction = async ({
     };
   }
 
-  const { fee, fromAddress, outputs, transferTotal } = details;
+  const { fee, fromAddress, orderedOutputs, transferTotal } = details;
   const { decimals, symbol } = network.networkToken;
 
   const displayData: DisplayData = {
@@ -73,8 +73,11 @@ export const bitcoinSignTransaction = async ({
         ],
       },
       {
-        title: 'Recipients',
-        items: outputs.map(({ address, value }) => fundsRecipientItem(address, BigInt(value), decimals, symbol)),
+        title: 'Outputs',
+        items: orderedOutputs.flatMap(({ address, value, position, isChange }) => [
+          textItem(`Output ${position}`, isChange ? 'Change - returns to this wallet' : 'Payment', 'horizontal'),
+          fundsRecipientItem(address, BigInt(value), decimals, symbol),
+        ]),
       },
       { title: 'Network Fee', items: [currencyItem('Total Fee', BigInt(fee), decimals, symbol)] },
     ],
@@ -178,6 +181,8 @@ const parseTxDetails = async (
       details: {
         fromAddress: string;
         outputs: [BitcoinOutputUTXO, ...BitcoinOutputUTXO[]];
+        /** Every output, in the order they are signed in, change included. */
+        orderedOutputs: (BitcoinOutputUTXO & { position: number; isChange: boolean })[];
         fee: number;
         transferTotal: number;
       };
@@ -199,11 +204,25 @@ const parseTxDetails = async (
 
     assertNonEmpty(outputs);
 
+    // The approval used to render only the outputs that leave this wallet, in whatever order
+    // they happened to survive the filter. Both halves of that matter: output order is signed
+    // and decides which output inherits protocol-layer assets carried by the spent UTXOs
+    // (an inscription at offset 0 follows the first output; an unallocated Rune balance
+    // follows the default pointer), and a "change" output is only change because it pays an
+    // address this wallet controls - nothing stops a caller placing an attacker's output
+    // first and calling the remainder change.
+    const orderedOutputs = params.outputs.map((output, position) => ({
+      ...output,
+      position,
+      isChange: output.address === fromAddress,
+    }));
+
     return {
       error: null,
       details: {
         fromAddress,
         outputs,
+        orderedOutputs,
         fee,
         transferTotal,
       },
