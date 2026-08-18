@@ -411,7 +411,7 @@ describe('ethSign', () => {
     await testWithValidationResultType('Warning');
   });
 
-  it('should not add an alert to displayData when validation result is Error', async () => {
+  it('should warn that the scan did not complete when validation result is Error', async () => {
     await testWithValidationResultType('Error');
   });
 
@@ -552,9 +552,23 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       }),
     );
   } else {
+    // `result_type === 'Error'` means no verdict was reached, which is not the same as a
+    // clean bill of health - the approval has to say the message went unchecked.
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({
-        displayData: expect.objectContaining({ alert: undefined }),
+        displayData: expect.objectContaining({
+          alert: {
+            type: AlertType.WARNING,
+            details: {
+              title: 'Transaction could not be checked',
+              description: 'The security scan did not complete, so this transaction has not been verified.',
+              body: [
+                'No security verdict was reached for this transaction.',
+                'Approve it only if you trust the source.',
+              ],
+            },
+          },
+        }),
       }),
     );
   }

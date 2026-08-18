@@ -21,7 +21,8 @@ import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
 import { hasToField } from './type-utils';
-import { transactionAlerts } from './transaction-alerts';
+import { incompleteScanAlert, scanUnavailableAlert, transactionAlerts } from './transaction-alerts';
+import { mergeAlerts } from '../handlers/eth-sign/utils/merge-alerts';
 
 type Erc20ExposureTrace = Blockaid.Evm.AccountSummary.Erc20ExposureTrace;
 type Erc721ExposureTrace = Blockaid.Evm.AccountSummary.Erc721ExposureTrace;
@@ -91,12 +92,14 @@ export const processTransactionSimulation = async ({
   if (simulationResult) {
     const { validation, simulation, gas_estimation: gasEstimation } = simulationResult;
 
-    // Only surface an alert when Blockaid returns a genuine verdict. A missing
-    // validation or `result_type === 'Error'` is not a security signal
     if (validation?.result_type === 'Warning') {
       alert = transactionAlerts[AlertType.WARNING];
     } else if (validation?.result_type === 'Malicious') {
       alert = transactionAlerts[AlertType.DANGER];
+    } else if (validation?.result_type === 'Error') {
+      // `Error` means no verdict was reached, not that the transaction is fine. A clean
+      // approval here tells the reader it was checked and passed, which it was not.
+      alert = scanUnavailableAlert;
     }
 
     if (simulation?.status === 'Success') {
@@ -108,6 +111,15 @@ export const processTransactionSimulation = async ({
     if (gasEstimation?.status === 'Success') {
       estimatedGasLimit = Number(gasEstimation.estimate);
     }
+  }
+
+  // Blockaid's scan API still has no access-list field, so a transaction carrying one is
+  // scanned without a component the wallet signs and broadcasts. Warm/cold gas accounting
+  // lets the same calldata take a different branch once that list is attached, so the
+  // simulation above can describe a transaction that will never execute. Say so rather than
+  // let a clean preview imply the whole transaction was covered.
+  if (params.accessList && params.accessList.length > 0) {
+    alert = mergeAlerts(alert, incompleteScanAlert);
   }
 
   // If debank parsing failed, check if toAddress is a known ERC20
@@ -247,8 +259,11 @@ const processAssetDiffs = (accountSummaryAssetsDiffs: AssetDiffs, type: 'in' | '
                 const valueBN = numberToBN(diff.value, token.decimals);
                 displayValue = balanceToDisplayValue(valueBN, token.decimals);
               } else if (isHexString(diff.value)) {
-                // for some token (like ERC1155) blockaid returns value in hex format
-                displayValue = parseInt(diff.value, 16).toString();
+                // For tokens without decimals (ERC1155) Blockaid returns the value as hex.
+                // `parseInt` routes it through a JS number, which silently rounds above 2^53
+                // and becomes scientific notation above ~1e21 - the amount on screen then
+                // stops matching the amount being signed. BigInt is exact at any width.
+                displayValue = BigInt(diff.value).toString();
               }
             } else if ('type' in token && token.type === TokenType.ERC721) {
               // for ERC721 type token, we just display 1 to indicate that a single NFT will be transferred
@@ -362,12 +377,14 @@ export const processJsonRpcSimulation = async ({
       blockaid,
     });
 
-    // Only surface an alert when Blockaid returns a genuine verdict. A missing
-    // validation or `result_type === 'Error'` is not a security signal
     if (validation?.result_type === 'Warning') {
       alert = transactionAlerts[AlertType.WARNING];
     } else if (validation?.result_type === 'Malicious') {
       alert = transactionAlerts[AlertType.DANGER];
+    } else if (validation?.result_type === 'Error') {
+      // `Error` means no verdict was reached, not that the transaction is fine. A clean
+      // approval here tells the reader it was checked and passed, which it was not.
+      alert = scanUnavailableAlert;
     }
 
     if (simulation?.status === 'Success') {

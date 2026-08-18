@@ -52,8 +52,11 @@ export const scanTransaction = async ({
       value: params.value,
       gas: params.gas,
       gas_price: params.gasPrice,
-      // TODO: provide accessList once Blockaid supports it
-      // access_list: params.accessList
+      // Blockaid's scan API has no access_list field, so an EIP-2930 access list cannot be
+      // included here. It is still signed and broadcast, which means the scan below covers
+      // strictly less than the transaction does - processTransactionSimulation raises
+      // `incompleteScanAlert` so the approval never presents this as full coverage.
+      // TODO: send access_list once Blockaid supports it, and drop that alert.
     },
     metadata: (domain && domain.length > 0 ? { domain } : { non_dapp: true }) as Blockaid.Evm.MetadataParam,
   });

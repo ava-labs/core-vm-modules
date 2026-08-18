@@ -15,6 +15,7 @@ import { ZodError } from 'zod';
 import { getProvider } from '../../utils/get-provider';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
+import { incompleteScanAlert } from '../../utils/transaction-alerts';
 import waitForExpect from 'wait-for-expect';
 
 // doesn't print the ugly console errors out
@@ -89,6 +90,9 @@ const testNetwork: Network = {
   vmName: NetworkVMType.EVM,
 };
 
+const INCOMPLETE_SCAN_NOTE =
+  'Simulation is incomplete: This transaction contains data that could not be simulated, so its preview may be wrong.';
+
 const testParams = {
   from: '0xfrom',
   to: '0xto',
@@ -147,7 +151,9 @@ const displayData = {
     },
   ],
   networkFeeSelector: true,
-  alert: undefined,
+  // The fixture transaction carries an access list, which Blockaid's scan API cannot accept,
+  // so the approval says the simulation did not cover the whole transaction.
+  alert: incompleteScanAlert,
   tokenApprovals: undefined,
   balanceChange: undefined,
   isSimulationSuccessful: true,
@@ -754,7 +760,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           details: {
             title: 'Scam transaction',
             description: 'This transaction has been flagged as malicious, I understand the risk.',
-            body: ['This transaction is malicious', 'do not proceed'],
+            body: ['This transaction is malicious', 'do not proceed', INCOMPLETE_SCAN_NOTE],
             actionTitles: {
               reject: 'Reject Transaction',
               proceed: 'Proceed Anyway',
@@ -775,6 +781,7 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
           details: {
             title: 'Suspicious transaction',
             description: 'Use caution, this transaction might be malicious.',
+            body: [INCOMPLETE_SCAN_NOTE],
           },
         },
       },
@@ -782,10 +789,25 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       updateTx,
     });
   } else {
-    // `result_type === 'Error'` is not a security verdict — no alert is raised.
+    // `result_type === 'Error'` means no verdict was reached. That is not "safe" - the
+    // approval has to say the transaction went unchecked.
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData: { ...displayData, alert: undefined },
+      displayData: {
+        ...displayData,
+        alert: {
+          type: AlertType.WARNING,
+          details: {
+            title: 'Transaction could not be checked',
+            description: 'The security scan did not complete, so this transaction has not been verified.',
+            body: [
+              'No security verdict was reached for this transaction.',
+              'Approve it only if you trust the source.',
+              INCOMPLETE_SCAN_NOTE,
+            ],
+          },
+        },
+      },
       signingData,
       updateTx,
     });

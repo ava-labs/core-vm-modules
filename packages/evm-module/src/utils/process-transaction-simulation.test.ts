@@ -1,7 +1,7 @@
 import { type AssetDiffs, processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
 import { AlertType, RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
 import simulationResult from './__mocks__/simulation-result';
-import { transactionAlerts } from './transaction-alerts';
+import { incompleteScanAlert, scanUnavailableAlert, transactionAlerts } from './transaction-alerts';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import Blockaid from '@blockaid/client';
 
@@ -49,23 +49,85 @@ describe('processTransactionSimulation', () => {
     expect(result).toEqual(expect.objectContaining({ alert: undefined, isSimulationSuccessful: false }));
   });
 
-  it.each(['Error', 'Benign'] as const)(
-    'should not raise an alert when Blockaid validation result_type is %s',
-    async (resultType) => {
+  it('should not raise an alert when Blockaid validation result_type is Benign', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.validation.result_type = 'Benign';
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+      chainId: 43112,
+      provider: emptyProvider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(result.alert).toBeUndefined();
+  });
+
+  // `Error` is the absence of a verdict, not a passing one. Rendering it as a clean approval
+  // told the reader the transaction had been checked when nothing had been established.
+  it('should warn that the scan did not complete when validation result_type is Error', async () => {
+    const clonedSimulation = structuredClone(simulationResult);
+    clonedSimulation.validation.result_type = 'Error';
+
+    const result = await processTransactionSimulation({
+      rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+      params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+      chainId: 43112,
+      provider: emptyProvider,
+      simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
+    });
+
+    expect(result.alert).toEqual(scanUnavailableAlert);
+  });
+
+  describe('access lists', () => {
+    // Blockaid's scan API has no access-list field, so a transaction carrying one is scanned
+    // without a component the wallet signs and broadcasts.
+    const accessList = [{ address: '0xContract', storageKeys: ['0xkey'] }];
+
+    it('should warn that the simulation is incomplete when the transaction carries an access list', async () => {
+      const result = await processTransactionSimulation({
+        rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+        params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue', accessList },
+        chainId: 43112,
+        provider: emptyProvider,
+        simulationResult: structuredClone(simulationResult) as unknown as Blockaid.TransactionScanResponse,
+      });
+
+      expect(result.alert).toEqual(incompleteScanAlert);
+    });
+
+    it('should keep a malicious verdict as the headline and note the gap underneath', async () => {
       const clonedSimulation = structuredClone(simulationResult);
-      clonedSimulation.validation.result_type = resultType;
+      clonedSimulation.validation.result_type = 'Malicious';
 
       const result = await processTransactionSimulation({
         rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
-        params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue' },
+        params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue', accessList },
         chainId: 43112,
         provider: emptyProvider,
         simulationResult: clonedSimulation as unknown as Blockaid.TransactionScanResponse,
       });
 
+      expect(result.alert?.type).toBe(AlertType.DANGER);
+      expect(result.alert?.details.body).toContain(
+        `${incompleteScanAlert.details.title}: ${incompleteScanAlert.details.description}`,
+      );
+    });
+
+    it('should not warn when the access list is empty', async () => {
+      const result = await processTransactionSimulation({
+        rpcMethod: RpcMethod.ETH_SEND_TRANSACTION,
+        params: { from: '0xFromAddress', to: '0xToAddress', value: '0xValue', accessList: [] },
+        chainId: 43112,
+        provider: emptyProvider,
+        simulationResult: structuredClone(simulationResult) as unknown as Blockaid.TransactionScanResponse,
+      });
+
       expect(result.alert).toBeUndefined();
-    },
-  );
+    });
+  });
 
   it('should not raise an alert when the validation section is missing', async () => {
     const clonedSimulation = structuredClone(simulationResult);

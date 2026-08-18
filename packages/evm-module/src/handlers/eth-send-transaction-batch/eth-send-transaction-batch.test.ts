@@ -439,7 +439,7 @@ describe('eth_sendTransactionBatch handler', () => {
     await testWithValidationResultType('Warning');
   });
 
-  it('should not add an alert to displayData when validation result is Error', async () => {
+  it('should warn that the scan did not complete when validation result is Error', async () => {
     await testWithValidationResultType('Error');
   });
 
@@ -1012,19 +1012,29 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       updateTx,
     });
   } else {
-    // `result_type === 'Error'` is not a security verdict — no alert is raised.
+    // `result_type === 'Error'` means no verdict was reached. Leaving the approval clean told
+    // the reader the batch had been checked and passed, which it had not.
+    const scanUnavailable = {
+      type: AlertType.WARNING,
+      details: {
+        title: 'Transaction could not be checked',
+        description: 'The security scan did not complete, so this transaction has not been verified.',
+        body: ['No security verdict was reached for this transaction.', 'Approve it only if you trust the source.'],
+      },
+    };
+
     expect(mockApprovalController.requestBatchApproval).toHaveBeenCalledWith({
       request: requestParams.request,
       displayData: {
         ...displayData,
-        alert: undefined,
+        alert: scanUnavailable,
       },
       signingRequests: signingRequests.map((req) => ({
         ...req,
         displayData: {
           ...req.displayData,
           isSimulationSuccessful: true,
-          alert: undefined,
+          alert: scanUnavailable,
         },
       })),
       updateTx,
