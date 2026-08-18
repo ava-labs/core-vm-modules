@@ -35,12 +35,15 @@ import {
   setAutoRenewedValidatorConfigDetailSection,
   setL1ValidatorWeightDetailSection,
 } from './transaction-detail-sections';
+import type { SignedOwnerDetails } from './get-signed-owner-details';
 
 export type GetTransactionDetailSectionsContext = {
   network: Network;
   signerAccount: string;
   /** Addresses receiving the funds of a cross-chain transfer - see getExportRecipients. */
   recipients?: string[];
+  /** Ownership fields the transaction signs that the sections used to drop - see getSignedOwnerDetails. */
+  signedOwners?: SignedOwnerDetails;
 };
 
 export const getTransactionDetailSections = (
@@ -63,6 +66,7 @@ export const getTransactionDetailSections = (
       symbol,
       network: context.network,
       signerAccount: context.signerAccount,
+      signedOwners: context.signedOwners,
     });
   } else if (isAddPermissionlessValidatorTx(txDetails)) {
     if (!context) throw new Error('context (network, signerAccount) is required for AddPermissionlessValidator');
@@ -71,6 +75,7 @@ export const getTransactionDetailSections = (
       symbol,
       network: context.network,
       signerAccount: context.signerAccount,
+      signedOwners: context.signedOwners,
     });
   } else if (isBlockchainDetails(txDetails)) {
     return blockChainDetailSection(txDetails, symbol);
@@ -85,9 +90,9 @@ export const getTransactionDetailSections = (
   } else if (isIncreaseL1ValidatorBalanceTx(txDetails)) {
     return increaseL1ValidatorBalanceDetailSection(txDetails, symbol);
   } else if (isRegisterL1ValidatorTx(txDetails)) {
-    return registerL1ValidatorDetailSection(txDetails, symbol);
+    return registerL1ValidatorDetailSection(txDetails, symbol, context?.signedOwners);
   } else if (isSetL1ValidatorWeightTx(txDetails)) {
-    return setL1ValidatorWeightDetailSection(txDetails, symbol);
+    return setL1ValidatorWeightDetailSection(txDetails, symbol, context?.signedOwners);
   } else if (isAddAutoRenewedValidatorTx(txDetails)) {
     if (!context) throw new Error('context (network, signerAccount) is required for AddAutoRenewedValidator');
     return addAutoRenewedValidatorDetailSection({
@@ -95,6 +100,7 @@ export const getTransactionDetailSections = (
       symbol,
       network: context.network,
       signerAccount: context.signerAccount,
+      signedOwners: context.signedOwners,
     });
   } else if (isSetAutoRenewedValidatorConfigTx(txDetails)) {
     return setAutoRenewedValidatorConfigDetailSection(txDetails, symbol);

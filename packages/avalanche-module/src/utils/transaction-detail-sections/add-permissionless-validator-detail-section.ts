@@ -2,12 +2,15 @@ import type { AddPermissionlessValidatorTx, DetailItem, DetailSection, Network }
 import { addressItem, currencyItem, dateItem, nodeIDItem, textItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
 import { networkItem } from '@internal/utils/src/utils/detail-item';
+import type { SignedOwnerDetails } from '../get-signed-owner-details';
+import { ownerItems } from './owner-items';
 
 type AddPermissionlessValidatorDetailSectionProps = {
   tx: AddPermissionlessValidatorTx;
   symbol: string;
   network: Network;
   signerAccount: string;
+  signedOwners?: SignedOwnerDetails;
 };
 
 export const addPermissionlessValidatorDetailSection = ({
@@ -15,6 +18,7 @@ export const addPermissionlessValidatorDetailSection = ({
   symbol,
   network,
   signerAccount,
+  signedOwners,
 }: AddPermissionlessValidatorDetailSectionProps) => {
   const details: DetailSection[] = [];
   const { txFee, nodeID, subnetID, delegationFee, start, end, stake } = tx;
@@ -40,6 +44,14 @@ export const addPermissionlessValidatorDetailSection = ({
     textItem('Delegation Fee', `${delegationFee / 10000} %`),
     dateItem('Start', start),
     dateItem('End', end),
+  );
+
+  // Staking rewards and the stake itself are returned to these addresses when the validation
+  // period ends. They are plain output owners chosen by whoever built the request, so nothing
+  // stops them pointing somewhere the signer does not control.
+  items.push(
+    ...ownerItems('Reward Owner', signedOwners?.rewardOwner),
+    ...ownerItems('Delegation Reward Owner', signedOwners?.delegationRewardOwner),
   );
 
   details.push({

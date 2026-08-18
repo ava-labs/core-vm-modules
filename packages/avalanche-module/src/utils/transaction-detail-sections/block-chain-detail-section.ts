@@ -17,12 +17,16 @@ const formatGenesisData = (genesisData: string): string => {
 export const blockChainDetailSection = (tx: CreateChainTx, symbol: string) => {
   const details: DetailSection[] = [];
   // handle genesis data similarly to how we handle data in transaction details
-  const { txFee, chainID, chainName, vmID, genesisData } = tx;
+  const { txFee, chainID, chainName, subnetID, fxIDs, vmID, genesisData } = tx;
 
   const items: DetailItem[] = [
     textItem('Blockchain name', chainName, 'vertical'),
     textItem('Blockchain ID', chainID, 'vertical'),
+    // Which subnet the chain is created under decides who controls it, and the feature
+    // extension set decides what its transactions can do. Both are signed here.
+    textItem('Subnet ID', subnetID, 'vertical'),
     textItem('Virtual Machine ID', vmID, 'vertical'),
+    ...(fxIDs && fxIDs.length > 0 ? [textItem('Feature Extension IDs', fxIDs.join('\n'), 'vertical')] : []),
     dataItem('Genesis Data', formatGenesisData(genesisData)),
   ];
 

@@ -102,6 +102,11 @@ export type CreateChainTx = {
   type: TxType.CreateChain;
   chainName: string;
   chainID: string;
+  // The subnet the new chain is created under, and the feature extensions it is bound to.
+  // Both are signed and both are parsed - they were simply never declared here, so no
+  // detail section could render them.
+  subnetID: string;
+  fxIDs: string[];
   vmID: string;
   genesisData: string;
   txFee: bigint;

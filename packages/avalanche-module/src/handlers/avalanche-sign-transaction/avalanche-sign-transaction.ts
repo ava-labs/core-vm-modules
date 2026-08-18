@@ -18,6 +18,7 @@ import { getProvider } from '../../utils/get-provider';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { resolveUtxos } from '../../utils/resolve-utxos';
 import { getCrossChainRecipients } from '../../utils/get-cross-chain-recipients';
+import { getSignedOwnerDetails } from '../../utils/get-signed-owner-details';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
@@ -135,6 +136,7 @@ export const avalancheSignTransaction = async ({
     network,
     signerAccount,
     recipients: getCrossChainRecipients(unsignedOrPartiallySignedTx.getTx(), txDetails, isTestnet),
+    signedOwners: getSignedOwnerDetails(unsignedOrPartiallySignedTx.getTx(), txDetails, isTestnet),
   });
 
   // Throw an error if we can't parse the transaction details

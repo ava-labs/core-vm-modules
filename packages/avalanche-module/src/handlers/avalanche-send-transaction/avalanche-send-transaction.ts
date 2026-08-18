@@ -17,6 +17,7 @@ import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs
 import { getProvider } from '../../utils/get-provider';
 import { resolveUtxos } from '../../utils/resolve-utxos';
 import { getCrossChainRecipients } from '../../utils/get-cross-chain-recipients';
+import { getSignedOwnerDetails } from '../../utils/get-signed-owner-details';
 import { parseTxDetails } from '../../utils/parse-tx-details';
 import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
@@ -149,6 +150,7 @@ export const avalancheSendTransaction = async ({
       network,
       signerAccount: currentAddress,
       recipients: getCrossChainRecipients(unsignedTx.getTx(), txDetails, isTestnet),
+      signedOwners: getSignedOwnerDetails(unsignedTx.getTx(), txDetails, isTestnet),
     });
 
     // Throw an error if we can't parse the transaction details

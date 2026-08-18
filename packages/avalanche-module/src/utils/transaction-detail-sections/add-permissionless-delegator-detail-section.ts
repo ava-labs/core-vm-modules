@@ -2,12 +2,15 @@ import type { AddPermissionlessDelegatorTx, DetailItem, DetailSection, Network }
 import { addressItem, currencyItem, dateItem, nodeIDItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
 import { networkItem } from '@internal/utils/src/utils/detail-item';
+import type { SignedOwnerDetails } from '../get-signed-owner-details';
+import { ownerItems } from './owner-items';
 
 type AddPermissionlessDelegatorDetailSectionProps = {
   tx: AddPermissionlessDelegatorTx;
   symbol: string;
   network: Network;
   signerAccount: string;
+  signedOwners?: SignedOwnerDetails;
 };
 
 export const addPermissionlessDelegatorDetailSection = ({
@@ -15,6 +18,7 @@ export const addPermissionlessDelegatorDetailSection = ({
   symbol,
   network,
   signerAccount,
+  signedOwners,
 }: AddPermissionlessDelegatorDetailSectionProps) => {
   const details: DetailSection[] = [];
   const { txFee, nodeID, subnetID, start, end, stake } = tx;
@@ -39,6 +43,9 @@ export const addPermissionlessDelegatorDetailSection = ({
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
     dateItem('Start', start),
     dateItem('End', end),
+    // The delegation rewards and the delegated stake are returned to this owner set, which
+    // the request picks freely - it does not have to be the account that signs.
+    ...ownerItems('Reward Owner', signedOwners?.delegationRewardOwner),
   ];
 
   details.push({

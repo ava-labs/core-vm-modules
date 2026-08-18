@@ -2,12 +2,15 @@ import type { AddAutoRenewedValidatorTx, DetailItem, DetailSection, Network } fr
 import { addressItem, currencyItem, nodeIDItem, textItem } from '@internal/utils';
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
 import { networkItem } from '@internal/utils/src/utils/detail-item';
+import type { SignedOwnerDetails } from '../get-signed-owner-details';
+import { ownerItems } from './owner-items';
 
 type AddAutoRenewedValidatorDetailSectionProps = {
   tx: AddAutoRenewedValidatorTx;
   symbol: string;
   network: Network;
   signerAccount: string;
+  signedOwners?: SignedOwnerDetails;
 };
 
 // Auto-renewal cycle (`period`) is provided in seconds.
@@ -23,6 +26,7 @@ export const addAutoRenewedValidatorDetailSection = ({
   symbol,
   network,
   signerAccount,
+  signedOwners,
 }: AddAutoRenewedValidatorDetailSectionProps) => {
   const details: DetailSection[] = [];
   const { txFee, nodeID, stake, delegationFee, autoCompoundRewardShares, period } = tx;
@@ -45,6 +49,12 @@ export const addAutoRenewedValidatorDetailSection = ({
     textItem('Delegation fee', `${delegationFee / PPM_TO_PERCENT_DIVISOR} %`),
     textItem('Cycle duration', `${Number(period) / SECONDS_IN_DAY} days`),
     textItem('Compound rewards percentage', `${autoCompoundRewardShares / PPM_TO_PERCENT_DIVISOR} %`),
+    // An auto-renewed validation renews itself indefinitely, so who controls it and where its
+    // rewards land matter for as long as it runs. All three owner sets are signed here and
+    // none of them has to be the signing account.
+    ...ownerItems('Validator Owner', signedOwners?.validatorAuthority),
+    ...ownerItems('Reward Owner', signedOwners?.rewardOwner),
+    ...ownerItems('Delegation Reward Owner', signedOwners?.delegationRewardOwner),
   ];
 
   details.push({
