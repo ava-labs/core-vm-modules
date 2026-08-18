@@ -1,7 +1,7 @@
 import { AlertType, type Network } from '@avalabs/vm-module-types';
 
 import type { getProvider } from '../get-provider';
-import { transactionAlerts } from '../transaction-alerts';
+import { transactionAlerts, wrongClusterAlert } from '../transaction-alerts';
 
 import { parseTransaction } from './parse-transaction';
 import { explainTransaction } from './explain-transaction';
@@ -10,6 +10,11 @@ import { scanSolanaTransaction } from './blockaid/scan-solana-transaction';
 
 jest.mock('./blockaid/scan-solana-transaction');
 jest.mock('./parse-transaction');
+
+const mockIsTransactionLifetimeOnCluster = jest.fn();
+jest.mock('../verify-transaction-lifetime', () => ({
+  isTransactionLifetimeOnCluster: (...args: unknown[]) => mockIsTransactionLifetimeOnCluster(...args),
+}));
 
 const mockBlockaid = {
   solana: {
@@ -40,6 +45,8 @@ describe('explainTransaction', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Undefined means "could not be determined" - the fail-open path.
+    mockIsTransactionLifetimeOnCluster.mockResolvedValue(undefined);
   });
 
   it('should return simulation result with balance changes and details when simulation is successful', async () => {
@@ -513,6 +520,113 @@ describe('explainTransaction', () => {
       label: 'Account',
       type: 'address',
       value: 'mockAccount',
+    });
+  });
+
+  describe('cluster binding', () => {
+    // A Solana message carries no chain id, so its blockhash is the only thing tying a
+    // signature to one cluster. See wrongClusterAlert.
+    const benignScan = {
+      result: {
+        simulation: { account_summary: { account_assets_diff: [], account_delegations: [] } },
+        validation: { result_type: 'Benign' },
+      },
+    };
+
+    it('warns when the lifetime is not live on the cluster being displayed', async () => {
+      mockIsTransactionLifetimeOnCluster.mockResolvedValue(false);
+      (scanSolanaTransaction as jest.Mock).mockResolvedValue(benignScan);
+
+      const result = await explainTransaction({
+        simulationParams: mockSimulationParams,
+        network: { ...mockNetwork, chainName: 'Solana' } as Network,
+        provider: mockProvider,
+      });
+
+      expect(result.alert).toEqual(wrongClusterAlert('Solana'));
+    });
+
+    it('does not warn when the lifetime resolves on this cluster', async () => {
+      mockIsTransactionLifetimeOnCluster.mockResolvedValue(true);
+      (scanSolanaTransaction as jest.Mock).mockResolvedValue(benignScan);
+
+      const result = await explainTransaction({
+        simulationParams: mockSimulationParams,
+        network: mockNetwork,
+        provider: mockProvider,
+      });
+
+      expect(result.alert).toBeUndefined();
+    });
+
+    it('does not warn when the lifetime could not be determined', async () => {
+      mockIsTransactionLifetimeOnCluster.mockResolvedValue(undefined);
+      (scanSolanaTransaction as jest.Mock).mockResolvedValue(benignScan);
+
+      const result = await explainTransaction({
+        simulationParams: mockSimulationParams,
+        network: mockNetwork,
+        provider: mockProvider,
+      });
+
+      expect(result.alert).toBeUndefined();
+    });
+  });
+
+  describe('delegations', () => {
+    // A delegation moves no balance at signing time, so it never appears in the asset diffs
+    // the rest of the screen is built from.
+    it('renders a delegation that produces no balance diff', async () => {
+      (scanSolanaTransaction as jest.Mock).mockResolvedValue({
+        result: {
+          simulation: {
+            account_summary: {
+              account_assets_diff: [],
+              account_delegations: [
+                {
+                  asset: { address: 'mintAddress', name: 'USD Coin', symbol: 'USDC', decimals: 6 },
+                  asset_type: 'TOKEN',
+                  delegate: 'attackerAddress',
+                  delegation: { raw_value: 119000000, value: 119 },
+                },
+              ],
+            },
+          },
+          validation: { result_type: 'Benign' },
+        },
+      });
+
+      const result = await explainTransaction({
+        simulationParams: mockSimulationParams,
+        network: mockNetwork,
+        provider: mockProvider,
+      });
+
+      const approvals = result.details.find((section) => section.title === 'Approvals Granted');
+
+      expect(approvals).toBeDefined();
+      expect(approvals?.items).toEqual([
+        { label: 'Token', value: 'USD Coin (USDC)', alignment: 'vertical', type: 'text' },
+        { label: 'Amount', value: '119', alignment: 'horizontal', type: 'text' },
+        { label: 'Delegate', value: 'attackerAddress', type: 'address' },
+      ]);
+    });
+
+    it('adds no section when there are no delegations', async () => {
+      (scanSolanaTransaction as jest.Mock).mockResolvedValue({
+        result: {
+          simulation: { account_summary: { account_assets_diff: [], account_delegations: [] } },
+          validation: { result_type: 'Benign' },
+        },
+      });
+
+      const result = await explainTransaction({
+        simulationParams: mockSimulationParams,
+        network: mockNetwork,
+        provider: mockProvider,
+      });
+
+      expect(result.details.some((section) => section.title === 'Approvals Granted')).toBe(false);
     });
   });
 });

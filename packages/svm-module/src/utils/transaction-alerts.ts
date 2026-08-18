@@ -56,3 +56,23 @@ export const transactionAlerts = {
     },
   },
 };
+
+/**
+ * Raised when a message's lifetime constraint is not live on the cluster being displayed.
+ *
+ * Solana messages carry no chain id, so the blockhash (or durable-nonce account) is the only
+ * thing binding a signature to one cluster. When it does not resolve here, the signature the
+ * wallet is about to produce cannot execute on the cluster shown - which either means it has
+ * expired, or that it was built for a different cluster and will be broadcast there.
+ */
+export const wrongClusterAlert = (chainName: string): Alert => ({
+  type: AlertType.WARNING,
+  details: {
+    title: 'This transaction is not anchored to this network',
+    description: `Its blockhash is not valid on ${chainName}.`,
+    body: [
+      `The transaction cannot be executed on ${chainName} as it stands.`,
+      'It has either expired, or it was built for a different Solana cluster - in which case the signature you give here could be broadcast there instead.',
+    ],
+  },
+});

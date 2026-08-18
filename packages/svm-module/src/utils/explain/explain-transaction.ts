@@ -8,11 +8,13 @@ import {
 } from '@avalabs/vm-module-types';
 
 import type { getProvider } from '../get-provider';
-import { getAlertForError, transactionAlerts } from '../transaction-alerts';
+import { getAlertForError, transactionAlerts, wrongClusterAlert } from '../transaction-alerts';
+import { isTransactionLifetimeOnCluster } from '../verify-transaction-lifetime';
 
 import type { ExplainTxParams } from './types';
 import { parseTransaction } from './parse-transaction';
 import { processBalanceChange } from './blockaid/process-balance-change';
+import { processDelegations } from './blockaid/process-delegations';
 import { scanSolanaTransaction } from './blockaid/scan-solana-transaction';
 import { addressItem, dataItem } from '@internal/utils';
 import { addressListItem } from '@internal/utils/src/utils/detail-item';
@@ -44,7 +46,13 @@ export const explainTransaction = async ({
   let balanceChange: BalanceChange | undefined;
   let alert: Alert | undefined;
 
-  if (!validation || validation.result_type === 'Warning') {
+  // A Solana message has no chain id - its blockhash (or nonce account) is the only thing
+  // tying it to one cluster, and nothing used to check it against the cluster on screen.
+  const isOnThisCluster = await isTransactionLifetimeOnCluster(params.transactionBase64, provider);
+
+  if (isOnThisCluster === false) {
+    alert = wrongClusterAlert(network.chainName);
+  } else if (!validation || validation.result_type === 'Warning') {
     alert = transactionAlerts[AlertType.WARNING];
   } else if (validation.result_type === 'Malicious') {
     alert = transactionAlerts[AlertType.DANGER];
@@ -88,6 +96,11 @@ export const explainTransaction = async ({
       // Make sure to always show the user's address in the details.
       genericDetails.items.push(addressItem('Account', params.account));
     }
+
+    // A delegation moves no balance at signing time, so it never appears in the asset diffs
+    // the section above is built from. It is in the scan result and in the signed bytes, and
+    // it hands spending authority to somebody else - it has to be on the screen.
+    details.push(...processDelegations(simulation.account_summary.account_delegations));
 
     isSimulationSuccessful = true;
   } else {
