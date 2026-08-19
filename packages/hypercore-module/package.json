@@ -23,7 +23,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.94",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.96",
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
