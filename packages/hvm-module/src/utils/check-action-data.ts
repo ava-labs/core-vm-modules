@@ -23,26 +23,38 @@ const toIntegerValue = (value: unknown): bigint | null => {
   return null;
 };
 
+// Describes the value with its runtime type, so `'true'` does not read the same as `true`.
+const describeValue = (value: unknown): string => {
+  const valueType = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
+
+  try {
+    // JSON.stringify returns undefined for `undefined`, symbols and functions, and throws on bigint.
+    return `${JSON.stringify(value) ?? String(value)} (${valueType})`;
+  } catch {
+    return `${String(value)} (${valueType})`;
+  }
+};
+
 const primitiveTypeMismatch = (type: string, value: unknown): string | null => {
   if (type === 'bool') {
-    return typeof value === 'boolean' ? null : `expected boolean, got ${JSON.stringify(value)}`;
+    return typeof value === 'boolean' ? null : `expected boolean, got ${describeValue(value)}`;
   }
 
   if (type === 'string') {
-    return typeof value === 'string' ? null : `expected string, got ${JSON.stringify(value)}`;
+    return typeof value === 'string' ? null : `expected string, got ${describeValue(value)}`;
   }
 
   if (type === 'Address') {
     return typeof value === 'string' && /^0x[0-9a-fA-F]{74}$/.test(value)
       ? null
-      : `expected a 37-byte hex address, got ${JSON.stringify(value)}`;
+      : `expected a 37-byte hex address, got ${describeValue(value)}`;
   }
 
   if (type === '[]uint8') {
     // Byte slices are marshaled from base64 (`atob`), not from hex or a plain array.
     return typeof value === 'string' && isBase64String(value)
       ? null
-      : `expected a base64 encoded byte string, got ${JSON.stringify(value)}`;
+      : `expected a base64 encoded byte string, got ${describeValue(value)}`;
   }
 
   const uintIntMatch = UINT_INT_TYPE.exec(type);
@@ -51,18 +63,20 @@ const primitiveTypeMismatch = (type: string, value: unknown): string | null => {
     const integerValue = toIntegerValue(value);
 
     if (integerValue === null) {
-      return `expected an integer for ${type}, got ${JSON.stringify(value)}`;
+      return `expected an integer for ${type}, got ${describeValue(value)}`;
     }
 
     const isUnsigned = uintIntMatch[1] === 'u';
     const bitWidth = Number(uintIntMatch[2]);
+    // BigInt exponentiation, since the widths go up to 2 ** 256 and number arithmetic
+    // loses precision past 2 ** 53.
     const [min, max] = isUnsigned
-      ? [0n, (1n << BigInt(bitWidth)) - 1n]
-      : [-(1n << BigInt(bitWidth - 1)), (1n << BigInt(bitWidth - 1)) - 1n];
+      ? [0n, 2n ** BigInt(bitWidth) - 1n]
+      : [-(2n ** BigInt(bitWidth - 1)), 2n ** BigInt(bitWidth - 1) - 1n];
 
     // Check bounds
     return integerValue < min || integerValue > max
-      ? `expected a value in the ${type} range, got ${JSON.stringify(value)}`
+      ? `expected a value in the ${type} range, got ${describeValue(value)}`
       : null;
   }
 
@@ -84,7 +98,7 @@ const collectMismatches = (
     const elementType = fixedArrayMatch[2] as string;
 
     if (!Array.isArray(value)) {
-      mismatches.push(`${path}: expected array of ${elementType}, got ${JSON.stringify(value)}`);
+      mismatches.push(`${path}: expected array of ${elementType}, got ${describeValue(value)}`);
       return;
     }
 
@@ -102,7 +116,7 @@ const collectMismatches = (
     const elementType = type.replace(SLICE_PREFIX, '');
 
     if (!Array.isArray(value)) {
-      mismatches.push(`${path}: expected array of ${elementType}, got ${JSON.stringify(value)}`);
+      mismatches.push(`${path}: expected array of ${elementType}, got ${describeValue(value)}`);
       return;
     }
 
@@ -114,7 +128,7 @@ const collectMismatches = (
 
   if (structType) {
     if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-      mismatches.push(`${path}: expected an object for ${type}, got ${JSON.stringify(value)}`);
+      mismatches.push(`${path}: expected an object for ${type}, got ${describeValue(value)}`);
       return;
     }
 

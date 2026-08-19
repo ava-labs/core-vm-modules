@@ -27,21 +27,33 @@ const toIntegerValue = (value: unknown): bigint | null => {
   return null;
 };
 
+// Describes the value with its runtime type, so `'true'` does not read the same as `true`.
+const describeValue = (value: unknown): string => {
+  const valueType = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
+
+  try {
+    // JSON.stringify returns undefined for `undefined`, symbols and functions, and throws on bigint.
+    return `${JSON.stringify(value) ?? String(value)} (${valueType})`;
+  } catch {
+    return `${String(value)} (${valueType})`;
+  }
+};
+
 // Returns a human-readable mismatch reason, or null if the value is fine (or the type
 // isn't one we know how to validate, in which case we don't want false positives).
 const primitiveTypeMismatch = (type: string, value: unknown): string | null => {
   if (type === 'bool') {
-    return typeof value === 'boolean' ? null : `expected boolean, got ${JSON.stringify(value)}`;
+    return typeof value === 'boolean' ? null : `expected boolean, got ${describeValue(value)}`;
   }
 
   if (type === 'string') {
-    return typeof value === 'string' ? null : `expected string, got ${JSON.stringify(value)}`;
+    return typeof value === 'string' ? null : `expected string, got ${describeValue(value)}`;
   }
 
   if (type === 'address') {
     return typeof value === 'string' && /^0x[0-9a-fA-F]{40}$/.test(value)
       ? null
-      : `expected a 20-byte address, got ${JSON.stringify(value)}`;
+      : `expected a 20-byte address, got ${describeValue(value)}`;
   }
 
   const uintIntMatch = UINT_INT_TYPE.exec(type);
@@ -50,18 +62,20 @@ const primitiveTypeMismatch = (type: string, value: unknown): string | null => {
     const integerValue = toIntegerValue(value);
 
     if (integerValue === null) {
-      return `expected an integer for ${type}, got ${JSON.stringify(value)}`;
+      return `expected an integer for ${type}, got ${describeValue(value)}`;
     }
 
     // `uint`/`int` without an explicit width mean 256 bits.
     const isUnsigned = uintIntMatch[1] === 'u';
     const bitWidth = uintIntMatch[2] ? Number(uintIntMatch[2]) : 256;
+    // BigInt exponentiation, since the widths go up to 2 ** 256 and number arithmetic
+    // loses precision past 2 ** 53.
     const [min, max] = isUnsigned
-      ? [0n, (1n << BigInt(bitWidth)) - 1n]
-      : [-(1n << BigInt(bitWidth - 1)), (1n << BigInt(bitWidth - 1)) - 1n];
+      ? [0n, 2n ** BigInt(bitWidth) - 1n]
+      : [-(2n ** BigInt(bitWidth - 1)), 2n ** BigInt(bitWidth - 1) - 1n];
 
     return integerValue < min || integerValue > max
-      ? `expected a value in the ${type} range, got ${JSON.stringify(value)}`
+      ? `expected a value in the ${type} range, got ${describeValue(value)}`
       : null;
   }
 
@@ -70,13 +84,13 @@ const primitiveTypeMismatch = (type: string, value: unknown): string | null => {
     const byteLength = Number(bytesNMatch[1]);
     return typeof value === 'string' && new RegExp(`^0x[0-9a-fA-F]{${byteLength * 2}}$`).test(value)
       ? null
-      : `expected ${byteLength}-byte hex string for ${type}, got ${JSON.stringify(value)}`;
+      : `expected ${byteLength}-byte hex string for ${type}, got ${describeValue(value)}`;
   }
 
   if (type === 'bytes') {
     return typeof value === 'string' && isHexString(value) && value.length % 2 === 0
       ? null
-      : `expected a hex byte string, got ${JSON.stringify(value)}`;
+      : `expected a hex byte string, got ${describeValue(value)}`;
   }
 
   // Unknown/unsupported primitive type - don't flag, let the existing ethers validation
@@ -97,7 +111,7 @@ const collectMismatches = (
     const elementType = type.slice(0, type.length - arrayMatch[0].length);
 
     if (!Array.isArray(value)) {
-      mismatches.push(`${path}: expected array of ${elementType}, got ${JSON.stringify(value)}`);
+      mismatches.push(`${path}: expected array of ${elementType}, got ${describeValue(value)}`);
       return;
     }
 
@@ -118,7 +132,7 @@ const collectMismatches = (
 
   if (structFields) {
     if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-      mismatches.push(`${path}: expected struct ${type}, got ${JSON.stringify(value)}`);
+      mismatches.push(`${path}: expected struct ${type}, got ${describeValue(value)}`);
       return;
     }
 

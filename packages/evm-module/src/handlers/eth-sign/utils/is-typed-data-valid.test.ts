@@ -38,23 +38,21 @@ describe('isTypedDataValid', () => {
   });
 
   it('returns a blocking error when a bool field is supplied as a string (82203)', () => {
-    const result = isTypedDataValid({
-      ...validData,
-      message: { ...validData.message, allowed: 'false' },
-    });
-
-    if (result.isValid) throw new Error('expected isValid to be false');
-    expect(result.blocking).toBe(true);
+    expect(
+      isTypedDataValid({
+        ...validData,
+        message: { ...validData.message, allowed: 'false' },
+      }),
+    ).toEqual({ isValid: false, error: expect.any(Error), blocking: true });
   });
 
   it('returns a non-blocking error for ethers-level issues like an empty verifyingContract', () => {
-    const result = isTypedDataValid({
-      ...validData,
-      domain: { ...validData.domain, verifyingContract: '' },
-    });
-
-    if (result.isValid) throw new Error('expected isValid to be false');
-    expect(result.blocking).toBe(false);
+    expect(
+      isTypedDataValid({
+        ...validData,
+        domain: { ...validData.domain, verifyingContract: '' },
+      }),
+    ).toEqual({ isValid: false, error: expect.any(Error), blocking: false });
   });
 });
 
@@ -69,9 +67,10 @@ describe('isTypedDataV1Valid', () => {
   });
 
   it('returns a blocking error when a bool field is supplied as a string', () => {
-    const result = isTypedDataV1Valid([{ name: 'allowed', type: 'bool', value: 'false' }]);
-
-    if (result.isValid) throw new Error('expected isValid to be false');
-    expect(result.blocking).toBe(true);
+    expect(isTypedDataV1Valid([{ name: 'allowed', type: 'bool', value: 'false' }])).toEqual({
+      isValid: false,
+      error: expect.any(Error),
+      blocking: true,
+    });
   });
 });
