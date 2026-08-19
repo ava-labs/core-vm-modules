@@ -22,10 +22,10 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-chains-sdk": "3.1.0-alpha.94",
-    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.94",
-    "@avalabs/core-utils-sdk": "3.1.0-alpha.94",
-    "@avalabs/core-wallets-sdk": "3.1.0-alpha.94",
+    "@avalabs/core-chains-sdk": "3.1.0-alpha.96",
+    "@avalabs/core-coingecko-sdk": "3.1.0-alpha.96",
+    "@avalabs/core-utils-sdk": "3.1.0-alpha.96",
+    "@avalabs/core-wallets-sdk": "3.1.0-alpha.96",
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.48.0",

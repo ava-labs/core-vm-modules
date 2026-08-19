@@ -218,5 +218,15 @@ describe('calculateAvaxTotalBalance', () => {
       const result = calculateAvaxTotalBalance(balanceWithLargeAmounts, avaxAssetId);
       expect(result).toBe(BigInt(Number.MAX_SAFE_INTEGER));
     });
+
+    it('should include restakedRewards in P-chain total', () => {
+      const balanceWithRestakedRewards = {
+        unlockedUnstaked: [{ amount: '1000000000', assetId: avaxAssetId } as unknown],
+        restakedRewards: '500000000',
+      } as PChainBalance;
+
+      const result = calculateAvaxTotalBalance(balanceWithRestakedRewards, avaxAssetId);
+      expect(result).toBe(BigInt(1500000000));
+    });
   });
 });
