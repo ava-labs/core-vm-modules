@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 4.0.2
+
+### Patch Changes
+
+- 0ecf7dc: Fix avax balance calculation
+
 ## 4.0.1
 
 ### Patch Changes
