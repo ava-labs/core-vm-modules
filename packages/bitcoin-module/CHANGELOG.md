@@ -1,5 +1,12 @@
 # @avalabs/bitcoin-module
 
+## 4.0.3
+
+### Patch Changes
+
+- 807ed1e: fix: security hardening
+  - @avalabs/vm-module-types@4.0.3
+
 ## 4.0.2
 
 ### Patch Changes
