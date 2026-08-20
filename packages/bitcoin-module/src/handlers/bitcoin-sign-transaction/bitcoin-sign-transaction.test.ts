@@ -9,6 +9,7 @@ jest.mock('../../utils/get-provider');
 jest.mock('@avalabs/core-wallets-sdk', () => ({
   BitcoinProvider: jest.fn().mockImplementation(() => ({
     getAddressFromScript: jest.fn(),
+    getUtxoBalance: jest.fn(),
     getNetwork: jest.fn(),
     issueRawTx: jest.fn(),
     waitForTx: jest.fn(),
@@ -79,6 +80,22 @@ const TEST_OUTPUTS = [
 
 const testParams = { inputs: TEST_INPUTS, outputs: TEST_OUTPUTS };
 
+// What the chain says those inputs are worth. Input values are caller-supplied, and the
+// displayed fee is derived from them, so the handler checks them against this.
+const chainUtxos = TEST_INPUTS.map(({ txHash, index, value }) => ({ txHash, index, value }));
+
+const mockChainUtxos = (
+  provider: BitcoinProvider,
+  utxos: { txHash: string; index: number; value: number }[] = chainUtxos,
+) => {
+  (provider.getUtxoBalance as jest.Mock).mockResolvedValue({
+    balance: 0,
+    balanceUnconfirmed: 0,
+    utxos,
+    utxosUnconfirmed: [],
+  });
+};
+
 const testRequestParams = (params?: BitcoinSignTransactionParams) => ({
   request: {
     requestId: '1',
@@ -145,6 +162,10 @@ describe('bitcoin-sign-transaction', () => {
     mockRequestApproval.mockResolvedValue({
       error: rpcErrors.internal('something went wrong'),
     });
+    const mockProvider = new BitcoinProvider();
+    (getProvider as jest.Mock).mockReturnValue(mockProvider);
+    (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    mockChainUtxos(mockProvider);
 
     const result = await bitcoinSignTransaction(testRequestParams());
 
@@ -156,6 +177,8 @@ describe('bitcoin-sign-transaction', () => {
     (mockApprovalController.requestApproval as jest.Mock).mockResolvedValue({ signedData: 'somesigneddata' });
     const mockProvider = new BitcoinProvider();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
+    (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    mockChainUtxos(mockProvider);
     (mockProvider.issueRawTx as jest.Mock).mockImplementation(() => {
       throw testError;
     });
@@ -167,11 +190,57 @@ describe('bitcoin-sign-transaction', () => {
     });
   });
 
+  it('should reject an input whose claimed value is not what the chain holds', async () => {
+    const mockProvider = new BitcoinProvider();
+    (getProvider as jest.Mock).mockReturnValue(mockProvider);
+    (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    // The caller understates the first input, which would make a 999_000_000 sat fee look
+    // like a 100_000 sat one.
+    mockChainUtxos(mockProvider, [{ ...chainUtxos[0]!, value: 1_000_000_000 }, chainUtxos[1]!]);
+
+    const result = await bitcoinSignTransaction(testRequestParams());
+
+    expect(result.error?.message).toContain('Transaction invalid or cannot be parsed');
+    expect(mockRequestApproval).not.toHaveBeenCalled();
+  });
+
+  it('should reject an input that does not belong to the signing address', async () => {
+    const mockProvider = new BitcoinProvider();
+    (getProvider as jest.Mock).mockReturnValue(mockProvider);
+    (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    mockChainUtxos(mockProvider, [chainUtxos[0]!]);
+
+    const result = await bitcoinSignTransaction(testRequestParams());
+
+    expect(result.error?.message).toContain('Transaction invalid or cannot be parsed');
+    expect(mockRequestApproval).not.toHaveBeenCalled();
+  });
+
+  it('should accept inputs that are only known as unconfirmed UTXOs', async () => {
+    (mockApprovalController.requestApproval as jest.Mock).mockResolvedValue({ signedData: 'somesigneddata' });
+    const mockProvider = new BitcoinProvider();
+    (getProvider as jest.Mock).mockReturnValue(mockProvider);
+    (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    (mockProvider.issueRawTx as jest.Mock).mockResolvedValue('0x123');
+    (mockProvider.getUtxoBalance as jest.Mock).mockResolvedValue({
+      balance: 0,
+      balanceUnconfirmed: 0,
+      utxos: [chainUtxos[0]],
+      utxosUnconfirmed: [chainUtxos[1]],
+    });
+
+    const result = await bitcoinSignTransaction(testRequestParams());
+
+    expect(mockRequestApproval).toHaveBeenCalled();
+    expect(result.error).toBeUndefined();
+  });
+
   it('should broadcast transaction and return transaction hash', async () => {
     (mockApprovalController.requestApproval as jest.Mock).mockResolvedValue({ signedData: 'somesigneddata' });
     const mockProvider = new BitcoinProvider();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
     (mockProvider.getAddressFromScript as jest.Mock).mockResolvedValue('sender-address');
+    mockChainUtxos(mockProvider);
     (mockProvider.issueRawTx as jest.Mock).mockResolvedValue('0x123');
 
     const params = testRequestParams();

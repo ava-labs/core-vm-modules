@@ -9,7 +9,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, currencyItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
 
 import { buildAgentIdentityDetailSection } from './build-agent-identity-detail-section';
 
@@ -19,6 +19,17 @@ import { parseERC20TransactionType } from './parse-erc20-transaction-type';
 import { getRecipientAddress } from './get-recipient-address';
 import { classifyTransaction } from '@src/utils/classify-transaction';
 import { parseEercTransaction } from './parse-eerc-transaction';
+
+const parseNativeValue = (value?: string): bigint | null => {
+  if (!value) return null;
+
+  try {
+    const parsed = BigInt(value);
+    return parsed > 0n ? parsed : null;
+  } catch {
+    return null;
+  }
+};
 
 export const buildTxApprovalRequest = (
   request: RpcRequest,
@@ -59,6 +70,16 @@ export const buildTxApprovalRequest = (
     [TransactionKind.ERC20_TRANSFER, TransactionKind.CONTRACT_CALL].includes(transactionClassification)
   ) {
     transactionDetails.push(addressItem('Contract', transaction.to));
+  }
+
+  // The native value is signed, but it otherwise only reaches the user through the
+  // simulation's balance change - which is absent whenever the simulation fails.
+  const nativeValue = parseNativeValue(transaction.value);
+
+  if (nativeValue) {
+    transactionDetails.push(
+      currencyItem('Amount', nativeValue, network.networkToken.decimals, network.networkToken.symbol),
+    );
   }
 
   if (eercDisplayEnabled) {

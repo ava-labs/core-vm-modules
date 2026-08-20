@@ -17,7 +17,7 @@ export const addPermissionlessDelegatorDetailSection = ({
   signerAccount,
 }: AddPermissionlessDelegatorDetailSectionProps) => {
   const details: DetailSection[] = [];
-  const { txFee, nodeID, start, end, stake } = tx;
+  const { txFee, nodeID, subnetID, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
     items: [
@@ -33,6 +33,9 @@ export const addPermissionlessDelegatorDetailSection = ({
 
   const items: DetailItem[] = [
     nodeIDItem('Node', nodeID),
+    // Delegating on an arbitrary subnet is not the same commitment as the primary network,
+    // and the node id alone does not say which one this is.
+    nodeIDItem('Subnet ID', subnetID),
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
     dateItem('Start', start),
     dateItem('End', end),

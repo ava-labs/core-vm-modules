@@ -194,6 +194,39 @@ describe('eth_sendTransaction handler', () => {
     mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
   });
 
+  it.each([
+    ['a different chain given as a number', 137],
+    ['a different chain given as a decimal string', '137'],
+    ['a different chain given as a hex string', '0x89'],
+    ['a chain id that cannot be parsed', 'polygon'],
+  ])('should reject %s without requesting approval', async (_, chainId) => {
+    // The approval screen only names the connected network, so a transaction bound to
+    // another chain would be approved as if it targeted this one.
+    mockParseRequestParams.mockReturnValue({
+      success: true,
+      data: [{ ...testParams, chainId }],
+    });
+
+    const result = await ethSendTransaction(testRequestParams());
+
+    expect(result).toMatchObject({
+      error: expect.objectContaining({ message: expect.stringContaining('Transaction params are invalid') }),
+    });
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('should accept a transaction that does not specify a chain id', async () => {
+    const { chainId, ...paramsWithoutChainId } = testParams;
+    mockParseRequestParams.mockReturnValue({
+      success: true,
+      data: [paramsWithoutChainId],
+    });
+
+    await ethSendTransaction(testRequestParams());
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalled();
+  });
+
   it('should return error if request params are invalid', async () => {
     const testError = new Error('Invalid params') as ZodError;
     mockParseRequestParams.mockReturnValue({

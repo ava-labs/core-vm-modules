@@ -83,6 +83,76 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
+  it('labels a non-AVAX output with the asset the chain described', () => {
+    const txDetails: TxDetails = {
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          isAvax: false,
+          assetId: '0xAssetID',
+          assetDescription: { assetID: '0xAssetID', name: 'Some Token', symbol: 'TKN', denomination: 2 },
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+
+    // Previously rendered as AVAX at AVAX's scale.
+    expect(items).toContainEqual({ label: 'Amount', value: 100n, type: 'currency', maxDecimals: 2, symbol: 'TKN' });
+    expect(items).toContainEqual({ label: 'Asset', value: 'Some Token', type: 'text', alignment: 'horizontal' });
+  });
+
+  it('shows the raw amount and asset id for an undescribed non-AVAX output', () => {
+    const txDetails: TxDetails = {
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          isAvax: false,
+          assetId: '0xAssetID',
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+
+    expect(items).toContainEqual({
+      label: 'Amount',
+      value: '100 (smallest unit)',
+      type: 'text',
+      alignment: 'horizontal',
+    });
+    expect(items).toContainEqual({ label: 'Asset', value: '0xAssetID', type: 'text', alignment: 'vertical' });
+    expect(items).not.toContainEqual(expect.objectContaining({ symbol: networkToken.symbol, label: 'Amount' }));
+  });
+
+  it('flags an output that stays locked, and ignores a locktime already in the past', () => {
+    const buildTx = (locktime: bigint): TxDetails => ({
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      outputs: [{ amount: 100n, owners: ['0xOwner1'], threshold: 1n, locktime, isAvax: true, assetId: '0xAssetID' }],
+      txFee: 1n,
+    });
+
+    const future = BigInt(Math.floor(Date.now() / 1000) + 3600);
+    const lockedItems = getTransactionDetailSections(buildTx(future), networkToken.symbol)?.[1]?.items;
+    const pastItems = getTransactionDetailSections(buildTx(1n), networkToken.symbol)?.[1]?.items;
+
+    expect(lockedItems).toContainEqual(expect.objectContaining({ label: 'Locked until' }));
+    expect(pastItems).not.toContainEqual(expect.objectContaining({ label: 'Locked until' }));
+  });
+
   it('should handle export transactions', () => {
     const txDetails: TxDetails = {
       amount: 100n,
@@ -276,6 +346,11 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
             type: 'nodeID',
           },
           {
+            label: 'Subnet ID',
+            value: 'SubnetID',
+            type: 'nodeID',
+          },
+          {
             label: 'Stake Amount',
             value: 50n,
             type: 'currency',
@@ -339,6 +414,11 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           {
             label: 'Node',
             value: 'NodeID',
+            type: 'nodeID',
+          },
+          {
+            label: 'Subnet ID',
+            value: 'SubnetID',
             type: 'nodeID',
           },
           {

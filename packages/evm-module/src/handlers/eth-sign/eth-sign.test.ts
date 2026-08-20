@@ -1,6 +1,7 @@
 import { ethSign } from './eth-sign';
 import { AlertType, NetworkVMType, RpcMethod } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
+import { rpcErrorOpts } from '@internal/utils';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 
 // doesn't print the ugly console errors out
@@ -23,6 +24,7 @@ jest.mock('./schemas/parse-request-params/parse-request-params', () => ({
 
 jest.mock('./utils/is-typed-data-valid', () => ({
   isTypedDataValid: jest.fn(),
+  isTypedDataV1Valid: jest.fn(),
 }));
 
 jest.mock('ethers', () => ({
@@ -45,6 +47,7 @@ jest.mock('./utils/typeguards', () => ({
 
 const mockParseRequestParams = require('./schemas/parse-request-params/parse-request-params').parseRequestParams;
 const mockIsTypedDataValid = require('./utils/is-typed-data-valid').isTypedDataValid;
+const mockIsTypedDataV1Valid = require('./utils/is-typed-data-valid').isTypedDataV1Valid;
 const mockToUtf8 = require('ethers').toUtf8String;
 const mockBeautifySimpleMessage = require('./utils/beautify-message/beautify-message').beautifySimpleMessage;
 const mockBeautifyComplexMessage = require('./utils/beautify-message/beautify-message').beautifyComplexMessage;
@@ -100,6 +103,7 @@ describe('ethSign', () => {
     mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
     mockBeautifySimpleMessage.mockReturnValue('beautified simple message');
     mockBeautifyComplexMessage.mockReturnValue('beautified complex message');
+    mockIsTypedDataV1Valid.mockReturnValue({ isValid: true });
     mockResolveAgentIdentity.mockResolvedValue(testAgentIdentity);
   });
 
@@ -169,6 +173,43 @@ describe('ethSign', () => {
   });
 
   it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
+    'should reject the request without prompting for approval when typed data validation is blocking for %s',
+    async (method) => {
+      mockParseRequestParams.mockReturnValueOnce({
+        success: true,
+        data: { method, data: {}, address: '0xabc' },
+      });
+      mockIsTypedDataValid.mockReturnValueOnce({
+        isValid: false,
+        error: new Error(
+          'EIP-712 message contains fields with a type mismatch: message.allowed: expected boolean, got "false"',
+        ),
+        blocking: true,
+      });
+
+      const result = await ethSign({
+        request: { ...mockRequest, method },
+        network: mockNetwork,
+        approvalController: mockApprovalController,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+
+      expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        success: false,
+        error: rpcErrors.invalidParams(
+          rpcErrorOpts(
+            'EIP-712 message is invalid',
+            new Error(
+              'EIP-712 message contains fields with a type mismatch: message.allowed: expected boolean, got "false"',
+            ),
+          ),
+        ),
+      });
+    },
+  );
+
+  it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
     'should generate a warning banner for typed data validation failure for %s',
     async (method) => {
       mockParseRequestParams.mockReturnValueOnce({
@@ -201,6 +242,103 @@ describe('ethSign', () => {
     },
   );
 
+  it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
+    'should display only the fields covered by the signature for %s',
+    async (method) => {
+      const typedData = {
+        types: {
+          EIP712Domain: [{ name: 'name', type: 'string' }],
+          Permit: [{ name: 'spender', type: 'address' }],
+        },
+        primaryType: 'Permit',
+        domain: { name: 'dApp' },
+        // `dailyLimit` is not declared in the Permit type, so it is not signed and must not
+        // be shown as if it were.
+        message: { spender: `0x${'11'.repeat(20)}`, dailyLimit: '0.01 ETH' },
+      };
+
+      mockParseRequestParams.mockReturnValueOnce({
+        success: true,
+        data: { method, data: typedData, address: '0xabc' },
+      });
+
+      await ethSign({
+        request: { ...mockRequest, method },
+        network: mockNetwork,
+        approvalController: mockApprovalController,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+
+      expect(mockBeautifyComplexMessage).toHaveBeenCalledWith({
+        domain: typedData.domain,
+        message: { spender: typedData.message.spender },
+      });
+    },
+  );
+
+  it.each([RpcMethod.SIGN_TYPED_DATA, RpcMethod.SIGN_TYPED_DATA_V1])(
+    'should reject the request without prompting for approval when V1 typed data validation is blocking for %s',
+    async (method) => {
+      mockIsTypedDataV1.mockReturnValueOnce(true);
+      mockParseRequestParams.mockReturnValueOnce({
+        success: true,
+        data: { method, data: [{ name: 'allowed', type: 'bool', value: 'false' }], address: '0xabc' },
+      });
+      mockIsTypedDataV1Valid.mockReturnValueOnce({
+        isValid: false,
+        error: new Error('Typed data contains fields with a type mismatch: allowed: expected boolean, got "false"'),
+        blocking: true,
+      });
+
+      const result = await ethSign({
+        request: { ...mockRequest, method },
+        network: mockNetwork,
+        approvalController: mockApprovalController,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+
+      expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        success: false,
+        error: rpcErrors.invalidParams(
+          rpcErrorOpts(
+            'EIP-712 message is invalid',
+            new Error('Typed data contains fields with a type mismatch: allowed: expected boolean, got "false"'),
+          ),
+        ),
+      });
+    },
+  );
+
+  it('should fall back to the raw payload when a personal_sign message is not valid UTF-8', async () => {
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method: RpcMethod.PERSONAL_SIGN, data: '0xdeadbeef', address: '0xabc' },
+    });
+    mockToUtf8.mockImplementationOnce(() => {
+      throw new Error('invalid codepoint');
+    });
+
+    const result = await ethSign({
+      request: { ...mockRequest, method: RpcMethod.PERSONAL_SIGN },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
+
+    // Signable either way, so the request must not blow up in the handler.
+    expect(result).toEqual({ result: '0x1234' });
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({
+          details: expect.arrayContaining([
+            expect.objectContaining({ items: [expect.objectContaining({ value: '0xdeadbeef' })] }),
+          ]),
+        }),
+      }),
+    );
+  });
+
   it.each([
     [RpcMethod.ETH_SIGN, 'data', 'data'],
     [RpcMethod.PERSONAL_SIGN, 'data', 'data in utf8'],
@@ -210,7 +348,8 @@ describe('ethSign', () => {
     [RpcMethod.SIGN_TYPED_DATA_V4, { types: {}, primaryType: '', message: 'test' }, 'beautified complex message'],
   ])('should generate signingData and displayData for %s', async (method, inputData, expectedMessageDetails) => {
     if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
-      mockIsTypedDataV1.mockReturnValueOnce(true);
+      // isTypedDataV1 is called once for validation and once for display formatting.
+      mockIsTypedDataV1.mockReturnValue(true);
     }
 
     mockParseRequestParams.mockReturnValueOnce({

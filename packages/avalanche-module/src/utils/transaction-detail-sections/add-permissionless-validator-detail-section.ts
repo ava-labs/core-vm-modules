@@ -17,7 +17,7 @@ export const addPermissionlessValidatorDetailSection = ({
   signerAccount,
 }: AddPermissionlessValidatorDetailSectionProps) => {
   const details: DetailSection[] = [];
-  const { txFee, nodeID, delegationFee, start, end, stake } = tx;
+  const { txFee, nodeID, subnetID, delegationFee, start, end, stake } = tx;
 
   const basicInfo: DetailSection = {
     items: [
@@ -31,7 +31,9 @@ export const addPermissionlessValidatorDetailSection = ({
 
   details.push(basicInfo);
 
-  const items: DetailItem[] = [nodeIDItem('Node', nodeID)];
+  // Staking on an arbitrary subnet is not the same commitment as the primary network, and
+  // the node id alone does not say which one this is.
+  const items: DetailItem[] = [nodeIDItem('Node', nodeID), nodeIDItem('Subnet ID', subnetID)];
 
   items.push(
     currencyItem('Stake Amount', stake, AVAX_NONEVM_DENOMINATION, symbol),
