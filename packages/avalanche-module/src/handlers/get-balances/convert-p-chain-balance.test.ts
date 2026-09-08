@@ -80,6 +80,28 @@ describe('convertPChainBalance', () => {
     expect(result.balancePerType.pendingStaked).toBe(BigInt(3 * 10 ** 9));
   });
 
+  it('should surface restakedRewards when Glacier reports it', () => {
+    const result = convertPChainBalance({
+      balance: { ...mockBalance, restakedRewards: '9000000000' } as PChainBalance,
+      networkToken: mockNetworkToken,
+      coingeckoId: 'test-token',
+      avaxAssetId: 'avaxAssetId',
+    });
+
+    expect(result.balancePerType.restakedRewards).toBe(9000000000n);
+  });
+
+  it('should leave restakedRewards undefined when Glacier omits it', () => {
+    const result = convertPChainBalance({
+      balance: mockBalance,
+      networkToken: mockNetworkToken,
+      coingeckoId: 'test-token',
+      avaxAssetId: 'avaxAssetId',
+    });
+
+    expect(result.balancePerType.restakedRewards).toBeUndefined();
+  });
+
   it('should return zero for empty balance types', () => {
     const emptyBalance = {
       unlockedUnstaked: [],

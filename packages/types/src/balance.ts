@@ -139,6 +139,7 @@ export interface TokenWithBalancePVM extends NetworkTokenWithBalance {
     unlockedUnstaked?: bigint;
     unlockedStaked?: bigint;
     pendingStaked?: bigint;
+    restakedRewards?: bigint;
   };
 }
 
