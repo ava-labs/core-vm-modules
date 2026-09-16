@@ -1,8 +1,10 @@
 import { Interface } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import {
+  AlertType,
   RpcMethod,
   type AgentIdentity,
+  type Alert,
   type Network,
   type RpcRequest,
   type TransactionSimulationResult,
@@ -85,6 +87,53 @@ describe('buildTxApprovalRequest', () => {
       const transaction = { from: FROM, to: TOKEN_CONTRACT, data: '0xdeadbeef' } as TransactionParams;
 
       expect(getFirstSectionItems(transaction)).toEqual([...baseItems, addressItem('Contract', TOKEN_CONTRACT)]);
+    });
+  });
+
+  describe('access list', () => {
+    const accessList = [{ address: TOKEN_CONTRACT, storageKeys: [`0x${'0'.repeat(64)}`] }];
+
+    it('surfaces an info alert when the transaction carries a non-empty access list', () => {
+      const transaction = { from: FROM, to: TO_EOA, value: '0x1', accessList } as unknown as TransactionParams;
+
+      const { alert } = buildTxApprovalRequest(request, network, transaction, emptyScan).displayData;
+
+      expect(alert?.type).toBe(AlertType.INFO);
+      expect(alert?.details.title).toBe('Includes an access list');
+    });
+
+    it('does not add the alert for a missing or empty access list', () => {
+      expect(
+        buildTxApprovalRequest(
+          request,
+          network,
+          { from: FROM, to: TO_EOA, value: '0x1' } as TransactionParams,
+          emptyScan,
+        ).displayData.alert,
+      ).toBeUndefined();
+
+      expect(
+        buildTxApprovalRequest(
+          request,
+          network,
+          { from: FROM, to: TO_EOA, value: '0x1', accessList: [] } as unknown as TransactionParams,
+          emptyScan,
+        ).displayData.alert,
+      ).toBeUndefined();
+    });
+
+    it('does not override a scan alert', () => {
+      const scanAlert: Alert = {
+        type: AlertType.DANGER,
+        details: { title: 'Malicious', description: 'bad' },
+      };
+      const transaction = { from: FROM, to: TO_EOA, value: '0x1', accessList } as unknown as TransactionParams;
+
+      const { alert } = buildTxApprovalRequest(request, network, transaction, {
+        alert: scanAlert,
+      } as TransactionSimulationResult).displayData;
+
+      expect(alert).toBe(scanAlert);
     });
   });
 

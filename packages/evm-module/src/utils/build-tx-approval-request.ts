@@ -1,6 +1,8 @@
 import {
+  AlertType,
   RpcMethod,
   type AgentIdentity,
+  type Alert,
   type DetailItem,
   type DisplayData,
   type Network,
@@ -91,6 +93,21 @@ export const buildTxApprovalRequest = (
     }
   }
 
+  // An EIP-2930 access list is signed but is not sent to Blockaid or included in
+  // the simulation, so flag its presence for the user. A scan alert (warning /
+  // danger) is more important and owns the single alert slot, so only surface
+  // this when nothing else already claimed it.
+  const hasAccessList = Array.isArray(transaction.accessList) && transaction.accessList.length > 0;
+
+  const accessListAlert: Alert = {
+    type: AlertType.INFO,
+    details: {
+      title: 'Includes an access list',
+      description:
+        "This transaction includes EIP-2930 access-list data that pre-declares the accounts and storage it will touch. Its contents aren't part of the security preview.",
+    },
+  };
+
   const displayData: DisplayData = {
     title,
     details: [
@@ -101,7 +118,7 @@ export const buildTxApprovalRequest = (
       ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
     networkFeeSelector: true,
-    alert,
+    alert: alert ?? (hasAccessList ? accessListAlert : undefined),
     balanceChange,
     tokenApprovals,
     isSimulationSuccessful,

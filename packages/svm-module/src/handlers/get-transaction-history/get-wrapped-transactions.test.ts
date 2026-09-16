@@ -57,7 +57,7 @@ describe('src/handlers/get-transaction-history/get-wrapped-transactions', () => 
 
     const result = await getWrappedTransactions({ network: mockNetwork, address, proxyApiUrl });
 
-    expect(getProvider).toHaveBeenCalledWith({ isTestnet: false, proxyApiUrl });
+    expect(getProvider).toHaveBeenCalledWith({ network: mockNetwork, proxyApiUrl });
     expect(mockProvider.getSignaturesForAddress).toHaveBeenCalledWith(expect.anything(), { limit: 25 });
     expect(mockProvider.getTransaction).toHaveBeenCalledWith('sig1', {
       encoding: 'json',
