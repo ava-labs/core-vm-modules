@@ -1,11 +1,12 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
+import { Address, UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
 import { AppName, NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
 import { avalancheSendTransaction } from './avalanche-send-transaction';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getProvider } from '../../utils/get-provider';
 import { retry } from '@internal/utils/src/utils/retry';
+import { hasValidOutputOwners } from '../../utils/has-valid-output-owners';
 
 const GLACIER_API_URL = 'https://glacier-api.avax.network';
 
@@ -13,6 +14,7 @@ jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@avalabs/avalanchejs');
 jest.mock('./utils/get-addresses-by-indices');
 jest.mock('../../utils/get-provider');
+jest.mock('../../utils/has-valid-output-owners');
 jest.mock('@internal/utils/src/utils/retry', () => ({
   retry: jest.fn(),
 }));
@@ -31,6 +33,10 @@ const mockApprovalController: jest.Mocked<ApprovalController> = {
 };
 
 const mockGetAddressesByIndices = getAddressesByIndices as jest.MockedFunction<typeof getAddressesByIndices>;
+const mockHasValidOutputOwners = hasValidOutputOwners as jest.MockedFunction<typeof hasValidOutputOwners>;
+
+const fromAddressBytes = new Uint8Array([0, 1, 2]);
+const fromAddress = { toBytes: () => fromAddressBytes } as unknown as Address;
 
 const issueTxHexMock = jest.fn();
 const mockGetTxStatus = jest.fn().mockResolvedValue({ status: 'Accepted' });
@@ -144,6 +150,8 @@ describe('avalanche_sendTransaction handler', () => {
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (EVMUnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     mockGetAddressesByIndices.mockResolvedValue([]);
+    mockHasValidOutputOwners.mockReturnValue(true);
+    (Address.fromString as jest.Mock).mockReturnValue(fromAddress);
     issueTxHexMock.mockResolvedValue({ txID: testTxHash });
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(AVM);
     (Avalanche.createAvalancheUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
@@ -195,11 +203,25 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
+  it('should return error if the transaction does not have valid output owners', async () => {
+    mockHasValidOutputOwners.mockReturnValue(false);
+
+    const params = testParams(testRequestParams);
+
+    const result = await avalancheSendTransaction(params);
+
+    expect(mockHasValidOutputOwners).toHaveBeenCalledWith(unsignedTxMock, [fromAddress]);
+    expect(Avalanche.parseAvalancheTx).not.toHaveBeenCalled();
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      error: rpcErrors.internal('Output owner address not found in input address map'),
+    });
+  });
+
   it('should return error if fails to parse transaction', async () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
       type: 'unknown',
     });
-    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
 
     const params = testParams(testRequestParams);
 
@@ -221,7 +243,6 @@ describe('avalanche_sendTransaction handler', () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
       type: 'import',
     });
-    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
 
     await avalancheSendTransaction(params);
 
@@ -240,7 +261,7 @@ describe('avalanche_sendTransaction handler', () => {
       tx,
       utxos: utxosMock,
       provider: mockProvider,
-      fromAddressBytes: [new Uint8Array([0, 1, 2])],
+      fromAddressBytes: [fromAddressBytes],
     });
 
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
@@ -311,12 +332,10 @@ describe('avalanche_sendTransaction handler', () => {
     const params = testParams({ transactionHex, chainAlias }, context);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(EVM);
     (utils.hexToBuffer as jest.Mock).mockReturnValueOnce(new Uint8Array([0, 1, 2]));
-    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
       type: 'import',
     });
     (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValueOnce(unsignedTxMock);
-    (utils.parse as jest.Mock).mockReturnValue([]);
 
     await avalancheSendTransaction(params);
 
@@ -408,7 +427,6 @@ describe('avalanche_sendTransaction handler', () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
       type: 'import',
     });
-    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
 
     await avalancheSendTransaction(params);
 
@@ -479,7 +497,6 @@ describe('avalanche_sendTransaction handler', () => {
     });
 
     it('should notify when transaction is confirmed', async () => {
-      (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
       mockRetry.mockResolvedValue({ status: 'Accepted' });
 
       const params = testParams(testRequestParams);

@@ -79,7 +79,7 @@ export const avalancheSendTransaction = async ({
     });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
-    let fromAddresses: Address[] = [];
+    let fromAddresses: Address[] | undefined = undefined;
 
     if (chainAlias === 'C') {
       unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
