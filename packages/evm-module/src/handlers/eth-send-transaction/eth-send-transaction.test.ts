@@ -114,6 +114,17 @@ const testRequestParams = () => ({
   blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 });
 
+// The default transaction below carries an EIP-2930 access list, so absent a
+// scan verdict the approval surfaces the informational access-list alert.
+const accessListAlert = {
+  type: AlertType.INFO,
+  details: {
+    title: 'Includes an access list',
+    description:
+      "This transaction includes EIP-2930 access-list data that pre-declares the accounts and storage it will touch. Its contents aren't part of the security preview.",
+  },
+};
+
 const displayData = {
   title: 'Do you approve this transaction?',
   details: [
@@ -147,7 +158,7 @@ const displayData = {
     },
   ],
   networkFeeSelector: true,
-  alert: undefined,
+  alert: accessListAlert,
   tokenApprovals: undefined,
   balanceChange: undefined,
   isSimulationSuccessful: true,
@@ -782,10 +793,11 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
       updateTx,
     });
   } else {
-    // `result_type === 'Error'` is not a security verdict — no alert is raised.
+    // `result_type === 'Error'` is not a security verdict, so no scan alert claims
+    // the slot and the informational access-list alert is surfaced instead.
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith({
       request: requestParams.request,
-      displayData: { ...displayData, alert: undefined },
+      displayData: { ...displayData, alert: accessListAlert },
       signingData,
       updateTx,
     });
