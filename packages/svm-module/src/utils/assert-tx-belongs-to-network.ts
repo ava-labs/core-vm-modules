@@ -56,7 +56,11 @@ const assertDurableNonceBelongsToNetwork = async ({
   network: Network;
 }): Promise<string | null> => {
   try {
-    const accountInfo = await provider.getAccountInfo(nonceAccountAddress, { encoding: 'jsonParsed' }).send();
+    // `processed` (not the default `finalized`) so a freshly created or advanced
+    // nonce account is observed in the same state a dApp can legitimately build against.
+    const accountInfo = await provider
+      .getAccountInfo(nonceAccountAddress, { encoding: 'jsonParsed', commitment: 'processed' })
+      .send();
     const data = accountInfo.value?.data;
 
     if (!data) {
@@ -124,7 +128,11 @@ export const assertTxBelongsToNetwork = async ({
   }
 
   try {
-    const { value: isValid } = await provider.isBlockhashValid(message.lifetimeToken as Blockhash).send();
+    // `processed` (not the default `finalized`) so a blockhash fetched moments ago
+    // is not reported unknown before its slot finalizes.
+    const { value: isValid } = await provider
+      .isBlockhashValid(message.lifetimeToken as Blockhash, { commitment: 'processed' })
+      .send();
 
     if (!isValid) {
       return lifetimeNotValid(network.chainName, 'blockhash');

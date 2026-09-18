@@ -50,7 +50,7 @@ describe('assertTxBelongsToNetwork', () => {
       const provider = buildProvider({ blockhashValid: { value: true } });
 
       expect(await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network })).toBeNull();
-      expect(provider.isBlockhashValid).toHaveBeenCalledWith(BLOCKHASH);
+      expect(provider.isBlockhashValid).toHaveBeenCalledWith(BLOCKHASH, { commitment: 'processed' });
     });
 
     it('flags expiry and cross-cluster when the blockhash is not valid on the target cluster', async () => {
@@ -76,7 +76,10 @@ describe('assertTxBelongsToNetwork', () => {
       const provider = buildProvider({ accountInfo: nonceAccountInfo(BLOCKHASH) });
 
       expect(await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network })).toBeNull();
-      expect(provider.getAccountInfo).toHaveBeenCalledWith(NONCE_ACCOUNT, { encoding: 'jsonParsed' });
+      expect(provider.getAccountInfo).toHaveBeenCalledWith(NONCE_ACCOUNT, {
+        encoding: 'jsonParsed',
+        commitment: 'processed',
+      });
       expect(provider.isBlockhashValid).not.toHaveBeenCalled();
     });
 
