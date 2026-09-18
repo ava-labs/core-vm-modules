@@ -13,7 +13,7 @@ import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import { parseRequestParams } from './schema';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
-import { avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { Address, avaxSerial, AVM, EVMUnsignedTx, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
 import { getProvider } from '../../utils/get-provider';
 import { resolveUtxos } from '../../utils/resolve-utxos';
 import { getCrossChainRecipients } from '../../utils/get-cross-chain-recipients';
@@ -24,6 +24,7 @@ import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
 import { getAccountFromContext } from '../../utils/get-account-from-context';
+import { hasValidOutputOwners } from '../../utils/has-valid-output-owners';
 
 export const avalancheSendTransaction = async ({
   request,
@@ -78,6 +79,8 @@ export const avalancheSendTransaction = async ({
     });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
+    let fromAddresses: Address[] = [];
+
     if (chainAlias === 'C') {
       unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
         txBytes,
@@ -112,9 +115,11 @@ export const avalancheSendTransaction = async ({
         externalXPAddresses,
       });
 
-      const fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])];
+      fromAddresses = [...new Set([currentAddress, ...externalAddresses, ...internalAddresses])].map((address) =>
+        Address.fromString(address),
+      );
 
-      const fromAddressBytes = fromAddresses.map((address) => utils.parse(address)[2]);
+      const fromAddressBytes = fromAddresses.map((address) => address.toBytes());
 
       unsignedTx = await Avalanche.createAvalancheUnsignedTx({
         tx,
@@ -124,8 +129,13 @@ export const avalancheSendTransaction = async ({
       });
     }
 
-    const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
+    if (!hasValidOutputOwners(unsignedTx, fromAddresses)) {
+      return {
+        error: rpcErrors.internal('Output owner address not found in input address map'),
+      };
+    }
 
+    const txData = await Avalanche.parseAvalancheTx(unsignedTx, provider, currentAddress);
     const txDetails = parseTxDetails(txData);
     const title = parseTxDisplayTitle(txData);
 
