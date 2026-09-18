@@ -2,6 +2,7 @@ import {
   type Address,
   type Blockhash,
   type CompiledTransactionMessage,
+  fetchAddressesForLookupTables,
   getCompiledTransactionMessageDecoder,
   getTransactionDecoder,
 } from '@solana/kit';
@@ -38,10 +39,50 @@ const isDurableNonceTransaction = (message: CompiledTransactionMessage): boolean
   );
 };
 
-const getDurableNonceAccountAddress = (message: CompiledTransactionMessage): Address | null => {
+// In a v0 message an instruction account index addresses the static keys
+// followed by the addresses loaded from lookup tables (all writable across the
+// lookups first, then all readonly). A durable nonce account is a writable
+// non-signer, so it can validly live in a lookup table and fall outside
+// `staticAccounts`. Resolve the loaded portion via the tables when needed.
+const resolveAccountAddress = async (
+  message: CompiledTransactionMessage,
+  accountIndex: number,
+  provider: SolanaProvider,
+): Promise<Address | null> => {
+  if (accountIndex < message.staticAccounts.length) {
+    return message.staticAccounts[accountIndex] ?? null;
+  }
+
+  const lookups = 'addressTableLookups' in message ? message.addressTableLookups ?? [] : [];
+
+  if (lookups.length === 0) {
+    return null;
+  }
+
+  const addressesByTable = await fetchAddressesForLookupTables(
+    lookups.map((lookup) => lookup.lookupTableAddress),
+    provider,
+  );
+
+  const writable = lookups.flatMap((lookup) =>
+    lookup.writableIndices.map((index) => addressesByTable[lookup.lookupTableAddress]?.[index]),
+  );
+  const readonly = lookups.flatMap((lookup) =>
+    lookup.readableIndices.map((index) => addressesByTable[lookup.lookupTableAddress]?.[index]),
+  );
+
+  return [...writable, ...readonly][accountIndex - message.staticAccounts.length] ?? null;
+};
+
+const getDurableNonceAccountAddress = (
+  message: CompiledTransactionMessage,
+  provider: SolanaProvider,
+): Promise<Address | null> => {
   const nonceAccountIndex = message.instructions[0]?.accountIndices?.[0];
 
-  return nonceAccountIndex === undefined ? null : message.staticAccounts[nonceAccountIndex] ?? null;
+  return nonceAccountIndex === undefined
+    ? Promise.resolve(null)
+    : resolveAccountAddress(message, nonceAccountIndex, provider);
 };
 
 const assertDurableNonceBelongsToNetwork = async ({
@@ -113,7 +154,13 @@ export const assertTxBelongsToNetwork = async ({
   }
 
   if (isDurableNonceTransaction(message)) {
-    const nonceAccountAddress = getDurableNonceAccountAddress(message);
+    let nonceAccountAddress: Address | null;
+
+    try {
+      nonceAccountAddress = await getDurableNonceAccountAddress(message, provider);
+    } catch {
+      return couldNotVerify(network.chainName);
+    }
 
     if (!nonceAccountAddress) {
       return couldNotVerify(network.chainName);
