@@ -45,6 +45,24 @@ describe('packages/svm-module/src/utils/get-provider', () => {
     });
   });
 
+  it('falls back to the testnet flag rather than Mainnet when the CAIP id is absent', () => {
+    getProvider({ proxyApiUrl, network: { isTestnet: true } as unknown as Network });
+
+    expect(getSolanaProvider).toHaveBeenCalledWith({
+      isTestnet: true,
+      rpcUrl: 'https://api.devnet.solana.com',
+    });
+  });
+
+  it('routes a caip-less mainnet network through the proxy', () => {
+    getProvider({ proxyApiUrl, network: { isTestnet: false } as unknown as Network });
+
+    expect(getSolanaProvider).toHaveBeenCalledWith({
+      isTestnet: false,
+      rpcUrl: 'https://localhost:3000/proxy/nownodes/sol',
+    });
+  });
+
   it('should add the glacier API key to the rpc url', () => {
     jest
       .mocked(addGlacierAPIKeyIfNeeded)

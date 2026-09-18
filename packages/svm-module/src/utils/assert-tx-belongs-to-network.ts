@@ -1,4 +1,5 @@
 import {
+  type Address,
   type Blockhash,
   type CompiledTransactionMessage,
   getCompiledTransactionMessageDecoder,
@@ -11,10 +12,15 @@ const SYSTEM_PROGRAM_ADDRESS = '11111111111111111111111111111111';
 // System instruction index (u32 little-endian) for AdvanceNonceAccount.
 const ADVANCE_NONCE_ACCOUNT_INSTRUCTION = 4;
 
+const couldNotVerify = (chainName: string) =>
+  `Could not verify this transaction belongs to ${chainName}. Signing it could authorize a transfer on a different Solana cluster.`;
+
+const lifetimeNotValid = (chainName: string, kind: 'blockhash' | 'durable nonce') =>
+  `This transaction's ${kind} is not valid on ${chainName}. It may have expired, or it may have been built for a different Solana cluster. Signing it could authorize a transfer on another network.`;
+
 // A durable-nonce transaction's lifetime is a nonce account rather than a
 // blockhash, and its first instruction must be a System `AdvanceNonceAccount`.
-// Such transactions carry the nonce (not a recent blockhash) in `lifetimeToken`,
-// so the blockhash check below does not apply to them.
+// Such transactions carry the nonce (not a recent blockhash) in `lifetimeToken`.
 const isDurableNonceTransaction = (message: CompiledTransactionMessage): boolean => {
   const [firstInstruction] = message.instructions;
 
@@ -32,20 +38,57 @@ const isDurableNonceTransaction = (message: CompiledTransactionMessage): boolean
   );
 };
 
+const getDurableNonceAccountAddress = (message: CompiledTransactionMessage): Address | null => {
+  const nonceAccountIndex = message.instructions[0]?.accountIndices?.[0];
+
+  return nonceAccountIndex === undefined ? null : message.staticAccounts[nonceAccountIndex] ?? null;
+};
+
+const assertDurableNonceBelongsToNetwork = async ({
+  nonceAccountAddress,
+  nonce,
+  provider,
+  network,
+}: {
+  nonceAccountAddress: Address;
+  nonce: string;
+  provider: SolanaProvider;
+  network: Network;
+}): Promise<string | null> => {
+  try {
+    const accountInfo = await provider.getAccountInfo(nonceAccountAddress, { encoding: 'jsonParsed' }).send();
+    const data = accountInfo.value?.data;
+
+    if (!data) {
+      return `This transaction's durable nonce account is unknown on ${network.chainName}. Signing it could authorize a transfer on a different Solana cluster.`;
+    }
+
+    if (Array.isArray(data)) {
+      return couldNotVerify(network.chainName);
+    }
+
+    const storedNonce = (data.parsed.info as { blockhash?: unknown }).blockhash;
+
+    if (typeof storedNonce !== 'string' || storedNonce !== nonce) {
+      return lifetimeNotValid(network.chainName, 'durable nonce');
+    }
+  } catch {
+    return couldNotVerify(network.chainName);
+  }
+
+  return null;
+};
+
 /**
- * Solana messages carry no chain id, so the recent blockhash is the only thing
- * binding a transaction to a cluster. A dApp could request signing under a
- * `solana:devnet` scope - which is what the scanner and the action metadata are
- * derived from - while supplying a transaction built on a fresh Mainnet
- * blockhash, then submit the returned signature to Mainnet. Verify the blockhash
- * is actually known on the cluster we are signing for.
+ * Solana messages carry no chain id, so the recent blockhash (or durable nonce)
+ * is the only thing binding a transaction to a cluster. A dApp could request
+ * signing under a `solana:devnet` scope - which is what the scanner and the
+ * action metadata are derived from - while supplying a transaction built on
+ * Mainnet, then submit the returned signature to Mainnet.
  *
- * Decode / transport failures fail open - the signer or RPC rejects a genuinely
- * broken transaction anyway, and a dApp cannot choose whether our own RPC call
- * succeeds.
- *
- * Returns an error message when the transaction does not belong to `network`, or
- * `null` when it is valid or cannot be determined.
+ * Fail closed whenever membership cannot be established: `signTransaction`
+ * returns a portable signature with no later network operation that would
+ * catch a cluster mismatch.
  */
 export const assertTxBelongsToNetwork = async ({
   serializedTx,
@@ -56,29 +99,38 @@ export const assertTxBelongsToNetwork = async ({
   provider: SolanaProvider;
   network: Network;
 }): Promise<string | null> => {
-  let blockhash: Blockhash;
+  let message: CompiledTransactionMessage;
 
   try {
     const transaction = getTransactionDecoder().decode(Uint8Array.from(Buffer.from(serializedTx, 'base64')));
-    const message = getCompiledTransactionMessageDecoder().decode(transaction.messageBytes);
+    message = getCompiledTransactionMessageDecoder().decode(transaction.messageBytes);
+  } catch {
+    return couldNotVerify(network.chainName);
+  }
 
-    if (isDurableNonceTransaction(message)) {
-      return null;
+  if (isDurableNonceTransaction(message)) {
+    const nonceAccountAddress = getDurableNonceAccountAddress(message);
+
+    if (!nonceAccountAddress) {
+      return couldNotVerify(network.chainName);
     }
 
-    blockhash = message.lifetimeToken as Blockhash;
-  } catch {
-    return null;
+    return assertDurableNonceBelongsToNetwork({
+      nonceAccountAddress,
+      nonce: message.lifetimeToken,
+      provider,
+      network,
+    });
   }
 
   try {
-    const { value: isValid } = await provider.isBlockhashValid(blockhash).send();
+    const { value: isValid } = await provider.isBlockhashValid(message.lifetimeToken as Blockhash).send();
 
     if (!isValid) {
-      return `This transaction was not built for ${network.chainName}. Its blockhash is unknown on this network, so signing it could authorize a transfer on a different Solana cluster.`;
+      return lifetimeNotValid(network.chainName, 'blockhash');
     }
   } catch {
-    return null;
+    return couldNotVerify(network.chainName);
   }
 
   return null;

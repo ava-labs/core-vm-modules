@@ -8,58 +8,121 @@ import { assertTxBelongsToNetwork } from './assert-tx-belongs-to-network';
 const SERIALIZED_TX =
   'AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAAAQKo9pFOiKGw4hAVPvdjrisAwrk9FsEk0sBTehAEgAAA3fS9Owj8B10Abix46FXAI/UfwKL0rpcbksjQ4hzpymIAAA=';
 const BLOCKHASH = 'FwRYtTPRk5NfqNsQBJTZFy1phFPo2VmbjnZ3AtDrDwK7';
+const NONCE_ACCOUNT = '11111111111111111111111111111113';
 
 const network = { chainName: 'Solana Devnet' } as unknown as Network;
 
-const providerReturning = (result: { value: boolean } | Error): SolanaProvider =>
+const asSend = <T>(result: T | Error) =>
+  jest.fn().mockReturnValue({
+    send: result instanceof Error ? jest.fn().mockRejectedValue(result) : jest.fn().mockResolvedValue(result),
+  });
+
+const buildProvider = ({
+  blockhashValid,
+  accountInfo,
+}: {
+  blockhashValid?: { value: boolean } | Error;
+  accountInfo?: unknown;
+} = {}): SolanaProvider =>
   ({
-    isBlockhashValid: jest.fn().mockReturnValue({
-      send: result instanceof Error ? jest.fn().mockRejectedValue(result) : jest.fn().mockResolvedValue(result),
-    }),
+    isBlockhashValid: asSend(blockhashValid ?? { value: true }),
+    getAccountInfo: asSend(accountInfo),
   }) as unknown as SolanaProvider;
 
+const nonceAccountInfo = (blockhash: unknown) => ({
+  value: { data: { parsed: { info: { blockhash } } } },
+});
+
+const buildDurableNonceTx = (): string => {
+  const payer = new PublicKey('11111111111111111111111111111112');
+  const message = new TransactionMessage({
+    payerKey: payer,
+    recentBlockhash: BLOCKHASH,
+    instructions: [SystemProgram.nonceAdvance({ noncePubkey: new PublicKey(NONCE_ACCOUNT), authorizedPubkey: payer })],
+  }).compileToV0Message();
+
+  return Buffer.from(new VersionedTransaction(message).serialize()).toString('base64');
+};
+
 describe('assertTxBelongsToNetwork', () => {
-  it('returns an error when the blockhash is unknown on the target cluster', async () => {
-    const provider = providerReturning({ value: false });
+  describe('blockhash transactions', () => {
+    it('returns null when the blockhash belongs to the cluster', async () => {
+      const provider = buildProvider({ blockhashValid: { value: true } });
 
-    const result = await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network });
+      expect(await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network })).toBeNull();
+      expect(provider.isBlockhashValid).toHaveBeenCalledWith(BLOCKHASH);
+    });
 
-    expect(result).toContain('was not built for Solana Devnet');
-    expect(provider.isBlockhashValid).toHaveBeenCalledWith(BLOCKHASH);
+    it('flags expiry and cross-cluster when the blockhash is not valid on the target cluster', async () => {
+      const provider = buildProvider({ blockhashValid: { value: false } });
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network });
+
+      expect(result).toContain('blockhash is not valid on Solana Devnet');
+      expect(result).toContain('may have expired');
+    });
+
+    it('fails closed when the blockhash cannot be checked', async () => {
+      const provider = buildProvider({ blockhashValid: new Error('network down') });
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network });
+
+      expect(result).toContain('Could not verify');
+    });
   });
 
-  it('returns null when the blockhash belongs to the cluster', async () => {
-    const provider = providerReturning({ value: true });
+  describe('durable-nonce transactions', () => {
+    it('returns null when the stored nonce matches on the target cluster', async () => {
+      const provider = buildProvider({ accountInfo: nonceAccountInfo(BLOCKHASH) });
 
-    expect(await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network })).toBeNull();
+      expect(await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network })).toBeNull();
+      expect(provider.getAccountInfo).toHaveBeenCalledWith(NONCE_ACCOUNT, { encoding: 'jsonParsed' });
+      expect(provider.isBlockhashValid).not.toHaveBeenCalled();
+    });
+
+    it('flags expiry and cross-cluster when the stored nonce does not match', async () => {
+      const provider = buildProvider({ accountInfo: nonceAccountInfo('SomeOtherNonceValue1111111111111111111111') });
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network });
+
+      expect(result).toContain('durable nonce is not valid on Solana Devnet');
+    });
+
+    it('fails closed when the nonce account is unknown on the target cluster', async () => {
+      const provider = buildProvider({ accountInfo: { value: null } });
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network });
+
+      expect(result).toContain('durable nonce account is unknown on Solana Devnet');
+    });
+
+    it('fails closed when the nonce account data cannot be parsed', async () => {
+      const provider = buildProvider({ accountInfo: { value: { data: ['deadbeef', 'base64'] } } });
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network });
+
+      expect(result).toContain('Could not verify');
+    });
+
+    it('fails closed when the nonce account cannot be fetched', async () => {
+      const provider = buildProvider();
+      jest.mocked(provider.getAccountInfo).mockReturnValue({
+        send: jest.fn().mockRejectedValue(new Error('network down')),
+      } as unknown as ReturnType<SolanaProvider['getAccountInfo']>);
+
+      const result = await assertTxBelongsToNetwork({ serializedTx: buildDurableNonceTx(), provider, network });
+
+      expect(result).toContain('Could not verify');
+    });
   });
 
-  it('fails open (null) when the blockhash cannot be checked', async () => {
-    const provider = providerReturning(new Error('network down'));
+  it('fails closed when the payload cannot be decoded', async () => {
+    const provider = buildProvider();
 
-    expect(await assertTxBelongsToNetwork({ serializedTx: SERIALIZED_TX, provider, network })).toBeNull();
-  });
+    const result = await assertTxBelongsToNetwork({ serializedTx: 'not-base64-@@@', provider, network });
 
-  it('fails open (null) when the payload cannot be decoded', async () => {
-    const provider = providerReturning({ value: false });
-
-    expect(await assertTxBelongsToNetwork({ serializedTx: 'not-base64-@@@', provider, network })).toBeNull();
+    expect(result).toContain('Could not verify');
     expect(provider.isBlockhashValid).not.toHaveBeenCalled();
-  });
-
-  it('skips durable-nonce transactions (no blockhash check)', async () => {
-    const payer = new PublicKey('11111111111111111111111111111112');
-    const nonceAccount = new PublicKey('11111111111111111111111111111113');
-    const message = new TransactionMessage({
-      payerKey: payer,
-      recentBlockhash: BLOCKHASH,
-      instructions: [SystemProgram.nonceAdvance({ noncePubkey: nonceAccount, authorizedPubkey: payer })],
-    }).compileToV0Message();
-    const nonceTx = Buffer.from(new VersionedTransaction(message).serialize()).toString('base64');
-
-    const provider = providerReturning({ value: false });
-
-    expect(await assertTxBelongsToNetwork({ serializedTx: nonceTx, provider, network })).toBeNull();
-    expect(provider.isBlockhashValid).not.toHaveBeenCalled();
+    expect(provider.getAccountInfo).not.toHaveBeenCalled();
   });
 });

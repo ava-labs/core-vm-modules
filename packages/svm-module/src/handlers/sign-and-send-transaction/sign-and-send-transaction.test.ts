@@ -27,6 +27,7 @@ const mockBlockaid = {
 
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@src/utils/get-provider');
+jest.mock('@src/utils/assert-tx-belongs-to-network');
 jest.mock('./schema');
 jest.mock('@src/utils/wait-for-transaction-confirmation');
 jest.mock('@src/utils/explain/explain-transaction', () => ({

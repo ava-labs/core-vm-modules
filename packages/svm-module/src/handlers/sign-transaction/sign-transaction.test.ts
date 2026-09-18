@@ -19,6 +19,7 @@ import { ChainId, SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@internal/utils/src/utils/is-promise-fulfilled');
 jest.mock('@src/utils/get-provider');
+jest.mock('@src/utils/assert-tx-belongs-to-network');
 jest.mock('@src/utils/functional');
 jest.mock('./schema');
 
