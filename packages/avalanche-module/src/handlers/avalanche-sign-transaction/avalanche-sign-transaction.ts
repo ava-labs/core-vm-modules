@@ -23,6 +23,7 @@ import { getTransactionDetailSections } from '../../utils/get-transaction-detail
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
 import { getAccountFromContext } from '../../utils/get-account-from-context';
+import { hasValidOutputOwners } from '../../utils/has-valid-output-owners';
 
 export const avalancheSignTransaction = async ({
   request,
@@ -112,6 +113,12 @@ export const avalancheSignTransaction = async ({
     };
   }
   const signerAccount = from ?? currentAddress;
+
+  if (!hasValidOutputOwners(unsignedOrPartiallySignedTx)) {
+    return {
+      error: rpcErrors.internal('Output owner address not found in input address map'),
+    };
+  }
 
   // get display data for the UI
   const txData = await Avalanche.parseAvalancheTx(unsignedOrPartiallySignedTx, provider, from ?? currentAddress);

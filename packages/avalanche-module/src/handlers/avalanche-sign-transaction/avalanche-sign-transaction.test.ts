@@ -5,9 +5,13 @@ import { avalancheSignTransaction } from './avalanche-sign-transaction';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
+import { hasValidOutputOwners } from '../../utils/has-valid-output-owners';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
+jest.mock('../../utils/has-valid-output-owners');
+
+const mockHasValidOutputOwners = hasValidOutputOwners as jest.MockedFunction<typeof hasValidOutputOwners>;
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
@@ -103,6 +107,7 @@ describe('avalanche-sign-transaction', () => {
     unsignedTxMock.getSigIndicesForAddress.mockReturnValue([[0, 0]]);
     unsignedTxMock.getSigIndices.mockReturnValue([[0, 0]]);
     (Avalanche.getUtxosByTxFromGlacier as jest.Mock).mockReturnValue(utxosMock);
+    mockHasValidOutputOwners.mockReturnValue(true);
     jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockRejectedValue(() => Promise.reject({}));
   });
 
@@ -181,6 +186,23 @@ describe('avalanche-sign-transaction', () => {
 
     expect(result).toEqual({
       error: rpcErrors.invalidParams('This account has nothing to sign'),
+    });
+  });
+
+  it('returns error if the transaction does not have valid output owners', async () => {
+    const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
+    mockHasValidOutputOwners.mockReturnValue(false);
+
+    const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request,
+    });
+
+    expect(mockHasValidOutputOwners).toHaveBeenCalledWith(unsignedTxMock);
+    expect(Avalanche.parseAvalancheTx).not.toHaveBeenCalled();
+    expect(mockRequestApproval).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      error: rpcErrors.internal('Output owner address not found in input address map'),
     });
   });
 
