@@ -25,6 +25,9 @@ const getSolanaRpcUrl = ({
     case SolanaCaip2ChainId.TESTNET:
       return RPC_URL_TESTNET;
     default:
+      if (caipId) {
+        throw new Error(`Unsupported Solana CAIP-2 id: ${caipId}`);
+      }
       // Without a CAIP id we cannot tell Devnet from Testnet, but routing a
       // testnet network to the Mainnet proxy would answer for a cluster the
       // user did not ask for. Fall back on the coarse testnet flag instead.
