@@ -24,6 +24,7 @@
     "postinstall": "pnpm run gen:contracts"
   },
   "dependencies": {
+    "@avalabs/core-coingecko-sdk": "3.1.0-canary.1654d7a1",
     "@avalabs/core-utils-sdk": "3.1.0-canary.1654d7a1",
     "@avalabs/core-chains-sdk": "3.1.0-canary.1654d7a1",
     "@avalabs/core-wallets-sdk": "3.1.0-canary.1654d7a1",
