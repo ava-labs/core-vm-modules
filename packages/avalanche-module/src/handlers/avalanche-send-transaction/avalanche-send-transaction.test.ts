@@ -17,6 +17,15 @@ jest.mock('@internal/utils/src/utils/retry', () => ({
   retry: jest.fn(),
 }));
 
+const emptyValueDetails = {
+  outputs: [],
+  inputAmounts: {},
+  outputAmounts: {},
+  totalAvaxInput: 0n,
+  totalAvaxOutput: 0n,
+  totalAvaxBurned: 0n,
+};
+
 const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 
 const mockOnTransactionConfirmed = jest.fn();
@@ -197,6 +206,7 @@ describe('avalanche_sendTransaction handler', () => {
 
   it('should return error if fails to parse transaction', async () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'unknown',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -219,6 +229,7 @@ describe('avalanche_sendTransaction handler', () => {
 
     (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -296,7 +307,7 @@ describe('avalanche_sendTransaction handler', () => {
       signingData: {
         type: 'avalanche_sendTransaction',
         unsignedTxJson: '{"foo":"bar"}',
-        data: { type: 'import' },
+        data: { ...emptyValueDetails, type: 'import' },
         vm: 'AVM',
       },
     });
@@ -313,6 +324,7 @@ describe('avalanche_sendTransaction handler', () => {
     (utils.hexToBuffer as jest.Mock).mockReturnValueOnce(new Uint8Array([0, 1, 2]));
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValueOnce(unsignedTxMock);
@@ -373,7 +385,7 @@ describe('avalanche_sendTransaction handler', () => {
       signingData: {
         type: 'avalanche_sendTransaction',
         unsignedTxJson: '{"foo":"bar"}',
-        data: { type: 'import' },
+        data: { ...emptyValueDetails, type: 'import' },
         vm: 'EVM',
       },
     });
@@ -406,6 +418,7 @@ describe('avalanche_sendTransaction handler', () => {
 
     (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -430,6 +443,7 @@ describe('avalanche_sendTransaction handler', () => {
       jest.clearAllMocks();
 
       (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+        ...emptyValueDetails,
         type: 'import',
       });
 
@@ -519,6 +533,7 @@ describe('avalanche_sendTransaction handler', () => {
       jest.clearAllMocks();
 
       (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+        ...emptyValueDetails,
         type: 'import',
       });
     });

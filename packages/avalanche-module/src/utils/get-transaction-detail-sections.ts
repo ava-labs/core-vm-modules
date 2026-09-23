@@ -17,6 +17,7 @@ import {
   isSetL1ValidatorWeightTx,
   isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
+import { valueDetailsSection } from './transaction-detail-sections/value-details-section';
 import {
   addAutoRenewedValidatorDetailSection,
   convertSubnetToL1DetailSection,
@@ -43,7 +44,7 @@ export type GetTransactionDetailSectionsContext = {
   recipients?: string[];
 };
 
-export const getTransactionDetailSections = (
+const _getDetailSectionsByType = (
   txDetails: TxDetails,
   symbol: string,
   context?: GetTransactionDetailSectionsContext,
@@ -99,4 +100,20 @@ export const getTransactionDetailSections = (
   } else if (isSetAutoRenewedValidatorConfigTx(txDetails)) {
     return setAutoRenewedValidatorConfigDetailSection(txDetails, symbol);
   }
+};
+
+export const getTransactionDetailSections = (
+  txDetails: TxDetails,
+  symbol: string,
+  context?: GetTransactionDetailSectionsContext,
+) => {
+  const detailSections = _getDetailSectionsByType(txDetails, symbol, context);
+
+  if (detailSections === undefined) {
+    return undefined;
+  }
+
+  const valueSection = valueDetailsSection(txDetails, symbol);
+
+  return valueSection ? [...detailSections, valueSection] : detailSections;
 };
