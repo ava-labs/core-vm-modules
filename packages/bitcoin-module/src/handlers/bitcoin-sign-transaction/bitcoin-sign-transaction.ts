@@ -137,6 +137,39 @@ const getScript = (inputs: BitcoinInputUTXO[]): string => {
   return scripts[0]!;
 };
 
+/**
+ * Checks the caller's claimed input values against the UTXOs the chain actually holds.
+ *
+ * Only the outputs of this transaction are shown as amounts; everything the inputs are worth
+ * beyond them is paid to the miner. The fee on the approval screen is `inputs - outputs`, so
+ * a caller that understates its input values makes an arbitrarily large fee look negligible
+ * while the real UTXOs are still what gets spent.
+ */
+const assertInputValuesAreReal = async (
+  inputs: BitcoinInputUTXO[],
+  fromAddress: string,
+  provider: BitcoinProvider,
+): Promise<void> => {
+  const { utxos, utxosUnconfirmed } = await provider.getUtxoBalance(fromAddress, false);
+  const knownValues = new Map(
+    [...utxos, ...utxosUnconfirmed].map((utxo) => [`${utxo.txHash}:${utxo.index}`, utxo.value]),
+  );
+
+  for (const input of inputs) {
+    const knownValue = knownValues.get(`${input.txHash}:${input.index}`);
+
+    if (knownValue === undefined) {
+      throw new Error(`Input ${input.txHash}:${input.index} does not belong to ${fromAddress}`);
+    }
+
+    if (knownValue !== input.value) {
+      throw new Error(
+        `Input ${input.txHash}:${input.index} claims a value of ${input.value} but is worth ${knownValue}`,
+      );
+    }
+  }
+};
+
 const parseTxDetails = async (
   params: BitcoinSignTransactionParams,
   provider: BitcoinProvider,
@@ -155,6 +188,9 @@ const parseTxDetails = async (
   try {
     const script = getScript(params.inputs);
     const fromAddress = await provider.getAddressFromScript(script);
+
+    await assertInputValuesAreReal(params.inputs, fromAddress, provider);
+
     const outputs = params.outputs.filter(({ address }) => address !== fromAddress);
     const inputsTotal = params.inputs.reduce((sum, { value }) => sum + value, 0);
     const outputsTotal = params.outputs.reduce((sum, { value }) => sum + value, 0); // with the change address

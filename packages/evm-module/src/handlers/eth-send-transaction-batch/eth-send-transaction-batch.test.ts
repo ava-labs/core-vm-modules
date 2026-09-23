@@ -295,6 +295,22 @@ describe('eth_sendTransactionBatch handler', () => {
     });
   });
 
+  it('should reject the batch when a transaction targets another chain', async () => {
+    // The schema only makes the batch agree with itself; it still has to be the chain the
+    // approval screen names.
+    mockParseRequestParams.mockReturnValue({
+      success: true,
+      data: { transactions: [tx1, { ...tx2, chainId: '0x89' }], options: {} },
+    });
+
+    const result = await ethSendTransactionBatch(testRequestParams());
+
+    expect(result).toMatchObject({
+      error: expect.objectContaining({ message: expect.stringContaining('Transaction params are invalid') }),
+    });
+    expect(mockApprovalController.requestBatchApproval).not.toHaveBeenCalled();
+  });
+
   it('should return error if request params are invalid', async () => {
     const testError = new Error('Invalid params') as ZodError;
     mockParseRequestParams.mockReturnValue({

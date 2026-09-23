@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/hypercore-module",
-  "version": "4.0.2",
+  "version": "4.0.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -23,7 +23,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.67077776",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.1654d7a1",
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",

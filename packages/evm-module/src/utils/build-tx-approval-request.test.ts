@@ -8,7 +8,7 @@ import {
   type TransactionSimulationResult,
 } from '@avalabs/vm-module-types';
 
-import { addressItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
+import { addressItem, currencyItem, linkItem, networkItem, textItem } from '@internal/utils/src/utils/detail-item';
 
 import { buildTxApprovalRequest } from './build-tx-approval-request';
 import { EERC_ABI } from './eerc-abi';
@@ -26,6 +26,7 @@ const network = {
   chainId: 1,
   chainName: 'Ethereum',
   logoUri: 'logoUri',
+  networkToken: { name: 'Ether', symbol: 'ETH', decimals: 18 },
 } as unknown as Network;
 
 const dappInfo = { url: 'https://example.com', name: 'dapp', icon: 'icon' };
@@ -46,8 +47,25 @@ const getFirstSectionItems = (transaction: TransactionParams) => getDetails(tran
 
 describe('buildTxApprovalRequest', () => {
   describe('transaction details layout', () => {
-    it('shows only the recipient (To) for a native transfer', () => {
+    it('shows the recipient (To) and the amount for a native transfer', () => {
       const transaction = { from: FROM, to: TO_EOA, value: '0x1' } as TransactionParams;
+
+      expect(getFirstSectionItems(transaction)).toEqual([
+        ...baseItems,
+        addressItem('To', TO_EOA),
+        currencyItem('Amount', 1n, 18, 'ETH'),
+      ]);
+    });
+
+    it('shows the signed value even when the simulation produced no balance change', () => {
+      // The amount otherwise only reaches the user through the simulation.
+      const transaction = { from: FROM, to: TO_EOA, value: '0xde0b6b3a7640000' } as TransactionParams;
+
+      expect(getFirstSectionItems(transaction)).toContainEqual(currencyItem('Amount', 10n ** 18n, 18, 'ETH'));
+    });
+
+    it('omits the amount for a zero-value transaction', () => {
+      const transaction = { from: FROM, to: TO_EOA, value: '0x0' } as TransactionParams;
 
       expect(getFirstSectionItems(transaction)).toEqual([...baseItems, addressItem('To', TO_EOA)]);
     });
@@ -126,7 +144,7 @@ describe('buildTxApprovalRequest', () => {
       const items = buildTxApprovalRequest(request, network, transaction, emptyScan, undefined, true).displayData
         .details[0]!.items;
 
-      expect(items).toEqual([...baseItems, addressItem('To', TO_EOA)]);
+      expect(items).toEqual([...baseItems, addressItem('To', TO_EOA), currencyItem('Amount', 1n, 18, 'ETH')]);
     });
   });
 

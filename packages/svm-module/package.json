@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/svm-module",
-  "version": "4.0.2",
+  "version": "4.0.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -22,9 +22,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/core-chains-sdk": "3.1.0-canary.67077776",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.67077776",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.67077776",
+    "@avalabs/core-chains-sdk": "3.1.0-canary.1654d7a1",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.1654d7a1",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.1654d7a1",
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@blockaid/client": "0.48.0",

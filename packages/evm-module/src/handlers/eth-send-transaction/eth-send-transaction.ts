@@ -12,6 +12,7 @@ import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { rpcErrorOpts } from '@internal/utils';
 
 import { parseRequestParams } from './schema';
+import { isMatchingChainId } from '../../utils/is-matching-chain-id';
 import { waitForTransactionReceipt } from '../../utils/wait-for-transaction-receipt';
 import { getTxHash } from '../../utils/get-tx-hash';
 import type Blockaid from '@blockaid/client';
@@ -42,6 +43,18 @@ export const ethSendTransaction = async ({
   }
 
   const [transaction] = data;
+
+  // The chain id is signed but never displayed - see isMatchingChainId.
+  if (!isMatchingChainId(transaction.chainId, network.chainId)) {
+    return {
+      error: rpcErrors.invalidParams(
+        rpcErrorOpts(
+          'Transaction params are invalid',
+          new Error(`The transaction targets a different chain than ${network.chainName}`),
+        ),
+      ),
+    };
+  }
 
   const provider = await getProvider({
     chainId: network.chainId,

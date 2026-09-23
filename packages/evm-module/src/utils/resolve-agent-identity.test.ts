@@ -113,7 +113,7 @@ describe('resolveAgentIdentity', () => {
     expect(result.trustLevel).toBe('high');
   });
 
-  it('ignores reputation when the reputation registry is bound to a different identity registry', async () => {
+  it('resolves nothing when the reputation registry does not vouch for the declared registry', async () => {
     const customContract = jest.fn((address: string, _abi: unknown, provider: unknown) => {
       if (address === identityAddress) {
         return {
@@ -145,8 +145,40 @@ describe('resolveAgentIdentity', () => {
       chainName: 'Avalanche',
     });
 
-    expect(result.reputationScore).toBeNull();
-    expect(result.trustLevel).toBe('unknown');
+    // The declaration is dApp input: an unvouched registry could be the caller's own
+    // contract, so none of the values it returns are shown.
+    expect(result).toEqual({
+      agentId: '1600',
+      agentRegistry: `eip155:43114:${identityAddress}`,
+      owner: null,
+      metadataUri: null,
+      reputationScore: null,
+      trustLevel: 'unknown',
+    });
+  });
+
+  it('does not read a registry declared on a chain other than the connected one', async () => {
+    const result = await resolveAgentIdentity({
+      declaration: {
+        agentId: '1602',
+        // Contracts are read on the connected network, so the chain in the prefix would be a
+        // label with nothing behind it.
+        agentRegistry: `eip155:1:${identityAddress}`,
+      },
+      rpcUrl: 'https://rpc.example/resolve-agent-identity-test-other-chain',
+      chainId: 43114,
+      chainName: 'Avalanche',
+    });
+
+    expect(Contract).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      agentId: '1602',
+      agentRegistry: `eip155:1:${identityAddress}`,
+      owner: null,
+      metadataUri: null,
+      reputationScore: null,
+      trustLevel: 'unknown',
+    });
   });
 
   it('falls back to unknown reputation when feedback reads fail', async () => {

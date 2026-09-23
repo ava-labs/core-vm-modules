@@ -12,8 +12,10 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { toUtf8String } from 'ethers';
 import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message/beautify-message';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
-import { isTypedDataV1 } from './utils/typeguards';
-import { isTypedDataValid } from './utils/is-typed-data-valid';
+import { isTypedData, isTypedDataV1 } from './utils/typeguards';
+import { isTypedDataValid, isTypedDataV1Valid } from './utils/is-typed-data-valid';
+import { sanitizeEip712Message } from './utils/eip712-type-check';
+import { mergeAlerts } from './utils/merge-alerts';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
@@ -21,6 +23,14 @@ import type Blockaid from '@blockaid/client';
 import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
+
+const toUtf8StringOrHex = (data: string): string => {
+  try {
+    return toUtf8String(data);
+  } catch {
+    return data;
+  }
+};
 
 export const ethSign = async ({
   request,
@@ -47,9 +57,24 @@ export const ethSign = async ({
 
   // validate typed data
   let typedDataValidationResult: ReturnType<typeof isTypedDataValid> | undefined;
+  const isLegacyTypedDataMethod = method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1;
 
   if (method === RpcMethod.SIGN_TYPED_DATA_V3 || method === RpcMethod.SIGN_TYPED_DATA_V4) {
     typedDataValidationResult = isTypedDataValid(data);
+  } else if (isLegacyTypedDataMethod) {
+    // Check for legacy flat V1 format or a full V3/V4-style typed data object
+    if (isTypedDataV1(data)) {
+      typedDataValidationResult = isTypedDataV1Valid(data);
+    } else if (isTypedData(data)) {
+      typedDataValidationResult = isTypedDataValid(data);
+    }
+  }
+
+  if (typedDataValidationResult && !typedDataValidationResult.isValid && typedDataValidationResult.blocking) {
+    return {
+      success: false,
+      error: rpcErrors.invalidParams(rpcErrorOpts('EIP-712 message is invalid', typedDataValidationResult.error)),
+    };
   }
 
   // generate display data and signing data
@@ -83,7 +108,9 @@ export const ethSign = async ({
       data: data,
     };
 
-    messageDetails = toUtf8String(data);
+    // A payload that isn't valid UTF-8 is still signable, so fall back to the raw bytes
+    // rather than throwing out of the handler.
+    messageDetails = toUtf8StringOrHex(data);
   } else if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
     signingData = {
       type: method,
@@ -91,7 +118,13 @@ export const ethSign = async ({
       data: data,
     };
 
-    messageDetails = isTypedDataV1(data) ? beautifySimpleMessage(data) : beautifyComplexMessage(data);
+    if (isTypedDataV1(data)) {
+      messageDetails = beautifySimpleMessage(data);
+    } else if (isTypedData(data)) {
+      messageDetails = beautifyComplexMessage({ ...data, message: sanitizeEip712Message(data) });
+    } else {
+      messageDetails = beautifyComplexMessage(data);
+    }
   } else if (method === RpcMethod.SIGN_TYPED_DATA_V3 || method === RpcMethod.SIGN_TYPED_DATA_V4) {
     signingData = {
       type: method,
@@ -100,7 +133,7 @@ export const ethSign = async ({
     };
 
     const { types, primaryType, ...messageToDisplay } = data;
-    messageDetails = beautifyComplexMessage(messageToDisplay);
+    messageDetails = beautifyComplexMessage({ ...messageToDisplay, message: sanitizeEip712Message(data) });
   }
 
   if (!signingData || !messageDetails) {
@@ -150,7 +183,7 @@ export const ethSign = async ({
       },
       ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
-    alert: simulationResult?.alert ?? alert,
+    alert: mergeAlerts(simulationResult?.alert, alert),
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,
   };

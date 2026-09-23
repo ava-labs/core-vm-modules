@@ -1,5 +1,46 @@
 # @avalabs/hvm-module
 
+## 4.0.5
+
+### Patch Changes
+
+- c079206: Report `restakedRewards` on `TokenWithBalancePVM.balancePerType`.
+
+  Rewards compounded into an auto-renewed validator are bonded into that validator's weight and have no UTXO until it exits, so Glacier reports them as a bare nAVAX total on the P-chain balance rather than in any UTXO category. `calculateAvaxTotalBalance` already counts them toward the total, but the amount was not surfaced anywhere a consumer could read it, so a wallet could show the compounded stake in its total while being unable to break it out.
+
+  `convertPChainBalance` cannot route the field through its existing `balanceTypes` loop, which is typed `Record<string, AggregatedAssetAmount[]>`, so it is read directly and set alongside the derived categories.
+
+  The field stays `undefined` rather than `0n` when Glacier omits it. Omission is not the same as zero: the field is dropped entirely on historical queries (`blockTimestamp > 0`), where absence means "unavailable", while a current-balance query for an address with no auto-renewed position returns `"0"`. Collapsing the two would report "nothing compounded" for a validator whose compounded stake simply could not be read.
+
+  Requires `@avalabs/glacier-sdk` at `3.1.0-alpha.97` or later, which is where `PChainBalance.restakedRewards` is typed.
+
+- Updated dependencies [c079206]
+  - @avalabs/vm-module-types@4.0.5
+
+## 4.0.4
+
+### Patch Changes
+
+- 4d9f873: Bump `@avalabs/avalanchejs` to `5.1.1-alpha.4` and the `@avalabs/*` SDK family to `3.1.0-alpha.97`.
+
+  `avalanchejs` `5.1.1-alpha.4` fixes `Utxo#getOutputOwners()` throwing `unable to get output owner` for `nftfx.TransferOutput`, `nftfx.MintOutput` and `secp256k1fx.MintOutput`, all of which do carry `OutputOwners`. Because `getUtxoInfo()` called it before its own fallbacks could run, anything mapping `getUtxoInfo` over a UTXO set threw when the set contained a single NFT — even when the operation had no interest in that UTXO. On X-chain, where `nftfx` outputs are legal, one NFT anywhere in a wallet broke every X-chain operation for that wallet.
+
+  `avalanche-module` pinned the affected `avalanchejs` exactly, so consumers could not fix this by bumping their own top-level dependency: they received a nested copy of the broken version through here unless they also carried a resolution override.
+
+  The `@avalabs/*` SDKs move from `3.1.0-alpha.96` to `3.1.0-alpha.97` together because those packages are released with locked versioning, and `core-wallets-sdk@3.1.0-alpha.97` pins its siblings at `3.1.0-alpha.97` exactly. Bumping only `core-wallets-sdk` would leave duplicate copies of `core-utils-sdk`, `core-chains-sdk` and `glacier-sdk` in consumers' trees.
+
+  `@avalabs/glacier-sdk` in particular must move in lockstep across **every** package that pins it (including the internal `@internal/utils`): its `CancelablePromise` declares a `#private` field, so TypeScript compares copies nominally, and two physically distinct installs are never assignable to each other — a split pin fails the build with `TS2345` on `GlacierFetchHttpRequest` even though the two versions' emitted types are byte-identical.
+
+- Updated dependencies [4d9f873]
+  - @avalabs/vm-module-types@4.0.4
+
+## 4.0.3
+
+### Patch Changes
+
+- 807ed1e: fix: security hardening
+  - @avalabs/vm-module-types@4.0.3
+
 ## 4.0.2
 
 ### Patch Changes

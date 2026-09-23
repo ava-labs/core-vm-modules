@@ -213,6 +213,25 @@ const resolveReputationScore = async (
   }
 };
 
+/**
+ * The reputation registry is a known address per chain, and it names the identity registry it
+ * serves - so it can vouch for a declared registry without the wallet shipping its own list.
+ */
+const isKnownIdentityRegistry = async (
+  reputationContract: ReputationContract | null,
+  declaredRegistry: string,
+): Promise<boolean> => {
+  if (!reputationContract) {
+    return false;
+  }
+
+  try {
+    return getAddress(await reputationContract.getIdentityRegistry()) === declaredRegistry;
+  } catch {
+    return false;
+  }
+};
+
 const parseAgentRegistry = (agentRegistry: string) => {
   const [namespace, chainId, address] = agentRegistry.split(':');
   if (namespace !== 'eip155' || !chainId || !address) {
@@ -282,6 +301,16 @@ export const resolveAgentIdentity = async ({
     return buildFallback(declaration);
   }
 
+  // The declaration is unauthenticated dApp input, and the registry it names is read on the
+  // connected network regardless of the chain in the `eip155:` prefix. Resolving an arbitrary
+  // address would let a caller put its own contract's `ownerOf`/`tokenURI` values - including
+  // a clickable metadata link - on the approval screen, attributed to a registry the user has
+  // no reason to distrust. Only the registry the trusted reputation contract points back at
+  // is resolved; anything else keeps the ids and nothing else.
+  if (parsedRegistry.chainId !== chainId) {
+    return buildFallback(declaration);
+  }
+
   if (!/^\d+$/.test(declaration.agentId)) {
     return buildFallback({
       ...declaration,
@@ -308,6 +337,10 @@ export const resolveAgentIdentity = async ({
   const reputationContract = reputationRegistry
     ? (new Contract(reputationRegistry, REPUTATION_ABI, provider) as ReputationContract)
     : null;
+
+  if (!(await isKnownIdentityRegistry(reputationContract, parsedRegistry.address))) {
+    return fallback;
+  }
 
   const [owner, metadataUri, reputationScore] = await Promise.all([
     callFirst<string | null>([async () => getAddress(await identityContract.ownerOf(BigInt(declaration.agentId)))]),

@@ -91,6 +91,7 @@ export const convertPChainBalance = ({
       unlockedUnstaked: balancePerType['unlockedUnstaked'],
       unlockedStaked: balancePerType['unlockedStaked'],
       pendingStaked: balancePerType['pendingStaked'],
+      restakedRewards: balance.restakedRewards ? BigInt(balance.restakedRewards) : undefined,
     },
     marketCap,
     vol24,

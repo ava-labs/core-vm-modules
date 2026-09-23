@@ -39,6 +39,8 @@ import {
 export type GetTransactionDetailSectionsContext = {
   network: Network;
   signerAccount: string;
+  /** Addresses receiving the funds of a cross-chain transfer - see getExportRecipients. */
+  recipients?: string[];
 };
 
 export const getTransactionDetailSections = (
@@ -49,9 +51,9 @@ export const getTransactionDetailSections = (
   if (isChainDetails(txDetails)) {
     return chainDetailSection(txDetails, symbol);
   } else if (isExportTx(txDetails)) {
-    return exportDetailSection(txDetails, symbol);
+    return exportDetailSection(txDetails, symbol, context?.recipients);
   } else if (isImportTx(txDetails)) {
-    return importDetailSection(txDetails, symbol);
+    return importDetailSection(txDetails, symbol, context?.recipients);
   } else if (isSubnetDetails(txDetails)) {
     return subnetDetailSection(txDetails, symbol);
   } else if (isAddPermissionlessDelegatorTx(txDetails)) {

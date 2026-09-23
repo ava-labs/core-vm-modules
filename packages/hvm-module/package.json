@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/hvm-module",
-  "version": "4.0.2",
+  "version": "4.0.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -27,7 +27,7 @@
     "hypersdk-client": "0.4.16",
     "@noble/hashes": "1.5.0",
     "@scure/base": "1.2.4",
-    "@avalabs/core-utils-sdk": "3.1.0-canary.67077776",
+    "@avalabs/core-utils-sdk": "3.1.0-canary.1654d7a1",
     "@metamask/rpc-errors": "6.3.0",
     "zod": "3.23.8"
   },
