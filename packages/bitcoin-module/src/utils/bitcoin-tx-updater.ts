@@ -1,4 +1,4 @@
-import { BitcoinProvider, createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
+import { getTransferTxDetails, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import type { BtcTxUpdateFn, DisplayData, RpcMethod, SigningData } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { calculateGasLimit } from './calculate-gas-limit';
@@ -11,7 +11,6 @@ export const getTxUpdater = (
   requestId: string,
   signingData: SigningData_BtcSendTx,
   displayData: DisplayData,
-  provider: BitcoinProvider,
 ): { updateTx: BtcTxUpdateFn; cleanup: () => void } => {
   requests.set(requestId, { signingData, displayData });
 
@@ -33,13 +32,12 @@ export const getTxUpdater = (
         account,
         data: { to, amount, balance },
       } = signingData;
-      const { inputs, outputs, fee } = createTransferTx(
+      const { inputs, outputs, fee } = getTransferTxDetails(
         to,
         account,
         amount,
         feeRate,
         balance.utxos as BitcoinInputUTXO[],
-        provider.getNetwork(),
       );
 
       if (!inputs || !outputs) {
