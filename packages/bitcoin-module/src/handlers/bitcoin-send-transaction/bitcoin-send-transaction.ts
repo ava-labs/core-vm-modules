@@ -12,8 +12,9 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
-import { createTransferTx, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
+import { getTransferTxDetails, type BitcoinInputUTXO } from '@avalabs/core-wallets-sdk';
 import { calculateGasLimit } from '../../utils/calculate-gas-limit';
+import { populateUtxosWithTxHex } from '../../utils/populate-utxos-with-tx-hex';
 import { addressItem, currencyItem, rpcErrorOpts } from '@internal/utils';
 import { linkItem } from '@internal/utils/src/utils/detail-item';
 import { getTxUpdater } from '../../utils/bitcoin-tx-updater';
@@ -60,14 +61,17 @@ export const bitcoinSendTransaction = async ({
 
   const { to, from, amount, feeRate } = params;
 
-  const { inputs, outputs, fee } = createTransferTx(
-    to,
-    from,
-    amount,
-    feeRate,
+  // Populate `txHex` on the whole spendable set (not just the currently selected
+  // inputs) so both the initial selection and the synchronous fee-rate updater's
+  // re-selection carry it. Signers need it at signing time to build the PSBT.
+  const utxos = await populateUtxosWithTxHex(
     btcBalance.utxos as BitcoinInputUTXO[], // we asked for scripts in getBalances() call
-    provider.getNetwork(),
+    provider,
   );
+
+  // Uses `getTransferTxDetails` (coin-selection + fee only) rather than
+  // `createTransferTx`, which additionally builds a PSBT we don't need here.
+  const { inputs, outputs, fee } = getTransferTxDetails(to, from, amount, feeRate, utxos);
 
   if (!inputs || !outputs) {
     return {
@@ -107,11 +111,11 @@ export const bitcoinSendTransaction = async ({
       gasLimit: calculateGasLimit(fee, feeRate),
       inputs,
       outputs,
-      balance: btcBalance,
+      balance: { ...btcBalance, utxos },
     },
   };
 
-  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData, provider);
+  const { updateTx, cleanup } = getTxUpdater(request.requestId, signingData, displayData);
   const response = await approvalController.requestApproval({ request, displayData, signingData, updateTx });
 
   cleanup();

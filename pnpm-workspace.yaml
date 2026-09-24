@@ -3,3 +3,5 @@ packages:
   - 'packages-internal/*'
 
 minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@avalabs/*'
