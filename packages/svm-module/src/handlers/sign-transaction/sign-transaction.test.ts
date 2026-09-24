@@ -10,6 +10,8 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { deserializeTransactionMessage, type SolanaProvider } from '@avalabs/core-wallets-sdk';
 
 import { getProvider } from '@src/utils/get-provider';
+import { assertTxBelongsToNetwork } from '@src/utils/assert-tx-belongs-to-network';
+import { explainTransaction } from '@src/utils/explain/explain-transaction';
 import { SOLANA_MAINNET_CAIP2_ID } from '@src/constants';
 
 import { signTransaction } from './sign-transaction';
@@ -19,8 +21,17 @@ import { ChainId, SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@internal/utils/src/utils/is-promise-fulfilled');
 jest.mock('@src/utils/get-provider');
+jest.mock('@src/utils/assert-tx-belongs-to-network');
 jest.mock('@src/utils/functional');
 jest.mock('./schema');
+jest.mock('@src/utils/explain/explain-transaction', () => ({
+  explainTransaction: jest.fn().mockResolvedValue({
+    details: [],
+    isSimulationSuccessful: true,
+    alert: null,
+    balanceChange: { ins: [], outs: [] },
+  }),
+}));
 
 const mockBlockaid = {
   solana: {
@@ -153,5 +164,30 @@ describe('src/handlers/sign-transaction', () => {
     });
 
     expect(result).toEqual({ result: 'test-signed-data' });
+  });
+
+  it('rejects without explaining or requesting approval when the tx does not belong to the network', async () => {
+    (parseRequestParams as jest.Mock).mockReturnValue({
+      success: true,
+      data: [{ account: 'test-account', serializedTx: 'test-serialized-tx' }],
+    });
+    jest.mocked(assertTxBelongsToNetwork).mockResolvedValueOnce('This transaction was not built for Solana');
+
+    const result = await signTransaction({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
+
+    expect(result).toEqual({
+      error: rpcErrors.invalidParams({
+        message: 'This transaction was not built for Solana',
+        data: { cause: null },
+      }),
+    });
+    expect(explainTransaction).not.toHaveBeenCalled();
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
   });
 });

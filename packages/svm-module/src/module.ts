@@ -65,7 +65,7 @@ export class SvmModule implements Module {
   }
 
   async getProvider(network: Network): Promise<SolanaProvider> {
-    return getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl: this.#proxyApiUrl });
+    return getProvider({ network, proxyApiUrl: this.#proxyApiUrl });
   }
 
   // TODO
