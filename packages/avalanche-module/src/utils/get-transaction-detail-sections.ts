@@ -17,6 +17,7 @@ import {
   isSetL1ValidatorWeightTx,
   isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
+import { amountDetailsSections } from './transaction-detail-sections/amount-details-sections';
 import { valueDetailsSection } from './transaction-detail-sections/value-details-section';
 import {
   addAutoRenewedValidatorDetailSection,
@@ -42,6 +43,7 @@ export type GetTransactionDetailSectionsContext = {
   signerAccount: string;
   /** Addresses receiving the funds of a cross-chain transfer - see getExportRecipients. */
   recipients?: string[];
+  avaxAssetId?: string;
 };
 
 const _getDetailSectionsByType = (
@@ -115,5 +117,9 @@ export const getTransactionDetailSections = (
 
   const valueSection = valueDetailsSection(txDetails, symbol);
 
-  return valueSection ? [...detailSections, valueSection] : detailSections;
+  return [
+    ...detailSections,
+    ...(valueSection ? [valueSection] : []),
+    ...amountDetailsSections(txDetails, symbol, context?.avaxAssetId),
+  ];
 };

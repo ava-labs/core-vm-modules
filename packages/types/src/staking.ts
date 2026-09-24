@@ -10,6 +10,7 @@ export type TxValueDetails = {
   totalAvaxInput: bigint;
   totalAvaxOutput: bigint;
   totalAvaxBurned: bigint;
+  isValidAvaxBurnedAmount: boolean;
 };
 
 export type TxOutput = {

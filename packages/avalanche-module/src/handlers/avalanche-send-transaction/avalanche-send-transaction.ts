@@ -22,6 +22,7 @@ import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
+import { getExcessiveBurnAlert } from '../../utils/get-excessive-burn-alert';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
 import { getAccountFromContext } from '../../utils/get-account-from-context';
 
@@ -149,6 +150,7 @@ export const avalancheSendTransaction = async ({
       network,
       signerAccount: currentAddress,
       recipients: getCrossChainRecipients(unsignedTx.getTx(), txDetails, isTestnet),
+      avaxAssetId: provider.getContext().avaxAssetID,
     });
 
     // Throw an error if we can't parse the transaction details
@@ -167,6 +169,7 @@ export const avalancheSendTransaction = async ({
       },
       details,
       networkFeeSelector: false,
+      alert: getExcessiveBurnAlert(txDetails),
     };
 
     // prompt user for approval

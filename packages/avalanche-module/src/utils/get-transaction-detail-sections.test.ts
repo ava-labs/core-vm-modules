@@ -15,6 +15,7 @@ const emptyValueDetails = {
   totalAvaxInput: 0n,
   totalAvaxOutput: 0n,
   totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
 };
 
 const fundsOutTransfers = (txDetails: TxDetails, symbol: string) => {

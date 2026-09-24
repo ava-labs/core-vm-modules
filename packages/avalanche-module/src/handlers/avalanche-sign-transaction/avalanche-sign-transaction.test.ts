@@ -1,8 +1,9 @@
 import { info, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
-import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
+import { AlertType, AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
 import { getAddressesByIndices } from '../avalanche-send-transaction/utils/get-addresses-by-indices';
+import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
@@ -10,6 +11,9 @@ import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/mod
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('../avalanche-send-transaction/utils/get-addresses-by-indices');
+jest.mock('../../utils/get-provider');
+
+const AVAX_ASSET_ID = 'avaxAssetId';
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
@@ -26,6 +30,7 @@ const emptyValueDetails = {
   totalAvaxInput: 0n,
   totalAvaxOutput: 0n,
   totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
 };
 
 const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
@@ -95,6 +100,9 @@ describe('avalanche-sign-transaction', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     (getAddressesByIndices as jest.Mock).mockResolvedValue([]);
+    (getProvider as jest.MockedFunction<typeof getProvider>).mockResolvedValue({
+      getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
+    } as unknown as Avalanche.JsonRpcProvider);
 
     jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockResolvedValue({} as GetUpgradesInfoResponse);
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
@@ -251,6 +259,41 @@ describe('avalanche-sign-transaction', () => {
     expect(result).toEqual({
       result: 'signedData',
     });
+  });
+
+  it('returns burn amount checker warning properly when isValidAvaxBurnedAmount is false', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      isValidAvaxBurnedAmount: false,
+      type: TxType.AddPermissionlessDelegator,
+      start: '0',
+      end: '1000',
+    });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({ alert: expect.objectContaining({ type: AlertType.WARNING }) }),
+      }),
+    );
+  });
+
+  it('does not return burn amount checker warning when isValidAvaxBurnedAmount is true', async () => {
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({ displayData: expect.objectContaining({ alert: undefined }) }),
+    );
   });
 
   it('works with EVM export transactions', async () => {

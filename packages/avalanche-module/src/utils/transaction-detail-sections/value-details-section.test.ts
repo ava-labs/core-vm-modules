@@ -20,6 +20,7 @@ const valueDetails = (overrides: Partial<TxValueDetails> = {}): TxValueDetails =
   totalAvaxInput: 0n,
   totalAvaxOutput: 0n,
   totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
   ...overrides,
 });
 
