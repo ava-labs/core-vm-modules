@@ -1,4 +1,5 @@
-import { type Network, type TxDetails } from '@avalabs/vm-module-types';
+import { type DetailSection, type Network, type TxDetails } from '@avalabs/vm-module-types';
+import { collapsibleGroupItem } from '@internal/utils';
 import {
   isAddAutoRenewedValidatorTx,
   isAddPermissionlessDelegatorTx,
@@ -108,18 +109,25 @@ export const getTransactionDetailSections = (
   txDetails: TxDetails,
   symbol: string,
   context?: GetTransactionDetailSectionsContext,
-) => {
+): DetailSection[] | undefined => {
   const detailSections = _getDetailSectionsByType(txDetails, symbol, context);
 
   if (detailSections === undefined) {
     return undefined;
   }
 
+  // attempt to add value details section to all avalanche transactions
   const valueSection = valueDetailsSection(txDetails, symbol);
 
-  return [
-    ...detailSections,
+  const valueDetails: DetailSection[] = [
     ...(valueSection ? [valueSection] : []),
     ...amountDetailsSections(txDetails, symbol, context?.avaxAssetId),
   ];
+
+  if (valueDetails.length === 0) {
+    return detailSections;
+  }
+
+  // value details are attached in a collapsible group to the end of the detail sections
+  return [...detailSections, { items: [collapsibleGroupItem('Transfer details', valueDetails)] }];
 };

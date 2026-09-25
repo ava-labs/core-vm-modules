@@ -18,10 +18,16 @@ const emptyValueDetails = {
   isValidAvaxBurnedAmount: true,
 };
 
-const fundsOutTransfers = (txDetails: TxDetails, symbol: string) => {
+const getValueDetailsSection = (txDetails: TxDetails, symbol: string) => {
+  const items = getTransactionDetailSections(txDetails, symbol)?.flatMap((section) => section.items) ?? [];
+  const group = items.find((item) => typeof item !== 'string' && item.type === DetailItemType.COLLAPSIBLE_GROUP);
+
+  return group && typeof group !== 'string' && group.type === DetailItemType.COLLAPSIBLE_GROUP ? group.value : [];
+};
+
+const getTransactionOutputsSection = (txDetails: TxDetails, symbol: string) => {
   const [item] =
-    getTransactionDetailSections(txDetails, symbol)?.find((section) => section.title === 'Transaction Outputs')
-      ?.items ?? [];
+    getValueDetailsSection(txDetails, symbol).find((section) => section.title === 'Transaction Outputs')?.items ?? [];
 
   return typeof item === 'string' || item?.type !== DetailItemType.TRANSFER_LIST ? undefined : item.value;
 };
@@ -90,21 +96,31 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Transaction Outputs',
         items: [
           {
-            label: 'Transaction Outputs',
-            type: 'transferList',
+            label: 'Transfer details',
+            type: 'collapsibleGroup',
             value: [
               {
-                addresses: ['0xOwner1'],
-                amount: 100n,
-                assetId: '0xAssetID',
-                symbol: 'AVAX',
-                decimals: 9,
-                threshold: 1,
-                lockedUntil: 1,
-                stakeableLockedUntil: 0,
+                title: 'Transaction Outputs',
+                items: [
+                  {
+                    label: 'Transaction Outputs',
+                    type: 'transferList',
+                    value: [
+                      {
+                        addresses: ['0xOwner1'],
+                        amount: 100n,
+                        assetId: '0xAssetID',
+                        symbol: 'AVAX',
+                        decimals: 9,
+                        threshold: 1,
+                        lockedUntil: 1,
+                        stakeableLockedUntil: 0,
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -114,7 +130,51 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
-  it('labels a non-AVAX output with the asset the chain described', () => {
+  it('groups value detail sections into a collapsible section', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      inputAmounts: { '0xAssetID': 3n },
+      outputAmounts: { '0xAssetID': 2n },
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          stakeableLocktime: 0n,
+          isAvax: true,
+          assetId: '0xAssetID',
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const sections = getTransactionDetailSections(txDetails, networkToken.symbol) ?? [];
+
+    // The three belong to one collapsible item rather than sitting loose beside Chain Details
+    // and Network Fee, so a client can show and hide them together.
+    expect(sections.map(({ title }) => title)).toEqual(['Chain Details', 'Network Fee', undefined]);
+    expect(getValueDetailsSection(txDetails, networkToken.symbol).map(({ title }) => title)).toEqual([
+      'Transaction Outputs',
+      'Input amounts',
+      'Output amounts',
+    ]);
+  });
+
+  it('skips collapsible group when there are no value details', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      txFee: 1n,
+    };
+
+    expect(getValueDetailsSection(txDetails, networkToken.symbol)).toEqual([]);
+  });
+
+  it('returns the proper details for a non-AVAX output', () => {
     const txDetails: TxDetails = {
       ...emptyValueDetails,
       type: TxType.Base,
@@ -134,13 +194,13 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const transfers = fundsOutTransfers(txDetails, networkToken.symbol);
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
     // Previously rendered as AVAX at AVAX's scale.
     expect(transfers?.[0]).toMatchObject({ amount: 100n, decimals: 2, symbol: 'TKN', assetName: 'Some Token' });
   });
 
-  it('shows the raw amount and asset id for an undescribed non-AVAX output', () => {
+  it('returns the assetId for an undescribed non-AVAX output', () => {
     const txDetails: TxDetails = {
       ...emptyValueDetails,
       type: TxType.Base,
@@ -159,7 +219,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const transfers = fundsOutTransfers(txDetails, networkToken.symbol);
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
     // Without a symbol the client shows the raw amount against the asset id, rather than a
     // number that would only look like a familiar unit.
@@ -168,7 +228,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(transfers?.[0]?.decimals).toBeUndefined();
   });
 
-  it('reports both locks on an output, which restrict it in different ways', () => {
+  it('returns the proper lock times for each output', () => {
     const txDetails: TxDetails = {
       ...emptyValueDetails,
       type: TxType.Base,
@@ -187,7 +247,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const transfers = fundsOutTransfers(txDetails, networkToken.symbol);
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
     expect(transfers?.[0]).toMatchObject({ lockedUntil: 1700, stakeableLockedUntil: 9900 });
   });

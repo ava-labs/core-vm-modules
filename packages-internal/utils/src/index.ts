@@ -8,6 +8,7 @@ export {
   dataItem,
   dateItem,
   transferListItem,
+  collapsibleGroupItem,
 } from './utils/detail-item';
 export { retry, RetryBackoffPolicy } from './utils/retry';
 export { fetchAndVerify } from './utils/fetch-and-verify';

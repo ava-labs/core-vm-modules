@@ -14,6 +14,8 @@ import {
   type NetworkItem,
   type Transfer,
   type TransferListItem,
+  type CollapsibleGroupItem,
+  type DetailSection,
 } from '@avalabs/vm-module-types';
 
 export const fundsRecipientItem = (
@@ -93,5 +95,11 @@ export const networkItem = (label: string, value: NetworkItemValue): NetworkItem
 export const transferListItem = (label: string, value: Transfer[]): TransferListItem => ({
   label,
   type: DetailItemType.TRANSFER_LIST,
+  value,
+});
+
+export const collapsibleGroupItem = (label: string, value: DetailSection[]): CollapsibleGroupItem => ({
+  label,
+  type: DetailItemType.COLLAPSIBLE_GROUP,
   value,
 });
