@@ -23,6 +23,7 @@ import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExcessiveBurnAlert } from '../../utils/get-excessive-burn-alert';
+import { getUnsupportedExportError } from '../../utils/get-unsupported-export-error';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
 import { getAccountFromContext } from '../../utils/get-account-from-context';
 
@@ -137,6 +138,18 @@ export const avalancheSendTransaction = async ({
       };
     }
 
+    // Return an error if it's an X/P -> C export transaction and contains any non-AVAX assets
+    const avaxAssetId = provider.getContext().avaxAssetID;
+    const unsupportedExport = getUnsupportedExportError({
+      tx: unsignedTx.getTx(),
+      txDetails,
+      avaxAssetId,
+    });
+
+    if (unsupportedExport) {
+      return { error: unsupportedExport };
+    }
+
     const signingData: SigningData = {
       type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
       unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
@@ -150,7 +163,7 @@ export const avalancheSendTransaction = async ({
       network,
       signerAccount: currentAddress,
       recipients: getCrossChainRecipients(unsignedTx.getTx(), txDetails, isTestnet),
-      avaxAssetId: provider.getContext().avaxAssetID,
+      avaxAssetId,
     });
 
     // Throw an error if we can't parse the transaction details

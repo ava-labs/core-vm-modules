@@ -20,6 +20,7 @@ import { resolveUtxos } from '../../utils/resolve-utxos';
 import { getCrossChainRecipients } from '../../utils/get-cross-chain-recipients';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
 import { getExcessiveBurnAlert } from '../../utils/get-excessive-burn-alert';
+import { getUnsupportedExportError } from '../../utils/get-unsupported-export-error';
 
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { getUnsignedOrPartiallySignedTx } from './util/get-unsigned-or-partially-signed-tx';
@@ -124,6 +125,18 @@ export const avalancheSignTransaction = async ({
     };
   }
 
+  // Return an error if it's an X/P -> C export transaction and contains any non-AVAX assets
+  const avaxAssetId = provider.getContext().avaxAssetID;
+  const unsupportedExport = getUnsupportedExportError({
+    tx: unsignedOrPartiallySignedTx.getTx(),
+    txDetails,
+    avaxAssetId,
+  });
+
+  if (unsupportedExport) {
+    return { error: unsupportedExport };
+  }
+
   const signingData: SigningData = {
     type: RpcMethod.AVALANCHE_SIGN_TRANSACTION,
     data: txData,
@@ -136,7 +149,7 @@ export const avalancheSignTransaction = async ({
     network,
     signerAccount,
     recipients: getCrossChainRecipients(unsignedOrPartiallySignedTx.getTx(), txDetails, isTestnet),
-    avaxAssetId: provider.getContext().avaxAssetID,
+    avaxAssetId,
   });
 
   // Throw an error if we can't parse the transaction details

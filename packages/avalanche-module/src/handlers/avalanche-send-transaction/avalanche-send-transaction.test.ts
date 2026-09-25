@@ -1,5 +1,5 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
+import { avmSerial, UnsignedTx, EVMUnsignedTx, AVM, pvmSerial, utils, EVM } from '@avalabs/avalanchejs';
 import {
   AlertType,
   AppName,
@@ -82,9 +82,7 @@ const unsignedTxMock = {
   hasAllSignatures: hasAllSignaturesMock,
   toJSON: () => unsignedTxJson,
   getSignedTx: () => 'signedTx',
-  getTx: () => ({
-    foo: 'bar',
-  }),
+  getTx: jest.fn(),
 };
 
 const testNetwork: Network = {
@@ -160,6 +158,9 @@ const testTxHash = '0xtxhash';
 describe('avalanche_sendTransaction handler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
+    (avmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'avm.ExportTx');
+    (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (EVMUnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     mockGetAddressesByIndices.mockResolvedValue([]);
@@ -454,6 +455,43 @@ describe('avalanche_sendTransaction handler', () => {
     expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
       expect.objectContaining({ displayData: expect.objectContaining({ alert: undefined }) }),
     );
+  });
+
+  it('returns an error if the export to C contains any non-AVAX assets', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      type: 'export',
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+
+    const result = await avalancheSendTransaction(params);
+
+    expect(result.error?.message).toContain(`Can't export non-AVAX assets to C-Chain`);
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('works as expected for an AVAX only export to C', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      type: 'export',
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => AVAX_ASSET_ID }] });
+
+    await avalancheSendTransaction(params);
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalled();
   });
 
   it('merges resolved auth headers into the Glacier UTXO request', async () => {
