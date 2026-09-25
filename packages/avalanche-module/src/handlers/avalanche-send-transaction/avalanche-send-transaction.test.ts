@@ -1,5 +1,5 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { avmSerial, UnsignedTx, EVMUnsignedTx, AVM, pvmSerial, utils, EVM } from '@avalabs/avalanchejs';
+import { avmSerial, UnsignedTx, EVMUnsignedTx, AVM, evmSerial, pvmSerial, utils, EVM } from '@avalabs/avalanchejs';
 import {
   AlertType,
   AppName,
@@ -13,6 +13,7 @@ import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getProvider } from '../../utils/get-provider';
 import { retry } from '@internal/utils/src/utils/retry';
+import { INVALID_EXPORT_ERROR } from '../../utils/get-unsupported-export-error';
 
 const GLACIER_API_URL = 'https://glacier-api.avax.network';
 const AVAX_ASSET_ID = 'avaxAssetId';
@@ -161,6 +162,7 @@ describe('avalanche_sendTransaction handler', () => {
     unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
     (avmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'avm.ExportTx');
     (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
+    (evmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'evm.ExportTx');
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (EVMUnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     mockGetAddressesByIndices.mockResolvedValue([]);
@@ -472,7 +474,7 @@ describe('avalanche_sendTransaction handler', () => {
 
     const result = await avalancheSendTransaction(params);
 
-    expect(result.error?.message).toContain(`Can't export non-AVAX assets to C-Chain`);
+    expect(result.error?.message).toContain(INVALID_EXPORT_ERROR);
     expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
   });
 

@@ -1,26 +1,43 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { avmSerial, Common, pvmSerial } from '@avalabs/avalanchejs';
+import { avmSerial, Common, evmSerial, pvmSerial, type TransferableOutput } from '@avalabs/avalanchejs';
 import { NetworkVMType, TxType, type VM } from '@avalabs/vm-module-types';
 
-// Export txs to C should not contain any non-AVAX assets in their export outputs
+export const EXPORT_PARSE_ERROR = 'Error while parsing exported outputs';
+export const INVALID_EXPORT_ERROR = 'Only AVAX can be exported';
+
+const _hasNonAvaxOutput = (outputs: readonly TransferableOutput[], avaxAssetId: string) =>
+  outputs.some((output) => output.getAssetId() !== avaxAssetId);
+
 export const getUnsupportedExportError = ({
   tx,
   txDetails,
   avaxAssetId,
 }: {
   tx: Common.Transaction;
-  txDetails: { type: TxType; destination?: VM };
+  txDetails: { type: TxType; chain?: VM; destination?: VM };
   avaxAssetId: string;
 }) => {
-  if (txDetails.type !== TxType.Export || txDetails.destination !== NetworkVMType.EVM) {
+  if (txDetails.type !== TxType.Export) {
     return undefined;
   }
 
-  if (!avmSerial.isExportTx(tx) && !pvmSerial.isExportTx(tx)) {
-    return rpcErrors.invalidParams('Error while parsing exported outputs');
+  if (txDetails.destination === NetworkVMType.EVM) {
+    if (!avmSerial.isExportTx(tx) && !pvmSerial.isExportTx(tx)) {
+      return rpcErrors.invalidParams(EXPORT_PARSE_ERROR);
+    }
+
+    return _hasNonAvaxOutput(tx.outs, avaxAssetId) ? rpcErrors.invalidParams(INVALID_EXPORT_ERROR) : undefined;
   }
 
-  return tx.outs.some((output) => output.getAssetId() !== avaxAssetId)
-    ? rpcErrors.invalidParams(`Can't export non-AVAX assets to C-Chain`)
-    : undefined;
+  if (txDetails.chain === NetworkVMType.EVM) {
+    if (!evmSerial.isExportTx(tx)) {
+      return rpcErrors.invalidParams(EXPORT_PARSE_ERROR);
+    }
+
+    return _hasNonAvaxOutput(tx.exportedOutputs, avaxAssetId)
+      ? rpcErrors.invalidParams(INVALID_EXPORT_ERROR)
+      : undefined;
+  }
+
+  return undefined;
 };
