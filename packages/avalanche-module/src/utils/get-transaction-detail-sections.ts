@@ -1,4 +1,5 @@
-import { type Network, type TxDetails } from '@avalabs/vm-module-types';
+import { type DetailSection, type Network, type TxDetails } from '@avalabs/vm-module-types';
+import { collapsibleGroupItem } from '@internal/utils';
 import {
   isAddAutoRenewedValidatorTx,
   isAddPermissionlessDelegatorTx,
@@ -17,6 +18,8 @@ import {
   isSetL1ValidatorWeightTx,
   isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
+import { amountDetailsSections } from './transaction-detail-sections/amount-details-sections';
+import { valueDetailsSection } from './transaction-detail-sections/value-details-section';
 import {
   addAutoRenewedValidatorDetailSection,
   convertSubnetToL1DetailSection,
@@ -41,9 +44,10 @@ export type GetTransactionDetailSectionsContext = {
   signerAccount: string;
   /** Addresses receiving the funds of a cross-chain transfer - see getExportRecipients. */
   recipients?: string[];
+  avaxAssetId?: string;
 };
 
-export const getTransactionDetailSections = (
+const _getDetailSectionsByType = (
   txDetails: TxDetails,
   symbol: string,
   context?: GetTransactionDetailSectionsContext,
@@ -99,4 +103,31 @@ export const getTransactionDetailSections = (
   } else if (isSetAutoRenewedValidatorConfigTx(txDetails)) {
     return setAutoRenewedValidatorConfigDetailSection(txDetails, symbol);
   }
+};
+
+export const getTransactionDetailSections = (
+  txDetails: TxDetails,
+  symbol: string,
+  context?: GetTransactionDetailSectionsContext,
+): DetailSection[] | undefined => {
+  const detailSections = _getDetailSectionsByType(txDetails, symbol, context);
+
+  if (detailSections === undefined) {
+    return undefined;
+  }
+
+  // attempt to add value details section to all avalanche transactions
+  const valueSection = valueDetailsSection(txDetails, symbol);
+
+  const valueDetails: DetailSection[] = [
+    ...(valueSection ? [valueSection] : []),
+    ...amountDetailsSections(txDetails, symbol, context?.avaxAssetId),
+  ];
+
+  if (valueDetails.length === 0) {
+    return detailSections;
+  }
+
+  // value details are attached in a collapsible group to the end of the detail sections
+  return [...detailSections, { items: [collapsibleGroupItem('Transfer details', valueDetails)] }];
 };

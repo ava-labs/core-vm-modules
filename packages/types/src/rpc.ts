@@ -103,6 +103,8 @@ export enum DetailItemType {
   DATE = 'date',
   LINK = 'link',
   NETWORK = 'network',
+  TRANSFER_LIST = 'transferList',
+  COLLAPSIBLE_GROUP = 'collapsibleGroup',
 }
 
 // It's very similar as CurrencyItem, but we want the client apps
@@ -170,6 +172,28 @@ export type NetworkItem = BaseDetailItem & {
   value: NetworkItemValue;
 };
 
+export type Transfer = {
+  addresses: string[];
+  amount: bigint;
+  assetId: string;
+  symbol?: string;
+  decimals?: number;
+  assetName?: string;
+  threshold?: number;
+  lockedUntil?: number;
+  stakeableLockedUntil?: number;
+};
+
+export type TransferListItem = BaseDetailItem & {
+  type: DetailItemType.TRANSFER_LIST;
+  value: Transfer[];
+};
+
+export type CollapsibleGroupItem = BaseDetailItem & {
+  type: DetailItemType.COLLAPSIBLE_GROUP;
+  value: DetailSection[];
+};
+
 export type DetailItem =
   | string
   | TextItem
@@ -181,7 +205,9 @@ export type DetailItem =
   | DateItem
   | LinkItem
   | FundsRecipientItem
-  | NetworkItem;
+  | NetworkItem
+  | TransferListItem
+  | CollapsibleGroupItem;
 
 export type DisplayData = {
   title: string;

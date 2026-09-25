@@ -1,12 +1,33 @@
 import type { NetworkVMType } from './common';
 
-export type TxDetails =
-  | StakingDetails
-  | ExportImportTxDetails
-  | ChainDetails
-  | BlockchainDetails
-  | SubnetDetails
-  | L1Details;
+export type TxDetails = TxValueDetails &
+  (StakingDetails | ExportImportTxDetails | ChainDetails | BlockchainDetails | SubnetDetails | L1Details);
+
+export type TxValueDetails = {
+  outputs: TxOutput[];
+  inputAmounts: Record<string, bigint>;
+  outputAmounts: Record<string, bigint>;
+  totalAvaxInput: bigint;
+  totalAvaxOutput: bigint;
+  totalAvaxBurned: bigint;
+  isValidAvaxBurnedAmount: boolean;
+};
+
+export type TxOutput = {
+  assetId: string;
+  amount: bigint;
+  owners: string[];
+  locktime: bigint;
+  stakeableLocktime: bigint;
+  threshold: bigint;
+  isAvax: boolean;
+  assetDescription?: {
+    assetID: string;
+    name: string;
+    symbol: string;
+    denomination: number;
+  };
+};
 
 export type StakingDetails =
   | AddPermissionlessDelegatorTx
@@ -70,20 +91,7 @@ export interface ImportTx {
 export interface BaseTx {
   type: TxType.Base;
   chain: VM;
-  outputs: {
-    assetId: string;
-    locktime: bigint;
-    threshold: bigint;
-    amount: bigint;
-    assetDescription?: {
-      assetID: string;
-      name: string;
-      symbol: string;
-      denomination: number;
-    };
-    owners: string[];
-    isAvax: boolean;
-  }[];
+  outputs: TxOutput[];
   memo?: string;
   txFee: bigint;
 }

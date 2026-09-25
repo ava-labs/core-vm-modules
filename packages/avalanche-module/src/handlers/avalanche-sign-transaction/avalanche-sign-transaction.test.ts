@@ -1,13 +1,20 @@
-import { info, PVM, UnsignedTx, utils } from '@avalabs/avalanchejs';
-import { AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
+import { avmSerial, evmSerial, info, PVM, pvmSerial, UnsignedTx, utils } from '@avalabs/avalanchejs';
+import { AlertType, AppName, NetworkVMType, RpcMethod, TxType } from '@avalabs/vm-module-types';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { avalancheSignTransaction } from './avalanche-sign-transaction';
+import { getAddressesByIndices } from '../avalanche-send-transaction/utils/get-addresses-by-indices';
+import { getProvider } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
+import { INVALID_EXPORT_ERROR } from '../../utils/get-unsupported-export-error';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
+jest.mock('../avalanche-send-transaction/utils/get-addresses-by-indices');
+jest.mock('../../utils/get-provider');
+
+const AVAX_ASSET_ID = 'avaxAssetId';
 
 const mockRequestApproval = jest.fn().mockImplementation(() => ({ success: true }));
 const mockApprovalController = {
@@ -17,6 +24,16 @@ const mockApprovalController = {
   onTransactionConfirmed: jest.fn(),
   onTransactionReverted: jest.fn(),
 };
+const emptyValueDetails = {
+  outputs: [],
+  inputAmounts: {},
+  outputAmounts: {},
+  totalAvaxInput: 0n,
+  totalAvaxOutput: 0n,
+  totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
+};
+
 const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 const mockNetwork = {
   chainId: 123,
@@ -74,21 +91,28 @@ describe('avalanche-sign-transaction', () => {
     getSigIndices: jest.fn(),
     toJSON: jest.fn(),
     getInputUtxos: jest.fn(),
-    getTx: () => ({
-      foo: 'bar',
-    }),
+    getTx: jest.fn(),
   };
   const codecManagerMock = {
     unpack: jest.fn(),
   };
   beforeEach(() => {
     jest.resetAllMocks();
+    (getAddressesByIndices as jest.Mock).mockResolvedValue([]);
+    (avmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'avm.ExportTx');
+    (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
+    (evmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'evm.ExportTx');
+    unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
+    (getProvider as jest.MockedFunction<typeof getProvider>).mockResolvedValue({
+      getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
+    } as unknown as Avalanche.JsonRpcProvider);
 
     jest.spyOn(info.InfoApi.prototype, 'getUpgradesInfo').mockResolvedValue({} as GetUpgradesInfoResponse);
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(PVM);
     (Avalanche.createAvalancheUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
       type: TxType.AddPermissionlessDelegator,
       start: '0',
       end: '1000',
@@ -186,7 +210,10 @@ describe('avalanche-sign-transaction', () => {
 
   it('returns error if the tx type is unknown', async () => {
     const request = createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' });
-    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({ type: TxType.Unknown });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Unknown,
+    });
 
     const result = await avalancheSignTransaction({
       ...avalancheSignTransactionParams,
@@ -235,6 +262,137 @@ describe('avalanche-sign-transaction', () => {
     expect(result).toEqual({
       result: 'signedData',
     });
+  });
+
+  it('returns burn amount checker warning properly when isValidAvaxBurnedAmount is false', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      isValidAvaxBurnedAmount: false,
+      type: TxType.AddPermissionlessDelegator,
+      start: '0',
+      end: '1000',
+    });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({ alert: expect.objectContaining({ type: AlertType.WARNING }) }),
+      }),
+    );
+  });
+
+  it('does not return burn amount checker warning when isValidAvaxBurnedAmount is true', async () => {
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'P', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({ displayData: expect.objectContaining({ alert: undefined }) }),
+    );
+  });
+
+  it('returns an error if the export to C contains any non-AVAX assets', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Export,
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+
+    const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'X', from: '123' }),
+    });
+
+    expect(result.error?.message).toContain(INVALID_EXPORT_ERROR);
+    expect(mockRequestApproval).not.toHaveBeenCalled();
+  });
+
+  it('returns an error if the export from C contains any non-AVAX assets', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Export,
+      chain: NetworkVMType.EVM,
+      destination: NetworkVMType.AVM,
+    });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'evm.ExportTx',
+      exportedOutputs: [{ getAssetId: () => 'someOtherAsset' }],
+    });
+
+    const result = await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'C', from: 'C-avax1234567890' }),
+    });
+
+    expect(result.error?.message).toContain(INVALID_EXPORT_ERROR);
+    expect(mockRequestApproval).not.toHaveBeenCalled();
+  });
+
+  it('works as expected for an AVAX only export from C', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Export,
+      chain: NetworkVMType.EVM,
+      destination: NetworkVMType.AVM,
+    });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'evm.ExportTx',
+      exportedOutputs: [{ getAssetId: () => AVAX_ASSET_ID }],
+    });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'C', from: 'C-avax1234567890' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalled();
+  });
+
+  it('works as expected for an AVAX only export to C from X', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Export,
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => AVAX_ASSET_ID }] });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'X', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalled();
+  });
+
+  it('works as expected for an AVAX only export to C from P', async () => {
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValue({
+      ...emptyValueDetails,
+      type: TxType.Export,
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.PVM,
+    });
+    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+    mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+    await avalancheSignTransaction({
+      ...avalancheSignTransactionParams,
+      request: createRequest({ transactionHex: '0x00001', chainAlias: 'X', from: '123' }),
+    });
+
+    expect(mockRequestApproval).toHaveBeenCalled();
   });
 
   it('works with EVM export transactions', async () => {

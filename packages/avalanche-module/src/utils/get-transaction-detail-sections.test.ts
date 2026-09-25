@@ -1,5 +1,36 @@
-import { NetworkVMType, TxType, type Network, type NetworkToken, type TxDetails } from '@avalabs/vm-module-types';
+import {
+  DetailItemType,
+  type Network,
+  type NetworkToken,
+  NetworkVMType,
+  type TxDetails,
+  TxType,
+} from '@avalabs/vm-module-types';
 import { getTransactionDetailSections } from './get-transaction-detail-sections';
+
+const emptyValueDetails = {
+  outputs: [],
+  inputAmounts: {},
+  outputAmounts: {},
+  totalAvaxInput: 0n,
+  totalAvaxOutput: 0n,
+  totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
+};
+
+const getValueDetailsSection = (txDetails: TxDetails, symbol: string) => {
+  const items = getTransactionDetailSections(txDetails, symbol)?.flatMap((section) => section.items) ?? [];
+  const group = items.find((item) => typeof item !== 'string' && item.type === DetailItemType.COLLAPSIBLE_GROUP);
+
+  return group && typeof group !== 'string' && group.type === DetailItemType.COLLAPSIBLE_GROUP ? group.value : [];
+};
+
+const getTransactionOutputsSection = (txDetails: TxDetails, symbol: string) => {
+  const [item] =
+    getValueDetailsSection(txDetails, symbol).find((section) => section.title === 'Transaction Outputs')?.items ?? [];
+
+  return typeof item === 'string' || item?.type !== DetailItemType.TRANSFER_LIST ? undefined : item.value;
+};
 
 const networkToken: NetworkToken = {
   decimals: 18,
@@ -22,6 +53,7 @@ const mockAccount = 'P-avax1mockaccount';
 describe('getTransactionDetailSections - Detailed Tests', () => {
   it('should handle chain details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.Base,
       chain: NetworkVMType.AVM,
       outputs: [
@@ -30,6 +62,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           owners: ['0xOwner1'],
           threshold: 1n,
           locktime: 1n,
+          stakeableLocktime: 0n,
           isAvax: true,
           assetId: '0xAssetID',
         },
@@ -51,23 +84,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Balance Change',
-        items: [
-          {
-            label: 'To',
-            value: '0xOwner1',
-            type: 'address',
-          },
-          {
-            label: 'Amount',
-            value: 100n,
-            type: 'currency',
-            symbol: 'AVAX',
-            maxDecimals: 9,
-          },
-        ],
-      },
-      {
         title: 'Network Fee',
         items: [
           {
@@ -79,12 +95,88 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           },
         ],
       },
+      {
+        items: [
+          {
+            label: 'Transfer details',
+            type: 'collapsibleGroup',
+            value: [
+              {
+                title: 'Transaction Outputs',
+                items: [
+                  {
+                    label: 'Transaction Outputs',
+                    type: 'transferList',
+                    value: [
+                      {
+                        addresses: ['0xOwner1'],
+                        amount: 100n,
+                        assetId: '0xAssetID',
+                        symbol: 'AVAX',
+                        decimals: 9,
+                        threshold: 1,
+                        lockedUntil: 1,
+                        stakeableLockedUntil: 0,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     ];
     expect(details).toEqual(expectedDetails);
   });
 
-  it('labels a non-AVAX output with the asset the chain described', () => {
+  it('groups value detail sections into a collapsible section', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      inputAmounts: { '0xAssetID': 3n },
+      outputAmounts: { '0xAssetID': 2n },
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 0n,
+          stakeableLocktime: 0n,
+          isAvax: true,
+          assetId: '0xAssetID',
+        },
+      ],
+      txFee: 1n,
+    };
+
+    const sections = getTransactionDetailSections(txDetails, networkToken.symbol) ?? [];
+
+    // The three belong to one collapsible item rather than sitting loose beside Chain Details
+    // and Network Fee, so a client can show and hide them together.
+    expect(sections.map(({ title }) => title)).toEqual(['Chain Details', 'Network Fee', undefined]);
+    expect(getValueDetailsSection(txDetails, networkToken.symbol).map(({ title }) => title)).toEqual([
+      'Transaction Outputs',
+      'Input amounts',
+      'Output amounts',
+    ]);
+  });
+
+  it('skips collapsible group when there are no value details', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
+      type: TxType.Base,
+      chain: NetworkVMType.AVM,
+      txFee: 1n,
+    };
+
+    expect(getValueDetailsSection(txDetails, networkToken.symbol)).toEqual([]);
+  });
+
+  it('returns the proper details for a non-AVAX output', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.Base,
       chain: NetworkVMType.AVM,
       outputs: [
@@ -93,6 +185,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           owners: ['0xOwner1'],
           threshold: 1n,
           locktime: 0n,
+          stakeableLocktime: 0n,
           isAvax: false,
           assetId: '0xAssetID',
           assetDescription: { assetID: '0xAssetID', name: 'Some Token', symbol: 'TKN', denomination: 2 },
@@ -101,15 +194,15 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
     // Previously rendered as AVAX at AVAX's scale.
-    expect(items).toContainEqual({ label: 'Amount', value: 100n, type: 'currency', maxDecimals: 2, symbol: 'TKN' });
-    expect(items).toContainEqual({ label: 'Asset', value: 'Some Token', type: 'text', alignment: 'horizontal' });
+    expect(transfers?.[0]).toMatchObject({ amount: 100n, decimals: 2, symbol: 'TKN', assetName: 'Some Token' });
   });
 
-  it('shows the raw amount and asset id for an undescribed non-AVAX output', () => {
+  it('returns the assetId for an undescribed non-AVAX output', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.Base,
       chain: NetworkVMType.AVM,
       outputs: [
@@ -118,6 +211,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
           owners: ['0xOwner1'],
           threshold: 1n,
           locktime: 0n,
+          stakeableLocktime: 0n,
           isAvax: false,
           assetId: '0xAssetID',
         },
@@ -125,36 +219,42 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
       txFee: 1n,
     };
 
-    const items = getTransactionDetailSections(txDetails, networkToken.symbol)?.[1]?.items;
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
-    expect(items).toContainEqual({
-      label: 'Amount',
-      value: '100 (smallest unit)',
-      type: 'text',
-      alignment: 'horizontal',
-    });
-    expect(items).toContainEqual({ label: 'Asset', value: '0xAssetID', type: 'text', alignment: 'vertical' });
-    expect(items).not.toContainEqual(expect.objectContaining({ symbol: networkToken.symbol, label: 'Amount' }));
+    // Without a symbol the client shows the raw amount against the asset id, rather than a
+    // number that would only look like a familiar unit.
+    expect(transfers?.[0]).toMatchObject({ amount: 100n, assetId: '0xAssetID' });
+    expect(transfers?.[0]?.symbol).toBeUndefined();
+    expect(transfers?.[0]?.decimals).toBeUndefined();
   });
 
-  it('flags an output that stays locked, and ignores a locktime already in the past', () => {
-    const buildTx = (locktime: bigint): TxDetails => ({
+  it('returns the proper lock times for each output', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.Base,
       chain: NetworkVMType.AVM,
-      outputs: [{ amount: 100n, owners: ['0xOwner1'], threshold: 1n, locktime, isAvax: true, assetId: '0xAssetID' }],
+      outputs: [
+        {
+          amount: 100n,
+          owners: ['0xOwner1'],
+          threshold: 1n,
+          locktime: 1700n,
+          stakeableLocktime: 9900n,
+          isAvax: true,
+          assetId: '0xAssetID',
+        },
+      ],
       txFee: 1n,
-    });
+    };
 
-    const future = BigInt(Math.floor(Date.now() / 1000) + 3600);
-    const lockedItems = getTransactionDetailSections(buildTx(future), networkToken.symbol)?.[1]?.items;
-    const pastItems = getTransactionDetailSections(buildTx(1n), networkToken.symbol)?.[1]?.items;
+    const transfers = getTransactionOutputsSection(txDetails, networkToken.symbol);
 
-    expect(lockedItems).toContainEqual(expect.objectContaining({ label: 'Locked until' }));
-    expect(pastItems).not.toContainEqual(expect.objectContaining({ label: 'Locked until' }));
+    expect(transfers?.[0]).toMatchObject({ lockedUntil: 1700, stakeableLockedUntil: 9900 });
   });
 
   it('should handle export transactions', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       amount: 100n,
       chain: NetworkVMType.AVM,
       destination: NetworkVMType.PVM,
@@ -215,6 +315,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle import transactions', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       amount: 100n,
       chain: NetworkVMType.AVM,
       source: NetworkVMType.PVM,
@@ -275,6 +376,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle subnet details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.CreateSubnet,
       threshold: 2,
       controlKeys: ['0xKey1', '0xKey2'],
@@ -317,6 +419,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle staking transactions for permissionless delegators', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.AddPermissionlessDelegator,
       nodeID: 'NodeID',
       subnetID: 'SubnetID',
@@ -387,6 +490,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle staking transactions for permissionless validators', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.AddPermissionlessValidator,
       nodeID: 'NodeID',
       subnetID: 'SubnetID',
@@ -464,6 +568,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle AddSubnetValidator transactions', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.AddSubnetValidator,
       nodeID: 'NodeID',
       start: '1691234567',
@@ -518,6 +623,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle RemoveSubnetValidator transactions', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.RemoveSubnetValidator,
       nodeID: 'NodeID',
       subnetID: 'SubnetID',
@@ -576,6 +682,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const expectedFormattedGenesis = JSON.stringify(genesisJson, null, 2);
 
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.CreateChain,
       chainID: 'chainID',
       chainName: 'chainName',
@@ -636,6 +743,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const invalidGenesisData = 'invalid-json-string';
 
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.CreateChain,
       chainID: 'chainID',
       chainName: 'chainName',
@@ -693,6 +801,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle convert subnet l1 validator details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       chain: NetworkVMType.PVM,
       totalAvaxBurned: 1n,
       totalAvaxOutput: 1n,
@@ -790,6 +899,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle disable l1 validator details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       chain: NetworkVMType.PVM,
       totalAvaxBurned: 1n,
       totalAvaxOutput: 1n,
@@ -830,6 +940,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle register l1 validator details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       chain: NetworkVMType.PVM,
       totalAvaxBurned: 1n,
       totalAvaxOutput: 1n,
@@ -872,6 +983,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle set l1 validator weight details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       chain: NetworkVMType.PVM,
       totalAvaxBurned: 1n,
       totalAvaxOutput: 1n,
@@ -901,6 +1013,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle AddAutoRenewedValidator transactions (ACP-236 ppm conversion)', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.AddAutoRenewedValidator,
       nodeID: 'NodeID',
       stake: 50n,
@@ -948,6 +1061,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     'AddAutoRenewedValidator: autoCompoundRewardShares=$raw renders as $expected (ppm → percent)',
     ({ raw, expected }) => {
       const txDetails: TxDetails = {
+        ...emptyValueDetails,
         type: TxType.AddAutoRenewedValidator,
         nodeID: 'NodeID',
         stake: 1n,
@@ -973,6 +1087,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle SetAutoRenewedValidatorConfig transactions (ACP-236 ppm conversion)', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       type: TxType.SetAutoRenewedValidatorConfig,
       txId: 'ValidatorTxId',
       autoCompoundRewardShares: 1_000_000,
@@ -1000,6 +1115,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
   it('should handle increase l1 validator balance details', () => {
     const txDetails: TxDetails = {
+      ...emptyValueDetails,
       chain: NetworkVMType.PVM,
       totalAvaxBurned: 1n,
       totalAvaxOutput: 1n,
