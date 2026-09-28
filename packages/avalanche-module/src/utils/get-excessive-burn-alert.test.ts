@@ -1,6 +1,6 @@
 import { AlertType, type TxValueDetails } from '@avalabs/vm-module-types';
 
-import { getExcessiveBurnAlert } from './get-excessive-burn-alert';
+import { BURN_ALERT, getExcessiveBurnAlert } from './get-excessive-burn-alert';
 
 const valueDetails = (overrides: Partial<TxValueDetails> = {}): TxValueDetails => ({
   outputs: [],
@@ -19,6 +19,7 @@ describe('getExcessiveBurnAlert', () => {
 
     expect(alert).toMatchObject({ type: AlertType.WARNING });
     expect(alert?.details.title).toEqual('Caution!');
+    expect(alert?.details.description).toEqual(BURN_ALERT);
   });
 
   it('does not return burn amount checker warning when isValidAvaxBurnedAmount is true', () => {

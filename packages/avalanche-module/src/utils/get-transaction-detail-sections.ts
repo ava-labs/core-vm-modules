@@ -19,6 +19,8 @@ import {
   isChainDetails,
 } from '../handlers/avalanche-send-transaction/typeguards';
 import { amountDetailsSections } from './transaction-detail-sections/amount-details-sections';
+import { spendDetailsSection } from './transaction-detail-sections/spend-details-section';
+import type { TransactionSpendDetails } from './get-transaction-spend-details';
 import { valueDetailsSection } from './transaction-detail-sections/value-details-section';
 import {
   addAutoRenewedValidatorDetailSection,
@@ -45,6 +47,7 @@ export type GetTransactionDetailSectionsContext = {
   /** Addresses receiving the funds of a cross-chain transfer - see getExportRecipients. */
   recipients?: string[];
   avaxAssetId?: string;
+  spendDetails?: TransactionSpendDetails;
 };
 
 const _getDetailSectionsByType = (
@@ -116,7 +119,10 @@ export const getTransactionDetailSections = (
     return undefined;
   }
 
-  // attempt to add value details section to all avalanche transactions
+  const spendSection = context?.spendDetails
+    ? spendDetailsSection(txDetails, context.spendDetails, symbol, context.avaxAssetId)
+    : undefined;
+
   const valueSection = valueDetailsSection(txDetails, symbol);
 
   const valueDetails: DetailSection[] = [
@@ -124,10 +130,11 @@ export const getTransactionDetailSections = (
     ...amountDetailsSections(txDetails, symbol, context?.avaxAssetId),
   ];
 
+  const sections = [...detailSections, ...(spendSection ? [spendSection] : [])];
+
   if (valueDetails.length === 0) {
-    return detailSections;
+    return sections;
   }
 
-  // value details are attached in a collapsible group to the end of the detail sections
-  return [...detailSections, { items: [collapsibleGroupItem('Transfer details', valueDetails)] }];
+  return [...sections, { items: [collapsibleGroupItem('Transfer details', valueDetails)] }];
 };

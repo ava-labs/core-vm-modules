@@ -22,7 +22,9 @@ import { parseTxDisplayTitle } from './utils/parse-tx-display-title';
 import { getCoreHeaders, retry, rpcErrorOpts } from '@internal/utils';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getTransactionDetailSections } from '../../utils/get-transaction-detail-sections';
-import { getExcessiveBurnAlert } from '../../utils/get-excessive-burn-alert';
+import { getTransactionAlert } from '../../utils/get-transaction-alert';
+import { getTransactionSpendDetails } from '../../utils/get-transaction-spend-details';
+import { getSignerAddresses } from '../../utils/get-signer-addresses';
 import { getUnsupportedExportError } from '../../utils/get-unsupported-export-error';
 import { getExplorerAddressByNetwork } from '../get-transaction-history/utils';
 import { getAccountFromContext } from '../../utils/get-account-from-context';
@@ -64,7 +66,7 @@ export const avalancheSendTransaction = async ({
       };
     }
 
-    const { xpAddress: currentAddress, xpubXP, externalXPAddresses } = contextResult.data;
+    const { xpAddress: currentAddress, evmAddress, xpubXP, externalXPAddresses } = contextResult.data;
 
     const utxos = await resolveUtxos({
       utxoHexes: providedUtxoHexes,
@@ -80,6 +82,12 @@ export const avalancheSendTransaction = async ({
     });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
+    let signerAddressBytes = getSignerAddresses([
+      currentAddress,
+      evmAddress,
+      ...externalXPAddresses.map(({ address }) => address),
+    ]);
+
     if (chainAlias === 'C') {
       unsignedTx = await Avalanche.createAvalancheEvmUnsignedTx({
         txBytes,
@@ -118,6 +126,8 @@ export const avalancheSendTransaction = async ({
 
       const fromAddressBytes = fromAddresses.map((address) => utils.parse(address)[2]);
 
+      signerAddressBytes = [...signerAddressBytes, ...fromAddressBytes];
+
       unsignedTx = await Avalanche.createAvalancheUnsignedTx({
         tx,
         utxos,
@@ -150,6 +160,12 @@ export const avalancheSendTransaction = async ({
       return { error: unsupportedExport };
     }
 
+    const spendDetails = getTransactionSpendDetails({
+      tx: unsignedTx.getTx(),
+      inputUtxos: unsignedTx.getInputUtxos(),
+      signerAddresses: signerAddressBytes,
+    });
+
     const signingData: SigningData = {
       type: RpcMethod.AVALANCHE_SEND_TRANSACTION,
       unsignedTxJson: JSON.stringify(unsignedTx.toJSON()),
@@ -164,6 +180,7 @@ export const avalancheSendTransaction = async ({
       signerAccount: currentAddress,
       recipients: getCrossChainRecipients(unsignedTx.getTx(), txDetails, isTestnet),
       avaxAssetId,
+      spendDetails,
     });
 
     // Throw an error if we can't parse the transaction details
@@ -182,7 +199,7 @@ export const avalancheSendTransaction = async ({
       },
       details,
       networkFeeSelector: false,
-      alert: getExcessiveBurnAlert(txDetails),
+      alert: getTransactionAlert(txDetails, spendDetails, isTestnet),
     };
 
     // prompt user for approval

@@ -103,6 +103,7 @@ describe('avalanche-sign-transaction', () => {
     (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
     (evmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'evm.ExportTx');
     unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
+    unsignedTxMock.getInputUtxos.mockReturnValue([]);
     (getProvider as jest.MockedFunction<typeof getProvider>).mockResolvedValue({
       getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
     } as unknown as Avalanche.JsonRpcProvider);
@@ -306,7 +307,10 @@ describe('avalanche-sign-transaction', () => {
       chain: NetworkVMType.AVM,
       destination: NetworkVMType.EVM,
     });
-    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => 'someOtherAsset', output: { outputOwners: { addrs: [] } } }],
+    });
 
     const result = await avalancheSignTransaction({
       ...avalancheSignTransactionParams,
@@ -326,7 +330,8 @@ describe('avalanche-sign-transaction', () => {
     });
     unsignedTxMock.getTx.mockReturnValue({
       _type: 'evm.ExportTx',
-      exportedOutputs: [{ getAssetId: () => 'someOtherAsset' }],
+      ins: [],
+      exportedOutputs: [{ getAssetId: () => 'someOtherAsset', output: { outputOwners: { addrs: [] } } }],
     });
 
     const result = await avalancheSignTransaction({
@@ -347,7 +352,8 @@ describe('avalanche-sign-transaction', () => {
     });
     unsignedTxMock.getTx.mockReturnValue({
       _type: 'evm.ExportTx',
-      exportedOutputs: [{ getAssetId: () => AVAX_ASSET_ID }],
+      ins: [],
+      exportedOutputs: [{ getAssetId: () => AVAX_ASSET_ID, output: { outputOwners: { addrs: [] } } }],
     });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
 
@@ -366,7 +372,10 @@ describe('avalanche-sign-transaction', () => {
       chain: NetworkVMType.AVM,
       destination: NetworkVMType.EVM,
     });
-    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => AVAX_ASSET_ID }] });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => AVAX_ASSET_ID, output: { outputOwners: { addrs: [] } } }],
+    });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
 
     await avalancheSignTransaction({
@@ -384,7 +393,10 @@ describe('avalanche-sign-transaction', () => {
       chain: NetworkVMType.AVM,
       destination: NetworkVMType.PVM,
     });
-    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => 'someOtherAsset', output: { outputOwners: { addrs: [] } } }],
+    });
     mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
 
     await avalancheSignTransaction({

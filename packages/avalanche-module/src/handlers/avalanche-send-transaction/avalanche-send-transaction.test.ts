@@ -84,6 +84,7 @@ const unsignedTxMock = {
   toJSON: () => unsignedTxJson,
   getSignedTx: () => 'signedTx',
   getTx: jest.fn(),
+  getInputUtxos: jest.fn(),
 };
 
 const testNetwork: Network = {
@@ -160,6 +161,7 @@ describe('avalanche_sendTransaction handler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
+    unsignedTxMock.getInputUtxos.mockReturnValue([]);
     (avmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'avm.ExportTx');
     (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
     (evmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'evm.ExportTx');
@@ -470,7 +472,10 @@ describe('avalanche_sendTransaction handler', () => {
       destination: NetworkVMType.EVM,
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
-    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => 'someOtherAsset' }] });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => 'someOtherAsset', output: { outputOwners: { addrs: [] } } }],
+    });
 
     const result = await avalancheSendTransaction(params);
 
@@ -489,7 +494,10 @@ describe('avalanche_sendTransaction handler', () => {
       destination: NetworkVMType.EVM,
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
-    unsignedTxMock.getTx.mockReturnValue({ _type: 'avm.ExportTx', outs: [{ getAssetId: () => AVAX_ASSET_ID }] });
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => AVAX_ASSET_ID, output: { outputOwners: { addrs: [] } } }],
+    });
 
     await avalancheSendTransaction(params);
 
