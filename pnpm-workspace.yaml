@@ -4,4 +4,12 @@ packages:
 
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
-  - "@avalabs/avalanchejs"
+  - '@avalabs/avalanchejs'
+  - '@avalabs/core-chains-sdk'
+  - '@avalabs/core-coingecko-sdk'
+  - '@avalabs/core-etherscan-sdk'
+  - '@avalabs/core-utils-sdk'
+  - '@avalabs/core-wallets-sdk'
+  - '@avalabs/crypto-sdk'
+  - '@avalabs/glacier-sdk'
+  - '@avalabs/types'
