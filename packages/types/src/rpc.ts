@@ -143,6 +143,7 @@ export type CurrencyItem = BaseDetailItem & {
   value: bigint;
   maxDecimals: number;
   symbol: string;
+  isNativeToken?: boolean;
 };
 
 export type DataItem = BaseDetailItem & {
@@ -182,6 +183,7 @@ export type Transfer = {
   threshold?: number;
   lockedUntil?: number;
   stakeableLockedUntil?: number;
+  isNativeToken?: boolean;
 };
 
 export type TransferListItem = BaseDetailItem & {

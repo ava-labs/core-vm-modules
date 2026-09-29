@@ -31,12 +31,19 @@ export const fundsRecipientItem = (
   symbol,
 });
 
-export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({
+export const currencyItem = (
+  label: string,
+  value: bigint,
+  maxDecimals: number,
+  symbol: string,
+  isNativeToken?: boolean,
+): CurrencyItem => ({
   label,
   type: DetailItemType.CURRENCY,
   value,
   maxDecimals,
   symbol,
+  ...(isNativeToken === undefined ? {} : { isNativeToken }),
 });
 
 export const textItem = (

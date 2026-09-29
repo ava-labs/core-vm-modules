@@ -25,6 +25,7 @@ const _getTransferDetails = (output: TxOutput, symbol: string): Transfer => ({
   addresses: output.owners,
   amount: output.amount,
   assetId: output.assetId,
+  isNativeToken: output.isAvax,
   ..._getAssetDetails(output, symbol),
   threshold: Number(output.threshold),
   lockedUntil: Number(output.locktime),

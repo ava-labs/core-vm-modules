@@ -57,6 +57,7 @@ describe('spendDetailsSection', () => {
       value: 100n,
       maxDecimals: 9,
       symbol: 'AVAX',
+      isNativeToken: true,
     });
   });
 

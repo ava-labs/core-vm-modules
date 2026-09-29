@@ -112,6 +112,7 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
                         addresses: ['0xOwner1'],
                         amount: 100n,
                         assetId: '0xAssetID',
+                        isNativeToken: true,
                         symbol: 'AVAX',
                         decimals: 9,
                         threshold: 1,

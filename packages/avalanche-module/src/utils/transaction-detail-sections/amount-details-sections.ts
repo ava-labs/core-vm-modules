@@ -24,13 +24,13 @@ const _getAmountItem = (
   assets: Map<string, AssetDescription>,
 ): DetailItem => {
   if (assetId === avaxAssetId) {
-    return currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol);
+    return currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol, true);
   }
 
   const asset = assets.get(assetId);
 
   if (asset) {
-    return currencyItem(asset.name, amount, asset.denomination, asset.symbol);
+    return currencyItem(asset.name, amount, asset.denomination, asset.symbol, false);
   }
 
   return textItem(assetId, amount.toString(), 'vertical');

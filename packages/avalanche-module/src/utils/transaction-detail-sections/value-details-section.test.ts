@@ -31,6 +31,16 @@ const getTransfer = (tx: TxValueDetails) => {
 };
 
 describe('valueDetailsSection', () => {
+  it('marks a transfer of the network token as native', () => {
+    expect(getTransfer(valueDetails({ outputs: [createOutput()] }))?.[0]).toMatchObject({ isNativeToken: true });
+  });
+
+  it('marks a transfer of any other asset as not native', () => {
+    const transfers = getTransfer(valueDetails({ outputs: [createOutput({ isAvax: false, assetId: 'tokenId' })] }));
+
+    expect(transfers?.[0]).toMatchObject({ isNativeToken: false });
+  });
+
   it('returns the outputs as a list', () => {
     const section = valueDetailsSection(
       valueDetails({ outputs: [createOutput(), createOutput({ owners: ['X-fuji1other'], amount: 7n })] }),

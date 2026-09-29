@@ -62,6 +62,7 @@ describe('amountDetailsSections', () => {
       value: 3n,
       maxDecimals: 9,
       symbol: 'AVAX',
+      isNativeToken: true,
     });
   });
 
@@ -86,6 +87,24 @@ describe('amountDetailsSections', () => {
       maxDecimals: 2,
       symbol: 'TKN',
     });
+  });
+
+  it('marks the network token as native and a non-native asset as not', () => {
+    const [inputs] = getSection(
+      valueDetails({
+        inputAmounts: { [AVAX_ASSET_ID]: 3n, tokenId: 7n },
+        outputs: [
+          createOutput({
+            isAvax: false,
+            assetId: 'tokenId',
+            assetDescription: { assetID: 'tokenId', name: 'Some Token', symbol: 'TKN', denomination: 2 },
+          }),
+        ],
+      }),
+    );
+
+    expect(inputs?.items[0]).toMatchObject({ isNativeToken: true });
+    expect(inputs?.items[1]).toMatchObject({ isNativeToken: false });
   });
 
   it('returns the amount only for assets without a description', () => {
