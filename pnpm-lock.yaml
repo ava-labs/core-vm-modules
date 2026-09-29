@@ -106,14 +106,14 @@ importers:
   packages-internal/utils:
     devDependencies:
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -145,26 +145,26 @@ importers:
         specifier: 5.1.1-alpha.4
         version: 5.1.1-alpha.4
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@avalabs/crypto-sdk':
         specifier: 1.0.0
         version: 1.0.0
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@avalabs/types':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -215,14 +215,14 @@ importers:
   packages/bitcoin-module:
     dependencies:
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)
       '@avalabs/crypto-sdk':
         specifier: 1.0.0
         version: 1.0.0
@@ -279,26 +279,26 @@ importers:
   packages/evm-module:
     dependencies:
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@avalabs/crypto-sdk':
         specifier: 1.0.0
         version: 1.0.0
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@avalabs/types':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -370,8 +370,8 @@ importers:
   packages/hvm-module:
     dependencies:
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/vm-module-types':
         specifier: workspace:*
         version: link:../types
@@ -422,8 +422,8 @@ importers:
   packages/hypercore-module:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(rxjs@7.8.2)(typescript@5.8.2)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(rxjs@7.8.2)(typescript@5.8.2)
       '@avalabs/crypto-sdk':
         specifier: 1.0.0
         version: 1.0.0
@@ -471,17 +471,17 @@ importers:
   packages/svm-module:
     dependencies:
       '@avalabs/core-chains-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-coingecko-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-utils-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@avalabs/crypto-sdk':
         specifier: 1.0.0
         version: 1.0.0
@@ -550,11 +550,11 @@ importers:
   packages/types:
     dependencies:
       '@avalabs/core-wallets-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)
       '@avalabs/glacier-sdk':
-        specifier: 3.1.0-canary.5adb21d5
-        version: 3.1.0-canary.5adb21d5
+        specifier: 3.1.0-canary.9fb5e3cd
+        version: 3.1.0-canary.9fb5e3cd
       '@blockaid/client':
         specifier: 0.48.0
         version: 0.48.0
@@ -608,22 +608,23 @@ packages:
     resolution: {integrity: sha512-Q5mKt5mJEsPkRQmYob+UGovlxOECkJuMgzIVDlgHSQcQoAFMYexhDOSMNkaIbxZmYkl1MOF+zap1wFSVqqJeTg==}
     engines: {node: '>=20'}
 
-  '@avalabs/core-chains-sdk@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-cZWmpGAGJzajLBzcY/+yolYM40xsy2iXvypvMFB3b9+I5U4VCqOo17Wp8upBJLAM+RfBUwRAitjnASl8bkp4YA==}
+  '@avalabs/core-chains-sdk@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-yxegz9VuLZwP+W5eT729ShC0jB/bb9GwhA5aXiC0pS1efPnWv2SLqsgA7HDnJhZe6EVl6ye1xg1ULmpXmKA1vg==}
 
-  '@avalabs/core-coingecko-sdk@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-9UkN2Xl2CFbPm2FdjIYlNWfXxjKfQ4te+DphNrLeWi4wBcYNhA/U2iJGJIpoQC33Esfb3VuPLGY8rsMzAnAVJg==}
+  '@avalabs/core-coingecko-sdk@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-VT5O6aWSB5jl541RPOa/+aTnti/HAJ8I3/FxKejyYnDtegYvoX3i3ua4cIhqSbs/IIM1eAv+2+BySCdMFaMusw==}
 
-  '@avalabs/core-utils-sdk@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-Tj3prIEM7LrfxP2vssOd/6mfh+z/fQ89GPxEKYlgiedhY/BJctg5esQIEuXCtVNZMSgQTKyoO1cBvrudz3aIcw==}
+  '@avalabs/core-utils-sdk@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-GuR6Rn/LTVF8d/X3Z+ZURT5toEJe1jtfxkdZE7FsHzgin5OspBZz3ggrBYxXy8eHNbVP4wWIsBEDxB//W1A6cg==}
     peerDependencies:
       big.js: ^6.2.1
       bn.js: ^5.2.1
       ethers: ^6.7.1
 
-  '@avalabs/core-wallets-sdk@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-u6l5xNUqy2RKN/6XdEV+Oa+aPkK+LvDg4md2WUh9tgq5xyARjyfetxrzXyW8pq7kklfwTwA+Y0m9MZE2OkkUQw==}
+  '@avalabs/core-wallets-sdk@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-mYn/wwSbr6hCb7ZSCrUYHVYTRD/icUZTd017a3AROoZV82FzFcbiwkTZWulpbk631nhZJR+vNTmR+XKdr6fEdA==}
     peerDependencies:
+      '@avalabs/avalanchejs': ^5.2.0
       '@avalabs/hw-app-avalanche': 2.1.0
       '@ledgerhq/device-management-kit': 1.9.0
       '@ledgerhq/device-signer-kit-bitcoin': 1.3.3
@@ -643,8 +644,8 @@ packages:
       '@avalabs/crypto-wasm':
         optional: true
 
-  '@avalabs/glacier-sdk@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-ZpLm9Egl1Sx8Ol7OZfUhaBtLgPbBLwNIFLrR7XV+YV5oWyfgmKNPa8NCHRE4w1TI2rXsWQxDF8EX0dM1OLqh9g==}
+  '@avalabs/glacier-sdk@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-n+oszkhsMXhaPFQw1yY1uG6eLnQ22MpwNRIGmgD/aYy7rrG0Ocn8OpSEERQ3Hq/sGyFASlWnyO4hrQAdOcrmfg==}
 
   '@avalabs/hw-app-avalanche@2.1.0':
     resolution: {integrity: sha512-grdd8zj3dkX6dPU/4+DyBJ9weW1fyt9lrzoifXNlfkjWIOoAmai51omUltWO1taFDh8wn+jPq4aA0W6eOq71Tg==}
@@ -652,8 +653,8 @@ packages:
       '@ledgerhq/device-management-kit': ^1.9.0
       rxjs: 7.8.2
 
-  '@avalabs/types@3.1.0-canary.5adb21d5':
-    resolution: {integrity: sha512-RnxD7/tsL9POfJincifcJkaavq4+MmH9nr0yziqwFf4m8bM7aaRxjJNvyf2LefPGEYVRB7i5ggeGSFgTZquosA==}
+  '@avalabs/types@3.1.0-canary.9fb5e3cd':
+    resolution: {integrity: sha512-WWh080HXu960Ng47FdLWqigfTxuyQ3HmHd/HX/gcf0iXqRTvn7JkLOtMpz0j12Drj7Dmh6A/FBhCD2DjYfZm3Q==}
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -6384,9 +6385,9 @@ snapshots:
       '@scure/base': 1.1.5
       micro-eth-signer: 0.7.2
 
-  '@avalabs/core-chains-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-chains-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -6394,9 +6395,9 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-chains-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+  '@avalabs/core-chains-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -6404,9 +6405,9 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-chains-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-chains-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -6414,9 +6415,9 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-coingecko-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-coingecko-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -6424,9 +6425,9 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-coingecko-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-coingecko-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
     transitivePeerDependencies:
       - big.js
       - bn.js
@@ -6434,7 +6435,7 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-utils-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-utils-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
       '@hpke/core': 1.2.5
       big.js: 6.2.1
@@ -6445,7 +6446,7 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-utils-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+  '@avalabs/core-utils-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
     dependencies:
       '@hpke/core': 1.2.5
       big.js: 6.2.1
@@ -6456,7 +6457,7 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-utils-sdk@3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
+  '@avalabs/core-utils-sdk@3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)':
     dependencies:
       '@hpke/core': 1.2.5
       big.js: 6.2.1
@@ -6467,12 +6468,12 @@ snapshots:
       - node-fetch
       - supports-color
 
-  '@avalabs/core-wallets-sdk@3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)':
+  '@avalabs/core-wallets-sdk@3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@5.2.0))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)':
     dependencies:
       '@avalabs/avalanchejs': 5.1.1-alpha.4
-      '@avalabs/core-chains-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/glacier-sdk': 3.1.0-canary.5adb21d5
+      '@avalabs/core-chains-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk': 3.1.0-canary.9fb5e3cd
       '@avalabs/hw-app-avalanche': 2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       '@bitcoinerlab/secp256k1': 1.2.0
       '@ledgerhq/device-management-kit': 1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
@@ -6509,12 +6510,12 @@ snapshots:
       - typescript
       - ws
 
-  '@avalabs/core-wallets-sdk@3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+  '@avalabs/core-wallets-sdk@3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
     dependencies:
       '@avalabs/avalanchejs': 5.1.1-alpha.4
-      '@avalabs/core-chains-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/glacier-sdk': 3.1.0-canary.5adb21d5
+      '@avalabs/core-chains-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.14.1(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk': 3.1.0-canary.9fb5e3cd
       '@avalabs/hw-app-avalanche': 2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       '@bitcoinerlab/secp256k1': 1.2.0
       '@ledgerhq/device-management-kit': 1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
@@ -6551,12 +6552,12 @@ snapshots:
       - typescript
       - ws
 
-  '@avalabs/core-wallets-sdk@3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+  '@avalabs/core-wallets-sdk@3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)(rxjs@7.8.2)(typescript@5.8.2)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
     dependencies:
       '@avalabs/avalanchejs': 5.1.1-alpha.4
-      '@avalabs/core-chains-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
-      '@avalabs/glacier-sdk': 3.1.0-canary.5adb21d5
+      '@avalabs/core-chains-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.1)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(node-fetch@2.7.0)
+      '@avalabs/glacier-sdk': 3.1.0-canary.9fb5e3cd
       '@avalabs/hw-app-avalanche': 2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       '@bitcoinerlab/secp256k1': 1.2.0
       '@ledgerhq/device-management-kit': 1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
@@ -6593,12 +6594,12 @@ snapshots:
       - typescript
       - ws
 
-  '@avalabs/core-wallets-sdk@3.1.0-canary.5adb21d5(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(rxjs@7.8.2)(typescript@5.8.2)':
+  '@avalabs/core-wallets-sdk@3.1.0-canary.9fb5e3cd(@avalabs/avalanchejs@5.1.1-alpha.4)(@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(@ledgerhq/device-signer-kit-bitcoin@1.3.3(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bitcoinjs-lib@6.1.8))(@ledgerhq/device-signer-kit-solana@1.13.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(typescript@5.8.2)(utf-8-validate@5.0.10))(@solana/sysvars@2.1.0(typescript@5.8.2))(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))(rxjs@7.8.2)(typescript@5.8.2)':
     dependencies:
       '@avalabs/avalanchejs': 5.1.1-alpha.4
-      '@avalabs/core-chains-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
-      '@avalabs/core-utils-sdk': 3.1.0-canary.5adb21d5(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
-      '@avalabs/glacier-sdk': 3.1.0-canary.5adb21d5
+      '@avalabs/core-chains-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@avalabs/core-utils-sdk': 3.1.0-canary.9fb5e3cd(big.js@6.2.1)(bn.js@5.2.5)(ethers@6.13.5(bufferutil@4.1.0)(utf-8-validate@5.0.10))
+      '@avalabs/glacier-sdk': 3.1.0-canary.9fb5e3cd
       '@avalabs/hw-app-avalanche': 2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
       '@bitcoinerlab/secp256k1': 1.2.0
       '@ledgerhq/device-management-kit': 1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)
@@ -6637,7 +6638,7 @@ snapshots:
 
   '@avalabs/crypto-sdk@1.0.0': {}
 
-  '@avalabs/glacier-sdk@3.1.0-canary.5adb21d5': {}
+  '@avalabs/glacier-sdk@3.1.0-canary.9fb5e3cd': {}
 
   '@avalabs/hw-app-avalanche@2.1.0(@ledgerhq/device-management-kit@1.9.0(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10))(bufferutil@4.1.0)(rxjs@7.8.2)(utf-8-validate@5.0.10)':
     dependencies:
@@ -6650,7 +6651,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@avalabs/types@3.1.0-canary.5adb21d5': {}
+  '@avalabs/types@3.1.0-canary.9fb5e3cd': {}
 
   '@babel/code-frame@7.27.1':
     dependencies:
