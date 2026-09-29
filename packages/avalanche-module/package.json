@@ -1,6 +1,6 @@
 {
   "name": "@avalabs/avalanche-module",
-  "version": "4.0.5",
+  "version": "4.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ava-labs/core-vm-modules",
@@ -22,7 +22,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@avalabs/avalanchejs": "5.1.1-alpha.4",
+    "@avalabs/avalanchejs": "5.2.0",
     "@avalabs/core-chains-sdk": "3.1.0-canary.9fb5e3cd",
     "@avalabs/core-coingecko-sdk": "3.1.0-canary.9fb5e3cd",
     "@avalabs/core-utils-sdk": "3.1.0-canary.9fb5e3cd",

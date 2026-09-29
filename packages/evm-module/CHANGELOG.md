@@ -1,5 +1,19 @@
 # @avalabs/evm-module
 
+## 4.1.0
+
+### Patch Changes
+
+- Updated dependencies [cfaa839]
+  - @avalabs/vm-module-types@4.1.0
+
+## 4.0.6
+
+### Patch Changes
+
+- 3a36c29: fix: batched security fixes
+  - @avalabs/vm-module-types@4.0.6
+
 ## 4.0.5
 
 ### Patch Changes

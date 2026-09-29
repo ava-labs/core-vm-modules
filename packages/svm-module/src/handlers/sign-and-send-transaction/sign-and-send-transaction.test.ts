@@ -10,6 +10,8 @@ import { deserializeTransactionMessage, type SolanaProvider } from '@avalabs/cor
 import { rpcErrors } from '@metamask/rpc-errors';
 
 import { getProvider } from '@src/utils/get-provider';
+import { assertTxBelongsToNetwork } from '@src/utils/assert-tx-belongs-to-network';
+import { explainTransaction } from '@src/utils/explain/explain-transaction';
 import { SOLANA_MAINNET_CAIP2_ID } from '@src/constants';
 import { waitForTransactionConfirmation } from '@src/utils/wait-for-transaction-confirmation';
 
@@ -27,6 +29,7 @@ const mockBlockaid = {
 
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@src/utils/get-provider');
+jest.mock('@src/utils/assert-tx-belongs-to-network');
 jest.mock('./schema');
 jest.mock('@src/utils/wait-for-transaction-confirmation');
 jest.mock('@src/utils/explain/explain-transaction', () => ({
@@ -137,6 +140,28 @@ describe('src/handlers/sign-and-send-transaction', () => {
     expect(result).toEqual({
       error: rpcErrors.invalidParams({ message: 'Transaction params are invalid', data: { cause: 'Invalid params' } }),
     });
+  });
+
+  it('rejects without explaining, approving or broadcasting when the tx does not belong to the network', async () => {
+    jest.mocked(assertTxBelongsToNetwork).mockResolvedValueOnce('This transaction was not built for Solana');
+
+    const result = await signAndSendTransaction({
+      request: mockRequest,
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      proxyApiUrl: mockProxyApiUrl,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
+
+    expect(result).toEqual({
+      error: rpcErrors.invalidParams({
+        message: 'This transaction was not built for Solana',
+        data: { cause: null },
+      }),
+    });
+    expect(explainTransaction).not.toHaveBeenCalled();
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+    expect(mockProvider.sendTransaction).not.toHaveBeenCalled();
   });
 
   it('returns an error if approval request fails', async () => {

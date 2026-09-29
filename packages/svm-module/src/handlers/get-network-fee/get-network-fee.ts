@@ -44,7 +44,7 @@ const ensureEnoughData = (fees: number[]): ValidRecentFees => {
  *    we will suggest paying higher priority fees.
  */
 export async function getNetworkFee(network: NetworkFeeParam, proxyApiUrl: string): Promise<NetworkFees> {
-  const provider = getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl });
+  const provider = getProvider({ network, proxyApiUrl });
 
   const getFees = await provider.getRecentPrioritizationFees();
   const feesRaw = await getFees.send();
