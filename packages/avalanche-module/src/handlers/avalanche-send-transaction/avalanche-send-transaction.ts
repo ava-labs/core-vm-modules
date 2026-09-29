@@ -229,6 +229,7 @@ export const avalancheSendTransaction = async ({
       onTransactionPending: approvalController.onTransactionPending,
       onTransactionConfirmed: approvalController.onTransactionConfirmed,
       onTransactionReverted: approvalController.onTransactionReverted,
+      onTransactionStatusUnknown: approvalController.onTransactionStatusUnknown,
       request: request,
     });
 
@@ -259,6 +260,7 @@ const waitForTransactionReceipt = async ({
   onTransactionPending,
   onTransactionConfirmed,
   onTransactionReverted,
+  onTransactionStatusUnknown,
   request,
 }: {
   explorerUrl: string;
@@ -284,6 +286,15 @@ const waitForTransactionReceipt = async ({
     request: RpcRequest;
   }) => void;
   onTransactionReverted: ({ txHash, request }: { txHash: Hex; request: RpcRequest }) => void;
+  onTransactionStatusUnknown?: ({
+    txHash,
+    explorerLink,
+    request,
+  }: {
+    txHash: Hex;
+    explorerLink: string;
+    request: RpcRequest;
+  }) => void;
   request: RpcRequest;
 }) => {
   const maxTransactionStatusCheckRetries = 7;
@@ -320,23 +331,35 @@ const waitForTransactionReceipt = async ({
         onTransactionReverted({ txHash, request });
       }
     } else {
-      // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictxstatus
-      const result = await retry({
-        operation: () => provider.getApiC().getAtomicTxStatus(txHash),
-        isSuccess: (result) => ['Accepted', 'Dropped'].includes(result.status),
+      // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictx
+      //
+      // `getAtomicTxStatus` is deprecated by the node as of avalanchego v1.15.0
+      // (Helicon), so acceptance is read from `getAtomicTx` instead. The node
+      // sets `blockHeight` only once the atomic tx is accepted and serves both
+      // Processing and Dropped txs without one, so its presence is the only
+      // acceptance signal available here — which also means a dropped tx is no
+      // longer distinguishable from a slow one and surfaces as an unknown
+      // status once the poll budget runs out.
+      await retry({
+        operation: () => provider.getApiC().getAtomicTx({ txID: txHash }),
+        isSuccess: (result) => result.blockHeight !== undefined,
         maxRetries: maxTransactionStatusCheckRetries,
       });
 
-      if (result.status === 'Accepted') {
-        onTransactionConfirmed({ txHash, explorerLink, request });
-      } else {
-        onTransactionReverted({ txHash, request });
-      }
+      // Unlike the P and X branches above, there is no second terminal state to
+      // narrow here: `retry` only returns once `isSuccess` holds, so reaching
+      // this line already means the node reported a block height.
+      onTransactionConfirmed({ txHash, explorerLink, request });
     }
   } catch (error) {
     console.error(error);
     if (error instanceof Error && error.message.startsWith('Max retry exceeded.')) {
-      // in the future, we may want to handle this timeout situation differently
+      // Running out of polling attempts is not evidence that the transaction
+      // failed — it usually means the node stopped answering or is still
+      // processing. Reporting a revert here would tell the user their funds
+      // did not move when they very likely did, so this is surfaced as its own
+      // non-terminal state instead.
+      onTransactionStatusUnknown?.({ txHash, explorerLink, request });
     } else {
       onTransactionReverted({ txHash, request });
     }

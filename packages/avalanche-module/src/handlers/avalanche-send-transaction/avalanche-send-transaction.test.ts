@@ -41,12 +41,14 @@ const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 const mockOnTransactionConfirmed = jest.fn();
 const mockOnTransactionReverted = jest.fn();
 const mockOnTransactionPending = jest.fn();
+const mockOnTransactionStatusUnknown = jest.fn();
 const mockApprovalController: jest.Mocked<ApprovalController> = {
   requestApproval: jest.fn(),
   requestPublicKey: jest.fn(),
   onTransactionPending: mockOnTransactionPending,
   onTransactionConfirmed: mockOnTransactionConfirmed,
   onTransactionReverted: mockOnTransactionReverted,
+  onTransactionStatusUnknown: mockOnTransactionStatusUnknown,
 };
 
 const mockGetAddressesByIndices = getAddressesByIndices as jest.MockedFunction<typeof getAddressesByIndices>;
@@ -59,6 +61,11 @@ const mockGetApiP = jest.fn().mockReturnValue({
   getTxStatus: mockGetTxStatus,
 });
 
+const mockGetAtomicTx = jest.fn().mockResolvedValue({ blockHeight: 58717503n });
+const mockGetApiC = jest.fn().mockReturnValue({
+  getAtomicTx: mockGetAtomicTx,
+});
+
 const mockRetry = retry as jest.MockedFunction<typeof retry>;
 
 const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
@@ -66,6 +73,7 @@ const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 const mockProvider = {
   issueTxHex: issueTxHexMock,
   getApiP: mockGetApiP,
+  getApiC: mockGetApiC,
   getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
   evmRpc: {
     waitForTransaction: mockWaitForTransaction,
@@ -620,6 +628,126 @@ describe('avalanche_sendTransaction handler', () => {
       expect(response).toStrictEqual({ result: testTxHash });
 
       expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: params.request, txHash: testTxHash });
+    });
+  });
+
+  describe('C-chain atomic transaction status', () => {
+    // The C-chain branch polls `getAtomicTx`, whose only acceptance signal is
+    // the presence of a block height. These tests drive the params handed to
+    // `retry` directly because `retry` itself is mocked out for this suite.
+    type RetryCall = {
+      operation: (retryIndex: number) => Promise<unknown>;
+      isSuccess: (result: unknown) => boolean;
+    };
+
+    const flushPromises = () => new Promise(process.nextTick);
+
+    const lastRetryCall = () => mockRetry.mock.calls[0]?.[0] as unknown as RetryCall;
+
+    const sendOnC = () => avalancheSendTransaction(testParams({ transactionHex: '0x000142', chainAlias: 'C' }));
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ ...emptyValueDetails, type: 'import' });
+      (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
+      (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(EVM);
+
+      mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
+      mockRetry.mockResolvedValue({ blockHeight: 58717503n });
+    });
+
+    it('polls getAtomicTx rather than the deprecated getAtomicTxStatus', async () => {
+      await sendOnC();
+      await flushPromises();
+
+      await lastRetryCall().operation(0);
+
+      expect(mockGetApiC).toHaveBeenCalled();
+      expect(mockGetAtomicTx).toHaveBeenCalledWith({ txID: testTxHash });
+    });
+
+    it('treats a block height as the only acceptance signal', async () => {
+      await sendOnC();
+      await flushPromises();
+
+      const { isSuccess } = lastRetryCall();
+
+      expect(isSuccess({ blockHeight: 58717503n })).toBe(true);
+      // Processing and Dropped txs are both served without a block height.
+      expect(isSuccess({ blockHeight: undefined })).toBe(false);
+      expect(isSuccess({})).toBe(false);
+    });
+
+    it('notifies confirmation once the atomic tx reports a block height', async () => {
+      const params = testParams({ transactionHex: '0x000142', chainAlias: 'C' });
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        txHash: testTxHash,
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        request: params.request,
+      });
+      expect(mockOnTransactionStatusUnknown).not.toHaveBeenCalled();
+    });
+
+    it('reports an unknown status when polling is exhausted', async () => {
+      mockRetry.mockRejectedValue(new Error('Max retry exceeded. Error: request failed'));
+
+      const params = testParams({ transactionHex: '0x000142', chainAlias: 'C' });
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionStatusUnknown).toHaveBeenCalledWith({
+        txHash: testTxHash,
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        request: params.request,
+      });
+      // Exhaustion is not evidence either way, so neither terminal state fires.
+      expect(mockOnTransactionConfirmed).not.toHaveBeenCalled();
+      expect(mockOnTransactionReverted).not.toHaveBeenCalled();
+    });
+
+    it('still reverts when the failure is not poll exhaustion', async () => {
+      // The real `retry` only ever throws 'Max retry exceeded.', so a failure
+      // raised before it is the reachable non-exhaustion path through the same
+      // catch — mocking `retry` into some other error shape would assert
+      // against something the implementation cannot actually produce.
+      mockOnTransactionPending.mockImplementationOnce(() => {
+        throw new Error('Boom');
+      });
+
+      const params = testParams({ transactionHex: '0x000142', chainAlias: 'C' });
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionReverted).toHaveBeenCalledWith({ txHash: testTxHash, request: params.request });
+      expect(mockOnTransactionStatusUnknown).not.toHaveBeenCalled();
+    });
+
+    it('stays silent when the consumer has not implemented onTransactionStatusUnknown', async () => {
+      // The optional call itself is guarded by `?.` and enforced by tsc, so
+      // what is worth asserting here is the behaviour: a consumer that opted
+      // out hears nothing, rather than falling back to a misleading revert.
+      mockRetry.mockRejectedValue(new Error('Max retry exceeded.'));
+
+      const params = {
+        ...testParams({ transactionHex: '0x000142', chainAlias: 'C' }),
+        approvalController: {
+          ...mockApprovalController,
+          onTransactionStatusUnknown: undefined,
+        } as unknown as ApprovalController,
+      };
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionConfirmed).not.toHaveBeenCalled();
+      expect(mockOnTransactionReverted).not.toHaveBeenCalled();
     });
   });
 

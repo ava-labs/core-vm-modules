@@ -25,7 +25,7 @@ export const getUnsignedOrPartiallySignedTx = async ({
   currentAddress: string;
   currentEvmAddress?: string;
   provider: Avalanche.JsonRpcProvider;
-}) => {
+}): Promise<UnsignedTx> => {
   let credentials: Credential[] | undefined = undefined;
   let parsedTxInstance: UnsignedTx | EVMUnsignedTx;
   const tx = utils.unpackWithManager(vm, txBytes) as avaxSerial.AvaxTx;

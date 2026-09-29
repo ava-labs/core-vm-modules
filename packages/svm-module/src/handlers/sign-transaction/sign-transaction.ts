@@ -9,6 +9,7 @@ import {
 } from '@avalabs/vm-module-types';
 
 import { getProvider } from '@src/utils/get-provider';
+import { assertTxBelongsToNetwork } from '@src/utils/assert-tx-belongs-to-network';
 import { isBalanceChangeEmpty } from '@src/utils/functional';
 import { getNetworkName } from '@src/utils/get-network-name';
 import { explainTransaction } from '@src/utils/explain/explain-transaction';
@@ -42,10 +43,15 @@ export const signTransaction = async ({
 
   const [{ account, serializedTx }] = data;
 
-  const provider = getProvider({
-    isTestnet: Boolean(network.isTestnet),
-    proxyApiUrl,
-  });
+  const provider = getProvider({ network, proxyApiUrl });
+
+  const clusterMismatch = await assertTxBelongsToNetwork({ serializedTx, provider, network });
+
+  if (clusterMismatch) {
+    return {
+      error: rpcErrors.invalidParams(rpcErrorOpts(clusterMismatch, null)),
+    };
+  }
 
   const { details, isSimulationSuccessful, alert, balanceChange } = await explainTransaction({
     simulationParams: {

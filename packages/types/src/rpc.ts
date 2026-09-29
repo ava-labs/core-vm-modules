@@ -443,6 +443,26 @@ export interface ApprovalController {
     request: RpcRequest;
   }) => void;
   onTransactionReverted: ({ txHash, request }: { txHash: string; request: RpcRequest }) => void;
+  /**
+   * Called when the module gave up waiting for a terminal status without ever
+   * learning one — the node stopped answering, or kept reporting the tx as
+   * processing until the poll budget ran out. The transaction may still have
+   * been accepted, so this is deliberately neither a confirmation nor a
+   * revert: consumers should stop showing an in-progress state and point the
+   * user at the explorer.
+   *
+   * Optional so existing consumers keep compiling; a module that has nothing
+   * better to report simply stays silent when it is not implemented.
+   */
+  onTransactionStatusUnknown?: ({
+    txHash,
+    explorerLink,
+    request,
+  }: {
+    txHash: string;
+    explorerLink: string;
+    request: RpcRequest;
+  }) => void;
 }
 
 export interface BatchApprovalController extends ApprovalController {

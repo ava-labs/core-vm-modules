@@ -20,7 +20,7 @@ export const getWrappedTransactions = async ({
   address: string;
   proxyApiUrl: string;
 }): Promise<WrappedTransaction[]> => {
-  const provider = getProvider({ isTestnet: Boolean(network.isTestnet), proxyApiUrl });
+  const provider = getProvider({ network, proxyApiUrl });
 
   // Get main wallet signatures
   const mainSignaturesResponse = await provider.getSignaturesForAddress(solAddress(address), { limit: 25 }).send();
