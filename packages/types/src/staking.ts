@@ -21,6 +21,7 @@ export type TxOutput = {
   stakeableLocktime: bigint;
   threshold: bigint;
   isAvax: boolean;
+  isStake: boolean;
   assetDescription?: {
     assetID: string;
     name: string;

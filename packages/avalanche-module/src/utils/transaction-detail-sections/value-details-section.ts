@@ -1,7 +1,11 @@
-import type { DetailSection, Transfer, TxOutput, TxValueDetails } from '@avalabs/vm-module-types';
+import type { DetailSection, Transfer, TxDetails, TxOutput } from '@avalabs/vm-module-types';
 import { transferListItem } from '@internal/utils';
 
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
+import {
+  isAddPermissionlessDelegatorTx,
+  isAddPermissionlessValidatorTx,
+} from '../../handlers/avalanche-send-transaction/typeguards';
 
 const TITLE = 'Transaction Outputs';
 
@@ -21,7 +25,22 @@ const _getAssetDetails = (output: TxOutput, symbol: string): Pick<Transfer, 'sym
   return {};
 };
 
-const _getTransferDetails = (output: TxOutput, symbol: string): Transfer => ({
+// no end date for auto-renewed validators
+const _getStakeEnd = (tx: TxDetails): number | undefined =>
+  isAddPermissionlessDelegatorTx(tx) || isAddPermissionlessValidatorTx(tx) ? Number(tx.end) : undefined;
+
+const _getStakeDetails = (
+  output: TxOutput,
+  stakeEnd: number | undefined,
+): Pick<Transfer, 'isStaked' | 'stakedUntil'> => {
+  if (!output.isStake) {
+    return {};
+  }
+
+  return { isStaked: true, stakedUntil: stakeEnd };
+};
+
+const _getTransferDetails = (output: TxOutput, symbol: string, stakeEnd: number | undefined): Transfer => ({
   addresses: output.owners,
   amount: output.amount,
   assetId: output.assetId,
@@ -30,17 +49,23 @@ const _getTransferDetails = (output: TxOutput, symbol: string): Transfer => ({
   threshold: Number(output.threshold),
   lockedUntil: Number(output.locktime),
   stakeableLockedUntil: Number(output.stakeableLocktime),
+  ..._getStakeDetails(output, stakeEnd),
 });
 
-export const valueDetailsSection = (tx: TxValueDetails, symbol: string): DetailSection | undefined =>
-  tx.outputs.length === 0
-    ? undefined
-    : {
-        title: TITLE,
-        items: [
-          transferListItem(
-            TITLE,
-            tx.outputs.map((output) => _getTransferDetails(output, symbol)),
-          ),
-        ],
-      };
+export const valueDetailsSection = (tx: TxDetails, symbol: string): DetailSection | undefined => {
+  if (tx.outputs.length === 0) {
+    return undefined;
+  }
+
+  const stakeEnd = _getStakeEnd(tx);
+
+  return {
+    title: TITLE,
+    items: [
+      transferListItem(
+        TITLE,
+        tx.outputs.map((output) => _getTransferDetails(output, symbol, stakeEnd)),
+      ),
+    ],
+  };
+};

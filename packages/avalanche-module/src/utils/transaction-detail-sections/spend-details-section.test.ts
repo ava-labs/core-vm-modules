@@ -13,6 +13,7 @@ const createOutput = (overrides: Partial<TxOutput> = {}): TxOutput => ({
   stakeableLocktime: 0n,
   threshold: 1n,
   isAvax: true,
+  isStake: false,
   ...overrides,
 });
 
@@ -66,6 +67,7 @@ describe('spendDetailsSection', () => {
       outputs: [
         createOutput({
           isAvax: false,
+          isStake: false,
           assetId: TOKEN_ASSET_ID,
           assetDescription: { assetID: TOKEN_ASSET_ID, name: 'Some Token', symbol: 'TKN', denomination: 2 },
         }),

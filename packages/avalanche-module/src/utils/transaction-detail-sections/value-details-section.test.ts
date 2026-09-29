@@ -1,4 +1,12 @@
-import { DetailItemType, type TxOutput, type TxValueDetails } from '@avalabs/vm-module-types';
+import {
+  DetailItemType,
+  NetworkVMType,
+  type Transfer,
+  type TxDetails,
+  type TxOutput,
+  type TxValueDetails,
+  TxType,
+} from '@avalabs/vm-module-types';
 
 import { valueDetailsSection } from './value-details-section';
 
@@ -10,10 +18,14 @@ const createOutput = (overrides: Partial<TxOutput> = {}): TxOutput => ({
   stakeableLocktime: 0n,
   threshold: 1n,
   isAvax: true,
+  isStake: false,
   ...overrides,
 });
 
-const valueDetails = (overrides: Partial<TxValueDetails> = {}): TxValueDetails => ({
+const valueDetails = (overrides: Partial<TxValueDetails> = {}): TxDetails => ({
+  type: TxType.Base,
+  chain: NetworkVMType.AVM,
+  txFee: 0n,
   outputs: [],
   inputAmounts: {},
   outputAmounts: {},
@@ -24,7 +36,20 @@ const valueDetails = (overrides: Partial<TxValueDetails> = {}): TxValueDetails =
   ...overrides,
 });
 
-const getTransfer = (tx: TxValueDetails) => {
+const createTransfer = (overrides: Partial<Transfer> = {}): Transfer => ({
+  addresses: ['X-fuji1recipient'],
+  amount: 100n,
+  assetId: 'avaxAssetId',
+  isNativeToken: true,
+  symbol: 'AVAX',
+  decimals: 9,
+  threshold: 1,
+  lockedUntil: 0,
+  stakeableLockedUntil: 0,
+  ...overrides,
+});
+
+const getTransfer = (tx: TxDetails) => {
   const [item] = valueDetailsSection(tx, 'AVAX')?.items ?? [];
 
   return typeof item === 'string' || item?.type !== DetailItemType.TRANSFER_LIST ? undefined : item.value;
@@ -109,6 +134,55 @@ describe('valueDetailsSection', () => {
 
     expect(shared?.[0]?.threshold).toEqual(2);
     expect(sole?.[0]?.threshold).toEqual(1);
+  });
+
+  it('returns stake outputs as staked until the end of the staking period', () => {
+    const tx: TxDetails = {
+      ...valueDetails({ outputs: [createOutput({ isStake: true }), createOutput({ amount: 7n })] }),
+      type: TxType.AddPermissionlessDelegator,
+      nodeID: 'NodeID-1',
+      subnetID: 'subnetId',
+      stake: 100n,
+      start: '1700000000',
+      end: '1702592000',
+      txFee: 0n,
+    };
+
+    expect(getTransfer(tx)).toStrictEqual([
+      createTransfer({ isStaked: true, stakedUntil: 1702592000 }),
+      createTransfer({ amount: 7n }),
+    ]);
+  });
+
+  it('returns stake outputs of a validator as staked until the end of the staking period', () => {
+    const tx: TxDetails = {
+      ...valueDetails({ outputs: [createOutput({ isStake: true })] }),
+      type: TxType.AddPermissionlessValidator,
+      nodeID: 'NodeID-1',
+      subnetID: 'subnetId',
+      stake: 100n,
+      delegationFee: 20000,
+      start: '1700000000',
+      end: '1702592000',
+      txFee: 0n,
+    };
+
+    expect(getTransfer(tx)).toStrictEqual([createTransfer({ isStaked: true, stakedUntil: 1702592000 })]);
+  });
+
+  it('returns stake outputs of an auto-renewed validator as staked with no end date', () => {
+    const tx: TxDetails = {
+      ...valueDetails({ outputs: [createOutput({ isStake: true })] }),
+      type: TxType.AddAutoRenewedValidator,
+      nodeID: 'NodeID-1',
+      stake: 100n,
+      delegationFee: 20000,
+      autoCompoundRewardShares: 0,
+      period: 1209600n,
+      txFee: 0n,
+    };
+
+    expect(getTransfer(tx)).toStrictEqual([createTransfer({ isStaked: true })]);
   });
 
   it('returns outputs with no owners', () => {

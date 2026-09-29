@@ -184,6 +184,8 @@ export type Transfer = {
   lockedUntil?: number;
   stakeableLockedUntil?: number;
   isNativeToken?: boolean;
+  isStaked?: boolean;
+  stakedUntil?: number;
 };
 
 export type TransferListItem = BaseDetailItem & {

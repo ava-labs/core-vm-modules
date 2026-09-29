@@ -27,7 +27,7 @@
     "@avalabs/core-coingecko-sdk": "3.1.0-alpha.99",
     "@avalabs/core-utils-sdk": "3.1.0-alpha.99",
     "@avalabs/core-chains-sdk": "3.1.0-alpha.99",
-    "@avalabs/core-wallets-sdk": "3.1.0-canary.40de0cac",
+    "@avalabs/core-wallets-sdk": "3.1.0-canary.6efe9304",
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/glacier-sdk": "3.1.0-alpha.99",
     "@avalabs/types": "3.1.0-alpha.99",
