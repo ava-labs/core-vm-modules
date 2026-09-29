@@ -182,7 +182,7 @@ describe('valueDetailsSection', () => {
       txFee: 0n,
     };
 
-    expect(getTransfer(tx)).toStrictEqual([createTransfer({ isStaked: true })]);
+    expect(getTransfer(tx)).toStrictEqual([createTransfer({ isStaked: true, stakedUntil: undefined })]);
   });
 
   it('returns outputs with no owners', () => {
