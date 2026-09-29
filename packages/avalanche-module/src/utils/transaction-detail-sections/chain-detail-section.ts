@@ -8,7 +8,6 @@ export const chainDetailSection = (tx: BaseTx, symbol: string) => {
   const { txFee, chain, memo } = tx;
 
   details.push({
-    title: 'Chain Details',
     items: [textItem('Active chain', `Avalanche ${AvalancheChainStrings[chain]}`)],
   });
 
@@ -20,7 +19,6 @@ export const chainDetailSection = (tx: BaseTx, symbol: string) => {
   }
   if (txFee) {
     details.push({
-      title: 'Network Fee',
       items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
     });
   }

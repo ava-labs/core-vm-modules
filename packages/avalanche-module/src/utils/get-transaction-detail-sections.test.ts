@@ -73,7 +73,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Chain Details',
         items: [
           {
             label: 'Active chain',
@@ -84,7 +83,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -154,13 +152,11 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
 
     const sections = getTransactionDetailSections(txDetails, networkToken.symbol) ?? [];
 
-    // The three belong to one collapsible item rather than sitting loose beside Chain Details
-    // and Network Fee, so a client can show and hide them together.
-    expect(sections.map(({ title }) => title)).toEqual(['Chain Details', 'Network Fee', undefined]);
+    expect(sections.map(({ title }) => title)).toEqual([undefined, undefined, undefined]);
     expect(getValueDetailsSection(txDetails, networkToken.symbol).map(({ title }) => title)).toEqual([
-      'Transaction Outputs',
       'Input amounts',
       'Output amounts',
+      'Transaction Outputs',
     ]);
   });
 
@@ -299,7 +295,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -360,7 +355,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -403,7 +397,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -474,7 +467,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -552,7 +544,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -607,7 +598,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -649,7 +639,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -723,7 +712,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -784,7 +772,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -883,7 +870,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -924,7 +910,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -967,7 +952,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -997,7 +981,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     const details = getTransactionDetailSections(txDetails, networkToken.symbol);
     const expectedDetails = [
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',
@@ -1046,7 +1029,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [{ label: 'Fee Amount', value: 1n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' }],
       },
     ];
@@ -1107,7 +1089,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [{ label: 'Fee Amount', value: 1n, type: 'currency', maxDecimals: 9, symbol: 'AVAX' }],
       },
     ];
@@ -1148,7 +1129,6 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
         ],
       },
       {
-        title: 'Network Fee',
         items: [
           {
             label: 'Fee Amount',

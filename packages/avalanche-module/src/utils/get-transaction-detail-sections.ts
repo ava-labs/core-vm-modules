@@ -126,8 +126,8 @@ export const getTransactionDetailSections = (
   const valueSection = valueDetailsSection(txDetails, symbol);
 
   const valueDetails: DetailSection[] = [
-    ...(valueSection ? [valueSection] : []),
     ...amountDetailsSections(txDetails, symbol, context?.avaxAssetId),
+    ...(valueSection ? [valueSection] : []),
   ];
 
   const sections = [...detailSections, ...(spendSection ? [spendSection] : [])];

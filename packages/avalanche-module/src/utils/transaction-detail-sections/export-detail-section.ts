@@ -24,7 +24,6 @@ export const exportDetailSection = (tx: ExportTx, symbol: string, recipients: st
   });
   if (txFee) {
     details.push({
-      title: 'Network Fee',
       items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
     });
   }
