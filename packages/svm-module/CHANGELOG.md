@@ -1,5 +1,16 @@
 # @avalabs/svm-module
 
+## 4.2.0
+
+### Minor Changes
+
+- cce416d: add value details to avalanche tx approval screens
+
+### Patch Changes
+
+- Updated dependencies [cce416d]
+  - @avalabs/vm-module-types@4.2.0
+
 ## 4.1.1
 
 ### Patch Changes
