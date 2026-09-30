@@ -1,6 +1,6 @@
 import { RpcMethod, type DisplayData, type TokenWithBalanceBTC } from '@avalabs/vm-module-types';
 import { getTxUpdater } from './bitcoin-tx-updater';
-import { createTransferTx, type BitcoinOutputUTXO, type BitcoinProvider } from '@avalabs/core-wallets-sdk';
+import { getTransferTxDetails, type BitcoinOutputUTXO } from '@avalabs/core-wallets-sdk';
 
 jest.mock('@avalabs/core-wallets-sdk');
 
@@ -40,9 +40,6 @@ describe('bitcoin-tx-updater', () => {
     ],
   } as unknown as TokenWithBalanceBTC;
 
-  const network = {};
-  const provider = { getNetwork: jest.fn().mockReturnValue(network) } as unknown as BitcoinProvider;
-
   it('returns the updateTx callback', () => {
     const updatedTx = {
       inputs: [],
@@ -50,7 +47,7 @@ describe('bitcoin-tx-updater', () => {
       fee: 100,
     };
 
-    jest.mocked(createTransferTx).mockReturnValue(updatedTx);
+    jest.mocked(getTransferTxDetails).mockReturnValue(updatedTx);
 
     const { updateTx } = getTxUpdater(
       'abcd-1234',
@@ -69,7 +66,6 @@ describe('bitcoin-tx-updater', () => {
         },
       },
       {} as DisplayData,
-      provider,
     );
 
     expect(updateTx({ feeRate: 2 })).toEqual({
@@ -90,6 +86,6 @@ describe('bitcoin-tx-updater', () => {
       displayData: {},
     });
 
-    expect(createTransferTx).toHaveBeenCalledWith('to', 'from', 1, 2, testBtcBalance.utxos, network);
+    expect(getTransferTxDetails).toHaveBeenCalledWith('to', 'from', 1, 2, testBtcBalance.utxos);
   });
 });
