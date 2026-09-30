@@ -3,7 +3,7 @@ import { parseRequestParams } from './schema';
 import { getProvider } from '../../utils/get-provider';
 import { getBalances } from '../get-balances/get-balances';
 import { isBtcBalance } from '../../utils/is-btc-balance';
-import { createTransferTx, BitcoinProvider } from '@avalabs/core-wallets-sdk';
+import { getTransferTxDetails, BitcoinProvider } from '@avalabs/core-wallets-sdk';
 import {
   NetworkVMType,
   RpcMethod,
@@ -25,12 +25,15 @@ jest.mock('../../utils/bitcoin-tx-updater', () => ({
     cleanup: jest.fn(),
   }),
 }));
+const mockTxHex = 'aabbccddeeff';
+
 jest.mock('@avalabs/core-wallets-sdk', () => ({
-  createTransferTx: jest.fn(),
+  getTransferTxDetails: jest.fn(),
   BitcoinProvider: jest.fn().mockImplementation(() => ({
     getNetwork: jest.fn(),
     issueRawTx: jest.fn(),
     waitForTx: jest.fn(),
+    getTxHex: jest.fn().mockResolvedValue(mockTxHex),
   })),
 }));
 
@@ -169,7 +172,8 @@ describe('bitcoinSendTransaction', () => {
     (parseRequestParams as jest.Mock).mockReturnValue({ success: true, data: testParams });
     (getBalances as jest.Mock).mockResolvedValue({ from: { BTC: testBtcBalance } });
     (isBtcBalance as unknown as jest.Mock).mockReturnValue(true);
-    (createTransferTx as jest.Mock).mockReturnValue({ inputs: testInputs, outputs: testOutputs, fee: 1 });
+    (getTransferTxDetails as jest.Mock).mockReturnValue({ inputs: testInputs, outputs: testOutputs, fee: 1 });
+    (getProvider as jest.Mock).mockReturnValue(new BitcoinProvider());
   });
 
   it('should return an error for invalid params', async () => {
@@ -194,8 +198,7 @@ describe('bitcoinSendTransaction', () => {
   it('should return an error if transaction cannot be created', async () => {
     const mockProvider = new BitcoinProvider();
     (getProvider as jest.Mock).mockReturnValue(mockProvider);
-    (mockProvider.getNetwork as jest.Mock).mockResolvedValue(undefined);
-    (createTransferTx as jest.Mock).mockReturnValue({ inputs: null, outputs: null });
+    (getTransferTxDetails as jest.Mock).mockReturnValue({ inputs: null, outputs: null });
 
     const result = await bitcoinSendTransaction(testRequestParams());
 
@@ -290,7 +293,10 @@ describe('bitcoinSendTransaction', () => {
           gasLimit: 1,
           inputs: testInputs,
           outputs: testOutputs,
-          balance: testBtcBalance,
+          balance: {
+            ...testBtcBalance,
+            utxos: testBtcBalance.utxos.map((utxo) => ({ ...utxo, txHex: mockTxHex })),
+          },
         },
       },
       updateTx,
