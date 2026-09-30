@@ -1,5 +1,12 @@
 # @avalabs/hvm-module
 
+## 4.2.0
+
+### Patch Changes
+
+- Updated dependencies [cce416d]
+  - @avalabs/vm-module-types@4.2.0
+
 ## 4.1.1
 
 ### Patch Changes

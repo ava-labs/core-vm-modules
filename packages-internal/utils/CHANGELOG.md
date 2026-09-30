@@ -1,5 +1,11 @@
 # @internal/utils
 
+## 0.9.0
+
+### Minor Changes
+
+- cce416d: add value details to avalanche tx approval screens
+
 ## 0.8.2
 
 ### Patch Changes
