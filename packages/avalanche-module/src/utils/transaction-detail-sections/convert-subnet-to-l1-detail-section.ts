@@ -50,7 +50,6 @@ export const convertSubnetToL1DetailSection = (tx: ConvertSubnetToL1Tx, symbol: 
 
   if (txFee) {
     details.push({
-      title: 'Network Fee',
       items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
     });
   }

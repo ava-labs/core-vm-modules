@@ -12,6 +12,10 @@ import {
   type AddressListItem,
   type NetworkItemValue,
   type NetworkItem,
+  type Transfer,
+  type TransferListItem,
+  type CollapsibleGroupItem,
+  type DetailSection,
 } from '@avalabs/vm-module-types';
 
 export const fundsRecipientItem = (
@@ -27,12 +31,19 @@ export const fundsRecipientItem = (
   symbol,
 });
 
-export const currencyItem = (label: string, value: bigint, maxDecimals: number, symbol: string): CurrencyItem => ({
+export const currencyItem = (
+  label: string,
+  value: bigint,
+  maxDecimals: number,
+  symbol: string,
+  isNativeToken?: boolean,
+): CurrencyItem => ({
   label,
   type: DetailItemType.CURRENCY,
   value,
   maxDecimals,
   symbol,
+  ...(isNativeToken === undefined ? {} : { isNativeToken }),
 });
 
 export const textItem = (
@@ -85,5 +96,17 @@ export const dateItem = (label: string, value: string): DateItem => ({
 export const networkItem = (label: string, value: NetworkItemValue): NetworkItem => ({
   label,
   type: DetailItemType.NETWORK,
+  value,
+});
+
+export const transferListItem = (label: string, value: Transfer[]): TransferListItem => ({
+  label,
+  type: DetailItemType.TRANSFER_LIST,
+  value,
+});
+
+export const collapsibleGroupItem = (label: string, value: DetailSection[]): CollapsibleGroupItem => ({
+  label,
+  type: DetailItemType.COLLAPSIBLE_GROUP,
   value,
 });

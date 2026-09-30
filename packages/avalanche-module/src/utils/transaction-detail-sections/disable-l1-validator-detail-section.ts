@@ -16,7 +16,6 @@ export const disableL1ValidatorDetailSection = (tx: DisableL1ValidatorTx, symbol
 
   if (txFee) {
     details.push({
-      title: 'Network Fee',
       items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
     });
   }

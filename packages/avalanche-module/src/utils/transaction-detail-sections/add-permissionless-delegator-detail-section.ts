@@ -47,7 +47,6 @@ export const addPermissionlessDelegatorDetailSection = ({
   });
   if (txFee) {
     details.push({
-      title: 'Network Fee',
       items: [currencyItem('Fee Amount', txFee, AVAX_NONEVM_DENOMINATION, symbol)],
     });
   }

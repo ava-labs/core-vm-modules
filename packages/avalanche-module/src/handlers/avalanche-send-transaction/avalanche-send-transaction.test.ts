@@ -1,13 +1,22 @@
 import { rpcErrors } from '@metamask/rpc-errors';
-import { UnsignedTx, EVMUnsignedTx, AVM, utils, EVM } from '@avalabs/avalanchejs';
-import { AppName, NetworkVMType, RpcMethod, type ApprovalController, type Network } from '@avalabs/vm-module-types';
+import { avmSerial, UnsignedTx, EVMUnsignedTx, AVM, evmSerial, pvmSerial, utils, EVM } from '@avalabs/avalanchejs';
+import {
+  AlertType,
+  AppName,
+  NetworkVMType,
+  RpcMethod,
+  type ApprovalController,
+  type Network,
+} from '@avalabs/vm-module-types';
 import { avalancheSendTransaction } from './avalanche-send-transaction';
 import { Avalanche } from '@avalabs/core-wallets-sdk';
 import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getProvider } from '../../utils/get-provider';
 import { retry } from '@internal/utils/src/utils/retry';
+import { INVALID_EXPORT_ERROR } from '../../utils/get-unsupported-export-error';
 
 const GLACIER_API_URL = 'https://glacier-api.avax.network';
+const AVAX_ASSET_ID = 'avaxAssetId';
 
 jest.mock('@avalabs/core-wallets-sdk');
 jest.mock('@avalabs/avalanchejs');
@@ -16,6 +25,16 @@ jest.mock('../../utils/get-provider');
 jest.mock('@internal/utils/src/utils/retry', () => ({
   retry: jest.fn(),
 }));
+
+const emptyValueDetails = {
+  outputs: [],
+  inputAmounts: {},
+  outputAmounts: {},
+  totalAvaxInput: 0n,
+  totalAvaxOutput: 0n,
+  totalAvaxBurned: 0n,
+  isValidAvaxBurnedAmount: true,
+};
 
 const utxosMock = [{ utxoId: '1' }, { utxoId: '2' }];
 
@@ -55,6 +74,7 @@ const mockProvider = {
   issueTxHex: issueTxHexMock,
   getApiP: mockGetApiP,
   getApiC: mockGetApiC,
+  getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
   evmRpc: {
     waitForTransaction: mockWaitForTransaction,
   },
@@ -71,9 +91,8 @@ const unsignedTxMock = {
   hasAllSignatures: hasAllSignaturesMock,
   toJSON: () => unsignedTxJson,
   getSignedTx: () => 'signedTx',
-  getTx: () => ({
-    foo: 'bar',
-  }),
+  getTx: jest.fn(),
+  getInputUtxos: jest.fn(),
 };
 
 const testNetwork: Network = {
@@ -149,6 +168,11 @@ const testTxHash = '0xtxhash';
 describe('avalanche_sendTransaction handler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    unsignedTxMock.getTx.mockReturnValue({ foo: 'bar' });
+    unsignedTxMock.getInputUtxos.mockReturnValue([]);
+    (avmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'avm.ExportTx');
+    (pvmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'pvm.ExportTx');
+    (evmSerial.isExportTx as unknown as jest.Mock).mockImplementation((tx) => tx?._type === 'evm.ExportTx');
     (UnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     (EVMUnsignedTx.fromJSON as jest.Mock).mockReturnValue(unsignedTxMock);
     mockGetAddressesByIndices.mockResolvedValue([]);
@@ -205,6 +229,7 @@ describe('avalanche_sendTransaction handler', () => {
 
   it('should return error if fails to parse transaction', async () => {
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'unknown',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -227,6 +252,7 @@ describe('avalanche_sendTransaction handler', () => {
 
     (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -304,7 +330,7 @@ describe('avalanche_sendTransaction handler', () => {
       signingData: {
         type: 'avalanche_sendTransaction',
         unsignedTxJson: '{"foo":"bar"}',
-        data: { type: 'import' },
+        data: { ...emptyValueDetails, type: 'import' },
         vm: 'AVM',
       },
     });
@@ -321,6 +347,7 @@ describe('avalanche_sendTransaction handler', () => {
     (utils.hexToBuffer as jest.Mock).mockReturnValueOnce(new Uint8Array([0, 1, 2]));
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValueOnce(unsignedTxMock);
@@ -381,7 +408,7 @@ describe('avalanche_sendTransaction handler', () => {
       signingData: {
         type: 'avalanche_sendTransaction',
         unsignedTxJson: '{"foo":"bar"}',
-        data: { type: 'import' },
+        data: { ...emptyValueDetails, type: 'import' },
         vm: 'EVM',
       },
     });
@@ -405,6 +432,86 @@ describe('avalanche_sendTransaction handler', () => {
     });
   });
 
+  it('returns burn amount checker warning properly when isValidAvaxBurnedAmount is false', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      isValidAvaxBurnedAmount: false,
+      type: 'import',
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({
+        displayData: expect.objectContaining({ alert: expect.objectContaining({ type: AlertType.WARNING }) }),
+      }),
+    );
+  });
+
+  it('does not return burn amount checker warning when isValidAvaxBurnedAmount is true', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      type: 'import',
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+
+    await avalancheSendTransaction(params);
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalledWith(
+      expect.objectContaining({ displayData: expect.objectContaining({ alert: undefined }) }),
+    );
+  });
+
+  it('returns an error if the export to C contains any non-AVAX assets', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      type: 'export',
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => 'someOtherAsset', output: { outputOwners: { addrs: [] } } }],
+    });
+
+    const result = await avalancheSendTransaction(params);
+
+    expect(result.error?.message).toContain(INVALID_EXPORT_ERROR);
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+  });
+
+  it('works as expected for an AVAX only export to C', async () => {
+    const params = testParams(testRequestParams);
+
+    (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm: AVM });
+    (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
+      type: 'export',
+      chain: NetworkVMType.AVM,
+      destination: NetworkVMType.EVM,
+    });
+    (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
+    unsignedTxMock.getTx.mockReturnValue({
+      _type: 'avm.ExportTx',
+      outs: [{ getAssetId: () => AVAX_ASSET_ID, output: { outputOwners: { addrs: [] } } }],
+    });
+
+    await avalancheSendTransaction(params);
+
+    expect(mockApprovalController.requestApproval).toHaveBeenCalled();
+  });
+
   it('merges resolved auth headers into the Glacier UTXO request', async () => {
     const params = {
       ...testParams(testRequestParams),
@@ -414,6 +521,7 @@ describe('avalanche_sendTransaction handler', () => {
 
     (utils.unpackWithManager as jest.Mock).mockReturnValueOnce(tx);
     (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+      ...emptyValueDetails,
       type: 'import',
     });
     (utils.parse as jest.Mock).mockReturnValueOnce([undefined, undefined, new Uint8Array([0, 1, 2])]);
@@ -438,6 +546,7 @@ describe('avalanche_sendTransaction handler', () => {
       jest.clearAllMocks();
 
       (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+        ...emptyValueDetails,
         type: 'import',
       });
 
@@ -540,7 +649,7 @@ describe('avalanche_sendTransaction handler', () => {
     beforeEach(() => {
       jest.clearAllMocks();
 
-      (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ type: 'import' });
+      (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ ...emptyValueDetails, type: 'import' });
       (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValue(unsignedTxMock);
       (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(EVM);
 
@@ -647,6 +756,7 @@ describe('avalanche_sendTransaction handler', () => {
       jest.clearAllMocks();
 
       (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({
+        ...emptyValueDetails,
         type: 'import',
       });
     });
