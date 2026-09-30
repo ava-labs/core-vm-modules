@@ -1,5 +1,12 @@
 # @avalabs/vm-module-types
 
+## 4.1.1
+
+### Patch Changes
+
+- 2497ece: update avalanche-sdks
+- 2497ece: fix: bitcoin transaction building
+
 ## 4.1.0
 
 ### Minor Changes
