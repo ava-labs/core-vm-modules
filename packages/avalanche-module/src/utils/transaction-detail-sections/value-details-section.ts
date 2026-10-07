@@ -8,6 +8,10 @@ import {
 } from '../../handlers/avalanche-send-transaction/typeguards';
 
 const TITLE = 'Transaction Outputs';
+const MAX_DATE_SECONDS = 8_640_000_000_000n;
+
+const _toTimestamp = (seconds: bigint): number | 'indefinitely' =>
+  seconds > MAX_DATE_SECONDS ? 'indefinitely' : Number(seconds);
 
 const _getAssetDetails = (output: TxOutput, symbol: string): Pick<Transfer, 'symbol' | 'decimals' | 'assetName'> => {
   if (output.isAvax) {
@@ -26,12 +30,12 @@ const _getAssetDetails = (output: TxOutput, symbol: string): Pick<Transfer, 'sym
 };
 
 // no end date for auto-renewed validators
-const _getStakeEnd = (tx: TxDetails): number | undefined =>
-  isAddPermissionlessDelegatorTx(tx) || isAddPermissionlessValidatorTx(tx) ? Number(tx.end) : undefined;
+const _getStakeEnd = (tx: TxDetails): Transfer['stakedUntil'] =>
+  isAddPermissionlessDelegatorTx(tx) || isAddPermissionlessValidatorTx(tx) ? _toTimestamp(BigInt(tx.end)) : undefined;
 
 const _getStakeDetails = (
   output: TxOutput,
-  stakeEnd: number | undefined,
+  stakeEnd: Transfer['stakedUntil'],
 ): Pick<Transfer, 'isStaked' | 'stakedUntil'> => {
   if (!output.isStake) {
     return {};
@@ -40,15 +44,15 @@ const _getStakeDetails = (
   return { isStaked: true, stakedUntil: stakeEnd };
 };
 
-const _getTransferDetails = (output: TxOutput, symbol: string, stakeEnd: number | undefined): Transfer => ({
+const _getTransferDetails = (output: TxOutput, symbol: string, stakeEnd: Transfer['stakedUntil']): Transfer => ({
   addresses: output.owners,
   amount: output.amount,
   assetId: output.assetId,
   isNativeToken: output.isAvax,
   ..._getAssetDetails(output, symbol),
   threshold: Number(output.threshold),
-  lockedUntil: Number(output.locktime),
-  stakeableLockedUntil: Number(output.stakeableLocktime),
+  lockedUntil: _toTimestamp(output.locktime),
+  stakeableLockedUntil: _toTimestamp(output.stakeableLocktime),
   ..._getStakeDetails(output, stakeEnd),
 });
 
