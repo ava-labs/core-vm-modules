@@ -82,9 +82,8 @@ export const avalancheSendTransaction = async ({
     });
 
     let unsignedTx: UnsignedTx | EVMUnsignedTx;
-    let signerAddressBytes = getSignerAddresses([
+    let xpSignerAddressBytes = getSignerAddresses([
       currentAddress,
-      evmAddress,
       ...externalXPAddresses.map(({ address }) => address),
     ]);
 
@@ -126,7 +125,7 @@ export const avalancheSendTransaction = async ({
 
       const fromAddressBytes = fromAddresses.map((address) => utils.parse(address)[2]);
 
-      signerAddressBytes = [...signerAddressBytes, ...fromAddressBytes];
+      xpSignerAddressBytes = [...xpSignerAddressBytes, ...fromAddressBytes];
 
       unsignedTx = await Avalanche.createAvalancheUnsignedTx({
         tx,
@@ -163,7 +162,8 @@ export const avalancheSendTransaction = async ({
     const spendDetails = getTransactionSpendDetails({
       tx: unsignedTx.getTx(),
       inputUtxos: unsignedTx.getInputUtxos(),
-      signerAddresses: signerAddressBytes,
+      xpSignerAddresses: xpSignerAddressBytes,
+      evmSignerAddresses: getSignerAddresses([evmAddress]),
     });
 
     const signingData: SigningData = {
