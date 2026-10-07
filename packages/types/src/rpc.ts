@@ -144,6 +144,7 @@ export type CurrencyItem = BaseDetailItem & {
   maxDecimals: number;
   symbol: string;
   isNativeToken?: boolean;
+  isAssetLabel?: boolean;
 };
 
 export type DataItem = BaseDetailItem & {

@@ -31,13 +31,13 @@ export const spendDetailsSection = (
     title: 'You spend',
     items: spent.map(([assetId, amount]) => {
       if (assetId === avaxAssetId) {
-        return currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol, true);
+        return { ...currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol, true), isAssetLabel: true };
       }
 
       const asset = assets.get(assetId);
 
       return asset
-        ? currencyItem(asset.name, amount, asset.denomination, asset.symbol, false)
+        ? { ...currencyItem(asset.name, amount, asset.denomination, asset.symbol, false), isAssetLabel: true }
         : textItem(assetId, amount.toString(), 'vertical');
     }),
   };
