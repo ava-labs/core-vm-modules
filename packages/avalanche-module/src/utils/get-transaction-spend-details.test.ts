@@ -15,11 +15,15 @@ const AVAX_ASSET_ID = 'FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z';
 const TOKEN_ASSET_ID = '2QqUTT3XTgR6HLbCLGtjN2uDHHqNyAbAsZZFZGnsyorTy6FuTB';
 
 const SIGNER = new Uint8Array(20).fill(1);
+const SECOND_SIGNER = new Uint8Array(20).fill(2);
 const UNKNOWN = new Uint8Array(20).fill(3);
 const EVM_SIGNER = utils.hexToBuffer('0x0102030405060708090a0b0c0d0e0f1011121314');
 
 const createOutput = (amount: bigint, owners: Uint8Array[], assetId = AVAX_ASSET_ID) =>
   TransferableOutput.fromNative(assetId, amount, owners);
+
+const createMultisigOutput = (amount: bigint, owners: Uint8Array[], threshold: number) =>
+  TransferableOutput.fromNative(AVAX_ASSET_ID, amount, owners, 0n, threshold);
 
 const createLockedOutput = (amount: bigint, owners: Uint8Array[], assetId = AVAX_ASSET_ID) =>
   ({
@@ -47,13 +51,19 @@ const createEvmAmount = (address: Uint8Array, amount: bigint, assetId = AVAX_ASS
 });
 
 const getSpendDetails = (utxos: ReturnType<typeof createUtxo>[], outputs: TransferableOutput[], signers = [SIGNER]) =>
-  getTransactionSpendDetails({ tx: createTx(outputs), inputUtxos: utxos, signerAddresses: signers });
+  getTransactionSpendDetails({
+    tx: createTx(outputs),
+    inputUtxos: utxos,
+    xpSignerAddresses: signers,
+    evmSignerAddresses: [EVM_SIGNER],
+  });
 
 const getSpendDetailsWithExport = (outs: TransferableOutput[], change: TransferableOutput[], signers = [SIGNER]) =>
   getTransactionSpendDetails({
     tx: { baseTx: { outputs: change }, outs } as unknown as Common.Transaction,
     inputUtxos: [createUtxo(1_000n, [SIGNER])],
-    signerAddresses: signers,
+    xpSignerAddresses: signers,
+    evmSignerAddresses: [EVM_SIGNER],
   });
 
 describe('getTransactionSpendDetails', () => {
@@ -105,12 +115,58 @@ describe('getTransactionSpendDetails', () => {
     expect(spendDetails).toStrictEqual({ spentAmounts: { [AVAX_ASSET_ID]: 600n }, unknownAddresses: [] });
   });
 
-  it('returns the correct spend details when the signer co-owns an output with an unknown address', () => {
-    const spendDetails = getSpendDetails([createUtxo(1_000n, [SIGNER])], [createOutput(400n, [SIGNER, UNKNOWN])]);
+  describe('multisig outputs', () => {
+    it('counts an output as spent when an unknown co-owner can spend it alone', () => {
+      const spendDetails = getSpendDetails(
+        [createUtxo(1_000n, [SIGNER])],
+        [createMultisigOutput(400n, [SIGNER, UNKNOWN], 1)],
+      );
 
-    expect(spendDetails).toStrictEqual({
-      spentAmounts: { [AVAX_ASSET_ID]: 600n },
-      unknownAddresses: [utils.bufferToHex(UNKNOWN)],
+      expect(spendDetails).toStrictEqual({
+        spentAmounts: { [AVAX_ASSET_ID]: 1_000n },
+        unknownAddresses: [utils.bufferToHex(UNKNOWN)],
+      });
+    });
+
+    it('counts an output as spent when the signer cannot spend it without an unknown co-owner', () => {
+      const spendDetails = getSpendDetails(
+        [createUtxo(1_000n, [SIGNER])],
+        [createMultisigOutput(400n, [SIGNER, UNKNOWN], 2)],
+      );
+
+      expect(spendDetails).toStrictEqual({
+        spentAmounts: { [AVAX_ASSET_ID]: 1_000n },
+        unknownAddresses: [utils.bufferToHex(UNKNOWN)],
+      });
+    });
+
+    it('counts an output as returned when the signers meet the threshold and the unknown co-owners do not', () => {
+      const spendDetails = getSpendDetails(
+        [createUtxo(1_000n, [SIGNER])],
+        [createMultisigOutput(400n, [SIGNER, SECOND_SIGNER, UNKNOWN], 2)],
+        [SIGNER, SECOND_SIGNER],
+      );
+
+      expect(spendDetails).toStrictEqual({
+        spentAmounts: { [AVAX_ASSET_ID]: 600n },
+        unknownAddresses: [utils.bufferToHex(UNKNOWN)],
+      });
+    });
+
+    it('counts an output as returned when every owner is a signer', () => {
+      const spendDetails = getSpendDetails(
+        [createUtxo(1_000n, [SIGNER])],
+        [createMultisigOutput(400n, [SIGNER, SECOND_SIGNER], 2)],
+        [SIGNER, SECOND_SIGNER],
+      );
+
+      expect(spendDetails).toStrictEqual({ spentAmounts: { [AVAX_ASSET_ID]: 600n }, unknownAddresses: [] });
+    });
+
+    it('counts an output as spent when its threshold exceeds its owners', () => {
+      const spendDetails = getSpendDetails([createUtxo(1_000n, [SIGNER])], [createMultisigOutput(400n, [SIGNER], 2)]);
+
+      expect(spendDetails).toStrictEqual({ spentAmounts: { [AVAX_ASSET_ID]: 1_000n }, unknownAddresses: [] });
     });
   });
 
@@ -126,6 +182,15 @@ describe('getTransactionSpendDetails', () => {
     expect(spendDetails).toStrictEqual({
       spentAmounts: { [AVAX_ASSET_ID]: 1_000n },
       unknownAddresses: [utils.bufferToHex(UNKNOWN)],
+    });
+  });
+
+  it('does not treat an X/P output owned by the EVM signer address bytes as owned by the signer', () => {
+    const spendDetails = getSpendDetails([createUtxo(1_000n, [SIGNER])], [createOutput(400n, [EVM_SIGNER])]);
+
+    expect(spendDetails).toStrictEqual({
+      spentAmounts: { [AVAX_ASSET_ID]: 1_000n },
+      unknownAddresses: [utils.bufferToHex(EVM_SIGNER)],
     });
   });
 
@@ -166,9 +231,31 @@ describe('getTransactionSpendDetails', () => {
         exportedOutputs: [],
       } as unknown as Common.Transaction;
 
-      const spendDetails = getTransactionSpendDetails({ tx, inputUtxos: [], signerAddresses: [EVM_SIGNER] });
+      const spendDetails = getTransactionSpendDetails({
+        tx,
+        inputUtxos: [],
+        xpSignerAddresses: [SIGNER],
+        evmSignerAddresses: [EVM_SIGNER],
+      });
 
       expect(spendDetails).toStrictEqual({ spentAmounts: { [AVAX_ASSET_ID]: 1_000n }, unknownAddresses: [] });
+    });
+
+    it('does not treat export inputs from the X/P signer address bytes as spent by the signer', () => {
+      const tx = {
+        _type: TypeSymbols.EvmExportTx,
+        ins: [createEvmAmount(SIGNER, 1_000n)],
+        exportedOutputs: [],
+      } as unknown as Common.Transaction;
+
+      const spendDetails = getTransactionSpendDetails({
+        tx,
+        inputUtxos: [],
+        xpSignerAddresses: [SIGNER],
+        evmSignerAddresses: [EVM_SIGNER],
+      });
+
+      expect(spendDetails).toStrictEqual({ spentAmounts: {}, unknownAddresses: [] });
     });
 
     it('returns no spent amounts when the signer does not own the export inputs', () => {
@@ -178,7 +265,12 @@ describe('getTransactionSpendDetails', () => {
         exportedOutputs: [],
       } as unknown as Common.Transaction;
 
-      const spendDetails = getTransactionSpendDetails({ tx, inputUtxos: [], signerAddresses: [EVM_SIGNER] });
+      const spendDetails = getTransactionSpendDetails({
+        tx,
+        inputUtxos: [],
+        xpSignerAddresses: [SIGNER],
+        evmSignerAddresses: [EVM_SIGNER],
+      });
 
       expect(spendDetails).toStrictEqual({ spentAmounts: {}, unknownAddresses: [] });
     });
@@ -190,7 +282,12 @@ describe('getTransactionSpendDetails', () => {
         Outs: [createEvmAmount(EVM_SIGNER, 1_000n)],
       } as unknown as Common.Transaction;
 
-      const spendDetails = getTransactionSpendDetails({ tx, inputUtxos: [], signerAddresses: [EVM_SIGNER] });
+      const spendDetails = getTransactionSpendDetails({
+        tx,
+        inputUtxos: [],
+        xpSignerAddresses: [SIGNER],
+        evmSignerAddresses: [EVM_SIGNER],
+      });
 
       expect(spendDetails).toStrictEqual({ spentAmounts: {}, unknownAddresses: [] });
     });

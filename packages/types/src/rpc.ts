@@ -144,6 +144,7 @@ export type CurrencyItem = BaseDetailItem & {
   maxDecimals: number;
   symbol: string;
   isNativeToken?: boolean;
+  isAssetLabel?: boolean;
 };
 
 export type DataItem = BaseDetailItem & {
@@ -181,11 +182,11 @@ export type Transfer = {
   decimals?: number;
   assetName?: string;
   threshold?: number;
-  lockedUntil?: number;
-  stakeableLockedUntil?: number;
+  lockedUntil?: number | 'indefinitely';
+  stakeableLockedUntil?: number | 'indefinitely';
   isNativeToken?: boolean;
   isStaked?: boolean;
-  stakedUntil?: number;
+  stakedUntil?: number | 'indefinitely';
 };
 
 export type TransferListItem = BaseDetailItem & {

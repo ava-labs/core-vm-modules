@@ -1,43 +1,11 @@
-import type { DetailItem, DetailSection, TxOutput, TxValueDetails } from '@avalabs/vm-module-types';
-import { currencyItem, textItem } from '@internal/utils';
-import { AVAX_NONEVM_DENOMINATION } from '../../constants';
+import type { DetailSection, TxValueDetails } from '@avalabs/vm-module-types';
+import { assetAmountItem, getDescribedAssets } from './asset-amount-item';
 
 const INPUT_AMOUNTS = 'Input amounts';
 const OUTPUT_AMOUNTS = 'Output amounts';
 
-type AssetDescription = NonNullable<TxOutput['assetDescription']>;
-
-const _getDescribedAssets = (outputs: TxOutput[]): Map<string, AssetDescription> =>
-  outputs.reduce((assets, output) => {
-    if (output.assetDescription) {
-      assets.set(output.assetId, output.assetDescription);
-    }
-
-    return assets;
-  }, new Map<string, AssetDescription>());
-
-const _getAmountItem = (
-  assetId: string,
-  amount: bigint,
-  symbol: string,
-  avaxAssetId: string | undefined,
-  assets: Map<string, AssetDescription>,
-): DetailItem => {
-  if (assetId === avaxAssetId) {
-    return currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol, true);
-  }
-
-  const asset = assets.get(assetId);
-
-  if (asset) {
-    return currencyItem(asset.name, amount, asset.denomination, asset.symbol, false);
-  }
-
-  return textItem(assetId, amount.toString(), 'vertical');
-};
-
 export const amountDetailsSections = (tx: TxValueDetails, symbol: string, avaxAssetId?: string): DetailSection[] => {
-  const assets = _getDescribedAssets(tx.outputs);
+  const assets = getDescribedAssets(tx.outputs);
 
   const section = (title: string, amounts: Record<string, bigint>): DetailSection[] => {
     const entries = Object.entries(amounts);
@@ -47,7 +15,7 @@ export const amountDetailsSections = (tx: TxValueDetails, symbol: string, avaxAs
       : [
           {
             title,
-            items: entries.map(([assetId, amount]) => _getAmountItem(assetId, amount, symbol, avaxAssetId, assets)),
+            items: entries.map(([assetId, amount]) => assetAmountItem(assetId, amount, symbol, avaxAssetId, assets)),
           },
         ];
   };

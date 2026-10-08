@@ -7,6 +7,7 @@ export {
   nodeIDItem,
   dataItem,
   dateItem,
+  MAX_DATE_SECONDS,
   transferListItem,
   collapsibleGroupItem,
 } from './utils/detail-item';

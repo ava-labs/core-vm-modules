@@ -10,6 +10,9 @@ import {
 
 import { valueDetailsSection } from './value-details-section';
 
+const MAX_UINT64 = 2n ** 64n - 1n;
+const MAX_DATE_SECONDS = 8_640_000_000_000n;
+
 const createOutput = (overrides: Partial<TxOutput> = {}): TxOutput => ({
   assetId: 'avaxAssetId',
   amount: 100n,
@@ -126,6 +129,25 @@ describe('valueDetailsSection', () => {
     expect(transfers?.[0]).toMatchObject({ lockedUntil: 1700, stakeableLockedUntil: 9900 });
   });
 
+  it('returns the lock details as indefinite when they are past the latest representable date', () => {
+    const transfers = getTransfer(
+      valueDetails({ outputs: [createOutput({ locktime: MAX_UINT64, stakeableLocktime: MAX_DATE_SECONDS + 1n })] }),
+    );
+
+    expect(transfers?.[0]).toMatchObject({ lockedUntil: 'indefinitely', stakeableLockedUntil: 'indefinitely' });
+  });
+
+  it('returns the lock details as timestamps up to the latest representable date', () => {
+    const transfers = getTransfer(
+      valueDetails({ outputs: [createOutput({ locktime: MAX_DATE_SECONDS, stakeableLocktime: MAX_DATE_SECONDS })] }),
+    );
+
+    expect(transfers?.[0]).toMatchObject({
+      lockedUntil: Number(MAX_DATE_SECONDS),
+      stakeableLockedUntil: Number(MAX_DATE_SECONDS),
+    });
+  });
+
   it('returns the proper threshold details', () => {
     const shared = getTransfer(
       valueDetails({ outputs: [createOutput({ owners: ['X-fuji1a', 'X-fuji1b'], threshold: 2n })] }),
@@ -152,6 +174,21 @@ describe('valueDetailsSection', () => {
       createTransfer({ isStaked: true, stakedUntil: 1702592000 }),
       createTransfer({ amount: 7n }),
     ]);
+  });
+
+  it('returns stake outputs as staked indefinitely when the staking period ends past the latest representable date', () => {
+    const tx: TxDetails = {
+      ...valueDetails({ outputs: [createOutput({ isStake: true })] }),
+      type: TxType.AddPermissionlessDelegator,
+      nodeID: 'NodeID-1',
+      subnetID: 'subnetId',
+      stake: 100n,
+      start: '1700000000',
+      end: MAX_UINT64.toString(),
+      txFee: 0n,
+    };
+
+    expect(getTransfer(tx)).toStrictEqual([createTransfer({ isStaked: true, stakedUntil: 'indefinitely' })]);
   });
 
   it('returns stake outputs of a validator as staked until the end of the staking period', () => {

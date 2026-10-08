@@ -129,11 +129,7 @@ export const avalancheSignTransaction = async ({
 
   // Return an error if it's an X/P -> C export transaction and contains any non-AVAX assets
   const avaxAssetId = provider.getContext().avaxAssetID;
-  const signerAddresses = getSignerAddresses([
-    currentAddress,
-    currentEvmAddress,
-    ...externalXPAddresses.map(({ address }) => address),
-  ]);
+  const xpSignerAddresses = getSignerAddresses([currentAddress, ...externalXPAddresses.map(({ address }) => address)]);
   const unsupportedExport = getUnsupportedExportError({
     tx: unsignedOrPartiallySignedTx.getTx(),
     txDetails,
@@ -147,7 +143,8 @@ export const avalancheSignTransaction = async ({
   const spendDetails = getTransactionSpendDetails({
     tx: unsignedOrPartiallySignedTx.getTx(),
     inputUtxos: unsignedOrPartiallySignedTx.getInputUtxos(),
-    signerAddresses,
+    xpSignerAddresses,
+    evmSignerAddresses: getSignerAddresses([currentEvmAddress]),
   });
 
   const signingData: SigningData = {

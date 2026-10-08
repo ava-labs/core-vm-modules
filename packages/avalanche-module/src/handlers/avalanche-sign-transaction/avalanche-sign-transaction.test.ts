@@ -8,6 +8,8 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { Network as GlacierNetwork } from '@avalabs/glacier-sdk';
 import type { GetUpgradesInfoResponse } from '@avalabs/avalanchejs/dist/info/model';
 import { INVALID_EXPORT_ERROR } from '../../utils/get-unsupported-export-error';
+import * as signerAddresses from '../../utils/get-signer-addresses';
+import * as spendDetails from '../../utils/get-transaction-spend-details';
 
 jest.mock('@avalabs/avalanchejs');
 jest.mock('@avalabs/core-wallets-sdk');
@@ -262,6 +264,32 @@ describe('avalanche-sign-transaction', () => {
 
     expect(result).toEqual({
       result: 'signedData',
+    });
+  });
+
+  describe('spend details signer addresses', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('passes the EVM address only as an EVM signer address', async () => {
+      jest
+        .spyOn(signerAddresses, 'getSignerAddresses')
+        .mockImplementation((addresses) => addresses.filter(Boolean) as unknown as Uint8Array[]);
+      jest.spyOn(spendDetails, 'getTransactionSpendDetails');
+      mockRequestApproval.mockResolvedValue({ signedData: 'signedData' });
+
+      await avalancheSignTransaction({
+        ...avalancheSignTransactionParams,
+        request: createRequest({ transactionHex: '0x00001', chainAlias: 'P' }),
+      });
+
+      expect(spendDetails.getTransactionSpendDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          xpSignerAddresses: expect.not.arrayContaining(['0x0']),
+          evmSignerAddresses: ['0x0'],
+        }),
+      );
     });
   });
 
