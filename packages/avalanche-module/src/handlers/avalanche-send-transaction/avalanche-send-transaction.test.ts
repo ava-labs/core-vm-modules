@@ -14,6 +14,8 @@ import { getAddressesByIndices } from './utils/get-addresses-by-indices';
 import { getProvider } from '../../utils/get-provider';
 import { retry } from '@internal/utils/src/utils/retry';
 import { INVALID_EXPORT_ERROR } from '../../utils/get-unsupported-export-error';
+import * as signerAddresses from '../../utils/get-signer-addresses';
+import * as spendDetails from '../../utils/get-transaction-spend-details';
 
 const GLACIER_API_URL = 'https://glacier-api.avax.network';
 const AVAX_ASSET_ID = 'avaxAssetId';
@@ -429,6 +431,42 @@ describe('avalanche_sendTransaction handler', () => {
       vm: EVM,
       utxos: utxosMock,
       fromAddress: '0x0',
+    });
+  });
+
+  describe('spend details signer addresses', () => {
+    const context = {
+      account: { xpAddress: 'X-fuji1xp', evmAddress: '0xevm', xpubXP: 'xpubXP', externalXPAddresses: [] },
+    };
+
+    beforeEach(() => {
+      jest
+        .spyOn(signerAddresses, 'getSignerAddresses')
+        .mockImplementation((addresses) => addresses.filter(Boolean) as unknown as Uint8Array[]);
+      jest.spyOn(spendDetails, 'getTransactionSpendDetails');
+      (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ ...emptyValueDetails, type: 'import' });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it.each([
+      ['X/P', 'X' as const, AVM],
+      ['C', 'C' as const, EVM],
+    ])('%s: passes the EVM address only as an EVM signer address', async (_, chainAlias, vm) => {
+      (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(vm);
+      (utils.unpackWithManager as jest.Mock).mockReturnValueOnce({ vm });
+      (Avalanche.createAvalancheEvmUnsignedTx as jest.Mock).mockReturnValueOnce(unsignedTxMock);
+
+      await avalancheSendTransaction(testParams({ transactionHex: '0x00001', chainAlias }, context));
+
+      expect(spendDetails.getTransactionSpendDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          xpSignerAddresses: expect.not.arrayContaining(['0xevm']),
+          evmSignerAddresses: ['0xevm'],
+        }),
+      );
     });
   });
 
