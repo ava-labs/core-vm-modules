@@ -1,5 +1,13 @@
 # @avalabs/vm-module-types
 
+## 5.0.0
+
+### Major Changes
+
+- 4e309a8: avalanche transaction detail improvements
+
+  BREAKING: `Transfer.lockedUntil`, `Transfer.stakeableLockedUntil` and `Transfer.stakedUntil` are now `number | 'indefinitely'`. The avalanche module reports `'indefinitely'` for timestamps past the latest date a JS `Date` can represent, so clients must handle it before formatting these values as dates.
+
 ## 4.2.0
 
 ### Minor Changes
