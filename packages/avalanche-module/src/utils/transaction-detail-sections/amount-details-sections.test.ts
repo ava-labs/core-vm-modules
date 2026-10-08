@@ -64,6 +64,7 @@ describe('amountDetailsSections', () => {
       maxDecimals: 9,
       symbol: 'AVAX',
       isNativeToken: true,
+      isAssetLabel: true,
     });
   });
 
@@ -88,6 +89,7 @@ describe('amountDetailsSections', () => {
       value: 7n,
       maxDecimals: 2,
       symbol: 'TKN',
+      isAssetLabel: true,
     });
   });
 

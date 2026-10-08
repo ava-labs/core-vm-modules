@@ -1,18 +1,6 @@
-import type { DetailSection, TxOutput, TxValueDetails } from '@avalabs/vm-module-types';
-import { currencyItem, textItem } from '@internal/utils';
-import { AVAX_NONEVM_DENOMINATION } from '../../constants';
+import type { DetailSection, TxValueDetails } from '@avalabs/vm-module-types';
 import type { TransactionSpendDetails } from '../get-transaction-spend-details';
-
-type AssetDescription = NonNullable<TxOutput['assetDescription']>;
-
-const _getDescribedAssets = (outputs: TxOutput[]): Map<string, AssetDescription> =>
-  outputs.reduce((assets, output) => {
-    if (output.assetDescription) {
-      assets.set(output.assetId, output.assetDescription);
-    }
-
-    return assets;
-  }, new Map<string, AssetDescription>());
+import { assetAmountItem, getDescribedAssets } from './asset-amount-item';
 
 export const spendDetailsSection = (
   tx: TxValueDetails,
@@ -20,7 +8,7 @@ export const spendDetailsSection = (
   symbol: string,
   avaxAssetId?: string,
 ): DetailSection | undefined => {
-  const assets = _getDescribedAssets(tx.outputs);
+  const assets = getDescribedAssets(tx.outputs);
   const spent = Object.entries(spendDetails.spentAmounts);
 
   if (spent.length === 0) {
@@ -29,16 +17,6 @@ export const spendDetailsSection = (
 
   return {
     title: 'You spend',
-    items: spent.map(([assetId, amount]) => {
-      if (assetId === avaxAssetId) {
-        return { ...currencyItem(symbol, amount, AVAX_NONEVM_DENOMINATION, symbol, true), isAssetLabel: true };
-      }
-
-      const asset = assets.get(assetId);
-
-      return asset
-        ? { ...currencyItem(asset.name, amount, asset.denomination, asset.symbol, false), isAssetLabel: true }
-        : textItem(assetId, amount.toString(), 'vertical');
-    }),
+    items: spent.map(([assetId, amount]) => assetAmountItem(assetId, amount, symbol, avaxAssetId, assets)),
   };
 };
