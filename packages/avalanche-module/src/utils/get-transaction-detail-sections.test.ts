@@ -486,6 +486,28 @@ describe('getTransactionDetailSections - Detailed Tests', () => {
     expect(details).toEqual(expectedDetails);
   });
 
+  it('returns an indefinite end for a delegation ending past the latest representable date', () => {
+    const txDetails: TxDetails = {
+      ...emptyValueDetails,
+      type: TxType.AddPermissionlessDelegator,
+      nodeID: 'NodeID',
+      subnetID: 'SubnetID',
+      start: '1691234567',
+      end: (2n ** 64n - 1n).toString(),
+      stake: 50n,
+      txFee: 1n,
+    };
+
+    const details = getTransactionDetailSections(txDetails, networkToken.symbol, {
+      network: mockNetwork,
+      signerAccount: mockAccount,
+    });
+    const stakingItems = details?.find((section) => section.title === 'Staking Details')?.items;
+
+    expect(stakingItems).toContainEqual({ label: 'Start', type: 'date', value: '1691234567' });
+    expect(stakingItems).toContainEqual({ label: 'End', type: 'text', value: 'Indefinitely', alignment: 'horizontal' });
+  });
+
   it('should handle staking transactions for permissionless validators', () => {
     const txDetails: TxDetails = {
       ...emptyValueDetails,

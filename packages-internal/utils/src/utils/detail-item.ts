@@ -87,11 +87,16 @@ export const dataItem = (label: string, value: string): DataItem => ({
   value,
 });
 
-export const dateItem = (label: string, value: string): DateItem => ({
-  label,
-  type: DetailItemType.DATE,
-  value,
-});
+export const MAX_DATE_SECONDS = 8_640_000_000_000n;
+
+export const dateItem = (label: string, value: string): DateItem | TextItem =>
+  BigInt(value) > MAX_DATE_SECONDS
+    ? textItem(label, 'Indefinitely')
+    : {
+        label,
+        type: DetailItemType.DATE,
+        value,
+      };
 
 export const networkItem = (label: string, value: NetworkItemValue): NetworkItem => ({
   label,

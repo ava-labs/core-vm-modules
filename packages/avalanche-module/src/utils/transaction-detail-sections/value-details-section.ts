@@ -1,5 +1,5 @@
 import type { DetailSection, Transfer, TxDetails, TxOutput } from '@avalabs/vm-module-types';
-import { transferListItem } from '@internal/utils';
+import { MAX_DATE_SECONDS, transferListItem } from '@internal/utils';
 
 import { AVAX_NONEVM_DENOMINATION } from '../../constants';
 import {
@@ -8,7 +8,6 @@ import {
 } from '../../handlers/avalanche-send-transaction/typeguards';
 
 const TITLE = 'Transaction Outputs';
-const MAX_DATE_SECONDS = 8_640_000_000_000n;
 
 const _toTimestamp = (seconds: bigint): number | 'indefinitely' =>
   seconds > MAX_DATE_SECONDS ? 'indefinitely' : Number(seconds);
