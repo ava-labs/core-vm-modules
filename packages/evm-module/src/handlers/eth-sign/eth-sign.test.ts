@@ -210,6 +210,28 @@ describe('ethSign', () => {
   );
 
   it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
+    'should validate typed data against the requested network chainId for %s',
+    async (method) => {
+      const typedData = { types: { EIP712Domain: [] }, primaryType: 'Foo', domain: {}, message: {} };
+
+      mockParseRequestParams.mockReturnValueOnce({
+        success: true,
+        data: { method, data: typedData, address: '0xabc' },
+      });
+      mockIsTypedDataValid.mockReturnValueOnce({ isValid: true });
+
+      await ethSign({
+        request: { ...mockRequest, method },
+        network: mockNetwork,
+        approvalController: mockApprovalController,
+        blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      });
+
+      expect(mockIsTypedDataValid).toHaveBeenCalledWith(typedData, mockNetwork.chainId);
+    },
+  );
+
+  it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
     'should generate a warning banner for typed data validation failure for %s',
     async (method) => {
       mockParseRequestParams.mockReturnValueOnce({
