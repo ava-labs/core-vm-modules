@@ -1,5 +1,11 @@
 # @avalabs/avalanche-module
 
+## 5.0.1
+
+### Patch Changes
+
+- @avalabs/vm-module-types@5.0.1
+
 ## 5.0.0
 
 ### Major Changes
