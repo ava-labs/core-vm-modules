@@ -60,13 +60,13 @@ export const ethSign = async ({
   const isLegacyTypedDataMethod = method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1;
 
   if (method === RpcMethod.SIGN_TYPED_DATA_V3 || method === RpcMethod.SIGN_TYPED_DATA_V4) {
-    typedDataValidationResult = isTypedDataValid(data);
+    typedDataValidationResult = isTypedDataValid(data, network.chainId);
   } else if (isLegacyTypedDataMethod) {
     // Check for legacy flat V1 format or a full V3/V4-style typed data object
     if (isTypedDataV1(data)) {
       typedDataValidationResult = isTypedDataV1Valid(data);
     } else if (isTypedData(data)) {
-      typedDataValidationResult = isTypedDataValid(data);
+      typedDataValidationResult = isTypedDataValid(data, network.chainId);
     }
   }
 
