@@ -52,6 +52,7 @@ const mockToUtf8 = require('ethers').toUtf8String;
 const mockBeautifySimpleMessage = require('./utils/beautify-message/beautify-message').beautifySimpleMessage;
 const mockBeautifyComplexMessage = require('./utils/beautify-message/beautify-message').beautifyComplexMessage;
 const mockIsTypedDataV1 = require('./utils/typeguards').isTypedDataV1;
+const mockIsTypedData = require('./utils/typeguards').isTypedData;
 const mockResolveAgentIdentity = resolveAgentIdentity as jest.MockedFunction<typeof resolveAgentIdentity>;
 
 const mockRequest = {
@@ -230,6 +231,27 @@ describe('ethSign', () => {
       expect(mockIsTypedDataValid).toHaveBeenCalledWith(typedData, mockNetwork.chainId);
     },
   );
+
+  it('should validate legacy typed data objects against the requested network chainId', async () => {
+    const typedData = { types: { EIP712Domain: [] }, primaryType: 'Foo', domain: {}, message: {} };
+
+    mockParseRequestParams.mockReturnValueOnce({
+      success: true,
+      data: { method: RpcMethod.SIGN_TYPED_DATA, data: typedData, address: '0xabc' },
+    });
+    mockIsTypedDataV1.mockReturnValueOnce(false).mockReturnValueOnce(false);
+    mockIsTypedData.mockReturnValueOnce(true).mockReturnValueOnce(true);
+    mockIsTypedDataValid.mockReturnValueOnce({ isValid: true });
+
+    await ethSign({
+      request: { ...mockRequest, method: RpcMethod.SIGN_TYPED_DATA },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      blockaid: mockBlockaid as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    });
+
+    expect(mockIsTypedDataValid).toHaveBeenCalledWith(typedData, mockNetwork.chainId);
+  });
 
   it.each([RpcMethod.SIGN_TYPED_DATA_V3, RpcMethod.SIGN_TYPED_DATA_V4])(
     'should generate a warning banner for typed data validation failure for %s',

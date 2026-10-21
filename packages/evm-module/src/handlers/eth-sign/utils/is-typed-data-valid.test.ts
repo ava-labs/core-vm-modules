@@ -51,6 +51,53 @@ const chainAgnosticData = {
   },
 };
 
+// Hyperliquid fixes these domain values in its user-signed and L1 Agent signing protocols.
+const hyperliquidUserSignedData = {
+  types: {
+    EIP712Domain: [
+      { name: 'name', type: 'string' },
+      { name: 'version', type: 'string' },
+      { name: 'chainId', type: 'uint256' },
+      { name: 'verifyingContract', type: 'address' },
+    ],
+    'HyperliquidTransaction:ApproveAgent': [{ name: 'nonce', type: 'uint64' }],
+  },
+  primaryType: 'HyperliquidTransaction:ApproveAgent',
+  domain: {
+    name: 'HyperliquidSignTransaction',
+    version: '1',
+    chainId: '421614',
+    verifyingContract: '0x0000000000000000000000000000000000000000',
+  },
+  message: { nonce: 1 },
+};
+
+const hyperliquidAgentData = {
+  types: {
+    EIP712Domain: [
+      { name: 'name', type: 'string' },
+      { name: 'version', type: 'string' },
+      { name: 'chainId', type: 'uint256' },
+      { name: 'verifyingContract', type: 'address' },
+    ],
+    Agent: [
+      { name: 'source', type: 'string' },
+      { name: 'connectionId', type: 'bytes32' },
+    ],
+  },
+  primaryType: 'Agent',
+  domain: {
+    name: 'Exchange',
+    version: '1',
+    chainId: '1337',
+    verifyingContract: '0x0000000000000000000000000000000000000000',
+  },
+  message: {
+    source: 'a',
+    connectionId: `0x${'00'.repeat(32)}`,
+  },
+};
+
 describe('isTypedDataValid', () => {
   it('returns valid for well-formed typed data', () => {
     expect(isTypedDataValid(validData, 1)).toEqual({ isValid: true });
@@ -89,7 +136,7 @@ describe('isTypedDataValid', () => {
       });
     });
 
-    it.each([43114, '43114', '0xa86a', 'not-a-chain-id', 1.5, {}])(
+    it.each([43114, '43114', '0xa86a', 'not-a-chain-id', 1.5, true, [1], {}])(
       'returns a blocking error when the domain chainId is %p and the requested network is 1',
       (chainId) => {
         const result = isTypedDataValid({ ...validData, domain: { ...validData.domain, chainId } }, 1);
@@ -97,6 +144,7 @@ describe('isTypedDataValid', () => {
         if (result.isValid) throw new Error('expected isValid to be false');
         expect(result.blocking).toBe(true);
         expect(String(result.error)).toContain('does not match the requested network (1)');
+        expect(String(result.error)).toContain(`chainId (${JSON.stringify(chainId)})`);
       },
     );
 
@@ -108,6 +156,29 @@ describe('isTypedDataValid', () => {
       expect(
         isTypedDataValid({ ...chainAgnosticData, domain: { ...chainAgnosticData.domain, chainId } }, 43114),
       ).toEqual({ isValid: true });
+    });
+
+    it.each([
+      ['user-signed', hyperliquidUserSignedData],
+      ['L1 Agent', hyperliquidAgentData],
+    ])('accepts the fixed Hyperliquid %s domain on another requested network', (_kind, data) => {
+      expect(isTypedDataValid(data, 999)).toEqual({ isValid: true });
+    });
+
+    it('rejects a Hyperliquid-like domain with a different verifying contract', () => {
+      const result = isTypedDataValid(
+        {
+          ...hyperliquidUserSignedData,
+          domain: {
+            ...hyperliquidUserSignedData.domain,
+            verifyingContract: '0x1111111111111111111111111111111111111111',
+          },
+        },
+        999,
+      );
+
+      if (result.isValid) throw new Error('expected isValid to be false');
+      expect(result.blocking).toBe(true);
     });
   });
 });
