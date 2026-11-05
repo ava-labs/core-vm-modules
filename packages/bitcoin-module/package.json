@@ -29,7 +29,6 @@
     "@avalabs/crypto-sdk": "1.0.0",
     "@avalabs/vm-module-types": "workspace:*",
     "@metamask/rpc-errors": "6.3.0",
-    "big.js": "6.2.1",
     "bitcoinjs-lib": "5.2.0",
     "bn.js": "5.2.1",
     "zod": "3.23.8"
@@ -37,8 +36,6 @@
   "devDependencies": {
     "@internal/tsup-config": "workspace:*",
     "@internal/utils": "workspace:*",
-    "@types/big.js": "6.2.2",
-    "@types/bn.js": "5.1.5",
     "@types/jest": "29.5.7",
     "eslint-config-custom": "workspace:*",
     "ethers": "6.13.5",
