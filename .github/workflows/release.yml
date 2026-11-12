@@ -12,15 +12,16 @@ on:
       - changeset-release/main
   workflow_dispatch:
 
-permissions:
-  contents: write # Needed for changesets/action
-  id-token: write # Required for OIDC authentication when publishing to NPM
-  pull-requests: write # Needed for changesets/action
+permissions: {}
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   release:
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
     name: Release
     runs-on: ubuntu-latest # OIDC publishing currently requires GitHub-hosted runners
     env:
@@ -30,6 +31,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: true  # kept: job runs git commands that use the checkout token
 
       # Determine and print which type of run this is
       - name: Release Type
@@ -81,10 +84,11 @@ jobs:
       - name: Publish to NPM (Canary)
         if: steps.release-type.outputs.release == 'canary' && steps.changesets-check.outputs.hasChangesets == 'true'
         run: |
-          pnpm changeset version --snapshot ${{ steps.get-canary-subject.outputs.canary-subject }}
-          pnpm changeset publish --tag ${{ steps.get-canary-subject.outputs.canary-subject }}
+          pnpm changeset version --snapshot ${STEPS_GET_CANARY_SUBJECT_OUTPUTS_CANARY_SUBJECT}
+          pnpm changeset publish --tag ${STEPS_GET_CANARY_SUBJECT_OUTPUTS_CANARY_SUBJECT}
         env:
           NPM_CONFIG_PROVENANCE: true
+          STEPS_GET_CANARY_SUBJECT_OUTPUTS_CANARY_SUBJECT: ${{ steps.get-canary-subject.outputs.canary-subject }}
 
       # ------------------------------------------------
       # "Release" steps.
