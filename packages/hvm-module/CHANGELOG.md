@@ -1,5 +1,13 @@
 # @avalabs/hvm-module
 
+## 5.0.2
+
+### Patch Changes
+
+- a91200b: Update the SDKS to 4.0.0-alpha.0
+- Updated dependencies [a91200b]
+  - @avalabs/vm-module-types@5.0.2
+
 ## 5.0.1
 
 ### Patch Changes
