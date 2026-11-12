@@ -1,5 +1,11 @@
 # @avalabs/vm-module-types
 
+## 5.0.2
+
+### Patch Changes
+
+- a91200b: Update the SDKS to 4.0.0-alpha.0
+
 ## 5.0.1
 
 ## 5.0.0
