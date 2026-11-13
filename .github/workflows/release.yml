@@ -32,7 +32,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
-          persist-credentials: true  # kept: job runs git commands that use the checkout token
+          persist-credentials: true # kept: job runs git commands that use the checkout token
 
       # Determine and print which type of run this is
       - name: Release Type
