@@ -63,6 +63,11 @@ const mockGetApiP = jest.fn().mockReturnValue({
   getTxStatus: mockGetTxStatus,
 });
 
+const mockGetTxJson = jest.fn().mockResolvedValue({ tx: '0x00', encoding: 'hex' });
+const mockGetApiX = jest.fn().mockReturnValue({
+  getTxJson: mockGetTxJson,
+});
+
 const mockGetAtomicTx = jest.fn().mockResolvedValue({ blockHeight: 58717503n });
 const mockGetApiC = jest.fn().mockReturnValue({
   getAtomicTx: mockGetAtomicTx,
@@ -75,6 +80,7 @@ const mockGetProvider = getProvider as jest.MockedFunction<typeof getProvider>;
 const mockProvider = {
   issueTxHex: issueTxHexMock,
   getApiP: mockGetApiP,
+  getApiX: mockGetApiX,
   getApiC: mockGetApiC,
   getContext: () => ({ avaxAssetID: AVAX_ASSET_ID }),
   evmRpc: {
@@ -666,6 +672,76 @@ describe('avalanche_sendTransaction handler', () => {
       expect(response).toStrictEqual({ result: testTxHash });
 
       expect(mockOnTransactionReverted).toHaveBeenCalledWith({ request: params.request, txHash: testTxHash });
+    });
+  });
+
+  describe('X-chain transaction status', () => {
+    type RetryCall = {
+      operation: (retryIndex: number) => Promise<unknown>;
+      isSuccess: (result: unknown) => boolean;
+    };
+
+    const flushPromises = () => new Promise(process.nextTick);
+    const lastRetryCall = () => mockRetry.mock.calls[0]?.[0] as unknown as RetryCall;
+    const sendTransaction = () => avalancheSendTransaction(testParams(testRequestParams));
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      (Avalanche.parseAvalancheTx as jest.Mock).mockReturnValueOnce({ ...emptyValueDetails, type: 'import' });
+      (Avalanche.getVmByChainAlias as jest.Mock).mockReturnValue(AVM);
+
+      mockApprovalController.requestApproval.mockResolvedValue({ signedData: testSignedTxHash });
+      mockRetry.mockResolvedValue({ tx: '0x00', encoding: 'hex' });
+    });
+
+    it('polls getTx', async () => {
+      await sendTransaction();
+      await flushPromises();
+
+      await lastRetryCall().operation(0);
+
+      expect(mockGetApiX).toHaveBeenCalled();
+      expect(mockGetTxJson).toHaveBeenCalledWith({ txID: testTxHash });
+    });
+
+    it('treats any resolved getTx response as accepted', async () => {
+      await sendTransaction();
+      await flushPromises();
+
+      expect(lastRetryCall().isSuccess({ tx: '0x00', encoding: 'hex' })).toBe(true);
+    });
+
+    it('notifies confirmation once getTx resolves', async () => {
+      const params = testParams(testRequestParams);
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionConfirmed).toHaveBeenCalledWith({
+        txHash: testTxHash,
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        request: params.request,
+      });
+      expect(mockOnTransactionReverted).not.toHaveBeenCalled();
+      expect(mockOnTransactionStatusUnknown).not.toHaveBeenCalled();
+    });
+
+    it('reports an unknown status when polling is exhausted', async () => {
+      mockRetry.mockRejectedValue(new Error('Max retry exceeded. Error: not found'));
+
+      const params = testParams(testRequestParams);
+
+      await avalancheSendTransaction(params);
+      await flushPromises();
+
+      expect(mockOnTransactionStatusUnknown).toHaveBeenCalledWith({
+        txHash: testTxHash,
+        explorerLink: 'https://explorer.com/tx/' + testTxHash,
+        request: params.request,
+      });
+      expect(mockOnTransactionConfirmed).not.toHaveBeenCalled();
+      expect(mockOnTransactionReverted).not.toHaveBeenCalled();
     });
   });
 
