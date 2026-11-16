@@ -1,5 +1,13 @@
 # @avalabs/hypercore-module
 
+## 5.0.3
+
+### Patch Changes
+
+- 5650c9e: fix: poll X-Chain tx acceptance via `avm.getTx` instead of deprecated `avm.getTxStatus`
+- Updated dependencies [5650c9e]
+  - @avalabs/vm-module-types@5.0.3
+
 ## 5.0.2
 
 ### Patch Changes
