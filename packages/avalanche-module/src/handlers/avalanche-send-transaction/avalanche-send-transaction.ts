@@ -318,18 +318,14 @@ const waitForTransactionReceipt = async ({
         onTransactionReverted({ txHash, request });
       }
     } else if (vm === AVM) {
-      // https://docs.avax.network/api-reference/x-chain/api#avmgettxstatus
-      const result = await retry({
-        operation: () => provider.getApiX().getTxStatus({ txID: txHash }),
-        isSuccess: (result) => ['Accepted', 'Rejected'].includes(result.status),
+      // https://build.avax.network/docs/rpcs/x-chain/chain/avm_getTx
+      await retry({
+        operation: () => provider.getApiX().getTxJson({ txID: txHash }),
+        isSuccess: () => true,
         maxRetries: maxTransactionStatusCheckRetries,
       });
 
-      if (result.status === 'Accepted') {
-        onTransactionConfirmed({ txHash, explorerLink, request });
-      } else {
-        onTransactionReverted({ txHash, request });
-      }
+      onTransactionConfirmed({ txHash, explorerLink, request });
     } else {
       // https://docs.avax.network/api-reference/c-chain/api#avaxgetatomictx
       //
@@ -346,7 +342,7 @@ const waitForTransactionReceipt = async ({
         maxRetries: maxTransactionStatusCheckRetries,
       });
 
-      // Unlike the P and X branches above, there is no second terminal state to
+      // Unlike the P branch above, there is no second terminal state to
       // narrow here: `retry` only returns once `isSuccess` holds, so reaching
       // this line already means the node reported a block height.
       onTransactionConfirmed({ txHash, explorerLink, request });
