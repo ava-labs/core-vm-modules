@@ -28,6 +28,7 @@ jest.mock('./utils/is-typed-data-valid', () => ({
 }));
 
 jest.mock('ethers', () => ({
+  ...jest.requireActual('ethers'),
   toUtf8String: jest.fn(),
 }));
 
@@ -603,3 +604,157 @@ const testWithValidationResultType = async (resultType: 'Warning' | 'Error' | 'M
     );
   }
 };
+
+describe('ethSign SIWE domain check', () => {
+  const actualEthers = jest.requireActual('ethers');
+  const siweMessage = (domain: string) => `${domain} wants you to sign in with your Ethereum account:
+0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+
+Sign in to the app
+
+URI: https://${domain}/login
+Version: 1
+Chain ID: 1
+Nonce: abc12345
+Issued At: 2021-09-30T16:25:24Z`;
+  const toHex = (text: string): string => actualEthers.hexlify(actualEthers.toUtf8Bytes(text));
+  const siweMismatchAlert = expect.objectContaining({
+    type: AlertType.DANGER,
+    details: expect.objectContaining({
+      title: 'Sign-In Request Mismatch',
+      description: expect.stringContaining('Domain "evil.com" doesn\'t match the dApp origin "example.com".'),
+    }),
+  });
+
+  const runPersonalSign = async ({
+    data,
+    dappUrl = 'https://example.com',
+    blockaid = mockBlockaid,
+    method = RpcMethod.PERSONAL_SIGN,
+  }: {
+    data: unknown;
+    dappUrl?: string;
+    blockaid?: unknown;
+    method?: RpcMethod;
+  }) => {
+    mockParseRequestParams.mockReturnValueOnce({ success: true, data: { method, data, address: '0xabc' } });
+
+    const result = await ethSign({
+      request: { ...mockRequest, method, dappInfo: { ...mockRequest.dappInfo, url: dappUrl } },
+      network: mockNetwork,
+      approvalController: mockApprovalController,
+      blockaid: blockaid as never,
+    });
+
+    return { result, displayData: mockApprovalController.requestApproval.mock.calls[0]?.[0]?.displayData };
+  };
+
+  const blockaidWith = (resultType: 'Benign' | 'Warning' | 'Malicious') => ({
+    evm: { jsonRpc: { scan: jest.fn().mockResolvedValue({ validation: { result_type: resultType } }) } },
+  });
+
+  beforeEach(() => {
+    mockApprovalController.requestApproval.mockResolvedValue({ signedData: '0x1234' });
+    mockToUtf8.mockImplementation(actualEthers.toUtf8String);
+    mockResolveAgentIdentity.mockResolvedValue(undefined as never);
+  });
+
+  it.each([
+    ['hex', toHex(siweMessage('evil.com'))],
+    ['plain text', siweMessage('evil.com')],
+  ])('adds a DANGER alert when a %s SIWE message domain does not match the dApp origin', async (_encoding, data) => {
+    const { result, displayData } = await runPersonalSign({ data });
+
+    expect(result).toEqual({ result: '0x1234' });
+    expect(displayData.alert).toEqual(siweMismatchAlert);
+  });
+
+  it('does not add an alert when the SIWE domain matches the dApp origin', async () => {
+    const { displayData } = await runPersonalSign({
+      data: toHex(siweMessage('example.com')),
+      dappUrl: 'https://example.com/app',
+    });
+
+    expect(displayData.alert).toBeUndefined();
+  });
+
+  it('does not add an alert for a regular personal_sign message', async () => {
+    const { displayData } = await runPersonalSign({ data: toHex('Hello world') });
+
+    expect(displayData.alert).toBeUndefined();
+  });
+
+  it.each(['', 'not a url'])(
+    'does not add an alert or crash when the dApp URL is missing or unparseable (%p)',
+    async (dappUrl) => {
+      const { result, displayData } = await runPersonalSign({ data: siweMessage('evil.com'), dappUrl });
+
+      expect(result).toEqual({ result: '0x1234' });
+      expect(displayData.alert).toBeUndefined();
+    },
+  );
+
+  it('flags a malformed SIWE message', async () => {
+    const smuggled = siweMessage('example.com').replace(
+      'Sign in to the app\n',
+      'Sign in to the app\n\nURI: https://evil.com\n',
+    );
+    const { displayData } = await runPersonalSign({ data: smuggled });
+
+    expect(displayData.alert).toEqual(
+      expect.objectContaining({
+        type: AlertType.DANGER,
+        details: expect.objectContaining({ title: 'Malformed Sign-In Request' }),
+      }),
+    );
+  });
+
+  it('keeps the Blockaid alert when it is as severe as the SIWE alert and adds the SIWE reason to it', async () => {
+    const { displayData } = await runPersonalSign({
+      data: siweMessage('evil.com'),
+      blockaid: blockaidWith('Malicious'),
+    });
+
+    expect(displayData.alert.type).toBe(AlertType.DANGER);
+    expect(displayData.alert.details.title).toBe('Scam transaction');
+    expect(displayData.alert.details.body).toEqual([
+      'This transaction is malicious',
+      'do not proceed',
+      expect.stringMatching(/^Sign-In Request Mismatch: Domain "evil.com" doesn't match/),
+    ]);
+  });
+
+  it('leads with the SIWE alert over a less severe Blockaid warning without dropping the warning', async () => {
+    const { displayData } = await runPersonalSign({ data: siweMessage('evil.com'), blockaid: blockaidWith('Warning') });
+
+    expect(displayData.alert.type).toBe(AlertType.DANGER);
+    expect(displayData.alert.details.title).toBe('Sign-In Request Mismatch');
+    expect(displayData.alert.details.body).toEqual([
+      'Suspicious transaction: Use caution, this transaction might be malicious.',
+    ]);
+  });
+
+  it('keeps the Blockaid alert untouched when the SIWE domain matches', async () => {
+    const { displayData } = await runPersonalSign({
+      data: siweMessage('example.com'),
+      blockaid: blockaidWith('Warning'),
+    });
+
+    expect(displayData.alert).toEqual({
+      type: AlertType.WARNING,
+      details: { title: 'Suspicious transaction', description: 'Use caution, this transaction might be malicious.' },
+    });
+  });
+
+  it.each([RpcMethod.ETH_SIGN, RpcMethod.SIGN_TYPED_DATA_V4])('does not run the SIWE check for %s', async (method) => {
+    mockIsTypedDataValid.mockReturnValueOnce({ isValid: true });
+    const data =
+      method === RpcMethod.ETH_SIGN
+        ? siweMessage('evil.com')
+        : { types: {}, primaryType: 'Mail', domain: {}, message: { contents: siweMessage('evil.com') } };
+
+    const { displayData } = await runPersonalSign({ data, method });
+
+    expect(displayData.alert).toBeUndefined();
+  });
+});
