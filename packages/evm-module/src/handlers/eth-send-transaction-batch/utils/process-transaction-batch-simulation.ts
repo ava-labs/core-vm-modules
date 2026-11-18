@@ -35,7 +35,7 @@ export const simulateTransactionBatch = async ({
 }): Promise<
   TransactionSimulationResult & { scans: (TransactionSimulationResult & { transaction: TransactionParams })[] }
 > => {
-  let simulationResults;
+  let simulationResults: Awaited<ReturnType<typeof scanTransactionBatch>> | undefined;
 
   try {
     simulationResults = await scanTransactionBatch({
@@ -47,22 +47,21 @@ export const simulateTransactionBatch = async ({
     });
   } catch (error) {
     console.error('simulateTransactionBatch error', error);
-    return {
-      isSimulationSuccessful: false,
-      alert: transactionAlerts[AlertType.WARNING],
-      scans: [],
-    };
   }
 
+  // A failed or incomplete scan must not shrink the batch: every requested transaction still gets an entry (processed
+  // without a simulation result, i.e. with the ERC-20 calldata fallback) so the approval lists all of them and the
+  // per-transaction guards in the handler still run against every transaction.
+  const isScanComplete = Array.isArray(simulationResults) && simulationResults.length === params.length;
+
   const scans = await Promise.all(
-    simulationResults.map(async (simulationResult, index) => {
-      const matchingTx = params[index]!;
+    params.map(async (matchingTx, index) => {
       const processedResult = await processTransactionSimulation({
         chainId,
-        params: params[index]!,
+        params: matchingTx,
         provider,
         rpcMethod,
-        simulationResult,
+        simulationResult: simulationResults?.[index],
       });
 
       if (populateMissingGas && !matchingTx.gas && processedResult.estimatedGasLimit) {
@@ -77,9 +76,10 @@ export const simulateTransactionBatch = async ({
   );
 
   // Make sure `isSimulatioSuccessful` is only true for a batch if all nested transactions were simulated successfully
-  const isSimulationSuccessful = scans.every((scan) => scan.isSimulationSuccessful);
+  const isSimulationSuccessful = isScanComplete && scans.every((scan) => scan.isSimulationSuccessful);
   // Make sure the alert in the aggregated view is of the upmost priority (DANGER -> WARNING -> INFO)
-  const alert = getHighestAlert(scans);
+  // An unscanned batch is unverified, so it carries at least a warning.
+  const alert = getHighestAlert(isScanComplete ? scans : [...scans, { alert: transactionAlerts[AlertType.WARNING] }]);
   const balanceChange = aggregateBalanceChange(scans);
   const tokenApprovals = aggregateTokenApprovals(scans);
 

@@ -90,6 +90,17 @@ export const ethSendTransactionBatch = async ({
     populateMissingGas: !allTransactionPayloadsHaveGas,
     blockaid,
   });
+  // Every requested transaction must be represented, otherwise `every` below could pass on a partial list and the
+  // user would approve a batch that doesn't show all of the transactions that will be signed.
+  if (scans.length !== transactionRequests.length) {
+    console.error('Transaction batch simulation is missing transactions');
+    return {
+      error: rpcErrors.internal({
+        message: 'Unable to process all transactions in the batch',
+      }),
+    };
+  }
+
   const allTransactionsHaveGas = scans.every(({ transaction }) => Number(transaction.gas) > 0);
 
   if (!allTransactionsHaveGas) {
