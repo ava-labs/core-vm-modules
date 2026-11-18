@@ -1,4 +1,4 @@
-import { getAddress } from 'ethers';
+import { isAddress } from 'ethers';
 import { z } from 'zod';
 
 const HEX_ADDRESS_REGEX = /^0x[0-9a-fA-F]{40}$/;
@@ -8,17 +8,9 @@ const HEX_ADDRESS_REGEX = /^0x[0-9a-fA-F]{40}$/;
  * but a mixed-case address must match its checksum exactly. A wrong checksum usually means a typo
  * or a tampered address, so the request is rejected instead of sending funds to it.
  */
-export const isValidEip55Address = (address: string): boolean => {
-  if (!HEX_ADDRESS_REGEX.test(address)) return false;
-
-  try {
-    // ethers throws "bad address checksum" for a mixed-case address with an invalid checksum.
-    getAddress(address);
-    return true;
-  } catch {
-    return false;
-  }
-};
+// The regex keeps ethers' isAddress from also accepting un-prefixed and ICAP addresses; isAddress rejects a
+// mixed-case address whose checksum is wrong.
+export const isValidEip55Address = (address: string): boolean => HEX_ADDRESS_REGEX.test(address) && isAddress(address);
 
 const addressSchema = (field: 'from' | 'to') =>
   z
