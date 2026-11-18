@@ -255,6 +255,27 @@ describe('eth_sendTransaction handler', () => {
     });
   });
 
+  it('should reject a "to" address with an invalid EIP-55 checksum with an invalidParams error', async () => {
+    mockParseRequestParams.mockImplementationOnce(jest.requireActual('./schema').parseRequestParams);
+    const params = testRequestParams();
+    params.request.params = [
+      {
+        ...testParams,
+        from: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+        // one letter's case flipped compared to the checksummed address above
+        to: '0xd8da6BF26964aF9D7eEd9e03E53415D37aA96045',
+        accessList: [],
+      },
+    ];
+
+    const response = await ethSendTransaction(params);
+
+    const { error } = response as { error: { code: number; message: string } };
+    expect(error.code).toBe(rpcErrors.invalidParams().code);
+    expect(error.message).toContain("'to' address has an invalid EIP-55 checksum");
+    expect(mockApprovalController.requestApproval).not.toHaveBeenCalled();
+  });
+
   it('should calculate gas limit if not provided', async () => {
     const updateTx = jest.fn();
     jest.mocked(getTxUpdater).mockReturnValueOnce({

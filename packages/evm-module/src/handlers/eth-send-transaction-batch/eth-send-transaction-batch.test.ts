@@ -726,6 +726,87 @@ describe('eth_sendTransactionBatch handler', () => {
     });
   });
 
+  describe('when the batch scan fails or is incomplete', () => {
+    const blockaidWithScan = (scan: jest.Mock) => ({ evm: { transactionBulk: { scan } } }) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const warningAlert = {
+      type: AlertType.WARNING,
+      details: { title: 'Suspicious transaction', description: 'Use caution, this transaction might be malicious.' },
+    };
+
+    beforeEach(() => {
+      jest.mocked(getTxBatchUpdater).mockReturnValue({ updateTx: jest.fn(), cleanup: jest.fn() });
+      mockGetTransactionReceipt.mockResolvedValue({ status: 1 });
+      mockSend.mockResolvedValueOnce(testTxHash).mockResolvedValueOnce(testTxHash2);
+    });
+
+    it('still lists every transaction in the approval, with a warning, when the scan throws', async () => {
+      const response = await ethSendTransactionBatch({
+        ...testRequestParams(),
+        blockaid: blockaidWithScan(jest.fn().mockRejectedValue(new Error('blockaid down'))),
+      });
+
+      expect(mockApprovalController.requestBatchApproval).toHaveBeenCalledTimes(1);
+      const [{ signingRequests, displayData }] = mockApprovalController.requestBatchApproval.mock.calls[0]!;
+      expect(signingRequests).toHaveLength(2);
+      expect(signingRequests.map(({ signingData }) => (signingData as { data: { data?: string } }).data.data)).toEqual([
+        tx1.data,
+        tx2.data,
+      ]);
+      expect(displayData.isSimulationSuccessful).toBe(false);
+      expect(displayData.alert).toEqual(warningAlert);
+      expect(response).toEqual({ result: [testTxHash, testTxHash2] });
+    });
+
+    it('rejects the batch when the scan throws and gas could not be estimated', async () => {
+      mockParseRequestParams.mockReturnValue({
+        success: true,
+        data: { transactions: [tx1, { ...tx2, gas: undefined }] },
+      });
+
+      const response = await ethSendTransactionBatch({
+        ...testRequestParams(),
+        blockaid: blockaidWithScan(jest.fn().mockRejectedValue(new Error('blockaid down'))),
+      });
+
+      expect(response).toEqual({ error: rpcErrors.internal('Gas limit is missing in some transactions') });
+      expect(mockApprovalController.requestBatchApproval).not.toHaveBeenCalled();
+    });
+
+    it('lists every transaction and warns when the scan returns fewer results than transactions', async () => {
+      await ethSendTransactionBatch({
+        ...testRequestParams(),
+        blockaid: blockaidWithScan(
+          jest.fn().mockResolvedValue([
+            {
+              validation: { result_type: 'Benign' },
+              simulation: { status: 'Success', account_summary: { traces: [], assets_diffs: [] } },
+            },
+          ]),
+        ),
+      });
+
+      const [{ signingRequests, displayData }] = mockApprovalController.requestBatchApproval.mock.calls[0]!;
+      expect(signingRequests).toHaveLength(2);
+      expect(displayData.isSimulationSuccessful).toBe(false);
+      expect(displayData.alert).toEqual(warningAlert);
+    });
+
+    it('rejects the batch when the scan returns no results and gas is missing', async () => {
+      mockParseRequestParams.mockReturnValue({
+        success: true,
+        data: { transactions: [tx1, { ...tx2, gas: undefined }] },
+      });
+
+      const response = await ethSendTransactionBatch({
+        ...testRequestParams(),
+        blockaid: blockaidWithScan(jest.fn().mockResolvedValue([])),
+      });
+
+      expect(response).toEqual({ error: rpcErrors.internal('Gas limit is missing in some transactions') });
+      expect(mockApprovalController.requestBatchApproval).not.toHaveBeenCalled();
+    });
+  });
+
   it('should return error if nonce calculation fails', async () => {
     mockParseRequestParams.mockReturnValue({
       success: true,

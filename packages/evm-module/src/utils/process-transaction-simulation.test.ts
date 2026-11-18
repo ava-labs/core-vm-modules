@@ -1,5 +1,7 @@
 import { type AssetDiffs, processBalanceChange, processTransactionSimulation } from './process-transaction-simulation';
-import { AlertType, RpcMethod, type TokenApprovals } from '@avalabs/vm-module-types';
+import { AlertType, RpcMethod, TokenType, type TokenApprovals } from '@avalabs/vm-module-types';
+import { Interface } from 'ethers';
+import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
 import simulationResult from './__mocks__/simulation-result';
 import { transactionAlerts } from './transaction-alerts';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
@@ -258,6 +260,114 @@ describe('processTransactionSimulation', () => {
     })) as { tokenApprovals: TokenApprovals };
 
     expect(tokenApprovals).toBeUndefined();
+  });
+});
+
+describe('processTransactionSimulation ERC-20 approve fallback', () => {
+  const TOKEN = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E';
+  const SPENDER = '0x1111111111111111111111111111111111111111';
+  const erc20 = new Interface(ERC20.abi);
+  const approveData = erc20.encodeFunctionData('approve', [SPENDER, 1000n]);
+  const transferData = erc20.encodeFunctionData('transfer', [SPENDER, 1000n]);
+  const parsedApprovals: TokenApprovals = {
+    isEditable: true,
+    approvals: [
+      {
+        token: { type: TokenType.ERC20, address: TOKEN, decimals: 6, name: 'USD Coin', symbol: 'USDC' },
+        spenderAddress: SPENDER,
+        value: '1000',
+      },
+    ],
+  };
+
+  const assetDiffs: AssetDiffs = [
+    {
+      asset_type: 'ERC20',
+      asset: { type: 'ERC20', address: TOKEN, name: 'USD Coin', symbol: 'USDC', decimals: 6, logo_url: '' },
+      in: [],
+      out: [{ value: '1', usd_price: '1', raw_value: '0xf4240' }],
+    },
+  ];
+
+  // Blockaid simulated fine but saw no exposure increase (re-approve of an equal or lower amount).
+  const zeroExposureSimulation = () => {
+    const cloned = structuredClone(simulationResult);
+    cloned.simulation.account_summary.traces = [
+      {
+        type: 'ERC20ExposureTrace',
+        exposed: { raw_value: '0x0', value: 0, usd_price: 0 },
+        trace_type: 'ExposureTrace',
+        owner: '0xOwnerAddress',
+        spender: SPENDER,
+        asset: { type: 'ERC20', address: TOKEN, logo_url: '', decimals: 6, name: 'USD Coin', symbol: 'USDC' },
+      },
+    ];
+    (cloned.simulation.account_summary as { assets_diffs: unknown }).assets_diffs = assetDiffs;
+    return cloned as unknown as Blockaid.TransactionScanResponse;
+  };
+
+  const run = (data: string, rpcMethod = RpcMethod.ETH_SEND_TRANSACTION, scan = zeroExposureSimulation()) =>
+    processTransactionSimulation({
+      rpcMethod,
+      params: { from: '0xFromAddress', to: TOKEN, data, value: '0x0' },
+      chainId: 43114,
+      provider: emptyProvider,
+      simulationResult: scan,
+    });
+
+  beforeEach(() => {
+    mockParseWithErc20Abi.mockReset().mockResolvedValue({ tokenApprovals: parsedApprovals, balanceChange: undefined });
+  });
+
+  it('decodes spender and amount from calldata when Blockaid reports no approval for an approve call', async () => {
+    const result = await run(approveData);
+
+    expect(mockParseWithErc20Abi).toHaveBeenCalledWith(
+      expect.objectContaining({ to: TOKEN, data: approveData }),
+      43114,
+      emptyProvider,
+    );
+    expect(result.isSimulationSuccessful).toBe(true);
+    expect(result.tokenApprovals).toEqual({ isEditable: true, approvals: parsedApprovals.approvals });
+  });
+
+  it('keeps the Blockaid balance change when falling back', async () => {
+    const result = await run(approveData);
+
+    expect(result.balanceChange).toBeDefined();
+    expect(result.balanceChange).toEqual(processBalanceChange(assetDiffs));
+  });
+
+  it('marks the fallback approval as not editable outside eth_sendTransaction', async () => {
+    const result = await run(approveData, RpcMethod.ETH_SEND_TRANSACTION_BATCH);
+
+    expect(result.tokenApprovals?.isEditable).toBe(false);
+  });
+
+  it('does not decode calldata when Blockaid already reported the approval', async () => {
+    const result = await run(
+      approveData,
+      RpcMethod.ETH_SEND_TRANSACTION,
+      simulationResult as unknown as Blockaid.TransactionScanResponse,
+    );
+
+    expect(mockParseWithErc20Abi).not.toHaveBeenCalled();
+    expect(result.tokenApprovals?.approvals[0]?.spenderAddress).toBe('0xSpenderAddress');
+  });
+
+  it('does not decode calldata for non-approve calls', async () => {
+    const result = await run(transferData);
+
+    expect(mockParseWithErc20Abi).not.toHaveBeenCalled();
+    expect(result.tokenApprovals).toBeUndefined();
+  });
+
+  it('leaves tokenApprovals empty when the target is not a readable ERC-20', async () => {
+    mockParseWithErc20Abi.mockResolvedValueOnce({ tokenApprovals: undefined, balanceChange: undefined });
+
+    const result = await run(approveData);
+
+    expect(result.tokenApprovals).toBeUndefined();
   });
 });
 

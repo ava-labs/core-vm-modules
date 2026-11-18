@@ -1,47 +1,69 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const beautifyComplexMessage = (data: { domain: Record<string, any>; message: Record<string, any> }) => {
+const INDENT = '  ';
+// Typed data comes from the dApp; bound the recursion so a pathological payload cannot hang the approval.
+const MAX_DEPTH = 32;
+
+const isPlainObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+// Coerces any leaf value (string, number, bigint, boolean, null, undefined, ...) into a printable string.
+const formatPrimitive = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'bigint') return value.toString();
+  if (typeof value === 'symbol') return value.toString();
+  if (typeof value === 'function') return '[function]';
+  return String(value);
+};
+
+const isEmptyContainer = (value: unknown): boolean =>
+  (Array.isArray(value) && value.length === 0) || (isPlainObject(value) && Object.keys(value).length === 0);
+
+/**
+ * Renders the entries of an object or array, one line per leaf, recursing into nested structs and arrays at any
+ * depth. Array elements are labelled with their index. Containers print `key: ` on their own line and indent their
+ * children by one more level; empty containers print `[]` / `{}` so they are not silently hidden.
+ */
+const renderEntries = (value: Record<string, unknown> | unknown[], depth: number, seen: Set<unknown>): string => {
+  const indent = INDENT.repeat(depth);
+  const entries: [string, unknown][] = Array.isArray(value)
+    ? value.map((item, index) => [String(index), item])
+    : Object.entries(value);
+
   let result = '';
 
-  result += 'Domain\n';
-  for (const key in data.domain) {
-    result += `  ${key}: ${toUnicodeBold(String(data.domain[key]))}\n`;
-  }
-
-  result += '\nMessage\n';
-  for (const key in data.message) {
-    if (typeof data.message[key] === 'object' && !Array.isArray(data.message[key])) {
-      result += `  ${key}: \n`;
-      for (const subKey in data.message[key]) {
-        if (Array.isArray(data.message[key][subKey])) {
-          result += `    ${subKey}: \n`;
-          data.message[key][subKey].forEach((item: any, index: number) => {
-            result += `      ${index}: ${toUnicodeBold(item)}\n`;
-          });
-        } else {
-          result += `    ${subKey}: ${toUnicodeBold(String(data.message[key][subKey]))}\n`;
-        }
+  for (const [key, item] of entries) {
+    if (isEmptyContainer(item)) {
+      result += `${indent}${key}: ${Array.isArray(item) ? '[]' : '{}'}\n`;
+    } else if (Array.isArray(item) || isPlainObject(item)) {
+      if (seen.has(item) || depth >= MAX_DEPTH) {
+        result += `${indent}${key}: [nested too deeply]\n`;
+        continue;
       }
-    } else if (Array.isArray(data.message[key])) {
-      result += `  ${key}: \n`;
-      data.message[key].forEach((item: any, index: number) => {
-        result += `     ${index}: \n`;
-        for (const subKey in item) {
-          if (Array.isArray(item[subKey])) {
-            result += `     ${subKey}: \n`;
-            item[subKey].forEach((item: any, index: number) => {
-              result += `      ${index}: ${toUnicodeBold(item)}\n`;
-            });
-          } else {
-            result += `     ${subKey}: ${toUnicodeBold(String(item[subKey]))}\n`;
-          }
-        }
-      });
+      seen.add(item);
+      result += `${indent}${key}: \n${renderEntries(item, depth + 1, seen)}`;
+      seen.delete(item);
     } else {
-      result += `  ${key}: ${toUnicodeBold(String(data.message[key]))}\n`;
+      result += `${indent}${key}: ${toUnicodeBold(formatPrimitive(item))}\n`;
     }
   }
 
   return result;
+};
+
+const renderSection = (value: unknown): string => {
+  if (Array.isArray(value) || isPlainObject(value)) {
+    return renderEntries(value, 1, new Set([value]));
+  }
+  // A non-object message (e.g. a bare string) is shown as a single value rather than iterated character by character.
+  return value === undefined ? '' : `${INDENT}${toUnicodeBold(formatPrimitive(value))}\n`;
+};
+
+/**
+ * Formats EIP-712 typed data (domain + message) for display. Every domain field, including `verifyingContract`, and
+ * every message field at any depth is shown in full.
+ */
+export const beautifyComplexMessage = (data: { domain?: Record<string, any>; message: unknown }) => {
+  return `Domain\n${renderSection(data.domain)}\nMessage\n${renderSection(data.message)}`;
 };
 
 export const beautifySimpleMessage = (
@@ -55,7 +77,7 @@ export const beautifySimpleMessage = (
 
   data.forEach((item) => {
     result += `${item.name}:\n`;
-    result += `${toUnicodeBold(String(item.value))}\n\n`;
+    result += `${toUnicodeBold(formatPrimitive(item.value))}\n\n`;
   });
 
   return result;

@@ -24,7 +24,7 @@ import {
 } from '@avalabs/vm-module-types';
 import Blockaid from '@blockaid/client';
 import { getCoreHeaders, TokenService } from '@internal/utils';
-import { rpcErrors } from '@metamask/rpc-errors';
+import { providerErrors, rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { BLOCKAID_API_KEY } from './constants';
 import { getEnv } from './env';
@@ -254,6 +254,12 @@ export class EvmModule implements Module {
           blockaid: this.#blockaid,
         });
       default:
+        if (isLocallyUnsupportedMethod(request.method)) {
+          // Never forward these to the RPC node: the payload is private to the user, and a node answering them
+          // would look like the wallet processed the request without unlocking, connecting or asking the user.
+          return { error: providerErrors.unsupportedMethod(`Method ${request.method} is not supported`) };
+        }
+
         if (shouldForwardToRpcNode(request.method)) {
           return forwardToRpcNode(request, network);
         }
@@ -262,6 +268,16 @@ export class EvmModule implements Module {
     }
   }
 }
+
+/**
+ * Wallet-side methods that match the `eth_*` forwarding rule but must never reach the RPC node.
+ * Core does not implement EIP-1024 encryption, so they are rejected locally with EIP-1193 4200 (Unsupported Method).
+ * They stay in the manifest's nonRestrictedMethods so consumers route them here and get that rejection immediately,
+ * whether or not the dApp is connected or the wallet is unlocked.
+ */
+const LOCALLY_UNSUPPORTED_METHODS: ReadonlySet<string> = new Set(['eth_decrypt', 'eth_getEncryptionPublicKey']);
+
+const isLocallyUnsupportedMethod = (method: string) => LOCALLY_UNSUPPORTED_METHODS.has(method);
 
 const shouldForwardToRpcNode = (method: RpcMethod) => {
   return (
