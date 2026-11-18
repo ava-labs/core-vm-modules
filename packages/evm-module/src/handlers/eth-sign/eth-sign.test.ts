@@ -386,7 +386,8 @@ describe('ethSign', () => {
 
   it.each([
     [RpcMethod.ETH_SIGN, 'data', 'data'],
-    [RpcMethod.PERSONAL_SIGN, 'data', 'data in utf8'],
+    // Hex payload: plain text is displayed as is, without hex decoding.
+    [RpcMethod.PERSONAL_SIGN, '0x64617461', 'data in utf8'],
     [RpcMethod.SIGN_TYPED_DATA, 'data', 'beautified simple message'],
     [RpcMethod.SIGN_TYPED_DATA_V1, 'data', 'beautified simple message'],
     [RpcMethod.SIGN_TYPED_DATA_V3, { types: {}, primaryType: '', message: 'test' }, 'beautified complex message'],
@@ -667,6 +668,8 @@ Issued At: 2021-09-30T16:25:24Z`;
 
     expect(result).toEqual({ result: '0x1234' });
     expect(displayData.alert).toEqual(siweMismatchAlert);
+    // The message shown to the user is the same decoded text the SIWE check parsed.
+    expect(displayData.details[0].items[0].value).toBe(siweMessage('evil.com'));
   });
 
   it('does not add an alert when the SIWE domain matches the dApp origin', async () => {
