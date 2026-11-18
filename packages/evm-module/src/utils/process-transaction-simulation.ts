@@ -20,6 +20,8 @@ import { isHexString, MaxUint256 } from 'ethers';
 import { scanJsonRpc, scanTransaction } from './scan-transaction';
 import type { JsonRpcBatchInternal } from '@avalabs/core-wallets-sdk';
 import { parseWithErc20Abi } from './parse-erc20-tx';
+import { parseERC20TransactionType } from './parse-erc20-transaction-type';
+import { ERC20TransactionType } from '../types';
 import { hasToField } from './type-utils';
 import { transactionAlerts } from './transaction-alerts';
 
@@ -115,6 +117,24 @@ export const processTransactionSimulation = async ({
     const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
     balanceChange = erc20ParseResult.balanceChange;
     tokenApprovals = erc20ParseResult.tokenApprovals;
+  } else if (
+    isSimulationSuccessful &&
+    !tokenApprovals &&
+    hasToField(params) &&
+    parseERC20TransactionType(params) === ERC20TransactionType.APPROVE
+  ) {
+    // Blockaid only reports an approval when the spender's exposure increases, so re-approving an equal or lower
+    // amount (or revoking with 0) comes back without one. The user must still see that this is an approval, for
+    // which spender and for what amount, so decode it from the calldata instead.
+    const erc20ParseResult = await parseWithErc20Abi(params, chainId, provider);
+    const approvals = erc20ParseResult.tokenApprovals?.approvals;
+
+    if (approvals?.length) {
+      tokenApprovals = {
+        approvals,
+        isEditable: approvals.length === 1 && rpcMethod === RpcMethod.ETH_SEND_TRANSACTION,
+      };
+    }
   }
 
   return { alert, balanceChange, tokenApprovals, isSimulationSuccessful, estimatedGasLimit };
