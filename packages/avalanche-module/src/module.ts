@@ -21,7 +21,7 @@ import type {
   RuntimeParams,
 } from '@avalabs/vm-module-types';
 import { parseManifest, RpcMethod } from '@avalabs/vm-module-types';
-import { getCoreHeaders, TokenService } from '@internal/utils';
+import { getCoreHeaders, setGlacierApiKeyGetter, TokenService } from '@internal/utils';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
@@ -61,6 +61,7 @@ export class AvalancheModule implements Module {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#appInfo = appInfo;
     this.#runtime = runtime;
+    setGlacierApiKeyGetter(() => this.#runtime?.getGlacierApiKey?.());
     this.#glacierService = new AvalancheGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
