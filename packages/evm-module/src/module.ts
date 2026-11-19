@@ -23,7 +23,7 @@ import {
   type RuntimeParams,
 } from '@avalabs/vm-module-types';
 import Blockaid from '@blockaid/client';
-import { getCoreHeaders, TokenService } from '@internal/utils';
+import { getCoreHeaders, setGlacierApiKeyGetter, TokenService } from '@internal/utils';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { BLOCKAID_API_KEY } from './constants';
@@ -78,6 +78,7 @@ export class EvmModule implements Module {
   constructor({ approvalController, environment, appInfo, runtime }: EvmConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#runtime = runtime;
+    setGlacierApiKeyGetter(() => this.#runtime?.getGlacierApiKey?.());
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),

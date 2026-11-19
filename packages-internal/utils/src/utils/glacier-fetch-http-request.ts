@@ -8,10 +8,6 @@ import {
 import { getGlacierApiKey } from './get-glacier-api-key';
 import { RetryBackoffPolicy } from './retry';
 
-const GLOBAL_QUERY_PARAMS: Record<string, string | undefined> = {
-  rltoken: getGlacierApiKey(),
-};
-
 /**
  * Custom HTTP request handler that automatically appends the Glacier API key (if present)
  * to bypass rate limits in development environments.
@@ -27,7 +23,7 @@ export class GlacierFetchHttpRequest extends FetchHttpRequest {
   public override request<T>(options: ApiRequestOptions): CancelablePromise<T> {
     // Merge global query parameters with request-specific ones
     const mergedQuery = {
-      ...GLOBAL_QUERY_PARAMS,
+      rltoken: getGlacierApiKey(),
       ...(options.query || {}), // Request-specific params (override globals if same key)
     };
 
