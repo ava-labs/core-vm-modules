@@ -3,6 +3,7 @@ import { rpcErrors } from '@metamask/rpc-errors';
 import { z } from 'zod';
 
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
+import type { GetAuthHeaders } from '../../utils/get-provider';
 
 const schema = z.object({
   agentId: z.coerce.string().regex(/^\d+$/),
@@ -17,9 +18,11 @@ const schema = z.object({
 export const avalancheDeclareAgentIdentity = async ({
   request,
   network,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
+  getAuthHeaders?: GetAuthHeaders;
 }) => {
   const parsed = schema.safeParse(request.params);
 
@@ -40,6 +43,7 @@ export const avalancheDeclareAgentIdentity = async ({
       chainId: network.chainId,
       chainName: network.chainName,
       customRpcHeaders: network.customRpcHeaders,
+      getAuthHeaders,
     }),
   };
 };

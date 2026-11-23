@@ -1,7 +1,6 @@
 import { getSolanaProvider, type SolanaProvider } from '@avalabs/core-wallets-sdk';
 import { SolanaCaip2ChainId } from '@avalabs/core-chains-sdk';
 import type { Network } from '@avalabs/vm-module-types';
-import { addGlacierAPIKeyIfNeeded } from '@internal/utils';
 
 import { RPC_URL_DEVNET, RPC_URL_PROXY_API_ENDPOINT, RPC_URL_TESTNET } from '../constants';
 
@@ -37,10 +36,8 @@ const getSolanaRpcUrl = ({
 
 export const getProvider = ({ network, proxyApiUrl }: { network: Network; proxyApiUrl: string }): SolanaProvider => {
   const isTestnet = Boolean(network.isTestnet);
-  const url = addGlacierAPIKeyIfNeeded(getSolanaRpcUrl({ caipId: network.caipId, isTestnet, proxyApiUrl }));
-
   return getSolanaProvider({
     isTestnet,
-    rpcUrl: url,
+    rpcUrl: getSolanaRpcUrl({ caipId: network.caipId, isTestnet, proxyApiUrl }),
   });
 };

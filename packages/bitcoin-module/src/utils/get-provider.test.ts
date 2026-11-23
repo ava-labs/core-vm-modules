@@ -1,5 +1,4 @@
 import { BitcoinProvider } from '@avalabs/core-wallets-sdk';
-import * as utils from '@internal/utils';
 import { getProvider } from './get-provider';
 
 jest.mock('@avalabs/core-wallets-sdk');
@@ -20,27 +19,8 @@ describe('get-provider', () => {
       undefined,
       `${params.proxyApiUrl}/proxy/nownodes/${params.isTestnet ? 'btcbook-testnet' : 'btcbook'}`,
       `${params.proxyApiUrl}/proxy/nownodes/${params.isTestnet ? 'btc-testnet' : 'btc'}`,
-      {},
     );
 
     expect(result).toBeInstanceOf(BitcoinProvider);
-  });
-
-  describe('when glacier api key is defined', () => {
-    beforeAll(() => {
-      jest.spyOn(utils, 'getGlacierApiKey').mockReturnValue('glacier-api-key');
-    });
-
-    it('passes it to the constructor', async () => {
-      await getProvider({ isTestnet: true, proxyApiUrl: PROXY_API_DEV });
-
-      expect(BitcoinProvider).toHaveBeenCalledWith(
-        false,
-        undefined,
-        `${PROXY_API_DEV}/proxy/nownodes/btcbook-testnet`,
-        `${PROXY_API_DEV}/proxy/nownodes/btc-testnet`,
-        { token: 'glacier-api-key' },
-      );
-    });
   });
 });

@@ -18,7 +18,7 @@ import {
 import type { SolanaProvider } from '@avalabs/core-wallets-sdk';
 import { rpcErrors } from '@metamask/rpc-errors';
 
-import { setGlacierApiKeyGetter, TokenService } from '@internal/utils';
+import { TokenService } from '@internal/utils';
 
 import ManifestJson from '../manifest.json';
 import { getEnv } from './env';
@@ -50,7 +50,6 @@ export class SvmModule implements Module {
     this.#proxyApiUrl = proxyApiUrl;
     this.#approvalController = approvalController;
     this.#runtime = runtime;
-    setGlacierApiKeyGetter(() => this.#runtime?.getGlacierApiKey?.());
 
     // Temporarily referencing those props here just to silence eslint,
     // as eslint-disable-... comments don't seem to work on class properties.

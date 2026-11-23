@@ -2,7 +2,7 @@ import { type Network, type RpcRequest, type ApprovalController } from '@avalabs
 import { rpcErrors } from '@metamask/rpc-errors';
 
 import { getNonce } from '../../utils/get-nonce';
-import { getProvider } from '../../utils/get-provider';
+import { getProvider, type GetAuthHeaders } from '../../utils/get-provider';
 import { getTxUpdater } from '../../utils/evm-tx-updater';
 import { estimateGasLimit } from '../../utils/estimate-gas-limit';
 import { buildTxApprovalRequest } from '../../utils/build-tx-approval-request';
@@ -23,12 +23,14 @@ export const ethSendTransaction = async ({
   approvalController,
   blockaid,
   eercEnabled = false,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   blockaid: Blockaid;
   eercEnabled?: boolean;
+  getAuthHeaders?: GetAuthHeaders;
 }) => {
   const { params } = request;
 
@@ -63,6 +65,7 @@ export const ethSendTransaction = async ({
     multiContractAddress: network.utilityAddresses?.multicall,
     pollingInterval: 1000,
     customRpcHeaders: network.customRpcHeaders,
+    getAuthHeaders,
   });
 
   // calculate gas limit if not provided/invalid
@@ -110,6 +113,7 @@ export const ethSendTransaction = async ({
         chainId: network.chainId,
         chainName: network.chainName,
         customRpcHeaders: network.customRpcHeaders,
+        getAuthHeaders,
       })
     : undefined;
 

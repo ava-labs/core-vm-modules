@@ -15,6 +15,7 @@ import { findAsync } from '../../utils/find-async';
 import { addIdToPromise, type IdPromise, settleAllIdPromises } from '../../utils/id-promise';
 import { isERC20Token } from '../../utils/type-utils';
 import type { BalanceServiceInterface } from './balance-service-interface';
+import type { GetAuthHeaders } from '../../utils/get-provider';
 
 type AccountAddress = string;
 type TokenSymbol = string;
@@ -32,18 +33,20 @@ export const getBalances = async ({
   balanceServices = [],
   tokenService,
   fetch,
+  getAuthHeaders,
 }: GetBalancesParams & {
   proxyApiUrl: string;
   balanceServices: BalanceServiceInterface[];
   storage?: Storage;
   tokenService: TokenService;
   fetch?: typeof globalThis.fetch;
+  getAuthHeaders?: GetAuthHeaders;
 }): Promise<GetEvmBalancesResponse> => {
   const chainId = network.chainId;
   // When only custom tokens are requested we bypass indexed providers (which
   // return a zero-balance polyfill for tokens they don't index) and query the
   // chain directly via RPC to get the real on-chain balances.
-  const rpcService = new RpcService({ network, storage, proxyApiUrl, customTokens, fetch });
+  const rpcService = new RpcService({ network, storage, proxyApiUrl, customTokens, fetch, getAuthHeaders });
   const services: BalanceServiceInterface[] = customTokensOnly ? [rpcService] : [...balanceServices, rpcService];
 
   const resolvedTokenTypes = customTokensOnly ? [TokenType.ERC20] : tokenTypes;

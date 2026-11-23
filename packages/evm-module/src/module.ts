@@ -23,7 +23,7 @@ import {
   type RuntimeParams,
 } from '@avalabs/vm-module-types';
 import Blockaid from '@blockaid/client';
-import { getCoreHeaders, setGlacierApiKeyGetter, TokenService } from '@internal/utils';
+import { getCoreHeaders, TokenService } from '@internal/utils';
 import { rpcErrors } from '@metamask/rpc-errors';
 import ManifestJson from '../manifest.json';
 import { BLOCKAID_API_KEY } from './constants';
@@ -74,16 +74,16 @@ export class EvmModule implements Module {
   #blockaid: Blockaid;
   #runtime?: EvmRuntimeParams;
   #hyperEvmEtherscanClient: HyperEvmEtherscanClient;
+  // Reads #runtime at call time so updateRuntimeParams() is respected.
+  readonly #getAuthHeaders = async () => this.#runtime?.getAuthHeaders?.();
 
   constructor({ approvalController, environment, appInfo, runtime }: EvmConstructorParams) {
     const { glacierApiUrl, proxyApiUrl } = getEnv(environment);
     this.#runtime = runtime;
-    setGlacierApiKeyGetter(() => this.#runtime?.getGlacierApiKey?.());
     this.#glacierService = new EvmGlacierService({
       glacierApiUrl,
       headers: getCoreHeaders(appInfo),
-      // Reads #runtime at call time so updateRuntimeParams() is respected.
-      getAuthHeaders: async () => this.#runtime?.getAuthHeaders?.(),
+      getAuthHeaders: this.#getAuthHeaders,
     });
     this.#deBankService = new DeBankService({ proxyApiUrl, fetch: this.#runtime?.fetch });
     this.#proxyApiUrl = proxyApiUrl;
@@ -124,6 +124,7 @@ export class EvmModule implements Module {
       multiContractAddress: network.utilityAddresses?.multicall,
       pollingInterval: 1000,
       customRpcHeaders: network.customRpcHeaders,
+      getAuthHeaders: this.#getAuthHeaders,
     });
   }
 
@@ -171,6 +172,7 @@ export class EvmModule implements Module {
       tokenTypes,
       tokenService,
       fetch: this.#runtime?.fetch,
+      getAuthHeaders: this.#getAuthHeaders,
     });
   }
 
@@ -189,6 +191,7 @@ export class EvmModule implements Module {
       caipId,
       proxyApiUrl: this.#proxyApiUrl,
       customRpcHeaders,
+      getAuthHeaders: this.#getAuthHeaders,
     });
   }
 
@@ -222,6 +225,7 @@ export class EvmModule implements Module {
           approvalController: this.#approvalController,
           blockaid: this.#blockaid,
           eercEnabled: this.#runtime?.features?.encryptedERCs === true,
+          getAuthHeaders: this.#getAuthHeaders,
         });
       case RpcMethod.ETH_SEND_TRANSACTION_BATCH: {
         if (!supportsBatchApprovals(this.#approvalController)) {
@@ -235,12 +239,14 @@ export class EvmModule implements Module {
           network,
           approvalController: this.#approvalController,
           blockaid: this.#blockaid,
+          getAuthHeaders: this.#getAuthHeaders,
         });
       }
       case RpcMethod.AVALANCHE_DECLARE_AGENT_IDENTITY:
         return avalancheDeclareAgentIdentity({
           request,
           network,
+          getAuthHeaders: this.#getAuthHeaders,
         });
       case RpcMethod.PERSONAL_SIGN:
       case RpcMethod.ETH_SIGN:
@@ -253,10 +259,11 @@ export class EvmModule implements Module {
           network,
           approvalController: this.#approvalController,
           blockaid: this.#blockaid,
+          getAuthHeaders: this.#getAuthHeaders,
         });
       default:
         if (shouldForwardToRpcNode(request.method)) {
-          return forwardToRpcNode(request, network);
+          return forwardToRpcNode(request, network, this.#getAuthHeaders);
         }
 
         return { error: rpcErrors.methodNotSupported(`Method ${request.method} not supported`) };

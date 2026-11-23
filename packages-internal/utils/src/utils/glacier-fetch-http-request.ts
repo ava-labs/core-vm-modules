@@ -5,12 +5,11 @@ import {
   FetchHttpRequest,
   type OpenAPIConfig,
 } from '@avalabs/glacier-sdk';
-import { getGlacierApiKey } from './get-glacier-api-key';
 import { RetryBackoffPolicy } from './retry';
 
 /**
- * Custom HTTP request handler that automatically appends the Glacier API key (if present)
- * to bypass rate limits in development environments.
+ * Glacier HTTP client that postpones requests with exponential backoff after
+ * rate-limit (429) or server (5xx) errors.
  */
 export class GlacierFetchHttpRequest extends FetchHttpRequest {
   #failedRequests = 0;
@@ -21,19 +20,7 @@ export class GlacierFetchHttpRequest extends FetchHttpRequest {
   }
 
   public override request<T>(options: ApiRequestOptions): CancelablePromise<T> {
-    // Merge global query parameters with request-specific ones
-    const mergedQuery = {
-      rltoken: getGlacierApiKey(),
-      ...(options.query || {}), // Request-specific params (override globals if same key)
-    };
-
-    // Create modified options with merged query
-    const modifiedOptions: ApiRequestOptions = {
-      ...options,
-      query: Object.keys(mergedQuery).length > 0 ? mergedQuery : undefined,
-    };
-
-    const getRequest = () => super.request<T>(modifiedOptions);
+    const getRequest = () => super.request<T>(options);
     return this.#failedRequests > 0 ? this.#postponeRequest<T>(getRequest) : this.#request<T>(getRequest);
   }
 

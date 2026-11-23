@@ -43,12 +43,6 @@ export type RuntimeParams = {
    * constructor params since their Glacier calls cannot succeed without it.
    */
   getAuthHeaders?: () => Promise<Record<string, string>>;
-  /**
-   * Returns the Glacier API key that bypasses rate limits in development and
-   * testing. Read on every request, so the key can become available after the
-   * module is created. Takes precedence over `process.env.GLACIER_API_KEY`.
-   */
-  getGlacierApiKey?: () => string | undefined;
 };
 
 export type NetworkFeeParam = Network & { caipId?: string };

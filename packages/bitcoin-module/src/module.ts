@@ -31,7 +31,6 @@ import { bitcoinSignTransaction } from './handlers/bitcoin-sign-transaction/bitc
 import { deriveAddress } from './handlers/derive-address/derive-address';
 import { deriveAddresses } from './handlers/derive-addresses/derive-addresses';
 import { buildDerivationPath } from './handlers/build-derivation-path/build-derivation-path';
-import { setGlacierApiKeyGetter } from '@internal/utils';
 
 export class BitcoinModule implements Module {
   #proxyApiUrl: string;
@@ -44,7 +43,6 @@ export class BitcoinModule implements Module {
     this.#approvalController = approvalController;
     this.#proxyApiUrl = proxyApiUrl;
     this.#runtime = runtime;
-    setGlacierApiKeyGetter(() => this.#runtime?.getGlacierApiKey?.());
   }
 
   getProvider(network: Network): Promise<BitcoinProvider> {

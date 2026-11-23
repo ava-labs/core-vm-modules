@@ -23,6 +23,7 @@ import type Blockaid from '@blockaid/client';
 import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from-context';
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
+import type { GetAuthHeaders } from '../../utils/get-provider';
 
 const toUtf8StringOrHex = (data: string): string => {
   try {
@@ -37,11 +38,13 @@ export const ethSign = async ({
   network,
   approvalController,
   blockaid,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: ApprovalController;
   blockaid: Blockaid;
+  getAuthHeaders?: GetAuthHeaders;
 }) => {
   const result = parseRequestParams({ method: request.method, params: request.params });
 
@@ -160,6 +163,7 @@ export const ethSign = async ({
         chainId: network.chainId,
         chainName: network.chainName,
         customRpcHeaders: network.customRpcHeaders,
+        getAuthHeaders,
       })
     : undefined;
 
