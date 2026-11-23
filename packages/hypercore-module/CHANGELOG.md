@@ -1,5 +1,12 @@
 # @avalabs/hypercore-module
 
+## 5.1.0
+
+### Patch Changes
+
+- Updated dependencies [e50aa85]
+  - @avalabs/vm-module-types@5.1.0
+
 ## 5.0.3
 
 ### Patch Changes
