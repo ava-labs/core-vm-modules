@@ -1,7 +1,7 @@
 import type { AgentIdentity, AgentIdentityDeclaration } from '@avalabs/vm-module-types';
 import { Contract, getAddress, toUtf8String } from 'ethers';
 
-import { getProvider } from './get-provider';
+import { getProvider, type GetAuthHeaders } from './get-provider';
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const DEFAULT_REPUTATION_REGISTRIES: Record<number, string> = {
@@ -284,12 +284,14 @@ export const resolveAgentIdentity = async ({
   chainId,
   chainName,
   customRpcHeaders,
+  getAuthHeaders,
 }: {
   declaration: AgentIdentityDeclaration;
   rpcUrl: string;
   chainId: number;
   chainName: string;
   customRpcHeaders?: Record<string, string>;
+  getAuthHeaders?: GetAuthHeaders;
 }): Promise<AgentIdentity> => {
   const cached = cache.get(`${rpcUrl}:${declaration.agentRegistry}:${declaration.agentId}`);
   if (cached && cached.expiresAt > Date.now()) {
@@ -330,6 +332,7 @@ export const resolveAgentIdentity = async ({
     chainName,
     rpcUrl,
     customRpcHeaders,
+    getAuthHeaders,
   });
   const identityContract = new Contract(parsedRegistry.address, IDENTITY_ABI, provider) as IdentityContract;
 

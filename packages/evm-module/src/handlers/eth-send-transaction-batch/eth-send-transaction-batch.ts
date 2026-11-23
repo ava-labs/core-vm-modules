@@ -7,7 +7,7 @@ import {
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
 
-import { getProvider } from '../../utils/get-provider';
+import { getProvider, type GetAuthHeaders } from '../../utils/get-provider';
 
 import { parseRequestParams } from './schema';
 import { isMatchingChainId } from '../../utils/is-matching-chain-id';
@@ -29,11 +29,13 @@ export const ethSendTransactionBatch = async ({
   network,
   approvalController,
   blockaid,
+  getAuthHeaders,
 }: {
   request: RpcRequest;
   network: Network;
   approvalController: BatchApprovalController;
   blockaid: Blockaid;
+  getAuthHeaders?: GetAuthHeaders;
 }) => {
   const { params } = request;
   const { data: parsedParams, success, error } = parseRequestParams(params);
@@ -68,6 +70,7 @@ export const ethSendTransactionBatch = async ({
     multiContractAddress: network.utilityAddresses?.multicall,
     pollingInterval: 1000,
     customRpcHeaders: network.customRpcHeaders,
+    getAuthHeaders,
   });
 
   // Ensure all transactions in the batch have the nonce set
@@ -109,6 +112,7 @@ export const ethSendTransactionBatch = async ({
         chainId: network.chainId,
         chainName: network.chainName,
         customRpcHeaders: network.customRpcHeaders,
+        getAuthHeaders,
       })
     : undefined;
 

@@ -16,7 +16,7 @@ import type { VsCurrencyType } from '@avalabs/core-coingecko-sdk';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { ethers } from 'ethers';
 import ERC20 from '@openzeppelin/contracts/build/contracts/ERC20.json';
-import { getProvider } from '../../utils/get-provider';
+import { getProvider, type GetAuthHeaders } from '../../utils/get-provider';
 import { TokenService } from '@internal/utils';
 import { getTokens } from '../../handlers/get-tokens/get-tokens';
 import { isERC20Token } from '../../utils/type-utils';
@@ -27,6 +27,7 @@ export class RpcService implements BalanceServiceInterface {
   #proxyApiUrl: string;
   #customTokens: NetworkContractToken[];
   #fetch?: typeof globalThis.fetch;
+  #getAuthHeaders?: GetAuthHeaders;
 
   constructor({
     network,
@@ -34,18 +35,21 @@ export class RpcService implements BalanceServiceInterface {
     proxyApiUrl,
     customTokens,
     fetch,
+    getAuthHeaders,
   }: {
     network: Network;
     storage?: Storage;
     proxyApiUrl: string;
     customTokens: NetworkContractToken[];
     fetch?: typeof globalThis.fetch;
+    getAuthHeaders?: GetAuthHeaders;
   }) {
     this.#network = network;
     this.#storage = storage;
     this.#proxyApiUrl = proxyApiUrl;
     this.#customTokens = customTokens;
     this.#fetch = fetch;
+    this.#getAuthHeaders = getAuthHeaders;
   }
 
   async isNetworkSupported(): Promise<boolean> {
@@ -67,6 +71,7 @@ export class RpcService implements BalanceServiceInterface {
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
       customRpcHeaders: this.#network.customRpcHeaders,
+      getAuthHeaders: this.#getAuthHeaders,
     });
 
     const coingeckoTokenId = this.#network.pricingProviders?.coingecko.nativeTokenId;
@@ -126,6 +131,7 @@ export class RpcService implements BalanceServiceInterface {
       rpcUrl: this.#network.rpcUrl,
       multiContractAddress: this.#network.utilityAddresses?.multicall,
       customRpcHeaders: this.#network.customRpcHeaders,
+      getAuthHeaders: this.#getAuthHeaders,
     });
 
     const coingeckoPlatformId = this.#network.pricingProviders?.coingecko.assetPlatformId;

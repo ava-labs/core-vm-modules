@@ -1,8 +1,8 @@
 import type { Network, RpcRequest } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { getProvider } from '../../utils/get-provider';
+import { getProvider, type GetAuthHeaders } from '../../utils/get-provider';
 
-export const forwardToRpcNode = async (request: RpcRequest, network: Network) => {
+export const forwardToRpcNode = async (request: RpcRequest, network: Network, getAuthHeaders?: GetAuthHeaders) => {
   try {
     // IMPORTANT: do NOT pass `multiContractAddress` here. It makes the provider
     // transparently re-route eth_calls through Multicall3's `aggregate`, which
@@ -18,6 +18,7 @@ export const forwardToRpcNode = async (request: RpcRequest, network: Network) =>
       rpcUrl: network.rpcUrl,
       pollingInterval: 1000,
       customRpcHeaders: network.customRpcHeaders,
+      getAuthHeaders,
     });
 
     const response = await provider.send(request.method, request.params as unknown[]);

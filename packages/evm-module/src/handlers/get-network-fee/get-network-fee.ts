@@ -1,5 +1,5 @@
 import type { NetworkFees, SuggestGasPriceOptionsResponse } from '@avalabs/vm-module-types';
-import { getProvider } from '../../utils/get-provider';
+import { getProvider, type GetAuthHeaders } from '../../utils/get-provider';
 import { rpcErrors } from '@metamask/rpc-errors';
 import { TokenUnit } from '@avalabs/core-utils-sdk';
 import { ChainId } from '@avalabs/core-chains-sdk';
@@ -77,6 +77,7 @@ export async function getNetworkFee({
   caipId,
   proxyApiUrl,
   customRpcHeaders,
+  getAuthHeaders,
 }: {
   chainId: number;
   chainName: string;
@@ -85,6 +86,7 @@ export async function getNetworkFee({
   multiContractAddress?: string;
   caipId?: string;
   customRpcHeaders?: Record<string, string>;
+  getAuthHeaders?: GetAuthHeaders;
 }): Promise<NetworkFees> {
   const provider = await getProvider({
     chainId,
@@ -92,6 +94,7 @@ export async function getNetworkFee({
     rpcUrl,
     multiContractAddress,
     customRpcHeaders,
+    getAuthHeaders,
   });
 
   if (!proxyApiUrl) {
