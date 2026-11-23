@@ -9,13 +9,13 @@ import {
   AlertType,
 } from '@avalabs/vm-module-types';
 import { rpcErrors } from '@metamask/rpc-errors';
-import { toUtf8String } from 'ethers';
 import { beautifySimpleMessage, beautifyComplexMessage } from './utils/beautify-message/beautify-message';
 import { parseRequestParams } from './schemas/parse-request-params/parse-request-params';
 import { isTypedData, isTypedDataV1 } from './utils/typeguards';
 import { isTypedDataValid, isTypedDataV1Valid } from './utils/is-typed-data-valid';
 import { sanitizeEip712Message } from './utils/eip712-type-check';
 import { mergeAlerts } from './utils/merge-alerts';
+import { decodePersonalSignMessage, getSiweAlert } from './utils/siwe/get-siwe-alert';
 import { processJsonRpcSimulation } from '../../utils/process-transaction-simulation';
 import { textItem } from '@internal/utils/src/utils/detail-item';
 import { rpcErrorOpts } from '@internal/utils';
@@ -24,14 +24,6 @@ import { getAgentIdentityFromContext } from '../../utils/get-agent-identity-from
 import { resolveAgentIdentity } from '../../utils/resolve-agent-identity';
 import { buildAgentIdentityDetailSection } from '../../utils/build-agent-identity-detail-section';
 import type { GetAuthHeaders } from '../../utils/get-provider';
-
-const toUtf8StringOrHex = (data: string): string => {
-  try {
-    return toUtf8String(data);
-  } catch {
-    return data;
-  }
-};
 
 export const ethSign = async ({
   request,
@@ -84,6 +76,7 @@ export const ethSign = async ({
   let signingData: SigningData | undefined;
   let messageDetails: string | undefined;
   let alert: Alert | undefined;
+  let siweAlert: Alert | undefined;
 
   if (typedDataValidationResult && !typedDataValidationResult.isValid) {
     alert = {
@@ -111,9 +104,12 @@ export const ethSign = async ({
       data: data,
     };
 
-    // A payload that isn't valid UTF-8 is still signable, so fall back to the raw bytes
-    // rather than throwing out of the handler.
-    messageDetails = toUtf8StringOrHex(data);
+    // Display the same decoding the SIWE check reads. A payload that isn't valid UTF-8 is still signable,
+    // so fall back to the raw bytes rather than throwing out of the handler.
+    messageDetails = decodePersonalSignMessage(data) ?? data;
+
+    // Warn when a Sign-In with Ethereum message was issued for a different domain than the requesting dApp.
+    siweAlert = getSiweAlert({ data, dappUrl: request.dappInfo?.url });
   } else if (method === RpcMethod.SIGN_TYPED_DATA || method === RpcMethod.SIGN_TYPED_DATA_V1) {
     signingData = {
       type: method,
@@ -187,7 +183,7 @@ export const ethSign = async ({
       },
       ...(agentIdentity ? [buildAgentIdentityDetailSection(agentIdentity)] : []),
     ],
-    alert: mergeAlerts(simulationResult?.alert, alert),
+    alert: mergeAlerts(mergeAlerts(simulationResult?.alert, siweAlert), alert),
     balanceChange: simulationResult?.balanceChange,
     tokenApprovals: simulationResult?.tokenApprovals,
   };
